@@ -1,0 +1,27 @@
+name: tl-markdown
+display_name: TL Markdown
+bundle_id: cyou.tianli.TLMarkdown
+domain: apps-mac
+form: mac
+origin: own
+lifecycle: active
+function: 轻量本地 Markdown 编辑器；即时渲染、源码编辑、最近文件、阅读恢复与自动保存
+summary: 原生 SwiftUI 窗口与本地 CodeMirror 编辑组件，Swift 管理文件和恢复草稿，无服务器
+public_api: TL Markdown.app; Finder 打开 .md / .markdown
+icon:
+  glyph: doc.richtext
+  color: '#94523e'
+key_scripts:
+  - Sources/TLMarkdownApp.swift
+  - Sources/Models.swift
+  - Sources/ViewModel.swift
+  - Sources/BackendClient.swift
+  - Sources/ContentView.swift
+  - Editor/src/editor.js
+  - build.sh
+depends_on:
+  - /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
+  - /Users/tianli/Dev/tools/dev/lib/tools/macapp/make_icon.py
+owner: tianli
+tier: PACKAGE
+docs: README.md

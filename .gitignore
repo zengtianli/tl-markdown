@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Xcode / Swift build artifacts
+build/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+.swiftpm/
+.build/
+
+# Xcode per-user state (track shared project, ignore user-specific)
+xcuserdata/
+*.xcuserdatad
+# Generated local editor assets and build products
+Editor/node_modules/
+Resources/Editor/
+Resources/THIRD-PARTY-NOTICES.txt
+build/
+test-results/
+*.log

@@ -1,0 +1,67 @@
+import assert from 'node:assert/strict';
+import {readFile, mkdir, writeFile} from 'node:fs/promises';
+import {createServer} from 'node:http';
+import {resolve,extname} from 'node:path';
+import {chromium} from '@playwright/test';
+const root=resolve('../Resources/Editor');
+const server=createServer(async(req,res)=>{
+  try{const name=resolve(root,'.'+decodeURIComponent(req.url.split('?')[0]));if(!name.startsWith(root+'/'))throw Error('path');
+    const data=await readFile(name);res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'text/javascript','.css':'text/css','.woff2':'font/woff2'})[extname(name)]||'application/octet-stream'});res.end(data)
+  }catch{res.writeHead(404);res.end('Not found')}
+});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const base=`http://127.0.0.1:${server.address().port}`;
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+const page=await browser.newPage({viewport:{width:1100,height:900}}),errors=[],passed=[],metrics={};
+page.on('pageerror',e=>errors.push(e.message));
+const load=async(text,id='test',source=false)=>{
+  await page.evaluate(({text,id,source})=>tl.receive({action:'load',value:{id,text,revision:Date.now(),source,fontSize:17,contentWidth:820,selection:0,scroll:0}}),{text,id,source});
+};
+const text=()=>page.evaluate(()=>tl.getText());
+const command=async value=>page.evaluate(value=>tl.receive({action:'command',value}),value);
+const pass=name=>{passed.push(name);console.log('PASS',name)};
+try{
+  await page.goto(base+'/index.html');await page.waitForFunction(()=>window.tl);
+  const sample=await readFile('../Resources/欢迎使用.md','utf8');await load(sample);
+  await page.locator('.rendered h1').waitFor();assert.equal(await text(),sample);pass('rendering preserves the exact Markdown source');
+  assert.ok(await page.locator('.rendered table').count());
+  await page.evaluate(()=>{tl.getView().scrollDOM.scrollTop=1000});await page.locator('.katex').first().waitFor();pass('table and math render');
+  await page.evaluate(()=>{tl.getView().scrollDOM.scrollTop=2000});await page.locator('.diagram svg').waitFor({timeout:30000});
+  assert.match(await page.locator('.diagram svg').textContent(),/打开文档/);pass('offline bundled Mermaid renders with readable labels');
+  await page.screenshot({path:'../build/editor-rendered.png',fullPage:true});
+  await load('# 标题\n\n这里是 **中文** 和 emoji 😀。\n\n另一段。\n');
+  await page.locator('.rendered p').first().click();await page.keyboard.press('End');await page.keyboard.insertText('新增中文');
+  assert.match(await text(),/新增中文/);await command('undo');assert.doesNotMatch(await text(),/新增中文/);await command('redo');assert.match(await text(),/新增中文/);pass('rendered paragraph click, Chinese edit, undo and redo');
+  const changed=await text();await page.evaluate(()=>tl.receive({action:'mode',value:true}));await page.evaluate(()=>tl.receive({action:'mode',value:false}));assert.equal(await text(),changed);
+  await page.evaluate(()=>tl.receive({action:'goto',value:0}));assert.equal(await page.locator('.rendered h1').count(),1);assert.equal(await text(),changed);pass('mode switching and outline navigation are lossless');
+  await load('- 第一项\n','list',true);await page.evaluate(()=>{const v=tl.getView();v.dispatch({selection:{anchor:5}});v.focus()});await page.keyboard.press('Enter');
+  assert.equal(await text(),'- 第一项\n- \n');await page.keyboard.press('Enter');assert.equal(await text(),'- 第一项\n\n');pass('list continuation and empty-item exit');
+  await load('苹果 苹果 香蕉\n','search',true);await command('find');
+  await page.locator('input[name=search]').fill('苹果');await page.locator('input[name=replace]').fill('梨');
+  await page.waitForFunction(()=>document.querySelector('.match-count')?.textContent.includes('2 个匹配'));pass('search result count');
+  await page.locator('button[name=replaceAll]').click();assert.equal(await text(),'梨 梨 香蕉\n');pass('search and replace all');
+  await load('保持 A\n','a',true);await page.evaluate(()=>{const v=tl.getView();v.dispatch({changes:{from:0,insert:'改动 '}})});
+  const stateA=await text();await load('文件 B\n','b',true);
+  await page.evaluate(text=>tl.receive({action:'load',value:{id:'a',text,revision:window.aRevision??0,source:true,fontSize:17,contentWidth:820}}),stateA);
+  assert.equal(await text(),stateA);pass('multiple document contents remain isolated');
+  await load('- [ ] 待办\n- [x] 完成\n','tasks');await page.locator('.task-toggle').first().click();assert.match(await text(),/^- \[x\] 待办/);pass('task checkbox changes original Markdown');
+  await load('---\ntitle: 元数据\n---\n\n脚注引用[^a]。\n\n[^a]: 脚注正文\n\n<script>window.PWNED=1</script>\n\n<img src=x onerror="window.PWNED=2">\n');
+  assert.ok(await page.locator('details summary').count());assert.ok(await page.locator('#note-a').count());assert.equal(await page.evaluate(()=>window.PWNED),undefined);pass('frontmatter, footnotes and script sanitization');
+  // IME protocol: real CDP composition events through Chromium, not direct document assignment.
+  await load('中文输入：','ime',true);await page.evaluate(()=>{let v=tl.getView();v.dispatch({selection:{anchor:v.state.doc.length}});v.focus()});
+  const cdp=await page.context().newCDPSession(page);
+  await cdp.send('Input.imeSetComposition',{text:'测试',selectionStart:2,selectionEnd:2});
+  await cdp.send('Input.insertText',{text:'测试'});assert.equal(await text(),'中文输入：测试');pass('IME composition commits without lost or duplicated characters');
+  const unit='## 章节\n\n这是一段用于测试长文档的普通文字，包含 **重点** 和 `代码`。\n\n';
+  const large=unit.repeat(Math.ceil(1_000_000/Buffer.byteLength(unit)));
+  const ordinary=unit.repeat(Math.ceil(100_000/Buffer.byteLength(unit)));
+  let ordinaryStart=performance.now();await load(ordinary,'ordinary',false);metrics.ordinaryLoadMS=Math.round(performance.now()-ordinaryStart);
+  ordinaryStart=performance.now();await page.evaluate(()=>{let v=tl.getView();v.dispatch({changes:{from:10,insert:'测试'}})});metrics.ordinaryEditMS=Math.round(performance.now()-ordinaryStart);
+  const start=performance.now();await load(large,'large',false);metrics.largeLoadMS=Math.round(performance.now()-start);
+  const inputStart=performance.now();await page.evaluate(()=>{let v=tl.getView();v.dispatch({changes:{from:10,insert:'测试'}})});metrics.largeEditMS=Math.round(performance.now()-inputStart);
+  assert.equal((await text()).length,large.length+2);pass('1 MB mixed Markdown loads and edits');
+  await page.evaluate(()=>{const v=tl.getView();v.scrollDOM.scrollTop=100000});
+  await page.screenshot({path:'../build/editor-large.png'});
+  assert.deepEqual(errors,[]);pass('no uncaught editor errors');
+  await mkdir('../build',{recursive:true});await writeFile('../build/editor-test-results.json',JSON.stringify({passed,metrics,bytes:Buffer.byteLength(large)},null,2));console.log('METRICS',metrics);
+}finally{await browser.close();await new Promise(r=>server.close(r));}
