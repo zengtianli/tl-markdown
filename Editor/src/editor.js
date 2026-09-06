@@ -16,6 +16,7 @@ import 'highlight.js/styles/github.css';
 import './style.css';
 
 const post = data => { window.webkit?.messageHandlers?.editor?.postMessage(data); window.dispatchEvent(new CustomEvent('tl-message',{detail:data})); };
+const previewOnly = Boolean(window.TL_PREVIEW_ONLY);
 window.addEventListener('error', e => post({type:'error', message:e.message}));
 window.addEventListener('unhandledrejection', e => post({type:'error', message:String(e.reason)}));
 const md = new MarkdownIt({html:true, linkify:true, breaks:false, highlight(code,lang) {
@@ -68,6 +69,7 @@ function assetURL(src) {
   return 'mdasset://image?id='+encodeURIComponent(currentID)+'&path='+encodeURIComponent(decoded);
 }
 function activateBlock(v,from,to,event) {
+  if(previewOnly)return;
   event.preventDefault();
   let position=from;
   // Place the source cursor near the clicked word, not always at the document start.
@@ -115,6 +117,7 @@ class RenderedBlock extends WidgetType {
     element.innerHTML=DOMPurify.sanitize(html,{FORBID_TAGS:['script','style','iframe','object','embed','form','input'],ADD_TAGS:['eq','eqn']});
     element.querySelectorAll('.task-toggle').forEach(button=>button.addEventListener('click',event=>{
       event.preventDefault();event.stopPropagation();
+      if(previewOnly)return;
       const tasks=[...this.raw.matchAll(/^\s*[-+*]\s+\[([ xX])\]/gm)];
       const task=tasks[Number(button.dataset.task)];if(!task)return;
       const at=this.from+task.index+task[0].lastIndexOf('[')+1;
@@ -181,12 +184,12 @@ async function acceptImage(file){
   const reader=new FileReader();reader.onload=()=>post({type:'image',id,mime:file.type,data:String(reader.result).split(',')[1]});reader.readAsDataURL(file);return true;
 }
 const phrases=EditorState.phrases.of({'Find':'查找','Replace':'替换','next':'下一项','previous':'上一项','all':'选择全部','match case':'区分大小写','regexp':'正则表达式','by word':'全词','replace':'替换','replace all':'全部替换','close':'关闭','current match':'当前匹配'});
-function extensions(){return [modeField,editingField,renderedField,history(),drawSelection(),EditorView.lineWrapping,
+function extensions(){return [EditorState.readOnly.of(previewOnly),EditorView.editable.of(!previewOnly),modeField,editingField,renderedField,history(),drawSelection(),EditorView.lineWrapping,
   markdown({addKeymap:false}),syntaxHighlighting(defaultHighlightStyle),search({top:true}),phrases,placeholder('开始写作…'),
   keymap.of([{key:'Enter',run:insertNewlineContinueMarkupCommand({nonTightLists:false})},{key:'Mod-f',run:find},{key:'Mod-b',run:()=>wrap('**')},{key:'Mod-i',run:()=>wrap('*')},...markdownKeymap,...defaultKeymap,...historyKeymap,...searchKeymap,indentWithTab]),
   EditorView.updateListener.of(update=>{if(update.docChanged){changed();outline()}if(update.selectionSet)notifyPosition();if(update.docChanged||update.selectionSet||update.transactions.some(t=>t.effects.length))searchCount()}),
   EditorView.domEventHandlers({
-    focus:()=>{if(!view.state.field(editingField))view.dispatch({effects:editingEffect.of(true)})},
+    focus:()=>{if(!previewOnly&&!view.state.field(editingField))view.dispatch({effects:editingEffect.of(true)})},
     scroll:notifyPosition,
     paste:(e)=>{const image=[...(e.clipboardData?.files??[])].find(f=>f.type.startsWith('image/'));if(image){e.preventDefault();acceptImage(image);return true}return false},
     drop:(e)=>{const image=[...(e.dataTransfer?.files??[])].find(f=>f.type.startsWith('image/'));if(image){e.preventDefault();acceptImage(image);return true}return false}

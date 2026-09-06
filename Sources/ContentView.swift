@@ -32,7 +32,7 @@ struct ContentView: View {
                         Text(doc.conflict ? "需要处理文件冲突" : doc.path == nil ? "本地草稿" : doc.dirty ? (doc.message.isEmpty ? "正在保存…" : "保存未完成") : "已保存")
                         Spacer()
                         Text("\(doc.text.count.formatted()) 字符")
-                        Text(store.sourceMode ? "Markdown 源码" : "即时渲染")
+                        Text(store.sourceMode ? "Markdown 源码" : "原生编辑")
                     } else { Text("本地文件 · 离线读写"); Spacer() }
                 }.font(.system(size: 11)).foregroundStyle(.secondary).padding(.horizontal, 18).frame(height: 30)
             }
@@ -49,6 +49,10 @@ struct ContentView: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button { store.command("find") } label: { Image(systemName: "magnifyingglass") }.disabled(store.active == nil).help("搜索与替换 ⌘F")
                 Button { store.toggleSource() } label: { Label(store.sourceMode ? "即时渲染" : "源码", systemImage: store.sourceMode ? "doc.richtext" : "chevron.left.forwardslash.chevron.right") }.disabled(store.active == nil)
+                Button {
+                    store.bridge.flush()
+                    if let doc = store.active { FullPreview.shared.show(doc, settings: store.settings) }
+                } label: { Image(systemName: "doc.text.magnifyingglass") }.help("完整预览：表格、图片、公式和图表；关闭后释放").disabled(store.active == nil)
                 Button { store.showSettings = true } label: { Image(systemName: "slider.horizontal.3") }.help("阅读与编辑设置")
             }
         }

@@ -1,6 +1,5 @@
 import SwiftUI
 import UniformTypeIdentifiers
-import WebKit
 
 struct OutlineItem: Identifiable { var id: Int; var title: String; var level: Int }
 @MainActor final class EditorStore: ObservableObject {

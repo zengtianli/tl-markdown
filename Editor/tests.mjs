@@ -63,5 +63,13 @@ try{
   await page.evaluate(()=>{const v=tl.getView();v.scrollDOM.scrollTop=100000});
   await page.screenshot({path:'../build/editor-large.png'});
   assert.deepEqual(errors,[]);pass('no uncaught editor errors');
+  await page.addInitScript(()=>{window.TL_PREVIEW_ONLY=true});
+  await page.reload();await page.waitForFunction(()=>window.tl);
+  const previewText='# 只读预览\n\n正文 **强调**。\n\n- [ ] 待办\n';
+  await load(previewText,'preview');
+  await page.locator('.rendered p').first().click();await page.keyboard.insertText('不能插入');
+  await page.locator('.task-toggle').first().click();
+  assert.equal(await text(),previewText);assert.equal(await page.locator('.cm-content').getAttribute('contenteditable'),'false');
+  pass('optional full preview is read-only including task buttons');
   await mkdir('../build',{recursive:true});await writeFile('../build/editor-test-results.json',JSON.stringify({passed,metrics,bytes:Buffer.byteLength(large)},null,2));console.log('METRICS',metrics);
 }finally{await browser.close();await new Promise(r=>server.close(r));}

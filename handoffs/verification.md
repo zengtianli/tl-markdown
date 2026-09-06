@@ -1,5 +1,7 @@
 # TL Markdown · 首版验证
 
+> 历史记录：本文验证的是最初 WebKit 编辑区。随后按用户“极端轻量、速度、Swift / Rust”要求改为 AppKit 原生主编辑区；当前能力与实测见 `/Users/tianli/Apps/handoffs/md-editor-native-performance.md` 和 README，不沿用本文的渲染覆盖声明。
+
 日期：2026-09-06（系统时区 Asia/Shanghai）。来源：实际生产代码测试与本机原生窗口检查。
 
 ## 已实现

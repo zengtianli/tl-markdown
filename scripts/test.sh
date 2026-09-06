@@ -9,4 +9,7 @@ xcrun swiftc Sources/Models.swift Tests/DocumentIOTests.swift -o build/document-
 build/document-io-tests build/io-tests | tee build/io-test-results.txt
 xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/StoreTests.swift -o build/store-tests
 build/store-tests build/store-tests-data | tee build/store-test-results.txt
+xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/NativeEditorTests.swift -o build/native-editor-tests
+build/native-editor-tests | tee build/native-editor-test-results.txt
+# The optional full preview still uses these bundled components; these are not native editor tests.
 (cd Editor && npm run build && npm test)
