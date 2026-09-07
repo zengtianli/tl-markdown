@@ -19,6 +19,7 @@ xcodebuild -project TLMarkdown.xcodeproj -scheme TLMarkdown -configuration Relea
 APP="$DIR/build/DerivedData/Build/Products/Release/TLMarkdown.app"
 test -d "$APP"
 plutil -replace CFBundleDisplayName -string "$DISPLAY_NAME" "$APP/Contents/Info.plist"
+plutil -replace CFBundleName -string "$DISPLAY_NAME" "$APP/Contents/Info.plist"
 plutil -replace CFBundleIconFile -string AppIcon "$APP/Contents/Info.plist"
 VERSION=1
 if git rev-parse --verify HEAD >/dev/null 2>&1; then VERSION="$(git rev-list --count HEAD)"; fi
