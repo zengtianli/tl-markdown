@@ -21,10 +21,10 @@ import UniformTypeIdentifiers
             NSApp.terminate(nil)
         }
     }
-    func application(_ sender: NSApplication, openFiles filenames: [String]) {
-        let urls = filenames.map { URL(fileURLWithPath: $0) }
+    // Handle URL-based document events; SwiftUI's delegate does not forward
+    // these to the legacy openFiles callback. Keep cold-launch URLs queued.
+    func application(_ application: NSApplication, open urls: [URL]) {
         if let store { urls.forEach { store.open($0) } } else { pending.append(contentsOf: urls) }
-        NSApp.reply(toOpenOrPrint: .success)
     }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         store?.bridge.flush()
