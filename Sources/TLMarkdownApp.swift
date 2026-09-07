@@ -44,7 +44,7 @@ import UniformTypeIdentifiers
         _store = StateObject(wrappedValue: EditorStore(directory: root))
     }
     var body: some Scene {
-        Window("TL Markdown", id: "editor") {
+        Window(ProductIdentity.name, id: "editor") {
             ContentView(store: store).preferredColorScheme(.light).tint(Color(red: 0.56, green: 0.29, blue: 0.22))
                 .onAppear {
                     delegate.store = store; delegate.pending.forEach { store.open($0) }; delegate.pending = []

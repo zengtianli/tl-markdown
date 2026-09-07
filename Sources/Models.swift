@@ -121,3 +121,8 @@ final class SessionDisk {
         try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: file.path)
     }
 }
+
+/// User-facing name comes from catalog.yaml through the built Info.plist.
+enum ProductIdentity {
+    static var name: String { Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? ProcessInfo.processInfo.processName }
+}

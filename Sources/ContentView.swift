@@ -45,7 +45,7 @@ struct ContentView: View {
                 Button { store.openPanel() } label: { Image(systemName: "folder") }.help("打开文件 ⌘O")
                 Button { store.newDocument() } label: { Image(systemName: "square.and.pencil") }.help("新建 ⌘N")
             }
-            ToolbarItem(placement: .principal) { Text(store.active?.title ?? "TL Markdown").font(.headline).lineLimit(1) }
+            ToolbarItem(placement: .principal) { Text(store.active?.title ?? ProductIdentity.name).font(.headline).lineLimit(1) }
             ToolbarItemGroup(placement: .primaryAction) {
                 Button { store.command("find") } label: { Image(systemName: "magnifyingglass") }.disabled(store.active == nil).help("搜索与替换 ⌘F")
                 Button { store.toggleSource() } label: { Label(store.sourceMode ? "即时渲染" : "源码", systemImage: store.sourceMode ? "doc.richtext" : "chevron.left.forwardslash.chevron.right") }.disabled(store.active == nil)
@@ -69,7 +69,7 @@ struct ContentView: View {
     }
     var sidebar: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack { Image(systemName: "doc.richtext").foregroundStyle(Color.accentColor); Text("Markdown").font(.title3.weight(.semibold)); Spacer() }.padding(.top, 20)
+            HStack { Image(systemName: "doc.richtext").foregroundStyle(Color.accentColor); Text(ProductIdentity.name).font(.title3.weight(.semibold)); Spacer() }.padding(.top, 20)
             Picker("侧栏", selection: $store.sidebarTab) { Text("最近文件").tag(0); Text("大纲").tag(1) }.pickerStyle(.segmented)
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 4) {

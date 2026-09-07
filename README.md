@@ -1,4 +1,6 @@
-# TL Markdown
+# Folio
+
+[English](README_EN.md)
 
 本地 Markdown 阅读与编辑工具。默认使用 SwiftUI 窗口 + AppKit NSTextView 原生编辑器，日常读写不创建 WebKit 进程。优先低内存和输入响应；Swift 管理文件、保存与恢复记录。
 
@@ -24,7 +26,7 @@ bash build.sh --install
 
 运行时无需 Node、Python 或服务器。可选预览的 JS/CSS/字体全部打包。构建复用总部 Xcode 选择器、图标工厂和 CodingKey 检查；未从其他 App 导入代码。
 
-验证：`bash scripts/test.sh`（本机 Xcode、Node 与 Chrome）。安装包位于 `/Applications/TL Markdown.app`，不会替换现有 Markdown 默认打开方式。
+验证：`bash scripts/test.sh`（本机 Xcode、Node 与 Chrome）。安装包位于 `/Applications/Folio.app`，不会替换现有 Markdown 默认打开方式。
 
 ## 数据
 
