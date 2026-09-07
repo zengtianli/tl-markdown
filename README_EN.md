@@ -2,13 +2,13 @@
 
 [中文](README.md)
 
-A lightweight local Markdown editor for macOS. SwiftUI and AppKit provide the default native editing path; no WebKit process is created during ordinary editing.
+A local Markdown editor for macOS with a SwiftUI window and a bundled WebKit single-pane live editor. Swift handles files, autosave and recovery. Earlier native-only memory measurements do not describe this version.
 
 ## Use
 
-Open with Cmd+O, save with Cmd+S, find with Cmd+F. Named files autosave; drafts and recent-file history recover locally. Local standalone images use bounded thumbnail caching. Tables remain monospaced Markdown in the native editor.
+Open with Cmd+O, save with Cmd+S, find with Cmd+F. Named files autosave; drafts and recent-file history recover locally. Tables, reference links, images, math and diagrams render directly in the editor. Click a block to edit its Markdown; move to another block to render it again. Source mode preserves the original text.
 
-Cmd+Shift+P opens an optional read-only live WebKit preview for tables, math, Mermaid and richer syntax. Edits update it automatically while retaining its scroll position; helper-process reclamation is controlled by macOS. The native editor does not yet provide full single-pane WYSIWYG rendering.
+Cmd+Shift+P optionally opens a second read-only live preview for side-by-side reading. Ordinary editing does not require it.
 
 ## Build and verify
 

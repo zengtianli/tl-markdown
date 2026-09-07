@@ -33,9 +33,11 @@ import UniformTypeIdentifiers
         if let store { urls.forEach { store.open($0) } } else { pending.append(contentsOf: urls) }
     }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        store?.bridge.flush()
-        store?.persist()
-        return .terminateNow
+        guard let store else { return .terminateNow }
+        DispatchQueue.main.async {
+            store.bridge.flushBeforeQuit { ok in store.persist(); sender.reply(toApplicationShouldTerminate: ok) }
+        }
+        return .terminateLater
     }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag { sender.windows.first(where: { $0.canBecomeMain })?.makeKeyAndOrderFront(nil) }; return true
@@ -62,8 +64,8 @@ import UniformTypeIdentifiers
             CommandGroup(replacing: .newItem) {
                 Button("新建文档") { store.newDocument() }.keyboardShortcut("n")
                 Button("打开…") { store.openPanel() }.keyboardShortcut("o")
-                Divider(); Button("保存") { store.save() }.keyboardShortcut("s")
-                Button("另存为…") { store.save(saveAs: true) }.keyboardShortcut("s", modifiers: [.command, .shift])
+                Divider(); Button("保存") { store.bridge.flushBeforeQuit { if $0 { store.save() } } }.keyboardShortcut("s")
+                Button("另存为…") { store.bridge.flushBeforeQuit { if $0 { store.save(saveAs: true) } } }.keyboardShortcut("s", modifiers: [.command, .shift])
                 Button("关闭标签 / 预览") { if !FullPreview.shared.closeIfKey(), let id = store.activeID { store.close(id) } }.keyboardShortcut("w")
                 Button("恢复关闭的草稿") { store.restoreClosedDraft() }.disabled(store.closedDrafts.isEmpty)
             }

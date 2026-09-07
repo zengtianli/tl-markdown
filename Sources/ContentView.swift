@@ -32,7 +32,7 @@ struct ContentView: View {
                         Text(doc.conflict ? "需要处理文件冲突" : doc.path == nil ? "本地草稿" : doc.dirty ? (doc.message.isEmpty ? "正在保存…" : "保存未完成") : "已保存")
                         Spacer()
                         Text("\(doc.text.count.formatted()) 字符")
-                        Text(store.sourceMode ? "Markdown 源码" : "原生编辑")
+                        Text(store.sourceMode ? "Markdown 源码" : "即时渲染")
                     } else { Text("本地文件 · 离线读写"); Spacer() }
                 }.font(.system(size: 11)).foregroundStyle(.secondary).padding(.horizontal, 18).frame(height: 30)
             }

@@ -55,6 +55,9 @@ function parse(doc) {
     if(to>from && from >= (blocks.at(-1)?.to??0))blocks.push({from,to,kind:t.type,info:t.info});
   }
   // Footnote definitions may be consumed by markdown-it without a mapped top-level token.
+  for(let i=0;i<lines.length;i++)if(/^ {0,3}\[(?!\^)[^\]]+\]:\s*\S/.test(lines[i])&&!blocks.some(b=>offsets[i]>=b.from&&offsets[i]<b.to)) {
+    blocks.push({from:offsets[i],to:Math.min(text.length,offsets[i+1]-1),kind:'reference-definition'});
+  }
   for(let i=0;i<lines.length;i++)if(/^\[\^[^\]]+\]:/.test(lines[i])&&!blocks.some(b=>offsets[i]>=b.from&&offsets[i]<b.to)) {
     let end=i+1; while(end<lines.length&&/^ {2,}\S/.test(lines[end]))end++;
     blocks.push({from:offsets[i],to:Math.min(text.length,offsets[end]-1),kind:'footnote'}); i=end-1;
@@ -89,6 +92,7 @@ class RenderedBlock extends WidgetType {
   get estimatedHeight(){return this.kind==='table_open'?120:this.kind==='fence'?110:this.kind==='heading_open'?58:48;}
   toDOM(v) {
     const element=document.createElement('div'); element.className='rendered'; element.dataset.from=this.from;
+    if(this.kind==='reference-definition'){element.style.display='none';return element;}
     const edit=(event)=>activateBlock(v,this.from,this.to,event);
     element.addEventListener('mousedown',e=>{if(!e.target.closest('a,button,summary,input'))edit(e)});
     if(this.kind==='frontmatter') {
@@ -191,6 +195,7 @@ function extensions(){return [EditorState.readOnly.of(previewOnly),EditorView.ed
   EditorView.updateListener.of(update=>{if(update.docChanged){changed();outline()}if(update.selectionSet)notifyPosition();if(update.docChanged||update.selectionSet||update.transactions.some(t=>t.effects.length))searchCount()}),
   EditorView.domEventHandlers({
     focus:()=>{if(!previewOnly&&!view.state.field(editingField))view.dispatch({effects:editingEffect.of(true)})},
+    blur:()=>{setTimeout(()=>{if(!view.hasFocus&&!view.composing)view.dispatch({effects:editingEffect.of(false)})},0)},
     scroll:notifyPosition,
     paste:(e)=>{const image=[...(e.clipboardData?.files??[])].find(f=>f.type.startsWith('image/'));if(image){e.preventDefault();acceptImage(image);return true}return false},
     drop:(e)=>{const image=[...(e.dataTransfer?.files??[])].find(f=>f.type.startsWith('image/'));if(image){e.preventDefault();acceptImage(image);return true}return false}

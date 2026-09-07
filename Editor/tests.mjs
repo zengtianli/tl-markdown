@@ -35,6 +35,13 @@ try{
   await page.evaluate(()=>{const v=tl.getView(),from=v.state.doc.toString().indexOf('/first');v.dispatch({changes:{from,to:from+6,insert:'/second'}})});
   assert.equal(await page.locator('.rendered a').first().getAttribute('href'),'https://example.com/second');
   pass('reference links resolve across blocks and refresh when definitions change');
+  assert.doesNotMatch(await page.locator('.cm-content').innerText(),/\[CFG\]:/);
+  await load('# 单栏验收\n\n| 项目 | 状态 |\n| --- | --- |\n| Folio | 修改前 |\n\n下一段。\n','live-table');
+  await page.locator('.rendered td').last().click();
+  await page.keyboard.insertText('即时修改');
+  await page.locator('.rendered p').last().click();
+  assert.match(await page.locator('.rendered table').textContent(),/即时修改/);
+  assert.match(await text(),/即时修改/);pass('main single-pane table edits re-render when moving to another block');
   await load('# 标题\n\n这里是 **中文** 和 emoji 😀。\n\n另一段。\n');
   await page.locator('.rendered p').first().click();await page.keyboard.press('End');await page.keyboard.insertText('新增中文');
   assert.match(await text(),/新增中文/);await command('undo');assert.doesNotMatch(await text(),/新增中文/);await command('redo');assert.match(await text(),/新增中文/);pass('rendered paragraph click, Chinese edit, undo and redo');
