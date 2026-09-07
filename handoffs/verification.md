@@ -39,7 +39,7 @@ SwiftUI 原生窗口、标签页、最近文件/固定/移除/重定位、阅读
 
 ## 构建与注册
 
-- 项目：`/Users/tianli/Apps/mac/tl-markdown`
+- 项目（现路径）：`/Users/tianli/Apps/mac/folio`
 - 安装：`/Applications/TL Markdown.app`
 - 数据：`~/Library/Application Support/TLMarkdown/session.json`
 - 私有仓：`https://github.com/zengtianli/tl-markdown`

@@ -29,10 +29,11 @@ ditto "$DIR/Resources" "$APP/Contents/Resources"
 cp "$DIR/icon/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 codesign --force --sign - "$APP"
 codesign --verify --deep --strict "$APP"
+python3 "$DIR/scripts/test_file_open.py" "$APP"
 if [ "${1:-}" = "--install" ]; then
   DEST="/Applications/$DISPLAY_NAME.app"
   if [ -e "$DEST" ]; then
-    ARCHIVE="$HOME/.Trash/tl-markdown-previous-$(date +%s)"
+    ARCHIVE="$HOME/.Trash/folio-previous-$(date +%s)"
     mkdir -p "$ARCHIVE"
     mv "$DEST" "$ARCHIVE/"
   fi

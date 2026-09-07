@@ -1,4 +1,4 @@
-name: tl-markdown
+name: folio
 display_name: Folio
 bundle_id: cyou.tianli.TLMarkdown
 domain: apps-mac
@@ -20,6 +20,7 @@ key_scripts:
   - Sources/ContentView.swift
   - Editor/src/editor.js
   - build.sh
+  - scripts/test_file_open.py
 depends_on:
   - /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
   - /Users/tianli/Dev/tools/dev/lib/tools/macapp/make_icon.py

@@ -1,4 +1,4 @@
-# CLAUDE.md — tl-markdown
+# CLAUDE.md — Folio
 
 SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实际架构先读本项目
 `README.md` 和 `catalog.yaml`；上级 `~/Apps/mac/CLAUDE.md` 是舰队架构约定。
@@ -9,8 +9,10 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实�
 
 ## 构建
 
+项目目录为 `/Users/tianli/Apps/mac/folio`。Bundle ID、内部构建 target 与用户数据目录保持兼容，避免丢失默认文件关联和已有会话。
+
 ```bash
-cd ~/Apps/mac/tl-markdown
+cd ~/Apps/mac/folio
 ./build.sh          # 构建 + 装 /Applications（Xcode 自动挑，见下）
 ```
 
@@ -25,6 +27,8 @@ python3 /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.py list
 ```
 
 ## 硬约束（与范本 ssot-console 一致）
+
+- `build.sh` 对签名后的真实 .app 自动运行 `scripts/test_file_open.py`：通过 LaunchServices 验证冷启动、运行中多文件、Unicode/空格、两种扩展名和重复打开；读取隔离会话中真实文档内容。失败不安装。发布时再通过 CUA 核对安装版窗口内容；组件测试或 open 返回 0 不能替代。
 
 - bundle id `cyou.tianli.TLMarkdown`；部署目标见 pbxproj `MACOSX_DEPLOYMENT_TARGET`。
 - **若使用外部 Python 后端**：stdout 纯 JSON；`gui-*` 子命令一律 exit 0，失败 = `{"ok": false, "error": "人话"}`；

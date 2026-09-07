@@ -18,4 +18,4 @@ Builds reuse the headquarters Xcode selector, CodingKey checker and icon factory
 
 ## Compatibility
 
-The existing bundle ID `cyou.tianli.TLMarkdown`, repository directory and `~/Library/Application Support/TLMarkdown/session.json` remain unchanged. Renaming does not change the default Markdown file association. Chinese UI labels are retained; the product name is Folio in both languages.
+The repository now lives at `~/Apps/mac/folio`. The existing bundle ID `cyou.tianli.TLMarkdown` and `~/Library/Application Support/TLMarkdown/session.json` remain compatible, preserving file associations and saved sessions. Chinese UI labels are retained; the product name is Folio in both languages.

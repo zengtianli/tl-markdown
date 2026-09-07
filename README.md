@@ -18,15 +18,15 @@
 ## 构建
 
 ```sh
-cd /Users/tianli/Apps/mac/tl-markdown/Editor
+cd /Users/tianli/Apps/mac/folio/Editor
 npm ci
-cd /Users/tianli/Apps/mac/tl-markdown
+cd /Users/tianli/Apps/mac/folio
 bash build.sh --install
 ```
 
 运行时无需 Node、Python 或服务器。可选预览的 JS/CSS/字体全部打包。构建复用总部 Xcode 选择器、图标工厂和 CodingKey 检查；未从其他 App 导入代码。
 
-验证：`bash scripts/test.sh`（本机 Xcode、Node 与 Chrome）。安装包位于 `/Applications/Folio.app`，不会替换现有 Markdown 默认打开方式。
+验证：`bash scripts/test.sh`（本机 Xcode、Node 与 Chrome）。`build.sh` 还会从系统发起文件打开，核对隔离会话的实际文档内容；失败会阻止安装。安装包位于 `/Applications/Folio.app`，保留现有 Markdown 默认打开方式。
 
 ## 数据
 
