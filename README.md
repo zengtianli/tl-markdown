@@ -38,6 +38,8 @@ CodeMirror / Lezer、markdown-it 与插件、DOMPurify、highlight.js、KaTeX、
 
 `Tests/NativeEditorTests.swift` 验证保留的原生编辑实现；`Editor/tests.mjs` 验证当前主编辑区使用的渲染和编辑组件。安装版还需通过真实窗口验证主编辑路径。
 
+`Tests/MainEditorTests.swift` 挂载生产 `EditorSurface`，验证主区表格与引用渲染、编辑后重渲染和 Swift 保存；`scripts/test.sh` 与 `build.sh` 均执行，失败阻止安装。单独运行：`bash scripts/test.sh --main-editor /Applications/Folio.app/Contents/Resources`（隔离测试状态，不改用户会话）。错误原因和回退验证见 [实时渲染复盘](handoffs/live-rendering-retro.md)。
+
 ## 需求与验证
 
 范围来源：`/Users/tianli/Apps/handoffs/md-editor-requirements.md`。原生化、内存与性能证据见 `/Users/tianli/Apps/handoffs/md-editor-native-performance.md`。`handoffs/verification.md` 为最初 WebKit 版本历史验收；不代表当前原生功能范围。

@@ -36,6 +36,7 @@ cp "$DIR/icon/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 cp "$DIR/icon/AppIcon.icns" "$APP/Contents/Resources/$ICON_NAME.icns"
 codesign --force --sign - "$APP"
 codesign --verify --deep --strict "$APP"
+bash "$DIR/scripts/test.sh" --main-editor "$APP/Contents/Resources"
 python3 "$DIR/scripts/test_file_open.py" "$APP"
 if [ "${1:-}" = "--install" ]; then
   DEST="/Applications/$DISPLAY_NAME.app"
