@@ -8,7 +8,7 @@ A lightweight local Markdown editor for macOS. SwiftUI and AppKit provide the de
 
 Open with Cmd+O, save with Cmd+S, find with Cmd+F. Named files autosave; drafts and recent-file history recover locally. Local standalone images use bounded thumbnail caching. Tables remain monospaced Markdown in the native editor.
 
-Cmd+Shift+P opens an optional read-only WebKit snapshot for tables, math, Mermaid and richer syntax. Close and reopen to refresh it; helper-process reclamation is controlled by macOS.
+Cmd+Shift+P opens an optional read-only live WebKit preview for tables, math, Mermaid and richer syntax. Edits update it automatically while retaining its scroll position; helper-process reclamation is controlled by macOS. The native editor does not yet provide full single-pane WYSIWYG rendering.
 
 ## Build and verify
 

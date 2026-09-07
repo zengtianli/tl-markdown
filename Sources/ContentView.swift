@@ -57,6 +57,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $store.showSettings) { settingsView }
+        .onReceive(store.$documents) { FullPreview.shared.update(documents: $0) }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             for provider in providers {
                 _ = provider.loadObject(ofClass: URL.self) { url, _ in

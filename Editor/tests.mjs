@@ -29,6 +29,12 @@ try{
   await page.evaluate(()=>{tl.getView().scrollDOM.scrollTop=2000});await page.locator('.diagram svg').waitFor({timeout:30000});
   assert.match(await page.locator('.diagram svg').textContent(),/打开文档/);pass('offline bundled Mermaid renders with readable labels');
   await page.screenshot({path:'../build/editor-rendered.png',fullPage:true});
+  const referenceSource='参见 [参数文件][CFG]。\n\n[CFG]: https://example.com/first\n';
+  await load(referenceSource,'references');
+  assert.equal(await page.locator('.rendered a').first().getAttribute('href'),'https://example.com/first');
+  await page.evaluate(()=>{const v=tl.getView(),from=v.state.doc.toString().indexOf('/first');v.dispatch({changes:{from,to:from+6,insert:'/second'}})});
+  assert.equal(await page.locator('.rendered a').first().getAttribute('href'),'https://example.com/second');
+  pass('reference links resolve across blocks and refresh when definitions change');
   await load('# 标题\n\n这里是 **中文** 和 emoji 😀。\n\n另一段。\n');
   await page.locator('.rendered p').first().click();await page.keyboard.press('End');await page.keyboard.insertText('新增中文');
   assert.match(await text(),/新增中文/);await command('undo');assert.doesNotMatch(await text(),/新增中文/);await command('redo');assert.match(await text(),/新增中文/);pass('rendered paragraph click, Chinese edit, undo and redo');
@@ -71,5 +77,12 @@ try{
   await page.locator('.task-toggle').first().click();
   assert.equal(await text(),previewText);assert.equal(await page.locator('.cm-content').getAttribute('contenteditable'),'false');
   pass('optional full preview is read-only including task buttons');
+  const liveText=previewText+'\n| 项目 | 状态 |\n| --- | --- |\n| 实时 | 已更新 |\n';
+  await page.evaluate(text=>tl.receive({action:'refresh',value:{id:'preview',text}}),liveText);
+  assert.equal(await text(),liveText);
+  assert.match(await page.locator('.rendered table').textContent(),/已更新/);
+  await page.evaluate(()=>tl.receive({action:'refresh',value:{id:'another-document',text:'错误文档'}}));
+  assert.equal(await text(),liveText);
+  pass('live preview refresh renders changed tables and rejects other documents');
   await mkdir('../build',{recursive:true});await writeFile('../build/editor-test-results.json',JSON.stringify({passed,metrics,bytes:Buffer.byteLength(large)},null,2));console.log('METRICS',metrics);
 }finally{await browser.close();await new Promise(r=>server.close(r));}

@@ -5,6 +5,12 @@ import UniformTypeIdentifiers
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
     var store: EditorStore?
     var pending: [URL] = []
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Load this bundle's artwork explicitly for the running Dock tile.
+        if let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleIconFile") as? String,
+           let url = Bundle.main.url(forResource: name, withExtension: "icns"),
+           let icon = NSImage(contentsOf: url) { NSApp.applicationIconImage = icon }
+    }
     private var reportedBenchmark = false
     func reportBenchmarkIfRequested() {
         guard ProcessInfo.processInfo.environment["TL_MARKDOWN_BENCHMARK"] == "1", !reportedBenchmark else { return }
@@ -88,13 +94,28 @@ import UniformTypeIdentifiers
 }
 
 /// Optional compatibility renderer. Never allocated by editor startup or ordinary document loading.
-/// A snapshot, not a second writable document. Closing the window tears down WebKit and its handlers.
+/// Read-only live rendering of the same document. Closing tears down WebKit and its handlers.
 @MainActor final class FullPreview: NSObject, WKScriptMessageHandler, WKNavigationDelegate, WKURLSchemeHandler, NSWindowDelegate {
     static let shared = FullPreview()
     private var window: NSWindow?
     private var web: WKWebView?
     private var document: OpenDocument?
     private var settings = EditorSettings()
+    private var renderReady = false
+    private var refreshWork: DispatchWorkItem?
+    func update(documents: [OpenDocument]) {
+        guard let id = document?.id, let latest = documents.first(where: { $0.id == id }),
+              latest.text != document?.text || latest.path != document?.path else { return }
+        document = latest
+        window?.title = "\(latest.title) · 实时预览"
+        refreshWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            guard let self, self.renderReady, let doc = self.document else { return }
+            self.send("refresh", value: ["id": doc.id, "text": doc.text])
+        }
+        refreshWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
+    }
     var isKey: Bool { window?.isKeyWindow == true }
     @discardableResult func closeIfKey() -> Bool {
         guard isKey else { return false }; window?.close(); return true
@@ -111,7 +132,7 @@ import UniformTypeIdentifiers
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.navigationDelegate = self
         let preview = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1000, height: 760), styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
-        preview.title = "\(document.title) · 完整预览（按需加载的只读快照）"
+        preview.title = "\(document.title) · 实时预览"
         preview.isReleasedWhenClosed = false; preview.delegate = self; preview.contentView = view
         web = view; window = preview
         if let url = Bundle.main.resourceURL?.appendingPathComponent("Editor/index.html") {
@@ -121,6 +142,7 @@ import UniformTypeIdentifiers
     }
 
     func windowWillClose(_ notification: Notification) {
+        refreshWork?.cancel(); refreshWork = nil; renderReady = false
         web?.stopLoading()
         web?.configuration.userContentController.removeScriptMessageHandler(forName: "editor")
         web?.navigationDelegate = nil
@@ -136,6 +158,7 @@ import UniformTypeIdentifiers
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.frameInfo.isMainFrame, let body = message.body as? [String: Any], let type = body["type"] as? String else { return }
         if type == "ready", let doc = document {
+            renderReady = true
             send("load", value: ["id": doc.id, "text": doc.text, "revision": doc.revision, "selection": 0, "scroll": 0, "source": false,
                 "fontSize": settings.fontSize, "contentWidth": settings.contentWidth, "fontFamily": settings.fontFamily ?? "system"])
         } else if type == "copy", let text = body["text"] as? String {

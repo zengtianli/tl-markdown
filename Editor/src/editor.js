@@ -84,8 +84,8 @@ function activateBlock(v,from,to,event) {
   v.dispatch({selection:{anchor:Math.min(to,position)},effects:editingEffect.of(true)}); v.focus();
 }
 class RenderedBlock extends WidgetType {
-  constructor(raw,kind,from,to,id) {super();Object.assign(this,{raw,kind,from,to,id});}
-  eq(other){return this.raw===other.raw&&this.kind===other.kind&&this.from===other.from&&this.id===other.id;}
+  constructor(raw,kind,from,to,id,references) {super();Object.assign(this,{raw,kind,from,to,id,references});this.referenceKey=JSON.stringify(references);}
+  eq(other){return this.raw===other.raw&&this.kind===other.kind&&this.from===other.from&&this.id===other.id&&this.referenceKey===other.referenceKey;}
   get estimatedHeight(){return this.kind==='table_open'?120:this.kind==='fence'?110:this.kind==='heading_open'?58:48;}
   toDOM(v) {
     const element=document.createElement('div'); element.className='rendered'; element.dataset.from=this.from;
@@ -113,7 +113,7 @@ class RenderedBlock extends WidgetType {
     // Footnote references across independently rendered blocks remain navigable.
     let input=['fence','code_block'].includes(this.kind)?this.raw:this.raw.replace(/(`+)[\s\S]*?\1|(?<!\\)\[\^([^\]]+)\](?!:)/g,(whole,ticks,id)=>ticks?whole:`<sup><a href="#note-${md.utils.escapeHtml(id)}">${md.utils.escapeHtml(id)}</a></sup>`);
     let taskIndex=0;
-    const html=md.render(input).replace(/<input\b[^>]*type="checkbox"[^>]*>/g,tag=>`<button class="task-toggle" data-task="${taskIndex++}" role="checkbox" aria-checked="${tag.includes('checked')}">${tag.includes('checked')?'☑':'☐'}</button>`);
+    const html=md.render(input,{references:this.references}).replace(/<input\b[^>]*type="checkbox"[^>]*>/g,tag=>`<button class="task-toggle" data-task="${taskIndex++}" role="checkbox" aria-checked="${tag.includes('checked')}">${tag.includes('checked')?'☑':'☐'}</button>`);
     element.innerHTML=DOMPurify.sanitize(html,{FORBID_TAGS:['script','style','iframe','object','embed','form','input'],ADD_TAGS:['eq','eqn']});
     element.querySelectorAll('.task-toggle').forEach(button=>button.addEventListener('click',event=>{
       event.preventDefault();event.stopPropagation();
@@ -145,9 +145,10 @@ class RenderedBlock extends WidgetType {
 function decorations(state) {
   if(state.field(modeField))return Decoration.none;
   const active=state.field(editingField), ranges=[];
-  for(const block of parse(state.doc).blocks) {
+  const parsed=parse(state.doc);
+  for(const block of parsed.blocks) {
     const selected=active&&state.selection.ranges.some(s=>s.from<=block.to&&s.to>=block.from);
-    if(!selected)ranges.push(Decoration.replace({widget:new RenderedBlock(state.doc.sliceString(block.from,block.to),block.kind,block.from,block.to,currentID),block:true}).range(block.from,block.to));
+    if(!selected)ranges.push(Decoration.replace({widget:new RenderedBlock(state.doc.sliceString(block.from,block.to),block.kind,block.from,block.to,currentID,parsed.env.references),block:true}).range(block.from,block.to));
   }
   return Decoration.set(ranges,true);
 }
@@ -208,6 +209,12 @@ window.tl={
       view.setState(state);view.dispatch({effects:[modeEffect.of(v.source),editingEffect.of(false)]});
       settings(v);document.body.classList.toggle('source',v.source);hydrating=false;
       requestAnimationFrame(()=>{view.scrollDOM.scrollTop=old&&old.revision===v.revision?old.scroll:v.scroll||0;view.requestMeasure()});outline();
+    } else if(action==='refresh'&&previewOnly&&v.id===currentID) {
+      const scroll=view.scrollDOM.scrollTop;
+      hydrating=true;
+      try {view.dispatch({changes:{from:0,to:view.state.doc.length,insert:v.text},selection:{anchor:Math.min(view.state.selection.main.head,v.text.length)}})}
+      finally {hydrating=false;}
+      requestAnimationFrame(()=>{view.scrollDOM.scrollTop=scroll;view.requestMeasure()});
     } else if(action==='mode')setMode(v);
     else if(action==='settings')settings(v);
     else if(action==='command'){commands[v]?.();}
