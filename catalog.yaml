@@ -8,10 +8,7 @@ lifecycle: active
 function: 轻量本地 Markdown 编辑器；原生编辑、按需完整预览、最近文件、阅读恢复与自动保存
 summary: SwiftUI 与 AppKit 原生编辑器，日常读写单进程；表格公式图表仅在手动完整预览中使用 WebKit
 public_api: Folio.app; Finder 打开 .md / .markdown
-icon:
-  badge: ""
-  glyph: doc.richtext
-  color: '#94523e'
+icon_png: icon/AppIcon.png
 key_scripts:
   - Sources/TLMarkdownApp.swift
   - Sources/Models.swift

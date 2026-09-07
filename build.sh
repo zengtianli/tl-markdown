@@ -8,9 +8,15 @@ xcode_env_use macosx
 DISPLAY_NAME="$(/Users/tianli/Dev/.venv/bin/python3 -c 'import yaml; print(yaml.safe_load(open("catalog.yaml"))["display_name"])')"
 if [ ! -f icon/AppIcon.icns ]; then
   /Users/tianli/Dev/.venv/bin/python3 - <<'PY'
-import yaml, subprocess
+import yaml, subprocess, sys
+from pathlib import Path
 c=yaml.safe_load(open('catalog.yaml'))
-subprocess.run(['/opt/homebrew/bin/python3','/Users/tianli/Dev/tools/dev/lib/tools/macapp/make_icon.py','--glyph',c['icon']['glyph'],'--color',c['icon']['color'],'--out','icon/AppIcon','--badge',c['icon'].get('badge',''),'--icns'],check=True)
+if c.get('icon_png'):
+    sys.path.insert(0, '/Users/tianli/Dev/tools/dev/lib/tools/macapp')
+    from make_icon import to_icns
+    to_icns(Path(c['icon_png']))
+else:
+    subprocess.run(['/opt/homebrew/bin/python3','/Users/tianli/Dev/tools/dev/lib/tools/macapp/make_icon.py','--glyph',c['icon']['glyph'],'--color',c['icon']['color'],'--out','icon/AppIcon','--badge',c['icon'].get('badge',''),'--icns'],check=True)
 PY
 fi
 (cd "$DIR/Editor" && npm run build)
