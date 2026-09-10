@@ -20,3 +20,4 @@ Resources/THIRD-PARTY-NOTICES.txt
 build/
 test-results/
 *.log
+__pycache__/

@@ -2,10 +2,45 @@ import SwiftUI
 import WebKit
 import UniformTypeIdentifiers
 
+/// Explicit recording mode requires its own session and never opens a key window.
+/// It hosts the production ContentView and store; it does not simulate product UI.
+enum FolioLaunch {
+    static var background: Bool {
+        let env = ProcessInfo.processInfo.environment
+        guard env["FOLIO_BACKGROUND"] == "1", let path = env["TL_MARKDOWN_STATE_DIR"], !path.isEmpty else { return false }
+        let requested = URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath()
+        let normal = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support/TLMarkdown").resolvingSymlinksInPath()
+        return requested.path != normal.path && !requested.path.hasPrefix(normal.path + "/")
+    }
+}
+
+private final class FolioRecordingPanel: NSPanel {
+    override var canBecomeKey: Bool { false }
+    override var canBecomeMain: Bool { false }
+}
+
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
     var store: EditorStore?
     var pending: [URL] = []
+    private var recordingPanel: NSPanel?
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if FolioLaunch.background, let store {
+            NSApp.setActivationPolicy(.accessory)
+            let panel = FolioRecordingPanel(contentRect: NSRect(x: 120, y: 120, width: 1120, height: 780),
+                styleMask: [.titled, .closable, .resizable, .miniaturizable, .nonactivatingPanel], backing: .buffered, defer: false)
+            panel.title = ProductIdentity.name
+            panel.isReleasedWhenClosed = false
+            panel.hidesOnDeactivate = false
+            panel.isFloatingPanel = false
+            panel.contentView = NSHostingView(rootView: ContentView(store: store).preferredColorScheme(.light)
+                .tint(Color(red: 0.56, green: 0.29, blue: 0.22)))
+            recordingPanel = panel
+            pending.forEach { store.open($0) }; pending = []
+            if let path = ProcessInfo.processInfo.environment["TL_MARKDOWN_OPEN"] { store.open(URL(fileURLWithPath: path)) }
+            panel.orderBack(nil)
+            return
+        }
         // Load this bundle's artwork explicitly for the running Dock tile.
         if let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleIconFile") as? String,
            let url = Bundle.main.url(forResource: name, withExtension: "icns"),
@@ -40,6 +75,7 @@ import UniformTypeIdentifiers
         return .terminateLater
     }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if FolioLaunch.background { return false }
         if !flag { sender.windows.first(where: { $0.canBecomeMain })?.makeKeyAndOrderFront(nil) }; return true
     }
 }
@@ -49,7 +85,9 @@ import UniformTypeIdentifiers
     @StateObject private var store: EditorStore
     init() {
         let root = ProcessInfo.processInfo.environment["TL_MARKDOWN_STATE_DIR"].map { URL(fileURLWithPath: $0) }
-        _store = StateObject(wrappedValue: EditorStore(directory: root))
+        let model = EditorStore(directory: root)
+        _store = StateObject(wrappedValue: model)
+        if FolioLaunch.background { delegate.store = model }
     }
     var body: some Scene {
         Window(ProductIdentity.name, id: "editor") {
@@ -60,6 +98,7 @@ import UniformTypeIdentifiers
                     delegate.reportBenchmarkIfRequested()
                 }
         }.defaultSize(width: 1120, height: 780)
+        .defaultLaunchBehavior(FolioLaunch.background ? .suppressed : .automatic)
         .commands {
             CommandGroup(replacing: .newItem) {
                 Button("新建文档") { store.newDocument() }.keyboardShortcut("n")
@@ -74,6 +113,14 @@ import UniformTypeIdentifiers
                 Button("重做") { if !FullPreview.shared.isKey { store.command("redo") } }.keyboardShortcut("z", modifiers: [.command, .shift])
             }
             CommandGroup(replacing: .appSettings) { Button("设置…") { store.showSettings = true }.keyboardShortcut(",") }
+            CommandGroup(replacing: .help) {
+                Button("Folio 使用指南") {
+                    if let url = URL(string: "https://app-mac-folio.tianli.cyou/#start") { NSWorkspace.shared.open(url) }
+                }
+                Button("Folio 产品主页") {
+                    if let url = URL(string: "https://app-mac-folio.tianli.cyou/") { NSWorkspace.shared.open(url) }
+                }
+            }
             CommandMenu("编辑文档") {
                 Button("搜索与替换") { if !FullPreview.shared.isKey { store.command("find") } }.keyboardShortcut("f")
                 Button("查找下一个") { if !FullPreview.shared.isKey { store.command("findNext") } }.keyboardShortcut("g")

@@ -18,6 +18,9 @@ key_scripts:
   - Editor/src/editor.js
   - build.sh
   - scripts/test_file_open.py
+  - scripts/package-release.py
+  - scripts/build-site.py
+  - scripts/prepare-demo.py
 depends_on:
   - /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
   - /Users/tianli/Dev/tools/dev/lib/tools/macapp/make_icon.py

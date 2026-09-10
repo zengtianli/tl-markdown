@@ -26,6 +26,10 @@ xcrun swiftc Sources/Models.swift Tests/DocumentIOTests.swift -o build/document-
 build/document-io-tests build/io-tests | tee build/io-test-results.txt
 xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/StoreTests.swift -o build/store-tests
 build/store-tests build/store-tests-data | tee build/store-test-results.txt
+if [ "${1:-}" = "--core-only" ]; then
+  echo "Production I/O and store checks passed; no windows, clipboard or browser tests run."
+  exit 0
+fi
 xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/NativeEditorTests.swift -o build/native-editor-tests
 build/native-editor-tests | tee build/native-editor-test-results.txt
 # These components power the main single-pane editor and the optional preview.

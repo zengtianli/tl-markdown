@@ -44,7 +44,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>15.0</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>TLMarkdown</string>
+	<string>Folio · Tianli Zeng</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>UTImportedTypeDeclarations</key>

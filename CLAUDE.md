@@ -9,6 +9,12 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实�
 
 ## 构建
 
+产品主页在 `site/`；版本和安装包从 `scripts/package-release.py` 的实际产物派生，站群仅消费 `build/site/site-manifest.json` 白名单。完整媒体契约在 `docs/demo/录制说明.md`。`--preview` 输出不可发布。源码仓仍私有，只公开经核对的二进制与白名单网站资产。
+
+`build.sh --build-only` 不运行 GUI 与文件打开测试，不安装。`scripts/test.sh --core-only` 运行无窗口的生产文件与 store 回归。当前 HARNESS 的输入隔离规则优先，不能为了执行旧测试脚本而抢占用户焦点或剪贴板。最终 GUI 由隔离 Computer Use 验证，必须如实记录其覆盖。
+
+`FOLIO_BACKGROUND=1` 只有与独立 `TL_MARKDOWN_STATE_DIR` 同时提供才生效：抑制默认 SwiftUI Window，AppDelegate 用不能成为 key/main 的 nonactivating NSPanel 挂载同一 ContentView。普通启动不改变。录制副本由 `prepare-demo.py` 复制、改独立 bundle ID、删除文件关联、嵌入 LSEnvironment 并重签；不以桌面全局输入驱动录制。
+
 项目目录为 `/Users/tianli/Apps/mac/folio`。Bundle ID、内部构建 target 与用户数据目录保持兼容，避免丢失默认文件关联和已有会话。
 
 ```bash
