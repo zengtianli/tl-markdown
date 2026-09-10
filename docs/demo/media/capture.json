@@ -1,0 +1,404 @@
+{
+  "product": "Folio",
+  "app_version": "1.0",
+  "app_build": "14",
+  "release_sha256": "3772e10f912c243407ae96933e7a2899276fa31a14f5fd73b4952e836df98f7c",
+  "release_source_sha256": "a226e851db5e8819fa7c28ef90c48f367b40b861a05577f4aba21eeb78d4a72c",
+  "recorded_at": "2026-09-10",
+  "environment": "macOS 27.0 · Apple M4",
+  "source": "real-app-window",
+  "synthetic_input": true,
+  "scenes": [
+    "open",
+    "edit",
+    "save"
+  ],
+  "clips": {
+    "open": {
+      "raw_file": "open.mov",
+      "raw_sha256": "1d0252f913873071ea8dd3dcbd08e05bc601cd8abe39d7512e545d9d87ccc275",
+      "raw_duration": 24.0,
+      "raw_geometry": [
+        1166,
+        910
+      ],
+      "cuts": [
+        {
+          "source_start": 0.5,
+          "source_end": 2,
+          "output_start": 0.0,
+          "output_end": 1.5,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "从最近文件继续写作",
+          "subtitle": "本片使用一份虚构的 Markdown 写作样例"
+        },
+        {
+          "source_start": 4.5,
+          "source_end": 7.5,
+          "output_start": 1.5,
+          "output_end": 4.5,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "点开“写作样例.md”",
+          "subtitle": "标题、表格与任务清单在主编辑区排版"
+        },
+        {
+          "source_start": 9.5,
+          "source_end": 12.5,
+          "output_start": 4.5,
+          "output_end": 7.5,
+          "crop_xywh": [
+            23,
+            72,
+            565,
+            450
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "切换大纲，按标题定位",
+          "subtitle": "侧栏局部放大 · 点击标题即可跳到对应段落"
+        },
+        {
+          "source_start": 15.5,
+          "source_end": 17.8,
+          "output_start": 7.5,
+          "output_end": 9.8,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "跳到“也放得下公式与流程”",
+          "subtitle": "同一编辑器内直接阅读公式和流程图"
+        },
+        {
+          "source_start": 19,
+          "source_end": 22,
+          "output_start": 9.8,
+          "output_end": 12.8,
+          "crop_xywh": [
+            290,
+            330,
+            810,
+            300
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "公式与流程图，也在同一页",
+          "subtitle": "四个节点和连接箭头均为真实本地渲染"
+        }
+      ],
+      "removed_seconds": 11.2,
+      "independent_result": "原片实际打开写作样例，切换大纲并显示四节点流程图；主线程与剪辑者均肉眼核对实际SVG。",
+      "poster_seconds": 11.4
+    },
+    "edit": {
+      "raw_file": "edit.mov",
+      "raw_sha256": "90306aa63a3a54c86e7918fcbe84c90c5914d91067666e057c5bab87c494b235",
+      "raw_duration": 45.053333,
+      "raw_geometry": [
+        1166,
+        910
+      ],
+      "cuts": [
+        {
+          "source_start": 4.8,
+          "source_end": 6.8,
+          "output_start": 0.0,
+          "output_end": 2.0,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "打开“搜索与替换”",
+          "subtitle": "进入源码查找，便于准确替换同一处文字"
+        },
+        {
+          "source_start": 12.5,
+          "source_end": 14.8,
+          "output_start": 2.0,
+          "output_end": 4.3,
+          "crop_xywh": [
+            265,
+            105,
+            495,
+            345
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "查找“进行中”",
+          "subtitle": "左侧搜索区局部放大 · 找到样例中的一处匹配"
+        },
+        {
+          "source_start": 15,
+          "source_end": 17.2,
+          "output_start": 4.3,
+          "output_end": 6.5,
+          "crop_xywh": [
+            830,
+            106,
+            283,
+            102
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "替换内容填“已经完成”",
+          "subtitle": "右侧替换区局部放大 · 先确认要写入的文字"
+        },
+        {
+          "source_start": 20,
+          "source_end": 22.2,
+          "output_start": 6.5,
+          "output_end": 8.7,
+          "crop_xywh": [
+            830,
+            106,
+            283,
+            102
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "点“全部替换”",
+          "subtitle": "右侧操作区局部放大 · 保留实际操作原速"
+        },
+        {
+          "source_start": 22.2,
+          "source_end": 24.8,
+          "output_start": 8.7,
+          "output_end": 11.3,
+          "crop_xywh": [
+            288,
+            329,
+            585,
+            225
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "这一处状态已经变更",
+          "subtitle": "源码中的“进行中”替换为“已经完成”"
+        },
+        {
+          "source_start": 26.1,
+          "source_end": 28.5,
+          "output_start": 11.3,
+          "output_end": 13.7,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "关闭搜索，返回即时渲染",
+          "subtitle": "修改后的 Markdown 重新按正文排版"
+        },
+        {
+          "source_start": 32,
+          "source_end": 35,
+          "output_start": 13.7,
+          "output_end": 16.7,
+          "crop_xywh": [
+            288,
+            118,
+            805,
+            285
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "回到表格，核对新状态",
+          "subtitle": "结果显示“已经完成”，其他内容保持原样"
+        }
+      ],
+      "removed_seconds": 28.353,
+      "independent_result": "应用内查找进行中并全部替换为已经完成；实际原文长度由577到578。verify-demo.py通过，除了目标替换之外逐字一致。",
+      "poster_seconds": 14.8
+    },
+    "save": {
+      "raw_file": "save-complete.mov",
+      "raw_sha256": "82b614c84b125c7c6e41dc8abea2279d31ca796c038e00398f6be8c277f0728e",
+      "raw_duration": 35.033333,
+      "raw_geometry": [
+        1166,
+        910
+      ],
+      "cuts": [
+        {
+          "source_start": 0.6,
+          "source_end": 2.6,
+          "output_start": 0.0,
+          "output_end": 2.0,
+          "crop_xywh": [
+            263,
+            550,
+            650,
+            330
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "先确认底栏“已保存”",
+          "subtitle": "命名文件的修改已经写回本机"
+        },
+        {
+          "source_start": 4.6,
+          "source_end": 6.8,
+          "output_start": 2.0,
+          "output_end": 4.2,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "关闭当前标签",
+          "subtitle": "文档关闭后回到欢迎页，最近记录仍在"
+        },
+        {
+          "source_start": 10.3,
+          "source_end": 12.8,
+          "output_start": 4.2,
+          "output_end": 6.7,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "从最近文件重新打开",
+          "subtitle": "同一份“写作样例.md”回到编辑区"
+        },
+        {
+          "source_start": 13,
+          "source_end": 16,
+          "output_start": 6.7,
+          "output_end": 9.7,
+          "crop_xywh": [
+            288,
+            118,
+            805,
+            285
+          ],
+          "view": "局部放大",
+          "speed": 1,
+          "title": "重新打开，状态仍是“已经完成”",
+          "subtitle": "表格区域局部放大 · 核对原文件的真实保存结果"
+        },
+        {
+          "source_start": 17.5,
+          "source_end": 19,
+          "output_start": 9.7,
+          "output_end": 11.2,
+          "crop_xywh": [
+            23,
+            16,
+            1120,
+            864
+          ],
+          "view": "真实窗口",
+          "speed": 1,
+          "title": "下次继续，内容仍在",
+          "subtitle": "仍是普通 Markdown 文件，可以继续阅读和编辑"
+        }
+      ],
+      "removed_seconds": 23.833,
+      "independent_result": "使用同build14同一场景的完整补录。画面先关闭标签回欢迎页，再从最近文件重开，表格已完成仍在；实际Markdown由verify-demo.py再次验证保存且其余内容逐字一致。旧save.mov缺重开画面，未采用。",
+      "poster_seconds": 8.5
+    }
+  },
+  "checks": {
+    "open": {
+      "decode": "passed",
+      "black_frames": "none >=0.2s at 98% in product-image area",
+      "duration": 12.8,
+      "bytes": 320218,
+      "sha256": "f38ef3205be4c3a8174e30914950b7f19031bb0990bf29dd9e1ed1db4ca34347"
+    },
+    "edit": {
+      "decode": "passed",
+      "black_frames": "none >=0.2s at 98% in product-image area",
+      "duration": 16.7,
+      "bytes": 449798,
+      "sha256": "27924069304e1f4382dace52ad453d56815cd3d10d4dc4764ff78d136f7b3952"
+    },
+    "save": {
+      "decode": "passed",
+      "black_frames": "none >=0.2s at 98% in product-image area",
+      "duration": 11.2,
+      "bytes": 314721,
+      "sha256": "8faae2f14adb5383769f7a734837a38b8141bccc3c3cb67384d89a3517408162"
+    },
+    "tutorial": {
+      "decode": "passed",
+      "black_frames": "none >=0.2s at 98% in product-image area",
+      "duration": 40.7,
+      "bytes": 1083023,
+      "sha256": "93e64f503a8596b0206dedc0127e740f8ef9bcbdcdd9115f96f06182de0e483c"
+    }
+  },
+  "isolation": {
+    "copied_from_release_app": true,
+    "separate_bundle_and_state": true,
+    "background_non_key_panel": true,
+    "system_clipboard_used": false,
+    "input_method": "Computer Use 对真实应用控件 click / setValue；修改通过原界面搜索与全部替换"
+  },
+  "not_covered": [
+    "全新 Mac 上的下载首开",
+    "外部修改冲突的实机交互",
+    "图片插入与网络图片",
+    "未命名草稿恢复"
+  ],
+  "private_data_review": "逐片核对首中尾和关键操作前后画面，均为虚构写作样例；侧栏仅含该独立演示文档，未见个人账号或其他应用内容。",
+  "editing": {
+    "caption_bands_outside_product_image": true,
+    "local_zoom_labelled": true,
+    "retained_speed": 1,
+    "removed_waits_labelled": true,
+    "tutorial_is_three_separate_chapters": true,
+    "audio": "原片无音轨，成片静音"
+  },
+  "notes": "虚构样例文档；三个分章实录。保留画面原速，局部放大与剪去等待均已标注。修改通过查找替换完成。",
+  "final_visual_review": {
+    "reviewer": "main-thread",
+    "passed": [
+      "三个成片海报：四节点流程图、替换后表格、重开后状态清楚",
+      "1280宽桌面首页：真实hero、图片完整加载、无横向溢出",
+      "三个播放器readyState 4，实际时长12.8/16.7/11.2与显示比例一致",
+      "演示文字与真实搜索替换流程一致"
+    ],
+    "pending": [
+      "390像素手机宽度验收",
+      "线上播放与发布后的检查"
+    ]
+  },
+  "editor_visual_review": {
+    "source_frames": "首中尾及搜索字段、替换前后、关闭与重开状态均已逐片核对",
+    "final_frames": "所有字幕分段与海报逐个核对；调整了搜索替换与表格局部取景",
+    "full_decode": "三个片段与分章合片全部解码，未见解码错误或达到阈值的黑帧",
+    "remaining": "主线程最终浏览器播放、桌面和手机展示验收"
+  }
+}

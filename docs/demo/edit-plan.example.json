@@ -1,0 +1,14 @@
+{
+  "recorded_at": "",
+  "environment": "",
+  "raw_frames_reviewed": false,
+  "private_data_review": "",
+  "isolation": {},
+  "not_covered": ["全新 Mac 上的下载首开"],
+  "scenes": {
+    "open": {"raw_file": "open.mov", "raw_sha256": "", "geometry": [], "poster_seconds": 0, "independent_result": "", "segments": []},
+    "edit": {"raw_file": "edit.mov", "raw_sha256": "", "geometry": [], "poster_seconds": 0, "independent_result": "", "segments": []},
+    "save": {"raw_file": "save.mov", "raw_sha256": "", "geometry": [], "poster_seconds": 0, "independent_result": "", "segments": []}
+  },
+  "segment_fields": {"in": "实际原片秒数", "out": "实际原片秒数", "crop_xywh": "空数组为全帧，或真实局部像素坐标", "title": "画面已确认的操作", "subtitle": "画面已确认的结果或解释"}
+}

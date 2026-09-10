@@ -15,8 +15,8 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENES = (
-    ("open", "打开，就是好读的一页", "选中一份 Markdown，标题、表格和正文直接排版。"),
-    ("edit", "改完这一段，继续下一段", "点进表格修改内容，离开后恢复排版，也能随时查看源码。"),
+    ("open", "打开，就是好读的一页", "打开 Markdown，阅读表格与图表，再用标题大纲定位段落。"),
+    ("edit", "找到文字，一次替换", "查找“进行中”，全部替换为“已经完成”；切回排版查看结果。"),
     ("save", "保存后，下次接着写", "确认底栏已保存，重新打开同一文件，刚才的修改仍在。"),
 )
 
@@ -37,6 +37,7 @@ def check_media(media, release):
     capture = json.loads((media / "capture.json").read_text())
     assert capture["source"] == "real-app-window" and capture["synthetic_input"] is True, "Media must use an actual app window and synthetic input"
     assert str(capture["app_version"]) == release["version"] and str(capture["app_build"]) == release["build"], "Recording and release versions differ"
+    assert capture.get("release_source_sha256") == release["source_sha256"] and capture.get("release_sha256") == release["sha256"], "Recording must bind the actual released build and archive"
     assert set(capture["scenes"]) == {name for name, _, _ in SCENES}, "Recording scene coverage is incomplete"
     assert capture.get("environment") and capture.get("recorded_at"), "Recording environment and date are required"
     raw = (media / "folio-editor.png").read_bytes()
@@ -45,10 +46,15 @@ def check_media(media, release):
         video = probe(media / f"{name}.mp4")
         streams = [s for s in video["streams"] if s["codec_type"] == "video"]
         assert streams and streams[0]["codec_name"] == "h264" and streams[0].get("pix_fmt") == "yuv420p", f"{name}: use browser-compatible H.264 / yuv420p"
+        assert capture["checks"][name]["sha256"] == sha(media / f"{name}.mp4"), f"{name}: video differs from the reviewed media manifest"
         assert float(video["format"]["duration"]) > 1, f"{name}: invalid duration"
         assert probe(media / f"{name}.jpg")["streams"][0]["codec_type"] == "video", f"{name}: unreadable poster"
         subtitles = (media / f"{name}.vtt").read_text(encoding="utf-8-sig")
         assert subtitles.startswith("WEBVTT") and "-->" in subtitles, f"{name}: no real timed subtitles"
+    if (media / "tutorial.mp4").is_file():
+        assert sha(media / "tutorial.mp4") == capture["checks"]["tutorial"]["sha256"], "Tutorial differs from reviewed media"
+        assert (media / "tutorial.vtt").read_text().startswith("WEBVTT"), "Tutorial requires its timed subtitles"
+        required += ["tutorial.mp4", "tutorial.vtt"]
     return required, capture
 
 
@@ -115,7 +121,7 @@ def main():
             for name in media_files:
                 if name != "capture.json":
                     shutil.copyfile(args.media / name, stage / "media" / name)
-            public_capture = {key: capture[key] for key in ("app_version", "app_build", "recorded_at", "environment", "source", "synthetic_input", "scenes")}
+            public_capture = {key: capture[key] for key in ("app_version", "app_build", "release_sha256", "release_source_sha256", "recorded_at", "environment", "source", "synthetic_input", "scenes", "clips", "checks", "editing", "not_covered")}
             public_capture["notes"] = capture.get("notes", "")
             (stage / "media/capture.json").write_text(json.dumps(public_capture, ensure_ascii=False, indent=2) + "\n")
             hero = '<img src="media/folio-editor.png" alt="Folio 真实主编辑窗口：本地文档、最近文件、排版好的标题与表格" width="1440" height="1000" fetchpriority="high">'
@@ -123,7 +129,12 @@ def main():
             hero = '<div class="pending-media">内部预览：此处等待最终版本的真实窗口截图</div>'
         videos = []
         for index, (name, title, description) in enumerate(SCENES, 1):
-            player = (f'<video controls playsinline preload="metadata" poster="media/{name}.jpg"><source src="media/{name}.mp4" type="video/mp4"><track kind="captions" src="media/{name}.vtt" srclang="zh" label="中文" default>浏览器不支持视频时，请下载观看。</video>' if media_files else '<div class="pending-media">内部预览：等待真实操作片段</div>')
+            if media_files:
+                stream = next(s for s in probe(args.media / f"{name}.mp4")["streams"] if s["codec_type"] == "video")
+                size = f'width="{stream["width"]}" height="{stream["height"]}" style="aspect-ratio:{stream["width"]}/{stream["height"]}"'
+                player = f'<video {size} controls playsinline preload="metadata" poster="media/{name}.jpg"><source src="media/{name}.mp4" type="video/mp4"><track kind="captions" src="media/{name}.vtt" srclang="zh" label="中文">浏览器不支持视频时，请下载观看。</video>'
+            else:
+                player = '<div class="pending-media">内部预览：等待真实操作片段</div>'
             download = f'<a class="text-link" href="media/{name}.mp4" download>下载这段视频 ↓</a>' if media_files else ''
             videos.append(f'<article class="demo-card">{player}<div class="demo-copy"><span class="step-label">0{index} /</span><h3>{title}</h3><p>{description}</p>{download}</div></article>')
         capture_note = (f"录制版本 {release['version']}（{release['build']}）；{capture['environment']}。{capture.get('notes', '')}" if media_files else "内部预览尚无实机媒体；不得据此发布或声称演示完成。")
@@ -131,14 +142,15 @@ def main():
                   "MIN_MACOS": escape(release["minimum_macos"]), "CHIP": "Apple 芯片 Mac",
                   "SIZE": f"{release['bytes'] / 1024 / 1024:.1f} MB", "DOWNLOAD_URL": escape(release["download_url"], quote=True),
                   "HERO": hero, "VIDEOS": "\n".join(videos), "CAPTURE_NOTE": escape(capture_note),
+                  "TUTORIAL": '<p><a class="text-link" href="media/tutorial.mp4" download>下载三段完整演示 ↓</a></p>' if "tutorial.mp4" in media_files else '',
                   "PREVIEW_NOTICE": '<div class="preview-notice">内部预览 · 实机素材或最终验收尚未完成 · 不可发布</div>' if args.preview else ''}
         page = (ROOT / "site/index.html").read_text()
         for key, value in values.items():
             page = page.replace(f"@@{key}@@", value)
         (stage / "index.html").write_text(page)
-        privacy = '''<p>Folio 是本地 Markdown 编辑器。无需注册账号，也不内置文档上传、广告或分析追踪服务。</p><h2>文件与恢复记录</h2><p>文档保存在你选择的位置。最近文件、设置和恢复草稿位于本机 <code>~/Library/Application Support/TLMarkdown/</code>。清空最近记录不会删除原文件；卸载应用前，请先把需要的未命名草稿另存为。</p><h2>什么时候会连接网络？</h2><p>文档中含有网络图片时，编辑器可能访问该图片的原站点，原站点可能收到 IP 地址等通常的网络请求信息。点击外部链接或产品帮助链接，会由系统浏览器打开相应网站。Folio 不代管这些网站的数据政策。</p><p>将文档存入 iCloud 或其他同步文件夹时，同步由对应的服务负责；Folio 没有另建一份云端文档库。</p><h2>这份产品网站</h2><p>本页不使用第三方统计、广告脚本或外部视频播放器。视频由本站提供，访问服务器可能保留常规访问日志。维护者联系方式见 <a href="https://github.com/zengtianli">GitHub 个人主页</a>。</p>'''
+        privacy = '''<p>Folio 是本地 Markdown 编辑器。无需注册账号，也不内置文档上传、广告或分析追踪服务。</p><h2>文件与恢复记录</h2><p>文档保存在你选择的位置。最近文件、设置和恢复草稿位于本机 <code>~/Library/Application Support/TLMarkdown/</code>。清空最近记录不会删除原文件；卸载应用前，请先把需要的未命名草稿另存为。</p><h2>什么时候会连接网络？</h2><p>文档中含有网络图片时，编辑器可能访问该图片的原站点，原站点可能收到 IP 地址等通常的网络请求信息。点击外部链接或产品帮助链接，会由系统浏览器打开相应网站。Folio 不代管这些网站的数据政策。</p><p>将文档存入 iCloud 或其他同步文件夹时，同步由对应的服务负责；Folio 没有另建一份云端文档库。</p><h2>这份产品网站</h2><p>本网站经 Cloudflare 提供服务，并加载 Cloudflare Web Analytics，用于统计网页访问与页面性能。统计发生在网站页面，不读取 Folio 应用中的本地文档。详见 <a href="https://developers.cloudflare.com/web-analytics/about/">Cloudflare Web Analytics 官方说明</a>。</p><p>视频由本站提供，访问服务器可能保留常规访问日志。维护者联系方式见 <a href="https://github.com/zengtianli">GitHub 个人主页</a>。</p>'''
         (stage / "privacy.html").write_text(document_page("隐私说明", privacy))
-        change = f'''<p>当前下载：Folio {values['VERSION']}，构建 {values['BUILD']}，{values['CHIP']}，macOS {values['MIN_MACOS']} 及以上。</p><h2>这个版本可以做什么</h2><ul><li>在主编辑区阅读并编辑 Markdown，直接显示表格、公式与图表。</li><li>支持源码切换、标题大纲、最近文件、搜索替换及图片插入。</li><li>自动保存已命名文件，并在外部修改冲突时保留本地草稿。</li><li>从应用“帮助”菜单进入产品主页与使用指南。</li></ul><h2>分发说明</h2><p>当前提供直接下载的 ZIP，尚未经过 Apple 公证。首次打开方法见<a href="index.html#first-open">安装指南</a>。应用代码没有在本页开放下载。</p><p><a href="downloads/SHA256SUMS.txt">查看此安装包的 SHA-256</a>。旧的原生编辑器测量结果不用于描述当前完整渲染版本。</p>'''
+        change = f'''<p>当前下载：Folio {values['VERSION']}，构建 {values['BUILD']}，{values['CHIP']}，macOS {values['MIN_MACOS']} 及以上。</p><h2>这个版本可以做什么</h2><ul><li>在主编辑区阅读并编辑 Markdown，直接显示表格、公式与图表。</li><li>支持源码切换、标题大纲、最近文件、搜索替换及图片插入。</li><li>自动保存已命名文件，并在外部修改冲突时保留本地草稿。</li><li>从应用“帮助”菜单进入产品主页与使用指南。</li></ul><h2>分发说明</h2><p>当前提供直接下载的 ZIP，尚未经过 Apple 公证。首次打开方法见<a href="index.html#first-open">安装指南</a>。应用代码没有在本页开放下载。</p><p><a href="downloads/SHA256SUMS.txt">查看此安装包的 SHA-256</a>。</p>'''
         (stage / "changelog.html").write_text(document_page("版本记录", change))
         validate(stage)
         files = [{"path": str(path.relative_to(stage)), "sha256": sha(path), "bytes": path.stat().st_size}

@@ -39,3 +39,14 @@
 主线程在 build 13 已肉眼确认四节点 SVG 完整显示，无需额外等待。自动/突然终止 opt-out 没有解决录屏收尾退出：40 秒录制自然结束后，诊断副本仍退出。统一日志把 NSLog 整条脱敏为 `<private>`，因此改为仅在显式隔离状态目录写 `termination.json`（0600，仅时间、进程、事件 class/ID、发送方 PID/bundle ID 和调用栈，不记事件载荷或文档）。诊断文件表明 eventClass、eventID、senderPID 都为空，调用栈第 11 帧确为 AppKit `_scheduleCheckForTerminateAfterLastWindowClosed`，随后 timer 调用 `terminate`。这是最后窗口关闭检查路径，不能再归因为未阻止系统资源回收，也无证据指向用户或外部自动化退出。
 
 最终给 AppDelegate 实现 `applicationShouldTerminateAfterLastWindowClosed`：隔离 NSPanel 模式返回 false；普通单个 SwiftUI `Window` 继续返回 true，维持原先关闭窗口即退出的行为。主动 Quit 仍照常 flush；独立诊断合理保留。未换录屏工具。主线程需要用最终新包再次执行原来的定时窗口录制，确认收尾后进程持续存活，再完整录制最终版本的三个片段。
+
+### 最终 build 14 媒体与正式站点
+
+主线程已以最终独立副本实录三个场景，每次定时录屏自然结束后进程持续存活。剪辑者只读核对实际 Markdown，`verify-demo.py` 再次通过，除“进行中”→“已经完成”之外其余字符完全保留。原始 18 秒 save 只录到关闭后的欢迎页，因此未采用；同一 build / 同一文件的 35 秒 save-complete 补录包含关闭、欢迎页、重开以及已完成状态。
+
+- 正式媒体位于 `docs/demo/media/`：open 12.8 秒、edit 16.7 秒、save 11.2 秒，分章 tutorial 40.7 秒；每段有中文烧录字幕、JPG 海报和 VTT。原速，去除等待和局部放大有标记，字幕位于产品画面之外。真实 hero 由主线程提供，剪辑脚本不改它。
+- `docs/demo/edit-plan.json` 记录已核对原片哈希、具体剪点、裁切和真实结果；`scripts/render-homepage-demo.py` 使用计划，拒绝未审核样例、版本/源码指纹或原片哈希不符。原片和抽帧全留私有 build/demo 目录。
+- 所有成片全长解码与黑帧检测通过，首中尾、每个字幕分段和操作结果帧经过肉眼核对；主线程仍负责最终浏览器播放、桌面/手机展示以及发布验收。
+- `scripts/build-site.py` 正式构建已通过：三个片段的 1280×1056 比例从实际 ffprobe 派生，去掉模板固定比例和移动端高度上限；烧录字幕配可选 VTT，避免重复叠字。提供分段下载及合片下载。正式站目录 `build/site/` 的 21 项白名单没有原片和源码，哈希逐项一致；错版素材会被拒绝。
+- 演示文案明确为应用内搜索与“全部替换”，不宣称在表格单元格内直接编辑。网站隐私说明根据主线程线上实证列明 Cloudflare Web Analytics 访问/性能统计，并链接官方说明；应用本地文档与网站统计分开说明。
+- 发行包保持 **Folio 1.0 build 14**，ZIP SHA-256 `3772e10f912c243407ae96933e7a2899276fa31a14f5fd73b4952e836df98f7c`，应用来源提交 `4f7d8eb`。本次只有媒体、网站与交接文件提交，**不要因网站提交计数增加而重编应用或混入新的录像版本**。

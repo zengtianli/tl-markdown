@@ -1,0 +1,239 @@
+{
+  "recorded_at": "2026-09-10",
+  "environment": "macOS 27.0 · Apple M4",
+  "raw_frames_reviewed": true,
+  "private_data_review": "逐片核对首中尾和关键操作前后画面，均为虚构写作样例；侧栏仅含该独立演示文档，未见个人账号或其他应用内容。",
+  "isolation": {
+    "copied_from_release_app": true,
+    "separate_bundle_and_state": true,
+    "background_non_key_panel": true,
+    "system_clipboard_used": false,
+    "input_method": "Computer Use 对真实应用控件 click / setValue；修改通过原界面搜索与全部替换"
+  },
+  "not_covered": [
+    "全新 Mac 上的下载首开",
+    "外部修改冲突的实机交互",
+    "图片插入与网络图片",
+    "未命名草稿恢复"
+  ],
+  "scenes": {
+    "open": {
+      "raw_file": "open.mov",
+      "raw_sha256": "1d0252f913873071ea8dd3dcbd08e05bc601cd8abe39d7512e545d9d87ccc275",
+      "geometry": [
+        1166,
+        910
+      ],
+      "full_window_xywh": [
+        23,
+        16,
+        1120,
+        864
+      ],
+      "poster_seconds": 11.4,
+      "independent_result": "原片实际打开写作样例，切换大纲并显示四节点流程图；主线程与剪辑者均肉眼核对实际SVG。",
+      "segments": [
+        {
+          "in": 0.5,
+          "out": 2,
+          "crop_xywh": [],
+          "title": "从最近文件继续写作",
+          "subtitle": "本片使用一份虚构的 Markdown 写作样例"
+        },
+        {
+          "in": 4.5,
+          "out": 7.5,
+          "crop_xywh": [],
+          "title": "点开“写作样例.md”",
+          "subtitle": "标题、表格与任务清单在主编辑区排版"
+        },
+        {
+          "in": 9.5,
+          "out": 12.5,
+          "crop_xywh": [
+            23,
+            72,
+            565,
+            450
+          ],
+          "title": "切换大纲，按标题定位",
+          "subtitle": "侧栏局部放大 · 点击标题即可跳到对应段落"
+        },
+        {
+          "in": 15.5,
+          "out": 17.8,
+          "crop_xywh": [],
+          "title": "跳到“也放得下公式与流程”",
+          "subtitle": "同一编辑器内直接阅读公式和流程图"
+        },
+        {
+          "in": 19,
+          "out": 22,
+          "crop_xywh": [
+            290,
+            330,
+            810,
+            300
+          ],
+          "title": "公式与流程图，也在同一页",
+          "subtitle": "四个节点和连接箭头均为真实本地渲染"
+        }
+      ]
+    },
+    "edit": {
+      "raw_file": "edit.mov",
+      "raw_sha256": "90306aa63a3a54c86e7918fcbe84c90c5914d91067666e057c5bab87c494b235",
+      "geometry": [
+        1166,
+        910
+      ],
+      "full_window_xywh": [
+        23,
+        16,
+        1120,
+        864
+      ],
+      "poster_seconds": 14.8,
+      "independent_result": "应用内查找进行中并全部替换为已经完成；实际原文长度由577到578。verify-demo.py通过，除了目标替换之外逐字一致。",
+      "segments": [
+        {
+          "in": 4.8,
+          "out": 6.8,
+          "crop_xywh": [],
+          "title": "打开“搜索与替换”",
+          "subtitle": "进入源码查找，便于准确替换同一处文字"
+        },
+        {
+          "in": 12.5,
+          "out": 14.8,
+          "crop_xywh": [
+            265,
+            105,
+            495,
+            345
+          ],
+          "title": "查找“进行中”",
+          "subtitle": "左侧搜索区局部放大 · 找到样例中的一处匹配"
+        },
+        {
+          "in": 15,
+          "out": 17.2,
+          "crop_xywh": [
+            830,
+            106,
+            283,
+            102
+          ],
+          "title": "替换内容填“已经完成”",
+          "subtitle": "右侧替换区局部放大 · 先确认要写入的文字"
+        },
+        {
+          "in": 20,
+          "out": 22.2,
+          "crop_xywh": [
+            830,
+            106,
+            283,
+            102
+          ],
+          "title": "点“全部替换”",
+          "subtitle": "右侧操作区局部放大 · 保留实际操作原速"
+        },
+        {
+          "in": 22.2,
+          "out": 24.8,
+          "crop_xywh": [
+            288,
+            329,
+            585,
+            225
+          ],
+          "title": "这一处状态已经变更",
+          "subtitle": "源码中的“进行中”替换为“已经完成”"
+        },
+        {
+          "in": 26.1,
+          "out": 28.5,
+          "crop_xywh": [],
+          "title": "关闭搜索，返回即时渲染",
+          "subtitle": "修改后的 Markdown 重新按正文排版"
+        },
+        {
+          "in": 32,
+          "out": 35,
+          "crop_xywh": [
+            288,
+            118,
+            805,
+            285
+          ],
+          "title": "回到表格，核对新状态",
+          "subtitle": "结果显示“已经完成”，其他内容保持原样"
+        }
+      ]
+    },
+    "save": {
+      "raw_file": "save-complete.mov",
+      "raw_sha256": "82b614c84b125c7c6e41dc8abea2279d31ca796c038e00398f6be8c277f0728e",
+      "geometry": [
+        1166,
+        910
+      ],
+      "full_window_xywh": [
+        23,
+        16,
+        1120,
+        864
+      ],
+      "poster_seconds": 8.5,
+      "independent_result": "使用同build14同一场景的完整补录。画面先关闭标签回欢迎页，再从最近文件重开，表格已完成仍在；实际Markdown由verify-demo.py再次验证保存且其余内容逐字一致。旧save.mov缺重开画面，未采用。",
+      "segments": [
+        {
+          "in": 0.6,
+          "out": 2.6,
+          "crop_xywh": [
+            263,
+            550,
+            650,
+            330
+          ],
+          "title": "先确认底栏“已保存”",
+          "subtitle": "命名文件的修改已经写回本机"
+        },
+        {
+          "in": 4.6,
+          "out": 6.8,
+          "crop_xywh": [],
+          "title": "关闭当前标签",
+          "subtitle": "文档关闭后回到欢迎页，最近记录仍在"
+        },
+        {
+          "in": 10.3,
+          "out": 12.8,
+          "crop_xywh": [],
+          "title": "从最近文件重新打开",
+          "subtitle": "同一份“写作样例.md”回到编辑区"
+        },
+        {
+          "in": 13,
+          "out": 16,
+          "crop_xywh": [
+            288,
+            118,
+            805,
+            285
+          ],
+          "title": "重新打开，状态仍是“已经完成”",
+          "subtitle": "表格区域局部放大 · 核对原文件的真实保存结果"
+        },
+        {
+          "in": 17.5,
+          "out": 19,
+          "crop_xywh": [],
+          "title": "下次继续，内容仍在",
+          "subtitle": "仍是普通 Markdown 文件，可以继续阅读和编辑"
+        }
+      ]
+    }
+  }
+}
