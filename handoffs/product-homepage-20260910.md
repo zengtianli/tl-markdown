@@ -33,3 +33,9 @@
 - app 专属日志：PID 35454 在 16:48:22.213 被 AppKit 标记 `_kLSApplicationWouldBeTerminatedByTALKey=1`，16:48:56.882 调用 terminate，flush 后 reply YES，正常退出；其他两次也走正常终止路径。副本 LSEnvironment 无 `TL_MARKDOWN_BENCHMARK`，源码后台路径不调用 benchmark。证据支持自动终止资格与 NSPanel / 被抑制的 SwiftUI Window 生命周期有关，**没有直接记录退出发起方，不能把假设写成已证实根因**。
 - 仅显式隔离后台模式，在 willFinishLaunching 禁自动及突然终止；录制副本 Info.plist 也写明不支持二者。普通启动无变化，主动 Quit 仍 flush 并退出；隔离副本若再收到退出，会记录当前 AppleEvent 类/ID 与调用栈以定位发起链。未在子线程启动 GUI 验证保活效果。
 - 修改后无窗口的生产 I/O / store 27 项与 build-only 编译通过；正式包的实机保存、图表和持续存活验收仍待主线程完成。
+
+### 17:30 实证与最终修复
+
+主线程在 build 13 已肉眼确认四节点 SVG 完整显示，无需额外等待。自动/突然终止 opt-out 没有解决录屏收尾退出：40 秒录制自然结束后，诊断副本仍退出。统一日志把 NSLog 整条脱敏为 `<private>`，因此改为仅在显式隔离状态目录写 `termination.json`（0600，仅时间、进程、事件 class/ID、发送方 PID/bundle ID 和调用栈，不记事件载荷或文档）。诊断文件表明 eventClass、eventID、senderPID 都为空，调用栈第 11 帧确为 AppKit `_scheduleCheckForTerminateAfterLastWindowClosed`，随后 timer 调用 `terminate`。这是最后窗口关闭检查路径，不能再归因为未阻止系统资源回收，也无证据指向用户或外部自动化退出。
+
+最终给 AppDelegate 实现 `applicationShouldTerminateAfterLastWindowClosed`：隔离 NSPanel 模式返回 false；普通单个 SwiftUI `Window` 继续返回 true，维持原先关闭窗口即退出的行为。主动 Quit 仍照常 flush；独立诊断合理保留。未换录屏工具。主线程需要用最终新包再次执行原来的定时窗口录制，确认收尾后进程持续存活，再完整录制最终版本的三个片段。

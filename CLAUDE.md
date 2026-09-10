@@ -15,6 +15,8 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实�
 
 `FOLIO_BACKGROUND=1` 只有与独立 `TL_MARKDOWN_STATE_DIR` 同时提供才生效：抑制默认 SwiftUI Window，AppDelegate 用不能成为 key/main 的 nonactivating NSPanel 挂载同一 ContentView。普通启动不改变。录制副本由 `prepare-demo.py` 复制、改独立 bundle ID、删除文件关联、嵌入 LSEnvironment 并重签；不以桌面全局输入驱动录制。
 
+隔离模式的 `applicationShouldTerminateAfterLastWindowClosed` 必须返回 false：定时窗口录屏收尾会触发 AppKit 最后窗口检查，SwiftUI 默认会退出仅剩手工 NSPanel 的进程。此路径已由独立 `state/termination.json` 调用栈确认；automatic termination opt-out 不能替代。普通单个 Window 仍维持关窗退出，显式 Quit 仍 flush。诊断文件只在隔离状态目录写事件来源与调用栈，不写文档。
+
 项目目录为 `/Users/tianli/Apps/mac/folio`。Bundle ID、内部构建 target 与用户数据目录保持兼容，避免丢失默认文件关联和已有会话。
 
 ```bash

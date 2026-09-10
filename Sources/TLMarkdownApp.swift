@@ -76,11 +76,39 @@ private final class FolioRecordingPanel: NSPanel {
     func application(_ application: NSApplication, open urls: [URL]) {
         if let store { urls.forEach { store.open($0) } } else { pending.append(contentsOf: urls) }
     }
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        // Ordinary launches use one SwiftUI Window scene, which exits when its
+        // last window closes. The isolated NSPanel is not that scene: recording
+        // overlay teardown must not schedule an exit for the still-visible panel.
+        return !FolioLaunch.background
+    }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         if FolioLaunch.background {
             let event = NSAppleEventManager.shared().currentAppleEvent
-            NSLog("Folio isolated termination requested: eventClass=%u eventID=%u stack=%@",
-                  event?.eventClass ?? 0, event?.eventID ?? 0, Thread.callStackSymbols.joined(separator: " | "))
+            // Unified logging may redact NSLog's entire message. Keep this
+            // diagnostic in the explicitly isolated session instead. Never
+            // include the event payload, open paths, or document contents.
+            if let directory = ProcessInfo.processInfo.environment["TL_MARKDOWN_STATE_DIR"] {
+                let senderPID = event?.attributeDescriptor(forKeyword: AEKeyword(keySenderPIDAttr))?.int32Value
+                let report: [String: Any] = [
+                    "timestamp": ISO8601DateFormatter().string(from: Date()),
+                    "pid": ProcessInfo.processInfo.processIdentifier,
+                    "eventClass": event.map { NSNumber(value: $0.eventClass) } ?? NSNull(),
+                    "eventID": event.map { NSNumber(value: $0.eventID) } ?? NSNull(),
+                    "senderPID": senderPID.map { NSNumber(value: $0) } ?? NSNull(),
+                    "senderBundleID": senderPID.flatMap { NSRunningApplication(processIdentifier: $0)?.bundleIdentifier } as Any? ?? NSNull(),
+                    "callStack": Thread.callStackSymbols,
+                ]
+                let file = URL(fileURLWithPath: directory).appendingPathComponent("termination.json")
+                do {
+                    let data = try JSONSerialization.data(withJSONObject: report, options: [.prettyPrinted, .sortedKeys])
+                    try data.write(to: file, options: .atomic)
+                    try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: file.path)
+                } catch {
+                    // Diagnostic failure must not alter normal quit/flush.
+                    NSLog("Folio isolated termination diagnostic could not be written")
+                }
+            }
         }
         guard let store else { return .terminateNow }
         DispatchQueue.main.async {
