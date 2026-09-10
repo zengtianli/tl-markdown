@@ -24,6 +24,15 @@ private final class FolioRecordingPanel: NSPanel {
     var store: EditorStore?
     var pending: [URL] = []
     private var recordingPanel: NSPanel?
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        if FolioLaunch.background {
+            // A nonactivating NSPanel is not a SwiftUI Window scene. AppKit can
+            // otherwise mark this accessory process eligible for TAL recycling.
+            // These only opt out of OS reclamation; explicit Quit still flushes.
+            ProcessInfo.processInfo.disableAutomaticTermination("Folio isolated recording session")
+            ProcessInfo.processInfo.disableSuddenTermination()
+        }
+    }
     func applicationDidFinishLaunching(_ notification: Notification) {
         if FolioLaunch.background, let store {
             NSApp.setActivationPolicy(.accessory)
@@ -68,6 +77,11 @@ private final class FolioRecordingPanel: NSPanel {
         if let store { urls.forEach { store.open($0) } } else { pending.append(contentsOf: urls) }
     }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        if FolioLaunch.background {
+            let event = NSAppleEventManager.shared().currentAppleEvent
+            NSLog("Folio isolated termination requested: eventClass=%u eventID=%u stack=%@",
+                  event?.eventClass ?? 0, event?.eventID ?? 0, Thread.callStackSymbols.joined(separator: " | "))
+        }
         guard let store else { return .terminateNow }
         DispatchQueue.main.async {
             store.bridge.flushBeforeQuit { ok in store.persist(); sender.reply(toApplicationShouldTerminate: ok) }

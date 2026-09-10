@@ -11,6 +11,7 @@ import texmath from 'markdown-it-texmath';
 import katex from 'katex';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/common';
+import {mermaidLoader, drawDiagram} from './diagram.js';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/github.css';
 import './style.css';
@@ -29,14 +30,7 @@ const editingField = StateField.define({create:()=>false, update:(v,tr)=>tr.effe
 const cached = new WeakMap();
 let currentID = '', currentRevision = 0, view, hydrating = false;
 const sessions = new Map();
-let mermaidPromise, mermaidCounter=0;
-function loadMermaid() {
-  return mermaidPromise ||= new Promise((resolve,reject)=>{
-    if(window.TLMermaid) return resolve(window.TLMermaid);
-    const script=document.createElement('script'); script.src='mermaid.js';
-    script.onload=()=>resolve(window.TLMermaid); script.onerror=()=>reject(new Error('图表组件加载失败')); document.head.append(script);
-  });
-}
+const loadMermaid = mermaidLoader();
 function parse(doc) {
   if(cached.has(doc)) return cached.get(doc);
   const text=doc.toString(), lines=text.split('\n');
@@ -105,14 +99,10 @@ class RenderedBlock extends WidgetType {
     }
     const mermaid=/^\s*(`{3,}|~{3,})mermaid[^\n]*\n([\s\S]*?)\n\s*(?:`{3,}|~{3,})\s*$/.exec(this.raw);
     if(mermaid) {
-      element.classList.add('diagram'); element.textContent='正在绘制图表…';
-      const observer=new IntersectionObserver(entries=>{if(entries.some(x=>x.isIntersecting)){
-        observer.disconnect();
-        loadMermaid().then(async api=>{
-          const {svg}=await api.render('tlm-'+(++mermaidCounter),mermaid[2]);
-          if(element.isConnected){element.innerHTML=DOMPurify.sanitize(svg,{USE_PROFILES:{svg:true,svgFilters:true}});v.requestMeasure();}
-        }).catch(error=>{element.textContent='图表语法有误，点击修改\n'+mermaid[2];element.classList.add('render-error');v.requestMeasure();});
-      }});observer.observe(element);element._observer=observer;return element;
+      element.classList.add('diagram');
+      element._diagram=drawDiagram({element,source:mermaid[2],load:loadMermaid,
+        sanitize:svg=>DOMPurify.sanitize(svg,{USE_PROFILES:{svg:true,svgFilters:true}}),measure:()=>v.requestMeasure()});
+      return element;
     }
     // Footnote references across independently rendered blocks remain navigable.
     let input=['fence','code_block'].includes(this.kind)?this.raw:this.raw.replace(/(`+)[\s\S]*?\1|(?<!\\)\[\^([^\]]+)\](?!:)/g,(whole,ticks,id)=>ticks?whole:`<sup><a href="#note-${md.utils.escapeHtml(id)}">${md.utils.escapeHtml(id)}</a></sup>`);
@@ -142,7 +132,7 @@ class RenderedBlock extends WidgetType {
     element.querySelectorAll('table').forEach(table=>{const wrap=document.createElement('div');wrap.className='table-scroll';table.replaceWith(wrap);wrap.append(table)});
     return element;
   }
-  destroy(dom){dom._observer?.disconnect();}
+  destroy(dom){dom._diagram?.dispose();}
   // Widgets own pointer events; CodeMirror must not replace the block before a button's click fires.
   ignoreEvent(){return true;}
 }

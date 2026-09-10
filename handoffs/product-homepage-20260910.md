@@ -23,3 +23,13 @@
 最终包的 CUA 主编辑/保存重开验收、隔离后台面板实查、真实截图与视频、网页视觉与实际下载验收均由主线程处理，不能把子线程构建通过当作已完成。
 
 本机仅查到 Apple Development 证书，没有 Developer ID Application；当前发行包是 adhoc、未公证。页面已按实际状态写明首次打开与错误处理，依据 Apple 官方支持文档 `https://support.apple.com/zh-cn/102445`，未加入 xattr / 关闭安全机制命令。新 Mac 上的下载首开仍须实测；本机解压签名检查不是 Gatekeeper 首开成功的证据。
+
+## 实录阻断排查与修复
+
+主线程在 build 12 隔离副本发现 Mermaid 长时间停在“正在绘制图表…”；录制副本随后正常退出。用户明确未主动关闭。只保留已确认有效的 open 原片；edit / replace 原片未完成保存，不得发布。
+
+- Mermaid 资源确在签名包内，编辑器通过 file URL 加载；CSP 的 connect-src 为 none。旧实现只有 IntersectionObserver 相交时才启动绘制，加载和绘制都没有期限。修改为 CodeMirror 创建 widget 后的微任务立即渲染，本地组件加载 10 秒、绘制 15 秒超时会回到可点击修改的源码和明确错误；widget 销毁后不回写。构建检查 Mermaid 输出没有运行时外部 import。
+- `cd Editor && npm run test:diagram` 的 6 项回归验证后台可见性回调缺席、绘制未完成、widget 销毁、组件失败后重试、组件超时及真实 Mermaid bundle 在没有网络 API 的 Node VM 中初始化。**VM 不具备 WebKit SVG 布局能力，这些不等于实际图表视觉验证**；新最终包仍需主线程用 CUA 查看四节点流程图。
+- app 专属日志：PID 35454 在 16:48:22.213 被 AppKit 标记 `_kLSApplicationWouldBeTerminatedByTALKey=1`，16:48:56.882 调用 terminate，flush 后 reply YES，正常退出；其他两次也走正常终止路径。副本 LSEnvironment 无 `TL_MARKDOWN_BENCHMARK`，源码后台路径不调用 benchmark。证据支持自动终止资格与 NSPanel / 被抑制的 SwiftUI Window 生命周期有关，**没有直接记录退出发起方，不能把假设写成已证实根因**。
+- 仅显式隔离后台模式，在 willFinishLaunching 禁自动及突然终止；录制副本 Info.plist 也写明不支持二者。普通启动无变化，主动 Quit 仍 flush 并退出；隔离副本若再收到退出，会记录当前 AppleEvent 类/ID 与调用栈以定位发起链。未在子线程启动 GUI 验证保活效果。
+- 修改后无窗口的生产 I/O / store 27 项与 build-only 编译通过；正式包的实机保存、图表和持续存活验收仍待主线程完成。

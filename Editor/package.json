@@ -2,7 +2,7 @@
   "name": "folio-editor",
   "private": true,
   "type": "module",
-  "scripts": {"build": "node build.mjs", "test": "node tests.mjs"},
+  "scripts": {"build": "node build.mjs", "test": "node tests.mjs", "test:diagram": "node --test diagram-tests.mjs"},
   "dependencies": {
     "@codemirror/commands": "^6.8.1", "@codemirror/lang-markdown": "^6.3.3",
     "@codemirror/language": "^6.11.3", "@codemirror/language-data": "^6.5.1",

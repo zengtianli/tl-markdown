@@ -29,6 +29,8 @@ original_bundle_id = info["CFBundleIdentifier"]
 info["CFBundleIdentifier"] = "cyou.tianli.Folio.Recording." + run.name
 info["LSEnvironment"] = environment
 info["LSUIElement"] = True
+info["NSSupportsAutomaticTermination"] = False
+info["NSSupportsSuddenTermination"] = False
 info.pop("CFBundleDocumentTypes", None)
 info.pop("UTImportedTypeDeclarations", None)
 info_path.write_bytes(plistlib.dumps(info))

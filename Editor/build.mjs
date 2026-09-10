@@ -2,7 +2,10 @@ import {build} from 'esbuild';
 import {mkdir, writeFile, readFile, readdir} from 'node:fs/promises';
 await mkdir('../Resources/Editor', {recursive:true});
 await build({entryPoints:['src/editor.js'], bundle:true, minify:true, format:'iife', target:'safari17', outdir:'../Resources/Editor', loader:{'.woff2':'file','.woff':'file','.ttf':'file'}, assetNames:'fonts/[name]-[hash]'});
-await build({entryPoints:['src/mermaid.js'], bundle:true, minify:true, format:'iife', target:'safari17', outfile:'../Resources/Editor/mermaid.js'});
+const diagram = await build({entryPoints:['src/mermaid.js'], bundle:true, minify:true, format:'iife', target:'safari17', outfile:'../Resources/Editor/mermaid.js', metafile:true});
+// Mermaid's diagram modules must be inside this local asset. A leftover runtime
+// import would fail under the editor's offline connect-src 'none' policy.
+if(Object.values(diagram.metafile.outputs).some(output=>output.imports.length))throw new Error('Mermaid must have no runtime imports');
 await writeFile('../Resources/Editor/index.html', await readFile('src/index.html'));
 const notices=[];
 async function licenseNotices(directory) {
