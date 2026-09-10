@@ -87,6 +87,37 @@ def validate(root):
             assert local.is_relative_to(root.resolve()) and local.is_file(), f"Broken local link: {page.name}: {url}"
 
 
+def validate_file_set(root, manifest):
+    expected = {item["path"] for item in manifest["files"]} | {"site-manifest.json"}
+    paths = list(root.rglob("*"))
+    assert not any(path.is_symlink() for path in paths), "Generated site must not contain symlinks"
+    actual = {str(path.relative_to(root)) for path in paths if path.is_file()}
+    assert actual == expected, f"Generated files differ from allowlist: extra={sorted(actual - expected)}, missing={sorted(expected - actual)}"
+
+
+def replace_generated_site(stage, out):
+    """Install a complete generation; preserve the previous output for recovery."""
+    previous = None
+    if out.exists():
+        assert out.is_dir(), "Site output must be a directory"
+        if any(out.iterdir()):
+            marker = out / "site-manifest.json"
+            assert marker.is_file() and json.loads(marker.read_text()).get("product") == "Folio", "Refusing to replace a non-generated directory"
+        previous = Path(tempfile.mkdtemp(prefix=f".{out.name}-previous-", dir=out.parent))
+        try:
+            out.rename(previous)
+        except BaseException:
+            previous.rmdir()  # Still the empty directory reserved above.
+            raise
+    try:
+        stage.rename(out)
+    except BaseException:
+        if previous is not None:
+            previous.rename(out)
+        raise
+    return previous
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--release", type=Path, default=ROOT / "build/release/release.json")
@@ -106,10 +137,12 @@ def main():
         if not args.preview:
             raise SystemExit(f"Site not built: {error}")
         media_error = str(error)
+    assert not args.out.is_symlink(), "Site output must not be a symlink"
     out = args.out.resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="folio-site-", dir=out.parent) as temporary:
-        stage = Path(temporary)
+        stage = Path(temporary) / "site"
+        stage.mkdir()
         for directory in ("images", "downloads", "media"):
             (stage / directory).mkdir()
         shutil.copyfile(ROOT / "icon/AppIcon.png", stage / "images/icon.png")
@@ -158,15 +191,15 @@ def main():
         manifest = {"schema_version": 1, "product": "Folio", "preview": args.preview,
                     "version": release["version"], "build": release["build"], "files": files}
         (stage / "site-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
-        # Copy only the explicit stage. The consumer must use this manifest, not recursively publish the repo.
-        out.mkdir(parents=True, exist_ok=True)
-        for path in stage.rglob("*"):
-            if path.is_file():
-                target = out / path.relative_to(stage)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(path, target)
+        # Overlay copies retain obsolete downloads. Replace the entire generated
+        # directory only after the new stage passes; keep old output outside it.
+        validate_file_set(stage, manifest)
+        previous = replace_generated_site(stage, out)
+        validate_file_set(out, manifest)
     print(f"Built {'INTERNAL PREVIEW' if args.preview else 'product site'}: {out}")
     print(f"Allowlist: {len(files)} public files; manifest excludes itself to avoid a recursive hash.")
+    if previous is not None:
+        print(f"Previous generated output preserved: {previous}")
     if media_error:
         print(media_error)
 
