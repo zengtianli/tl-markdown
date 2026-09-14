@@ -1,7 +1,7 @@
 # CLAUDE.md — Folio
 
 SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实际架构先读本项目
-`README.md` 和 `catalog.yaml`；上级 `~/Apps/mac/CLAUDE.md` 是舰队架构约定。
+`README.md` 和 `project.yaml`；上级 `~/Apps/CLAUDE.md` 是产品工作区约定。
 默认能全 Swift 就全 Swift；生成的 Python demo 只是连通性示例，不是强制运行时依赖。
 只有实际依赖重型 Python 库或总部外部消费者时，才保留相应后端通路。
 
@@ -9,7 +9,7 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实�
 
 ## 构建
 
-产品主页在 `site/`；版本和安装包从 `scripts/package-release.py` 的实际产物派生，站群仅消费 `build/site/site-manifest.json` 白名单。完整媒体契约在 `docs/demo/录制说明.md`。`--preview` 输出不可发布。源码仓仍私有，只公开经核对的二进制与白名单网站资产。
+产品主页在 `site/`；版本和安装包从 `scripts/package-release.py` 的实际产物派生，站群仅消费 `build/site/site-manifest.json` 白名单。完整媒体契约在 `docs/demo/录制说明.md`。`--preview` 输出不可发布。源码已按9月12日决定公开，许可沿用随仓 `LICENSE`；网站继续只消费白名单，用户状态、录制原片与临时验证资料不随站点发布。
 
 `build.sh --build-only` 不运行 GUI 与文件打开测试，不安装。`scripts/test.sh --core-only` 运行无窗口的生产文件与 store 回归。当前 HARNESS 的输入隔离规则优先，不能为了执行旧测试脚本而抢占用户焦点或剪贴板。最终 GUI 由隔离 Computer Use 验证，必须如实记录其覆盖。
 
@@ -17,10 +17,10 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实�
 
 隔离模式的 `applicationShouldTerminateAfterLastWindowClosed` 必须返回 false：定时窗口录屏收尾会触发 AppKit 最后窗口检查，SwiftUI 默认会退出仅剩手工 NSPanel 的进程。此路径已由独立 `state/termination.json` 调用栈确认；automatic termination opt-out 不能替代。普通单个 Window 仍维持关窗退出，显式 Quit 仍 flush。诊断文件只在隔离状态目录写事件来源与调用栈，不写文档。
 
-项目目录为 `/Users/tianli/Apps/mac/folio`。Bundle ID、内部构建 target 与用户数据目录保持兼容，避免丢失默认文件关联和已有会话。
+项目目录为 `/Users/tianli/Apps/folio`。Bundle ID、内部构建 target 与用户数据目录保持兼容，避免丢失默认文件关联和已有会话。
 
 ```bash
-cd ~/Apps/mac/folio
+cd ~/Apps/folio
 ./build.sh          # 构建 + 装 /Applications（Xcode 自动挑，见下）
 ```
 

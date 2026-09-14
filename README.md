@@ -20,9 +20,9 @@
 ## 构建
 
 ```sh
-cd /Users/tianli/Apps/mac/folio/Editor
+cd /Users/tianli/Apps/folio/Editor
 npm ci
-cd /Users/tianli/Apps/mac/folio
+cd /Users/tianli/Apps/folio
 bash build.sh --install
 ```
 
@@ -34,7 +34,7 @@ bash build.sh --install
 
 `python3 scripts/package-release.py` 从已签名的构建包生成 `build/release/Folio-<版本>-<构建>-arm64.zip`、`release.json` 和 SHA-256。脚本核包内资源、系统依赖、源码指纹与解压后的签名；不启动、安装或上传应用。当前是 macOS 15+、Apple Silicon、本地签名且未公证的直接下载版。运行包包含第三方许可，不包含开发环境或用户会话。
 
-主页源在 `site/`，实际版本、大小、下载名与哈希来自发行清单。`python3 scripts/build-site.py --out build/site` 生成可消费的静态包和 `site-manifest.json` 文件白名单；真实截图、视频与字幕缺失或版本不匹配时停止。`--preview` 仅出明确标记的内部预览，不可部署为完成站。共享站群只消费白名单内的构建文件，不发布私有源码仓。
+主页源在 `site/`，实际版本、大小、下载名与哈希来自发行清单。`python3 scripts/build-site.py --out build/site` 生成可消费的静态包和 `site-manifest.json` 文件白名单；真实截图、视频与字幕缺失或版本不匹配时停止。`--preview` 仅出明确标记的内部预览，不可部署为完成站。源码按随仓许可公开；共享站群只消费白名单内的构建文件，不带入用户状态与录制原片。
 
 合成录制资料与输入在 `docs/demo/`；`python3 scripts/prepare-demo.py` 创建独立状态及带环境变量的演示副本，打印其路径但不启动。仅该副本启用不能成为 key/main 的后台窗口，真实编辑器与文件读写不变；普通应用保持正常窗口行为。实录成片落 `docs/demo/media/`，原片保留 `build/demo/`。详情见 [录制说明](docs/demo/录制说明.md)。
 
