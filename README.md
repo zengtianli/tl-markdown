@@ -2,7 +2,7 @@
 
 **中文** | [English](README_EN.md)
 
-[English](README_EN.md)
+
 
 [产品主页、直接下载与使用指南](https://app-mac-folio.tianli.cyou/)
 
