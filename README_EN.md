@@ -1,5 +1,7 @@
 # Folio
 
+[中文](README.md) | **English**
+
 [Product homepage, download and guide](https://app-mac-folio.tianli.cyou/)
 
 [中文](README.md)
