@@ -1,0 +1,94 @@
+{
+  "measured_at": "2026-09-26 02:00:31 +0800",
+  "device": "Mac16,12 / Apple M4 / 16 GB / macOS 27.2",
+  "source": "TLMarkdown.app",
+  "installed_bytes": 7536640,
+  "version": "1.0",
+  "build": "23",
+  "document_bytes": 136703,
+  "idle": {
+    "process": "FolioPerf.app (PID 46618) + helpers",
+    "footprint_mb": 115.8,
+    "main_footprint_mb": 45.0,
+    "cpu_pct": 1.0,
+    "main_cpu_pct": 1.0,
+    "processes": [
+      {
+        "pid": 46618,
+        "name": "main",
+        "cpu_pct": 0.997,
+        "footprint_peak_mb": 45.0,
+        "lifetime_peak_mb": 53.0,
+        "footprint_now_mb": 46.0
+      },
+      {
+        "pid": 46662,
+        "name": "com.apple.WebKit.Networking.7E687A1B-5FD4-4D5D-8048-992CB1876303",
+        "cpu_pct": 0.0,
+        "footprint_peak_mb": 5.8,
+        "lifetime_peak_mb": 9.2,
+        "footprint_now_mb": 5.8
+      },
+      {
+        "pid": 46642,
+        "name": "com.apple.WebKit.WebContent.1A4B19D3-5E15-44E5-BB21-1C589E5D112E",
+        "cpu_pct": 0.0,
+        "footprint_peak_mb": 51.0,
+        "lifetime_peak_mb": 113.0,
+        "footprint_now_mb": 51.0
+      },
+      {
+        "pid": 46641,
+        "name": "com.apple.WebKit.GPU.B101AF2E-CACA-4B03-B7E1-31A50F62B706",
+        "cpu_pct": 0.0,
+        "footprint_peak_mb": 14.0,
+        "lifetime_peak_mb": 62.0,
+        "footprint_now_mb": 14.0
+      }
+    ],
+    "window_s": 60,
+    "scope": "主进程 + XPC 辅助进程 + 子进程合计",
+    "webcontent_state": "已回收",
+    "webcontent_to_lifetime_peak": 0.45,
+    "webcontent_mb": 51.0,
+    "webcontent_lifetime_peak_mb": 113.0,
+    "settle_roster": [
+      {
+        "pid": 46618,
+        "name": "main",
+        "peak_rss_mb": 127.9
+      },
+      {
+        "pid": 46641,
+        "name": "com.apple.WebKit.GPU.B101AF2E-CACA-4B03-B7E1-31A50F62B706",
+        "peak_rss_mb": 28.3
+      },
+      {
+        "pid": 46642,
+        "name": "com.apple.WebKit.WebContent.1A4B19D3-5E15-44E5-BB21-1C589E5D112E",
+        "peak_rss_mb": 129.3
+      },
+      {
+        "pid": 46662,
+        "name": "com.apple.WebKit.Networking.7E687A1B-5FD4-4D5D-8048-992CB1876303",
+        "peak_rss_mb": 12.7
+      }
+    ],
+    "settle_s": 45,
+    "load_before": {
+      "at": "02:00:31",
+      "loadavg": "{ 36.78 57.97 55.66 }",
+      "memory_pressure_level": "2",
+      "swap": "total = 17408.00M  used = 16516.94M  free = 891.06M  (encrypted)"
+    },
+    "load_after": {
+      "at": "02:02:26",
+      "loadavg": "{ 22.61 45.74 51.09 }",
+      "memory_pressure_level": "2",
+      "swap": "total = 17408.00M  used = 16367.44M  free = 1040.56M  (encrypted)"
+    },
+    "units": "*_mb 为 MiB（2^20 字节，footprint 工具与活动监视器同口径）",
+    "method": "open -g -j -n 隐藏启动 → 静置 45 s（其间 1 Hz 记录进程名册与 RSS 峰值）→ measure.py idle <PID> --seconds 60 --with-helpers（CPU 窗口内不查 footprint，窗口后另采 3 次同时刻合计取峰值）→ 各进程 footprint -p 的 phys_footprint_peak（生命周期峰值）；WebContent 当前/生命周期峰值 < 0.6 记为「已回收」",
+    "gate_wait_s": 10
+  }
+}

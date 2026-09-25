@@ -58,6 +58,26 @@ def check_media(media, release):
     return required, capture
 
 
+def lightweight(release, preview):
+    """Page numbers come only from perf/lightweight.json, measured on this exact release."""
+    path = ROOT / "perf/lightweight.json"
+    data = json.loads(path.read_text())
+    expected = f"{release['version']} ({release['build']})"
+    if data.get("version") != expected or data["size"].get("download_bytes") != release["bytes"]:
+        if not preview:
+            raise SystemExit(f"Site not built: perf/lightweight.json measures {data.get('version')}, release is {expected}; re-measure first")
+    idle, launch = data["idle"], next(item for item in data["speed_gui"] if item["key"] == "launch")
+    installed = data["size"]["installed_bytes"] / 1e6  # decimal MB, same as Finder and the download button
+    note = (f"实测 Folio {release['version']}（构建 {release['build']}，即本页下载包）· {data['device']} · {data['measured_at']} · "
+            f"打开 137 KB 合成 Markdown（标题、表格、代码、公式）。内存为 phys_footprint（活动监视器「内存」列同口径），"
+            f"主进程 {idle['main_footprint_mb']:.0f} MB 加 WebKit 渲染、GPU、网络 3 个辅助进程合计，静置 {idle['settle_s']} 秒后测 {idle['window_s']} 秒；"
+            f"CPU 为这段时间各进程 CPU 时间 ÷ 墙钟，内存在其后采样；{len(idle.get('runs') or []) or 1} 次交替测量取中位；启动为 open -g -j 后台隐藏启动到编辑窗口读入文档，{launch['runs']} 次中位。"
+            "应用以隐藏窗口测量，窗口上屏时渲染进程会略高；测量时本机同时运行其他任务。")
+    return {"LW_INSTALLED": f"{installed:.1f} MB", "LW_MEMORY": f"{idle['footprint_mb']:.0f} MB",
+            "LW_CPU": f"{idle['cpu_pct']:.1f}%", "LW_LAUNCH": f"{launch['median_ms'] / 1000:.2f} 秒",
+            "LW_LAUNCH_RUNS": str(launch["runs"]), "LW_NOTE": escape(note)}
+
+
 def document_page(title, content):
     return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(title)} · Folio</title><link rel="icon" href="images/icon.png"><link rel="stylesheet" href="style.css"></head><body><header class="topbar wrap"><a class="brand" href="index.html"><img src="images/icon.png" width="42" height="42" alt=""><span>Folio</span></a><a class="text-link" href="index.html">返回产品主页 ↗</a></header><main class="document-page wrap"><p class="eyebrow">Folio</p><h1>{escape(title)}</h1>{content}</main></body></html>'''
 
@@ -173,9 +193,10 @@ def main():
         capture_note = (f"录制版本 {release['version']}（{release['build']}）；{capture['environment']}。{capture.get('notes', '')}" if media_files else "内部预览尚无实机媒体；不得据此发布或声称演示完成。")
         values = {"VERSION": escape(release["version"]), "BUILD": escape(release["build"]),
                   "MIN_MACOS": escape(release["minimum_macos"]), "CHIP": "Apple 芯片 Mac",
-                  "SIZE": f"{release['bytes'] / 1024 / 1024:.1f} MB", "DOWNLOAD_URL": escape(release["download_url"], quote=True),
+                  "SIZE": f"{release['bytes'] / 1e6:.1f} MB", "DOWNLOAD_URL": escape(release["download_url"], quote=True),
                   "HERO": hero, "VIDEOS": "\n".join(videos), "CAPTURE_NOTE": escape(capture_note),
                   "TUTORIAL": '<p><a class="text-link" href="media/tutorial.mp4" download>下载三段完整演示 ↓</a></p>' if "tutorial.mp4" in media_files else '',
+                  **lightweight(release, args.preview),
                   "PREVIEW_NOTICE": '<div class="preview-notice">内部预览 · 实机素材或最终验收尚未完成 · 不可发布</div>' if args.preview else ''}
         page = (ROOT / "site/index.html").read_text()
         for key, value in values.items():

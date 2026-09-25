@@ -22,6 +22,24 @@ const command=async value=>page.evaluate(value=>tl.receive({action:'command',val
 const pass=name=>{passed.push(name);console.log('PASS',name)};
 try{
   await page.goto(base+'/index.html');await page.waitForFunction(()=>window.tl);
+  // KaTeX and highlight.js are separate files fetched only when a formula or a fenced code block with
+  // a language is rendered; until then math shows its source and code is plain, then both re-render.
+  const lazyLoaded=()=>page.evaluate(()=>({katex:Boolean(window.TLKatex),hljs:Boolean(window.TLHljs),scripts:[...document.scripts].map(s=>s.getAttribute('src'))}));
+  await load('# 纯文字\n\n没有公式，也没有代码。\n\n```\n无语言标记的代码块\n```\n','plain');await page.locator('.rendered h1').waitFor();await page.waitForTimeout(300);
+  assert.deepEqual(await lazyLoaded(),{katex:false,hljs:false,scripts:['editor.js']});pass('plain document loads neither KaTeX nor highlight.js');
+  // Hold both components back to see the pending state, then check only those blocks re-render.
+  let release;const gate=new Promise(r=>{release=r});const held=/\/(katex|highlight)\.js$/;
+  await page.route(held,async route=>{await gate;await route.continue()});
+  await load('# 标题\n\n普通段落。\n\n公式 $a^2+b^2=c^2$。\n\n```python\ndef f(x):\n    return x\n```\n','lazy');
+  await page.locator('.math-pending').first().waitFor();
+  const blockState=()=>page.evaluate(()=>[...document.querySelectorAll('.rendered')].map(b=>({pending:b.dataset.pending||'',same:b.firstElementChild?._mark===true})));
+  await page.evaluate(()=>document.querySelectorAll('.rendered').forEach(b=>{if(b.firstElementChild)b.firstElementChild._mark=true}));
+  assert.deepEqual((await blockState()).map(b=>b.pending),['','','katex','hljs']);pass('blocks drawn without a component are marked pending, others are not');
+  release();
+  await page.locator('.rendered .katex').first().waitFor();await page.locator('.rendered pre code .hljs-keyword').first().waitFor();
+  assert.equal(await page.locator('.math-pending').count(),0);assert.equal((await lazyLoaded()).katex&&(await lazyLoaded()).hljs,true);pass('first formula and highlighted code block load their components and re-render');
+  assert.deepEqual(await blockState(),[{pending:'',same:true},{pending:'',same:true},{pending:'',same:false},{pending:'',same:false}]);pass('only the pending blocks re-render when a component arrives');
+  await page.unroute(held);
   const sample=await readFile('../Resources/欢迎使用.md','utf8');await load(sample);
   await page.locator('.rendered h1').waitFor();assert.equal(await text(),sample);pass('rendering preserves the exact Markdown source');
   assert.ok(await page.locator('.rendered table').count());

@@ -1,0 +1,67 @@
+{
+  "measured_at": "2026-09-26 00:19:19 +0800",
+  "device": "Mac16,12 / Apple M4 / 16 GB / macOS 27.2",
+  "source": "~/Apps/folio/build/perf-next/after-3/TLMarkdown.app",
+  "installed_bytes": 7307264,
+  "version": "1.0",
+  "build": "23",
+  "document_bytes": 136703,
+  "load_before": {
+    "loadavg": "{ 229.94 238.73 242.57 }",
+    "swap": "total = 18432.00M  used = 15197.69M  free = 3234.31M  (encrypted)",
+    "pressure_level": "2",
+    "at": "00:19:20"
+  },
+  "load_after": {
+    "loadavg": "{ 228.14 236.77 241.45 }",
+    "swap": "total = 16384.00M  used = 15515.44M  free = 868.56M  (encrypted)",
+    "pressure_level": "2",
+    "at": "00:21:07"
+  },
+  "idle": {
+    "processes": [
+      {
+        "role": "main",
+        "target": "<scratch>/lw/folio/folio-idle-z3ps141j/FolioPerf.app/Contents/MacOS/TLMarkdown",
+        "footprint_mb": 45.0,
+        "cpu_pct": 0.0,
+        "window_s": 60,
+        "after_window_mb": 45.0,
+        "lifetime_peak_mb": 53.0
+      },
+      {
+        "role": "com.apple.WebKit.GPU",
+        "target": "10996",
+        "footprint_mb": 14.0,
+        "cpu_pct": 0.02,
+        "window_s": 60,
+        "after_window_mb": 14.0,
+        "lifetime_peak_mb": 62.0
+      },
+      {
+        "role": "com.apple.WebKit.WebContent",
+        "target": "10999",
+        "footprint_mb": 72.0,
+        "cpu_pct": 0.0,
+        "window_s": 60,
+        "after_window_mb": 72.0,
+        "lifetime_peak_mb": 90.0
+      },
+      {
+        "role": "com.apple.WebKit.Networking",
+        "target": "11018",
+        "footprint_mb": 5.7,
+        "cpu_pct": 0.0,
+        "window_s": 60,
+        "after_window_mb": 5.7,
+        "lifetime_peak_mb": 9.6
+      }
+    ],
+    "footprint_mb": 136.7,
+    "main_footprint_mb": 45.0,
+    "cpu_pct": 0.02,
+    "settle_s": 45,
+    "window_s": 60,
+    "method": "open -g -j -n 隐藏启动隔离副本并打开样例，静置 45 s 后并行运行 measure.py idle --seconds 60（主进程按可执行文件路径，WebKit 辅助进程按 launchctl pid/<主进程> 域内 PID）；内存为各进程 phys_footprint 峰值之和，CPU 为各进程 CPU% 之和"
+  }
+}

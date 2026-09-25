@@ -1,0 +1,67 @@
+{
+  "measured_at": "2026-09-26 00:10:11 +0800",
+  "device": "Mac16,12 / Apple M4 / 16 GB / macOS 27.2",
+  "source": "~/Apps/folio/build/perf-next/after-2/TLMarkdown.app",
+  "installed_bytes": 7303168,
+  "version": "1.0",
+  "build": "23",
+  "document_bytes": 136703,
+  "load_before": {
+    "loadavg": "{ 85.62 135.68 228.37 }",
+    "swap": "total = 18432.00M  used = 17308.12M  free = 1123.88M  (encrypted)",
+    "pressure_level": "2",
+    "at": "00:10:12"
+  },
+  "load_after": {
+    "loadavg": "{ 200.93 159.62 226.33 }",
+    "swap": "total = 19456.00M  used = 18553.50M  free = 902.50M  (encrypted)",
+    "pressure_level": "2",
+    "at": "00:12:00"
+  },
+  "idle": {
+    "processes": [
+      {
+        "role": "main",
+        "target": "<scratch>/lw/folio/folio-idle-yqw7kzey/FolioPerf.app/Contents/MacOS/TLMarkdown",
+        "footprint_mb": 45.0,
+        "cpu_pct": 0.02,
+        "window_s": 60,
+        "after_window_mb": 45.0,
+        "lifetime_peak_mb": 58.0
+      },
+      {
+        "role": "com.apple.WebKit.GPU",
+        "target": "97545",
+        "footprint_mb": 14.0,
+        "cpu_pct": 0.05,
+        "window_s": 60,
+        "after_window_mb": 10.0,
+        "lifetime_peak_mb": 62.0
+      },
+      {
+        "role": "com.apple.WebKit.WebContent",
+        "target": "97547",
+        "footprint_mb": 41.0,
+        "cpu_pct": 0.0,
+        "window_s": 60,
+        "after_window_mb": 41.0,
+        "lifetime_peak_mb": 86.0
+      },
+      {
+        "role": "com.apple.WebKit.Networking",
+        "target": "97583",
+        "footprint_mb": 6.0,
+        "cpu_pct": 0.0,
+        "window_s": 60,
+        "after_window_mb": 6.0,
+        "lifetime_peak_mb": 12.0
+      }
+    ],
+    "footprint_mb": 106.0,
+    "main_footprint_mb": 45.0,
+    "cpu_pct": 0.07,
+    "settle_s": 45,
+    "window_s": 60,
+    "method": "open -g -j -n 隐藏启动隔离副本并打开样例，静置 45 s 后并行运行 measure.py idle --seconds 60（主进程按可执行文件路径，WebKit 辅助进程按 launchctl pid/<主进程> 域内 PID）；内存为各进程 phys_footprint 峰值之和，CPU 为各进程 CPU% 之和"
+  }
+}

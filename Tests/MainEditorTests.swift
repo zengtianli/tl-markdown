@@ -63,6 +63,42 @@ import WebKit
         try require(captured && store.active?.text == expected, "main editor changes reach the production Swift store")
         try require(store.save(), "main edited document saves through production file IO")
         try require(try String(contentsOf: file, encoding: .utf8) == expected, "saved Markdown matches the rendered edit")
+        try await lazyComponents(store: store, renderer: renderer, root: root, require: require)
         print("Main editor integration checks passed; isolated state: \(root.path)")
+    }
+
+    /// KaTeX and highlight.js load on demand inside the production WKWebView (file:// page under the
+    /// editor's CSP), including a document switch while they are still loading, the bundled WOFF2
+    /// fonts, and no error banner. The document above has neither formulas nor code.
+    @MainActor static func lazyComponents(store: EditorStore, renderer: WKWebView, root: URL, require: (Bool, String) throws -> Void) async throws {
+        func js(_ source: String) async throws -> Any? { try await renderer.evaluateJavaScript(source) }
+        func wait(_ condition: String, tries: Int = 200) async -> Bool {
+            for _ in 0..<tries {
+                if (try? await js(condition)) as? Bool == true { return true }
+                try? await Task.sleep(for: .milliseconds(50))
+            }
+            return false
+        }
+        let loaded = try await js("JSON.stringify({k:!!window.TLKatex,h:!!window.TLHljs})") as? String
+        try require(loaded == "{\"k\":false,\"h\":false}", "a document without formulas or code loads neither component (\(loaded ?? "nil"))")
+        let plainID = store.activeID!
+        let formulas = root.appendingPathComponent("公式与代码.md"), code = root.appendingPathComponent("仅代码.md")
+        try Data("# 公式\n\n行内 $E=mc^2$ 与块级：\n\n$$\\int_0^1 x^2\\,dx=\\frac13$$\n\n```swift\nlet x = 1\nfunc f() {}\n```\n".utf8).write(to: formulas)
+        try Data("# 仅代码\n\n```js\nconst y = 2; function g(){ return y }\n```\n".utf8).write(to: code)
+        // Switch away while the components are loading, then back.
+        store.open(formulas); let formulaID = store.activeID!
+        store.select(plainID)
+        try await Task.sleep(for: .milliseconds(30))
+        store.select(formulaID)
+        let rendered = await wait("document.querySelectorAll('.rendered .katex').length>=2&&!document.querySelector('.math-pending,.rendered[data-pending]')&&!!document.querySelector('.rendered pre code .hljs-keyword')")
+        let state = try await js("JSON.stringify({katex:document.querySelectorAll('.rendered .katex').length,pending:document.querySelectorAll('.math-pending,.rendered[data-pending]').length,keywords:document.querySelectorAll('.hljs-keyword').length})") as? String
+        try require(rendered, "formulas and code render after on-demand loading, across a document switch (\(state ?? "nil"))")
+        let fonts = await wait("[...document.fonts].some(f=>f.family.replace(/\"/g,'').startsWith('KaTeX')&&f.status==='loaded')", tries: 100)
+        try require(fonts, "KaTeX fonts load from the bundled WOFF2 files")
+        let family = try await js("getComputedStyle(document.querySelector('.katex')).fontFamily") as? String
+        try require(family?.contains("KaTeX") == true, "the on-demand KaTeX stylesheet applies (\(family ?? "nil"))")
+        store.open(code)
+        try require(await wait("!!document.querySelector('.rendered pre code .hljs-keyword')"), "code in the next document is highlighted with the loaded component")
+        try require(store.banner.isEmpty, "no editor error banner (\(store.banner))")
     }
 }

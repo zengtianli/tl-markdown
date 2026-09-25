@@ -1,0 +1,67 @@
+{
+  "measured_at": "2026-09-25 23:50:06 +0800",
+  "device": "Mac16,12 / Apple M4 / 16 GB / macOS 27.2",
+  "source": "~/Apps/folio/build/perf-next/baseline-23/TLMarkdown.app",
+  "installed_bytes": 7536640,
+  "version": "1.0",
+  "build": "23",
+  "document_bytes": 136703,
+  "load_before": {
+    "loadavg": "{ 435.04 403.03 333.74 }",
+    "swap": "total = 19456.00M  used = 18311.06M  free = 1144.94M  (encrypted)",
+    "pressure_level": "2",
+    "at": "23:50:09"
+  },
+  "load_after": {
+    "loadavg": "{ 428.82 416.43 348.85 }",
+    "swap": "total = 19456.00M  used = 18449.56M  free = 1006.44M  (encrypted)",
+    "pressure_level": "2",
+    "at": "23:52:16"
+  },
+  "idle": {
+    "processes": [
+      {
+        "role": "main",
+        "target": "<scratch>/lw/folio/folio-idle-xrj_fpm2/FolioPerf.app/Contents/MacOS/TLMarkdown",
+        "footprint_mb": 52.0,
+        "cpu_pct": 0.83,
+        "window_s": 60,
+        "after_window_mb": 54.0,
+        "lifetime_peak_mb": 57.0
+      },
+      {
+        "role": "com.apple.WebKit.GPU",
+        "target": "62761",
+        "footprint_mb": 14.0,
+        "cpu_pct": 0.03,
+        "window_s": 60,
+        "after_window_mb": 14.0,
+        "lifetime_peak_mb": 63.0
+      },
+      {
+        "role": "com.apple.WebKit.WebContent",
+        "target": "62764",
+        "footprint_mb": 94.0,
+        "cpu_pct": 0.0,
+        "window_s": 60,
+        "after_window_mb": 92.0,
+        "lifetime_peak_mb": 116.0
+      },
+      {
+        "role": "com.apple.WebKit.Networking",
+        "target": "62787",
+        "footprint_mb": 6.0,
+        "cpu_pct": 0.03,
+        "window_s": 60,
+        "after_window_mb": 5.7,
+        "lifetime_peak_mb": 10.0
+      }
+    ],
+    "footprint_mb": 166.0,
+    "main_footprint_mb": 52.0,
+    "cpu_pct": 0.89,
+    "settle_s": 45,
+    "window_s": 60,
+    "method": "open -g -j -n 隐藏启动隔离副本并打开样例，静置 45 s 后并行运行 measure.py idle --seconds 60（主进程按可执行文件路径，WebKit 辅助进程按 launchctl pid/<主进程> 域内 PID）；内存为各进程 phys_footprint 峰值之和，CPU 为各进程 CPU% 之和"
+  }
+}

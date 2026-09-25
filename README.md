@@ -8,6 +8,18 @@
 
 本地 Markdown 阅读与编辑工具。SwiftUI 窗口内默认使用单栏即时渲染编辑区，Swift 管理文件、保存与恢复记录。完整渲染使用打包的 WebKit 组件，会创建辅助进程；不再沿用旧原生版的低内存测量值。
 
+<!-- lightweight:start -->
+## 轻量（本机实测）
+
+| 安装包 | 空闲内存 | 空闲 CPU | 启动到编辑窗口出现并读入 137 KB 样例文档 |
+|---|---|---|---|
+| **4.4 MB**（装好后 9.3 MB） | **117 MB** | **0.6%** | **432 ms** |
+
+编辑区是包内 CodeMirror 网页组件，跑在 WebKit 里，多出网页、GPU、网络三个辅助进程；Mermaid 图表脚本用到才加载；无服务器与后台任务，每 2 秒查一次文件修改时间。
+
+<sub>v1.0 (14) · Mac16,12 / Apple M4 / 16 GB / macOS 27.2 · 合成 Markdown 样例 136,703 字节（200 节：标题、中文正文、表格、任务列表、代码块、10 个公式），由 scripts/measure-lightweight.py 生成；未打开用户文档 · 2026-09-26 本机实测。内存为 phys_footprint（活动监视器「内存」列同口径）；CPU 为静置后 60 秒内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+<!-- lightweight:end -->
+
 ## 使用
 
 - ⌘O 打开文件，⌘N 新建，⌘S 保存，⌘⇧S 另存为。

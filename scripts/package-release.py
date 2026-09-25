@@ -65,8 +65,9 @@ def main():
         dependency = line.strip().split(" (", 1)[0]
         assert dependency.startswith(("/usr/lib/", "/System/Library/", "@rpath/libswift")), f"Unexpected runtime dependency: {dependency}"
     resources = app / "Contents/Resources"
-    for name in ("Editor/index.html", "Editor/editor.js", "Editor/mermaid.js", "THIRD-PARTY-NOTICES.txt", "欢迎使用.md"):
+    for name in ("Editor/index.html", "Editor/editor.js", "Editor/katex.js", "Editor/katex.css", "Editor/highlight.js", "Editor/mermaid.js", "THIRD-PARTY-NOTICES.txt", "欢迎使用.md"):
         assert (resources / name).is_file(), f"Missing bundled resource: {name}"
+    assert (resources / f"{info['CFBundleIconFile']}.icns").is_file(), "Info.plist icon is missing from the bundle"
     assert not any(p.name in {".git", "session.json", "node_modules"} for p in app.rglob("*")), "Development or user state entered the app"
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)

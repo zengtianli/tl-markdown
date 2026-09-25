@@ -3,3 +3,4 @@
 .task-toggle{border:0;background:transparent;color:var(--accent);font-size:1.2em;cursor:pointer;padding:0 5px 0 0}.task-list-item{list-style:none}.match-count{color:var(--muted);font-size:12px}
 .rendered{white-space:normal}
 .rendered{font-family:var(--font-family,-apple-system,"PingFang SC",sans-serif)!important}
+.math-pending{font-family:ui-monospace,"SF Mono",monospace;font-size:.9em;color:var(--muted)}

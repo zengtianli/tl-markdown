@@ -1,0 +1,58 @@
+{
+  "measured_at": "2026-09-25 23:21:11 +0800",
+  "device": "Mac16,12 / Apple M4 / 16 GB / macOS 27.2",
+  "source": "Folio-1.0-14-arm64.zip",
+  "download_bytes": 4384818,
+  "installed_bytes": 9330688,
+  "version": "1.0",
+  "build": "14",
+  "document_bytes": 136703,
+  "load_before": {
+    "loadavg": "{ 146.07 88.59 70.68 }",
+    "swap": "total = 18432.00M  used = 17577.75M  free = 854.25M  (encrypted)",
+    "at": "23:21:13"
+  },
+  "load_after": {
+    "loadavg": "{ 252.80 143.91 94.43 }",
+    "swap": "total = 20480.00M  used = 19639.50M  free = 840.50M  (encrypted)",
+    "at": "23:23:01"
+  },
+  "idle": {
+    "processes": [
+      {
+        "role": "main",
+        "target": "<scratch>/lw/folio/folio-idle-vb1d3bcq/FolioPerf.app/Contents/MacOS/TLMarkdown",
+        "footprint_mb": 51.0,
+        "cpu_pct": 1.02,
+        "window_s": 60
+      },
+      {
+        "role": "com.apple.WebKit.GPU",
+        "target": "22244",
+        "footprint_mb": 12.0,
+        "cpu_pct": 0.07,
+        "window_s": 60
+      },
+      {
+        "role": "com.apple.WebKit.WebContent",
+        "target": "22245",
+        "footprint_mb": 88.0,
+        "cpu_pct": 0.0,
+        "window_s": 60
+      },
+      {
+        "role": "com.apple.WebKit.Networking",
+        "target": "22260",
+        "footprint_mb": 6.1,
+        "cpu_pct": 0.0,
+        "window_s": 60
+      }
+    ],
+    "footprint_mb": 157.1,
+    "main_footprint_mb": 51.0,
+    "cpu_pct": 1.09,
+    "settle_s": 45,
+    "window_s": 60,
+    "method": "open -g -j -n 隐藏启动隔离副本并打开样例，静置 45 s 后并行运行 measure.py idle --seconds 60（主进程按可执行文件路径，WebKit 辅助进程按 launchctl pid/<主进程> 域内 PID）；内存为各进程 phys_footprint 峰值之和，CPU 为各进程 CPU% 之和"
+  }
+}

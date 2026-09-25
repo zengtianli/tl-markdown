@@ -22,11 +22,21 @@
         <h1>打开一页。<br><em>继续写下去。</em></h1>
         <p class="lede">笔记、想法和下一篇文章，都从一份 Markdown 开始。Folio 让你直接阅读、直接修改，文字始终保存在自己的文件里。</p>
         <div class="actions"><a class="button primary" href="@@DOWNLOAD_URL@@" download>下载 Folio <span aria-hidden="true">↓</span></a><a class="text-link" href="#demo">看看怎么用 <span aria-hidden="true">↘</span></a></div>
-        <p class="requirements">macOS @@MIN_MACOS@@ 及以上 · @@CHIP@@<br>v@@VERSION@@ · @@SIZE@@ · <a href="#first-open">首次打开说明</a></p>
+        <p class="requirements">macOS @@MIN_MACOS@@ 及以上 · @@CHIP@@<br>v@@VERSION@@ · 安装包 @@SIZE@@（解压后 @@LW_INSTALLED@@）· <a href="#first-open">首次打开说明</a></p>
       </div>
       <aside class="side-note" aria-label="产品特点"><span class="note-number">01 /</span><p>想法留在纸上，<br>文件留在本机。</p><div class="note-line"></div><span>MARKDOWN, AT HOME.</span></aside>
       <figure class="hero-shot">@@HERO@@<figcaption><span class="caption-dot"></span> Folio 主编辑器 · 真实窗口 · 虚构样例文档</figcaption></figure>
       <div class="benefit-line"><span>不用注册账号</span><span>一份普通 .md 文件</span><span>写完自动保存</span><span>常用操作都有快捷键</span></div>
+    </section>
+    <section class="lightweight wrap" id="lightweight" aria-labelledby="lightweight-title">
+      <div class="lw-heading"><p class="eyebrow">轻量 · 实测数据</p><h2 id="lightweight-title">小，而且安静。</h2><p>原生 Swift 外壳，排版交给 macOS 自带的 WebKit，不内置 Chromium、Electron 或 Node 运行时；Mermaid 图表组件只在文档里真有图表时才加载。没有后台进程、登录项或本地服务器，退出后不留任何进程。</p></div>
+      <div class="lw-cards">
+        <article><b>@@SIZE@@</b><h3>安装包</h3><p>ZIP 下载大小；解压后 @@LW_INSTALLED@@，公式、图表与字体都在包内。</p></article>
+        <article><b>@@LW_MEMORY@@</b><h3>空闲内存</h3><p>打开一份 137 KB 文档后静置；含主进程与系统 WebKit 渲染进程合计。</p></article>
+        <article><b>@@LW_CPU@@</b><h3>空闲 CPU</h3><p>静置 60 秒的平均值。Folio 自己只做一件事：每 2 秒看一眼文件是否被其他软件改过。</p></article>
+        <article><b>@@LW_LAUNCH@@</b><h3>启动到可编辑</h3><p>从启动到编辑窗口出现并读入 137 KB 文档，@@LW_LAUNCH_RUNS@@ 次中位。</p></article>
+      </div>
+      <p class="fineprint">@@LW_NOTE@@</p>
     </section>
     <section class="section wrap" id="features">
       <div class="section-heading"><p class="eyebrow">留给文字更多空间</p><h2>好好写，也好好读。</h2><p>少一点来回切换，把阅读、修改和整理放在同一页。</p></div>

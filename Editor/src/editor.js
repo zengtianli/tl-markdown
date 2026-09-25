@@ -8,11 +8,9 @@ import MarkdownIt from 'markdown-it';
 import footnote from 'markdown-it-footnote';
 import taskLists from 'markdown-it-task-lists';
 import texmath from 'markdown-it-texmath';
-import katex from 'katex';
 import DOMPurify from 'dompurify';
-import hljs from 'highlight.js/lib/common';
 import {mermaidLoader, drawDiagram} from './diagram.js';
-import 'katex/dist/katex.min.css';
+import {blockOnly, documentStructure} from './structure.js';
 import 'highlight.js/styles/github.css';
 import './style.css';
 
@@ -20,9 +18,46 @@ const post = data => { window.webkit?.messageHandlers?.editor?.postMessage(data)
 const previewOnly = Boolean(window.TL_PREVIEW_ONLY);
 window.addEventListener('error', e => post({type:'error', message:e.message}));
 window.addEventListener('unhandledrejection', e => post({type:'error', message:String(e.reason)}));
+// KaTeX (~0.3 MB of script plus its stylesheet) and highlight.js (~0.2 MB, 37 language grammars
+// built at start-up) are fetched the first time a formula or a fenced code block with a language
+// is actually rendered; documents without them never parse either. Until one arrives, formulas
+// show their TeX source and code shows unhighlighted; each block drawn that way is marked
+// (data-pending) while it renders, and only those blocks re-render once the component arrives.
+// Mermaid follows the same rule in diagram.js.
+const lazy={
+  katex:{files:['katex.css','katex.js'],global:'TLKatex',state:'idle',failure:'本地公式组件加载失败，公式暂以源码显示'},
+  hljs:{files:['highlight.js'],global:'TLHljs',state:'idle',failure:'本地代码高亮组件加载失败，代码暂不着色'}
+};
+let missing=null; // components the block being rendered asked for but does not have yet
+function ready(name) {
+  const asset=lazy[name];
+  if(asset.state==='ready')return window[asset.global];
+  if(asset.state==='failed')return null;
+  missing?.add(name);
+  if(asset.state==='loading')return null;
+  asset.state='loading';
+  const loaded=file=>new Promise((resolve,reject)=>{
+    const element=file.endsWith('.css')?Object.assign(document.createElement('link'),{rel:'stylesheet',href:file}):Object.assign(document.createElement('script'),{src:file});
+    element.onload=resolve;element.onerror=reject;document.head.append(element);
+  });
+  Promise.all(asset.files.map(loaded)).then(()=>{
+    if(!window[asset.global])throw new Error('incomplete');
+    asset.state='ready';
+    document.querySelectorAll('.rendered[data-pending]').forEach(element=>{if(element.dataset.pending.split(' ').includes(name))element._rerender?.()});
+  }).catch(()=>{asset.state='failed';post({type:'error',message:asset.failure});});
+  return null;
+}
+const mathEngine={renderToString(tex,options) {
+  const katex=ready('katex');
+  return katex?katex.renderToString(tex,options):`<span class="math-pending">${md.utils.escapeHtml(tex)}</span>`;
+}};
 const md = new MarkdownIt({html:true, linkify:true, breaks:false, highlight(code,lang) {
-  return lang && hljs.getLanguage(lang) ? hljs.highlight(code,{language:lang,ignoreIllegals:true}).value : '';
-}}).use(footnote).use(taskLists,{enabled:false}).use(texmath,{engine:katex, delimiters:'dollars', katexOptions:{throwOnError:false,strict:false,trust:false}});
+  if(!lang)return '';
+  const hljs=ready('hljs');
+  return hljs?.getLanguage(lang) ? hljs.highlight(code,{language:lang,ignoreIllegals:true}).value : '';
+}}).use(footnote).use(taskLists,{enabled:false}).use(texmath,{engine:mathEngine, delimiters:'dollars', katexOptions:{throwOnError:false,strict:false,trust:false}});
+// Same options and plugins, block pass only: used for block ranges, headings and references.
+const structure = blockOnly(new MarkdownIt({html:true, linkify:true, breaks:false}).use(footnote).use(taskLists,{enabled:false}).use(texmath,{engine:mathEngine, delimiters:'dollars'}));
 
 const modeEffect = StateEffect.define(), editingEffect = StateEffect.define();
 const modeField = StateField.define({create:()=>false, update:(v,tr)=>tr.effects.reduce((x,e)=>e.is(modeEffect)?e.value:x,v)});
@@ -33,31 +68,10 @@ const sessions = new Map();
 const loadMermaid = mermaidLoader();
 function parse(doc) {
   if(cached.has(doc)) return cached.get(doc);
-  const text=doc.toString(), lines=text.split('\n');
-  const offsets=[0]; for(let i=0;i<lines.length;i++) offsets.push(offsets.at(-1)+lines[i].length+1);
-  // Frontmatter is preserved and shown in a compact, editable disclosure.
-  let frontEnd=0;
-  if(lines[0]==='---') { const end=lines.findIndex((l,i)=>i>0&&(l==='---'||l==='...')); if(end>0)frontEnd=end+1; }
-  const source=frontEnd?lines.map((s,i)=>i<frontEnd?'':s).join('\n'):text;
-  const env={}, tokens=md.parse(source,env), blocks=[], headings=[];
-  if(frontEnd)blocks.push({from:0,to:Math.min(text.length,offsets[frontEnd]-1),kind:'frontmatter'});
-  for(let i=0;i<tokens.length;i++) {
-    const t=tokens[i];
-    if(t.type==='heading_open'&&t.map) headings.push({position:offsets[t.map[0]],level:Number(t.tag.slice(1)),title:tokens[i+1]?.content||''});
-    if(t.level!==0||!t.map||t.nesting===-1)continue;
-    const from=offsets[t.map[0]], to=Math.min(text.length,offsets[t.map[1]]-1);
-    if(to>from && from >= (blocks.at(-1)?.to??0))blocks.push({from,to,kind:t.type,info:t.info});
-  }
-  // Footnote definitions may be consumed by markdown-it without a mapped top-level token.
-  for(let i=0;i<lines.length;i++)if(/^ {0,3}\[(?!\^)[^\]]+\]:\s*\S/.test(lines[i])&&!blocks.some(b=>offsets[i]>=b.from&&offsets[i]<b.to)) {
-    blocks.push({from:offsets[i],to:Math.min(text.length,offsets[i+1]-1),kind:'reference-definition'});
-  }
-  for(let i=0;i<lines.length;i++)if(/^\[\^[^\]]+\]:/.test(lines[i])&&!blocks.some(b=>offsets[i]>=b.from&&offsets[i]<b.to)) {
-    let end=i+1; while(end<lines.length&&/^ {2,}\S/.test(lines[end]))end++;
-    blocks.push({from:offsets[i],to:Math.min(text.length,offsets[end]-1),kind:'footnote'}); i=end-1;
-  }
-  blocks.sort((a,b)=>a.from-b.from);
-  const result={blocks,headings,env}; cached.set(doc,result); return result;
+  const result=documentStructure(structure,doc.toString());
+  // Compared by every block widget; serialized once per parse, not once per block.
+  result.referenceKey=JSON.stringify(result.env.references);
+  cached.set(doc,result); return result;
 }
 function assetURL(src) {
   if(/^(https?:|data:image\/)/i.test(src))return src;
@@ -80,8 +94,11 @@ function activateBlock(v,from,to,event) {
   }
   v.dispatch({selection:{anchor:Math.min(to,position)},effects:editingEffect.of(true)}); v.focus();
 }
+const mermaidFence=/^\s*(`{3,}|~{3,})mermaid[^\n]*\n([\s\S]*?)\n\s*(?:`{3,}|~{3,})\s*$/;
+// Every edit rebuilds one widget per block of the document, so construction and eq() only store
+// and compare; anything that scans the block's source happens in toDOM, for blocks on screen.
 class RenderedBlock extends WidgetType {
-  constructor(raw,kind,from,to,id,references) {super();Object.assign(this,{raw,kind,from,to,id,references});this.referenceKey=JSON.stringify(references);}
+  constructor(raw,kind,from,to,id,references,referenceKey) {super();Object.assign(this,{raw,kind,from,to,id,references,referenceKey});}
   eq(other){return this.raw===other.raw&&this.kind===other.kind&&this.from===other.from&&this.id===other.id&&this.referenceKey===other.referenceKey;}
   get estimatedHeight(){return this.kind==='table_open'?120:this.kind==='fence'?110:this.kind==='heading_open'?58:48;}
   toDOM(v) {
@@ -93,16 +110,31 @@ class RenderedBlock extends WidgetType {
       const details=document.createElement('details'), summary=document.createElement('summary'), code=document.createElement('pre');
       summary.textContent='文档属性 · Frontmatter'; code.textContent=this.raw; details.append(summary,code); element.append(details); return element;
     }
-    if(this.kind==='footnote') {
-      const m=this.raw.match(/^\[\^([^\]]+)\]:\s*([\s\S]*)/); element.id='note-'+m?.[1];
-      element.innerHTML=DOMPurify.sanitize(md.renderInline((m?.[1]||'')+'. '+(m?.[2]||this.raw)));return element;
-    }
-    const mermaid=/^\s*(`{3,}|~{3,})mermaid[^\n]*\n([\s\S]*?)\n\s*(?:`{3,}|~{3,})\s*$/.exec(this.raw);
+    if(this.kind==='footnote') element.id='note-'+this.raw.match(/^\[\^([^\]]+)\]:/)?.[1];
+    const mermaid=mermaidFence.exec(this.raw);
     if(mermaid) {
       element.classList.add('diagram');
       element._diagram=drawDiagram({element,source:mermaid[2],load:loadMermaid,
         sanitize:svg=>DOMPurify.sanitize(svg,{USE_PROFILES:{svg:true,svgFilters:true}}),measure:()=>v.requestMeasure()});
       return element;
+    }
+    this.fill(element,v);
+    element._rerender=()=>{element.replaceChildren();this.fill(element,v);v.requestMeasure();};
+    return element;
+  }
+  // Markdown output plus its controls; records which lazy components were missing while rendering.
+  fill(element,v) {
+    missing=new Set();
+    try {this.renderMarkdown(element,v);}
+    finally {
+      if(missing.size)element.dataset.pending=[...missing].join(' ');else delete element.dataset.pending;
+      missing=null;
+    }
+  }
+  renderMarkdown(element,v) {
+    if(this.kind==='footnote') {
+      const m=this.raw.match(/^\[\^([^\]]+)\]:\s*([\s\S]*)/);
+      element.innerHTML=DOMPurify.sanitize(md.renderInline((m?.[1]||'')+'. '+(m?.[2]||this.raw)));return;
     }
     // Footnote references across independently rendered blocks remain navigable.
     let input=['fence','code_block'].includes(this.kind)?this.raw:this.raw.replace(/(`+)[\s\S]*?\1|(?<!\\)\[\^([^\]]+)\](?!:)/g,(whole,ticks,id)=>ticks?whole:`<sup><a href="#note-${md.utils.escapeHtml(id)}">${md.utils.escapeHtml(id)}</a></sup>`);
@@ -130,7 +162,6 @@ class RenderedBlock extends WidgetType {
       });pre.append(copy);
     });
     element.querySelectorAll('table').forEach(table=>{const wrap=document.createElement('div');wrap.className='table-scroll';table.replaceWith(wrap);wrap.append(table)});
-    return element;
   }
   destroy(dom){dom._diagram?.dispose();}
   // Widgets own pointer events; CodeMirror must not replace the block before a button's click fires.
@@ -142,7 +173,7 @@ function decorations(state) {
   const parsed=parse(state.doc);
   for(const block of parsed.blocks) {
     const selected=active&&state.selection.ranges.some(s=>s.from<=block.to&&s.to>=block.from);
-    if(!selected)ranges.push(Decoration.replace({widget:new RenderedBlock(state.doc.sliceString(block.from,block.to),block.kind,block.from,block.to,currentID,parsed.env.references),block:true}).range(block.from,block.to));
+    if(!selected)ranges.push(Decoration.replace({widget:new RenderedBlock(state.doc.sliceString(block.from,block.to),block.kind,block.from,block.to,currentID,parsed.env.references,parsed.referenceKey),block:true}).range(block.from,block.to));
   }
   return Decoration.set(ranges,true);
 }

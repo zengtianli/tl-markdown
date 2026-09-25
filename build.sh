@@ -21,8 +21,10 @@ if c.get('icon_png'):
     sys.path.insert(0, '/Users/tianli/Dev/tools/dev/lib/tools/macapp')
     from make_icon import to_icns
     to_icns(Path(c['icon_png']))
-else:
+elif c.get('icon'):
     subprocess.run(['/opt/homebrew/bin/python3','/Users/tianli/Dev/tools/dev/lib/tools/macapp/make_icon.py','--glyph',c['icon']['glyph'],'--color',c['icon']['color'],'--out','icon/AppIcon','--badge',c['icon'].get('badge',''),'--icns'],check=True)
+elif not Path('icon/AppIcon.icns').is_file():
+    sys.exit('project.yaml has no icon source and icon/AppIcon.icns is missing')
 PY
 (cd "$DIR/Editor" && npm run build)
 mkdir -p build
@@ -37,9 +39,14 @@ VERSION=1
 if git rev-parse --verify HEAD >/dev/null 2>&1; then VERSION="$(git rev-list --count HEAD)"; fi
 plutil -replace CFBundleVersion -string "$VERSION" "$APP/Contents/Info.plist"
 mkdir -p "$APP/Contents/Resources"
+# ditto merges: clear the generated editor bundle so files a previous build
+# emitted (old hashed fonts) never linger in the app.
+rm -rf "$APP/Contents/Resources/Editor"
 ditto "$DIR/Resources" "$APP/Contents/Resources"
-cp "$DIR/icon/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+# Ship the icon once, under the content-hashed name Info.plist points to (it
+# busts the Finder/Dock icon cache). Xcode's plain AppIcon.icns copy is unused.
 cp "$DIR/icon/AppIcon.icns" "$APP/Contents/Resources/$ICON_NAME.icns"
+rm -f "$APP/Contents/Resources/AppIcon.icns"
 EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Contents/Info.plist")"
 xcrun strip -S "$APP/Contents/MacOS/$EXECUTABLE_NAME"
 python3 "$DIR/scripts/package-release.py" --app "$APP" --stamp

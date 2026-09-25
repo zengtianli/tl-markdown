@@ -1,0 +1,87 @@
+{
+  "measured_at": "2026-09-25 02:14:52 +0800",
+  "device": "Mac16,12 / Apple M4 / 16 GB / macOS 27.2",
+  "download_bytes": 4384818,
+  "source": "Folio-1.0-14-arm64.zip",
+  "installed_bytes": 9330688,
+  "version": "1.0",
+  "build": "14",
+  "document_bytes": 136703,
+  "launch": {
+    "samples_ms": [
+      314.6,
+      275.4,
+      281.0,
+      275.3,
+      259.0,
+      287.1,
+      293.9
+    ],
+    "median_ms": 281.0,
+    "method": "open -g -j 隐藏启动 → 编辑窗口出现并读入文档（隔离会话记录首次写盘）；首次为冷启动，其余热启动"
+  },
+  "idle": {
+    "processes": [
+      {
+        "pid": 27262,
+        "name": "TLMarkdown",
+        "footprint_mb": 50.0,
+        "cpu_s": 0.19
+      },
+      {
+        "pid": 27282,
+        "name": "com.apple.WebKit.GPU",
+        "footprint_mb": 25.0,
+        "cpu_s": 0.0
+      },
+      {
+        "pid": 27284,
+        "name": "com.apple.WebKit.WebContent",
+        "footprint_mb": 52.0,
+        "cpu_s": 0.0
+      },
+      {
+        "pid": 27308,
+        "name": "com.apple.WebKit.Networking",
+        "footprint_mb": 5.9,
+        "cpu_s": 0.0
+      }
+    ],
+    "footprint_mb": 132.9,
+    "main_footprint_mb": 50.0,
+    "cpu_s": 0.19,
+    "cpu_pct": 0.914,
+    "window_s": 20.8,
+    "settle_s": 10,
+    "series": [
+      {
+        "t": 0.1,
+        "27262": 50.0,
+        "27282": 25.0,
+        "27284": 49.0,
+        "27308": 5.02
+      },
+      {
+        "t": 5.3,
+        "27262": 47.0,
+        "27282": 14.0,
+        "27284": 52.0,
+        "27308": 5.86
+      },
+      {
+        "t": 10.5,
+        "27262": 50.0,
+        "27282": 14.0,
+        "27284": 52.0,
+        "27308": 5.84
+      },
+      {
+        "t": 15.8,
+        "27262": 45.0,
+        "27282": 14.0,
+        "27284": 52.0,
+        "27308": 5.84
+      }
+    ]
+  }
+}

@@ -1,0 +1,231 @@
+# Folio 空闲诊断摘录（2026-09-26，采样窗口结束后采集，不影响测量数字）
+# 完整输出未入库；命令：footprint -v -p / vmmap --summary / sample <pid> 5 / heap -sortBySize
+
+== diag-base23 / com.apple.WebKit.WebContent: footprint -v（类别前 12 行）
+com.apple.WebKit.WebContent [26294]: 64-bit    Footprint: 44 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  27 MB        0 B          0 B         10    WebKit Malloc
+6032 KB        0 B          0 B          9    Owned physical footprint (unmapped) (graphics)
+3920 KB        0 B          0 B        444    Malloc Small
+1696 KB        0 B          0 B         15    Untagged
+1376 KB        0 B          0 B        546    WebAssembly Memory
+ 737 KB        0 B          0 B          1    page table
+ 464 KB        0 B          0 B          3    JS JIT Generated Code
+ 400 KB        0 B          0 B         10    Malloc Metadata
+ 304 KB        0 B          0 B         24    Stack
+ 194 KB        0 B          0 B          1    __DATA_DIRTY .../WebCore
+ 192 KB        0 B          0 B          1    Malloc Tiny
+Auxiliary data:
+    phys_footprint: 44 MB
+    phys_footprint_peak: 108 MB
+== diag-base23 / main: footprint -v（类别前 12 行）
+TLMarkdown [26262]: 64-bit    Footprint: 49 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  27 MB        0 B          0 B         19    Malloc Small
+3424 KB        0 B          0 B          2    Malloc Large
+2768 KB        0 B          0 B         32    Untagged
+2064 KB        0 B          0 B          1    CG Image
+2064 KB        0 B          0 B          6    WebKit Malloc
+1408 KB        0 B          0 B         14    Malloc Metadata
+ 831 KB        0 B          0 B          1    __DATA .../SwiftUI
+ 785 KB        0 B          0 B          1    page table
+ 720 KB        0 B          0 B       2942    unused dyld shared cache area
+ 624 KB        0 B          0 B          2    CoreServices
+ 443 KB        0 B          0 B          1    __DATA_DIRTY .../SwiftUI
+Auxiliary data:
+    phys_footprint: 49 MB
+    phys_footprint_peak: 54 MB
+== diag-base23 / main: sample 5 s 线程样本数
+    4055 Thread_23816919   DispatchQueue_1: com.apple.main-thread  (serial)
+    4055 Thread_23817033: com.apple.NSEventThread
+    4055 Thread_23817250: WebCore: Scrolling
+    4055 Thread_23817385: Log work queue
+    4055 Thread_23834277
+    4055 Thread_23834280: JavaScriptCore libpas scavenger
+    2562 Thread_23827078
+    2352 Thread_23834278
+-- 主线程中 EditorStore/计时器相关帧：
+    + !                       :     |   + 1068 __CFArmNextTimerInMode  (in CoreFoundation) + 468  [0x1a07cdf30]
+    + !                       :     |       81 __NSFireTimer  (in Foundation) + 104  [0x1a1f4f420]
+    + !                       :     |           81 closure #3 in EditorStore.init(directory:)  (in TLMarkdown) + 132  [0x104c494f0]
+    +         141 closure #1 in closure #3 in EditorStore.init(directory:)  (in TLMarkdown) + 68  [0x104c4970c]
+    +           85 EditorStore.checkExternalChanges()  (in TLMarkdown) + 504  [0x104c49934]
+    +           39 EditorStore.checkExternalChanges()  (in TLMarkdown) + 544  [0x104c4995c]
+
+== diag-after1 / com.apple.WebKit.WebContent: footprint -v（类别前 12 行）
+com.apple.WebKit.WebContent [54161]: 64-bit    Footprint: 86 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  64 MB        0 B          0 B          8    WebKit Malloc
+6032 KB        0 B          0 B         13    Owned physical footprint (unmapped) (graphics)
+5424 KB        0 B          0 B          3    JS JIT Generated Code
+3776 KB        0 B          0 B        450    Malloc Small
+1904 KB        0 B          0 B         18    Untagged
+1296 KB        0 B          0 B        546    WebAssembly Memory
+ 721 KB        0 B          0 B          1    page table
+ 576 KB        0 B          0 B         34    Stack
+ 400 KB        0 B          0 B         10    Malloc Metadata
+ 194 KB        0 B          0 B          1    __DATA_DIRTY .../WebCore
+ 192 KB        0 B          0 B          1    Malloc Tiny
+Auxiliary data:
+    phys_footprint: 86 MB
+    phys_footprint_peak: 97 MB
+== diag-after1 / main: footprint -v（类别前 12 行）
+TLMarkdown [54154]: 64-bit    Footprint: 48 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  28 MB        0 B          0 B         19    Malloc Small
+2752 KB        0 B          0 B         32    Untagged
+2592 KB        0 B          0 B         11    CoreServices
+2064 KB        0 B          0 B          1    CG Image
+2064 KB        0 B          0 B          6    WebKit Malloc
+1408 KB        0 B          0 B         14    Malloc Metadata
+ 831 KB        0 B          0 B          1    __DATA .../SwiftUI
+ 785 KB        0 B          0 B          1    page table
+ 723 KB        0 B          0 B       2942    unused dyld shared cache area
+ 443 KB        0 B          0 B          1    __DATA_DIRTY .../SwiftUI
+ 413 KB        0 B          0 B          1    __DATA .../SwiftUICore
+Auxiliary data:
+    phys_footprint: 48 MB
+    phys_footprint_peak: 57 MB
+== diag-after1 / main: sample 5 s 线程样本数
+    4076 Thread_23947879   DispatchQueue_1: com.apple.main-thread  (serial)
+    4076 Thread_23947922: com.apple.NSEventThread
+    4076 Thread_23948012: WebCore: Scrolling
+    4076 Thread_23948105: Log work queue
+    4076 Thread_23955881
+    3741 Thread_23956721
+    2528 Thread_23961873
+    2218 Thread_23957500   DispatchQueue_274: pkd_client  (serial)
+-- 主线程中 EditorStore/计时器相关帧：
+
+== diag-after2 / com.apple.WebKit.WebContent: footprint -v（类别前 12 行）
+com.apple.WebKit.WebContent [81932]: 64-bit    Footprint: 46 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  29 MB        0 B          0 B          9    WebKit Malloc
+6032 KB        0 B          0 B          9    Owned physical footprint (unmapped) (graphics)
+3920 KB        0 B          0 B        440    Malloc Small
+1184 KB        0 B          0 B        546    WebAssembly Memory
+1152 KB        0 B          0 B         14    Untagged
+ 721 KB        0 B          0 B          1    page table
+ 480 KB        0 B          0 B         30    Stack
+ 464 KB        0 B          0 B          3    JS JIT Generated Code
+ 400 KB        0 B          0 B         10    Malloc Metadata
+ 194 KB        0 B          0 B          1    __DATA_DIRTY .../WebCore
+ 192 KB        0 B          0 B          1    Malloc Tiny
+Auxiliary data:
+    phys_footprint: 46 MB
+    phys_footprint_peak: 91 MB
+== diag-after2 / main: footprint -v（类别前 12 行）
+TLMarkdown [81894]: 64-bit    Footprint: 45 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  27 MB        0 B          0 B         18    Malloc Small
+2752 KB        0 B          0 B         32    Untagged
+2064 KB        0 B          0 B          1    CG Image
+2000 KB        0 B          0 B          6    WebKit Malloc
+1392 KB        0 B          0 B         14    Malloc Metadata
+ 831 KB        0 B          0 B          1    __DATA .../SwiftUI
+ 785 KB        0 B          0 B          1    page table
+ 723 KB        0 B          0 B       2942    unused dyld shared cache area
+ 624 KB        0 B          0 B          2    CoreServices
+ 443 KB        0 B          0 B          1    __DATA_DIRTY .../SwiftUI
+ 413 KB        0 B          0 B          1    __DATA .../SwiftUICore
+Auxiliary data:
+    phys_footprint: 45 MB
+    phys_footprint_peak: 54 MB
+== diag-after2 / main: sample 5 s 线程样本数
+    3841 Thread_24088823   DispatchQueue_1: com.apple.main-thread  (serial)
+    3841 Thread_24088943: com.apple.NSEventThread
+    3841 Thread_24089199: WebCore: Scrolling
+    3841 Thread_24089407: Log work queue
+    3270 Thread_24123686
+    3268 Thread_24111081
+    3267 Thread_24123682
+    6 Thread_24111081   DispatchQueue_13: com.apple.root.default-qos  (concurrent)
+-- 主线程中 EditorStore/计时器相关帧：
+
+== diag-after3 / com.apple.WebKit.WebContent: footprint -v（类别前 12 行）
+com.apple.WebKit.WebContent [99852]: 64-bit    Footprint: 74 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  53 MB        0 B          0 B          8    WebKit Malloc
+6032 KB        0 B          0 B         11    Owned physical footprint (unmapped) (graphics)
+5168 KB        0 B          0 B          3    JS JIT Generated Code
+3760 KB        0 B          0 B        408    Malloc Small
+1168 KB        0 B          0 B        546    WebAssembly Memory
+1168 KB        0 B          0 B         15    Untagged
+ 753 KB        0 B          0 B          1    page table
+ 400 KB        0 B          0 B         10    Malloc Metadata
+ 256 KB        0 B          0 B         12    Stack
+ 194 KB        0 B          0 B          1    __DATA_DIRTY .../WebCore
+ 192 KB        0 B          0 B          1    Malloc Tiny
+Auxiliary data:
+    phys_footprint: 74 MB
+    phys_footprint_peak: 91 MB
+== diag-after3 / main: footprint -v（类别前 12 行）
+TLMarkdown [99840]: 64-bit    Footprint: 49 MB (16384 bytes per page)
+======================================================================
+
+  Dirty      Clean  Reclaimable    Regions    Category
+    ---        ---          ---        ---    ---
+  27 MB        0 B          0 B         19    Malloc Small
+3424 KB        0 B          0 B          2    Malloc Large
+2752 KB        0 B          0 B         32    Untagged
+2064 KB        0 B          0 B          1    CG Image
+2048 KB        0 B          0 B          6    WebKit Malloc
+1408 KB        0 B          0 B         14    Malloc Metadata
+ 831 KB        0 B          0 B          1    __DATA .../SwiftUI
+ 817 KB        0 B          0 B          1    page table
+ 723 KB        0 B          0 B       2942    unused dyld shared cache area
+ 624 KB        0 B          0 B          2    CoreServices
+ 443 KB        0 B          0 B          1    __DATA_DIRTY .../SwiftUI
+Auxiliary data:
+    phys_footprint: 49 MB
+    phys_footprint_peak: 52 MB
+== diag-after3 / main: sample 5 s 线程样本数
+    3868 Thread_24220409   DispatchQueue_1: com.apple.main-thread  (serial)
+    3868 Thread_24220525: com.apple.NSEventThread
+    3868 Thread_24220617: WebCore: Scrolling
+    3868 Thread_24220740: Log work queue
+    3868 Thread_24232339
+-- 主线程中 EditorStore/计时器相关帧：
+
+== diag-after2 / main: heap -sortBySize（前 15 类）
+Physical footprint:         45.0M
+Physical footprint (peak):  53.8M
+All zones: 150045 nodes (21942924 bytes)
+
+   COUNT      BYTES       AVG   CLASS_NAME                                        TYPE    BINARY
+   =====      =====       ===   ==========                                        ====    ======
+   54269    8041095     148.2   non-object                                                
+     159    2400704   15098.8   Swift Metadata                                    C       libswiftCore.dylib
+   12785     663472      51.9   CFString                                          ObjC    CoreFoundation
+     984     559712     568.8   Class.methodCache._buckets (bucket_t)             C       libobjc.A.dylib
+    3435     544064     158.4   PropertyList.Element                              Swift   SwiftUICore
+       1     540672  540672.0   GLDDeviceRec                                      C++     AppleMetalOpenGLRend
+    1278     492608     385.5   NSMutableDictionary (Storage)                     C       CoreFoundation
+     281     472064    1679.9   Swift._ContiguousArrayStorage<SwiftUI.PlatformItemList.Item>  Swift   libswift
+     116     430400    3710.3   __DataStorage._bytes (malloc)                             Foundation
+     505     340672     674.6   Swift._DictionaryStorage<Swift.ObjectIdentifier, SwiftUI.(AnyTrackedValue in $
+    2724     305088     112.0   SVGAttribute                                      C++     CoreSVG
+    3027     293888      97.1   Closure context                                   Swift   <unknown>
+      34     212048    6236.7   CFData (Bytes Storage)                            C       CoreFoundation
+     385     191712     498.0   CFDictionary (Value Storage)                      C       CoreFoundation
