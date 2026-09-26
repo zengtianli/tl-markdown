@@ -34,9 +34,9 @@
 ## 构建
 
 ```sh
-cd /Users/tianli/Apps/folio/Editor
+cd Editor            # 在仓库根目录执行
 npm ci
-cd /Users/tianli/Apps/folio
+cd ..
 bash build.sh --install
 ```
 
@@ -68,4 +68,4 @@ CodeMirror / Lezer、markdown-it 与插件、DOMPurify、highlight.js、KaTeX、
 
 ## 需求与验证
 
-范围来源：`/Users/tianli/Apps/handoffs/md-editor-requirements.md`。原生化、内存与性能证据见 `/Users/tianli/Apps/handoffs/md-editor-native-performance.md`。`handoffs/verification.md` 为最初 WebKit 版本历史验收；不代表当前原生功能范围。
+`handoffs/verification.md` 为最初 WebKit 版本历史验收；不代表当前原生功能范围。
