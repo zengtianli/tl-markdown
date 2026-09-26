@@ -27,9 +27,19 @@ elif not Path('icon/AppIcon.icns').is_file():
     sys.exit('project.yaml has no icon source and icon/AppIcon.icns is missing')
 PY
 (cd "$DIR/Editor" && npm run build)
-mkdir -p build
-scrub_env_run xcodebuild -project TLMarkdown.xcodeproj -scheme TLMarkdown -configuration Release -destination 'platform=macOS,arch=arm64' -derivedDataPath "$DIR/build/DerivedData" CODE_SIGNING_ALLOWED=NO build > "$DIR/build/xcodebuild.log" 2>&1 || { tail -100 "$DIR/build/xcodebuild.log"; exit 1; }
-APP="$DIR/build/DerivedData/Build/Products/Release/TLMarkdown.app"
+# FOLIO_DERIVED_DATA / FOLIO_BUILD_LOG redirect the Xcode products and log for trial builds
+# (use with --build-only); package-release.py packages the default build/DerivedData.
+DD="${FOLIO_DERIVED_DATA:-$DIR/build/DerivedData}"
+LOG="${FOLIO_BUILD_LOG:-$DIR/build/xcodebuild.log}"
+mkdir -p build "$DD" "$(dirname "$LOG")"
+DD="$(cd "$DD" && pwd)"
+# Release strip (strip -D -x) runs after Xcode writes the dSYM next to the product, so crash
+# symbolication still works: it removes the executable's local symbols and its debug map (object
+# paths). STRIP_SWIFT_SYMBOLS=NO: Xcode's default adds -T, which leaves ~1,300 local symbols.
+scrub_env_run xcodebuild -project TLMarkdown.xcodeproj -scheme TLMarkdown -configuration Release -destination 'platform=macOS,arch=arm64' -derivedDataPath "$DD" CODE_SIGNING_ALLOWED=NO \
+  DEPLOYMENT_POSTPROCESSING=YES STRIP_INSTALLED_PRODUCT=YES STRIP_STYLE=non-global STRIP_SWIFT_SYMBOLS=NO \
+  build > "$LOG" 2>&1 || { tail -100 "$LOG"; exit 1; }
+APP="$DD/Build/Products/Release/TLMarkdown.app"
 test -d "$APP"
 plutil -replace CFBundleDisplayName -string "$DISPLAY_NAME" "$APP/Contents/Info.plist"
 plutil -replace CFBundleName -string "$DISPLAY_NAME" "$APP/Contents/Info.plist"
@@ -48,7 +58,10 @@ ditto "$DIR/Resources" "$APP/Contents/Resources"
 cp "$DIR/icon/AppIcon.icns" "$APP/Contents/Resources/$ICON_NAME.icns"
 rm -f "$APP/Contents/Resources/AppIcon.icns"
 EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Contents/Info.plist")"
-xcrun strip -S "$APP/Contents/MacOS/$EXECUTABLE_NAME"
+# Fail closed if the release executable keeps local symbols (nm type t/d/b/s) or debug entries
+# (type '-', except strip's own radr://5614542 marker); nm puts the type letter in column 18.
+LEFT="$(nm -a "$APP/Contents/MacOS/$EXECUTABLE_NAME" | awk 'substr($0,17,1)==" " && substr($0,19,1)==" " { t=substr($0,18,1); if (t ~ /[tdbs]/ || (t=="-" && $0 !~ /radr:\/\/5614542/)) n++ } END { print n+0 }')"
+[ "$LEFT" = 0 ] || { echo "Release executable still has $LEFT local/debug symbols" >&2; exit 1; }
 python3 "$DIR/scripts/package-release.py" --app "$APP" --stamp
 codesign --force --sign - "$APP"
 codesign --verify --deep --strict "$APP"
