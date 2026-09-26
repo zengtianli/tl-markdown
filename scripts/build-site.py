@@ -36,8 +36,15 @@ def check_media(media, release):
         raise ValueError("Missing real media: " + ", ".join(missing))
     capture = json.loads((media / "capture.json").read_text())
     assert capture["source"] == "real-app-window" and capture["synthetic_input"] is True, "Media must use an actual app window and synthetic input"
-    assert str(capture["app_version"]) == release["version"] and str(capture["app_build"]) == release["build"], "Recording and release versions differ"
-    assert capture.get("release_source_sha256") == release["source_sha256"] and capture.get("release_sha256") == release["sha256"], "Recording must bind the actual released build and archive"
+    if str(capture["app_version"]) == release["version"] and str(capture["app_build"]) == release["build"]:
+        assert capture.get("release_source_sha256") == release["source_sha256"] and capture.get("release_sha256") == release["sha256"], "Recording must bind the actual released build and archive"
+    else:
+        # A later release may reuse the recording only when the manifest names that exact release
+        # (source fingerprint and archive hash), states why the recorded scenes still hold, and cites
+        # the UI tests that passed on it. The page then labels the recording version, not the release.
+        reuse = (capture.get("reused_for") or {}).get(f"{release['version']} ({release['build']})") or {}
+        assert reuse.get("release_source_sha256") == release["source_sha256"] and reuse.get("release_sha256") == release["sha256"], "Recording and release versions differ"
+        assert reuse.get("reason") and reuse.get("tests"), "Reused recording needs a reason and the UI tests run on this release"
     assert set(capture["scenes"]) == {name for name, _, _ in SCENES}, "Recording scene coverage is incomplete"
     assert capture.get("environment") and capture.get("recorded_at"), "Recording environment and date are required"
     raw = (media / "folio-editor.png").read_bytes()
@@ -190,7 +197,10 @@ def main():
                 player = '<div class="pending-media">内部预览：等待真实操作片段</div>'
             download = f'<a class="text-link" href="media/{name}.mp4" download>下载这段视频 ↓</a>' if media_files else ''
             videos.append(f'<article class="demo-card">{player}<div class="demo-copy"><span class="step-label">0{index} /</span><h3>{title}</h3><p>{description}</p>{download}</div></article>')
-        capture_note = (f"录制版本 {release['version']}（{release['build']}）；{capture['environment']}。{capture.get('notes', '')}" if media_files else "内部预览尚无实机媒体；不得据此发布或声称演示完成。")
+        reused = (capture.get("reused_for") or {}).get(f"{release['version']} ({release['build']})") if media_files else None
+        capture_note = ((f"录制版本 {capture['app_version']}（{capture['app_build']}）；{capture['environment']}。{capture.get('notes', '')}"
+                         + (f"{release['version']}（{release['build']}）沿用这段录像：{reused['reason']}" if reused else ""))
+                        if media_files else "内部预览尚无实机媒体；不得据此发布或声称演示完成。")
         values = {"VERSION": escape(release["version"]), "BUILD": escape(release["build"]),
                   "MIN_MACOS": escape(release["minimum_macos"]), "CHIP": "Apple 芯片 Mac",
                   "SIZE": f"{release['bytes'] / 1e6:.1f} MB", "DOWNLOAD_URL": escape(release["download_url"], quote=True),

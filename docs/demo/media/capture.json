@@ -400,5 +400,14 @@
     "final_frames": "所有字幕分段与海报逐个核对；调整了搜索替换与表格局部取景",
     "full_decode": "三个片段与分章合片全部解码，未见解码错误或达到阈值的黑帧",
     "remaining": "主线程线上播放与发布后的检查"
+  },
+  "reused_for": {
+    "1.0.1 (27)": {
+      "release_source_sha256": "67917c4df4b471f0cd1f89c9ca9b6fac66329e61b7d52f84bc1faf16c24471b0",
+      "release_sha256": "4c1bc14cca3a2f5b8c1d74a597c879f394d8a6ac22694c6c9b77eebe1c61aa4e",
+      "reason": "1.0.1 的改动是内部实现（外部修改改为文件监听、KaTeX 与代码高亮按需加载、按键时少做重复计算），打开、搜索替换、保存三段操作与界面不变。",
+      "tests": "1.0.1 (27) 构建上 build.sh --verify：主编辑区 WKWebView 14 项（含公式与代码按需加载渲染）、LaunchServices 文件打开 4 项；scripts/test.sh 全量通过（2026-09-26）",
+      "checked": "2026-09-26"
+    }
   }
 }
