@@ -13,13 +13,13 @@
 
 | 安装包 | 空闲内存 | 空闲 CPU | 启动到编辑窗口出现并读入 137 KB 样例文档 |
 |---|---|---|---|
-| **2.7 MB**（装好后 6.7 MB） | **108 MB** | **0.8%** | **1.1 s** |
+| **2.7 MB**（装好后 6.7 MB） | **107 MB** | **0.02%** | **1.1 s** |
 
 编辑区是包内 CodeMirror 网页组件，跑在系统 WebKit 里，多出网页、GPU、网络三个辅助进程；公式（KaTeX）、代码着色与 Mermaid 图表都在文档用到时才加载；外部修改由系统文件事件通知，空闲时不轮询；无服务器与后台任务。
 
-内存口径：合计约为主进程 46 MB + WebContent 46 MB + GPU 10–14 MB + 网络 6 MB；3 次均为 WebContent 已回收状态（系统内存压力事件后 WebKit 释放缓存），未回收时合计会高约 40 MB（见 history 中 1.0 (23) 的双峰数据）
+内存口径：主进程与 WebKit 辅助进程同一时刻合计，采样峰值 107 MB。此次 WebContent 已回收缓存；未回收时通常约多 40 MB，生命周期峰值与进程明细保留在原始记录。
 
-CPU 口径：空闲 CPU 来自系统 LaunchServices / PlugInKit 的应用注册变更回调：sample 20 秒，主线程 16,361/16,364 个样本在事件等待，其余活动集中在 launchservices.clientcallbacks、LS database changed、pkd_client 队列（perf/raw/rel-1.0.1-27-sample-summary.txt）；测量时其他会话频繁注册/注销应用副本。Folio 自身空闲时没有周期唤醒。
+CPU 口径：正式发布包隐藏打开 137 KB 合成文稿，静置 45 秒后采样 60 秒；主进程及 WebKit 辅助进程合计 0.02%。整机 load average 4.9–8.5；此前高负载窗口的 0.76% 保留在历史记录。
 
 <sub>v1.0.1 (27) · Mac16,12 / Apple M4 / 16 GB / macOS 27.2 · 合成 Markdown 样例 136,703 字节（200 节：标题、中文正文、表格、任务列表、代码块、10 个公式），由 scripts/measure-lightweight.py 生成；未打开用户文档 · 2026-09-26 本机实测。内存为 phys_footprint（活动监视器「内存」列同口径）；CPU 为静置后 60 秒内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->

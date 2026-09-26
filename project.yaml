@@ -4,3 +4,21 @@ form: mac
 lifecycle: active
 bundle_id: cyou.tianli.TLMarkdown
 origin: own
+# 交付流程（SOP）事实：app_sop.py 据此检查轻量/测试、演示素材、推广页、装机与发布，字段说明见
+# ~/Dev/tools/dev/lib/tools/macapp/app_sop.py 的 SOP_KEYS。
+sop:
+  test: bash scripts/test.sh --core-only
+  ui:
+  - Sources/**
+  - Editor/**
+  - Resources/**
+  - Info.plist
+  - icon/**
+  - TLMarkdown.xcodeproj/**
+  media:
+  - docs/demo/media
+  media_meta: docs/demo/media/capture.json
+  release: build/site/release.json
+  build_number: git-count
+  site_build: python3 scripts/build-site.py --out build/site
+  site_deploy: products-only
