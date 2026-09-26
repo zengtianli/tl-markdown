@@ -80,6 +80,9 @@ def lightweight(release, preview):
             f"主进程 {idle['main_footprint_mb']:.0f} MB 加 WebKit 渲染、GPU、网络 3 个辅助进程合计，静置 {idle['settle_s']} 秒后测 {idle['window_s']} 秒；"
             f"CPU 为这段时间各进程 CPU 时间 ÷ 墙钟，内存在其后采样；{len(idle.get('runs') or []) or 1} 次交替测量取中位；启动为 open -g -j 后台隐藏启动到编辑窗口读入文档，{launch['runs']} 次中位。"
             "应用以隐藏窗口测量，窗口上屏时渲染进程会略高；测量时本机同时运行其他任务。")
+    for key, label in (("memory_note", "内存条件"), ("cpu_note", "CPU 条件")):
+        if idle.get(key):
+            note += f" {label}：{idle[key]}"
     return {"LW_INSTALLED": f"{installed:.1f} MB", "LW_MEMORY": f"{idle['footprint_mb']:.0f} MB",
             "LW_CPU": f"{idle['cpu_pct']:.1f}%", "LW_LAUNCH": f"{launch['median_ms'] / 1000:.2f} 秒",
             "LW_LAUNCH_RUNS": str(launch["runs"]), "LW_NOTE": escape(note)}
