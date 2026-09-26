@@ -16,7 +16,7 @@ process's lifetime peak (phys_footprint_peak) is recorded as well, and the
 WebContent state (reclaimed after a memory-pressure event or not) is labelled,
 because that state alone moves the total by ~40 MB.
 
-  python3 scripts/measure-lightweight.py --zip build/release/Folio-1.0-14-arm64.zip --raw perf/raw/baseline.json
+  python3 scripts/measure-lightweight.py --zip build/release/Folio-<version>-<build>-arm64.zip --raw perf/raw/baseline.json
   python3 scripts/measure-lightweight.py --app build/DerivedData/Build/Products/Release/TLMarkdown.app --raw perf/raw/after.json
   python3 scripts/measure-lightweight.py --runs 0 --app build/perf-next/after-4/TLMarkdown.app --raw perf/raw/idle.json   # idle only
 """
@@ -137,7 +137,8 @@ def launch_times(app, state, doc, runs):
     return samples
 
 
-MEASURE = Path("/Users/tianli/Apps/.claude/skills/app-lightweight/scripts/measure.py")
+# Shared app-lightweight measure.py; override with APP_LIGHTWEIGHT_MEASURE when it lives elsewhere.
+MEASURE = Path(os.environ.get("APP_LIGHTWEIGHT_MEASURE", Path.home() / "Apps/.claude/skills/app-lightweight/scripts/measure.py"))
 _spec = importlib.util.spec_from_file_location("app_lightweight_measure", MEASURE)
 measure = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(measure)

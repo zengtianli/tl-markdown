@@ -29,11 +29,11 @@
       <div class="benefit-line"><span>不用注册账号</span><span>一份普通 .md 文件</span><span>写完自动保存</span><span>常用操作都有快捷键</span></div>
     </section>
     <section class="lightweight wrap" id="lightweight" aria-labelledby="lightweight-title">
-      <div class="lw-heading"><p class="eyebrow">轻量 · 实测数据</p><h2 id="lightweight-title">小，而且安静。</h2><p>原生 Swift 外壳，排版交给 macOS 自带的 WebKit，不内置 Chromium、Electron 或 Node 运行时；Mermaid 图表组件只在文档里真有图表时才加载。没有后台进程、登录项或本地服务器，退出后不留任何进程。</p></div>
+      <div class="lw-heading"><p class="eyebrow">轻量 · 实测数据</p><h2 id="lightweight-title">小，而且安静。</h2><p>原生 Swift 外壳，排版交给 macOS 自带的 WebKit，不内置 Chromium、Electron 或 Node 运行时；公式（KaTeX）、代码着色与 Mermaid 图表组件都只在文档里真用到时才加载。没有后台进程、登录项或本地服务器，退出后不留任何进程。</p></div>
       <div class="lw-cards">
         <article><b>@@SIZE@@</b><h3>安装包</h3><p>ZIP 下载大小；解压后 @@LW_INSTALLED@@，公式、图表与字体都在包内。</p></article>
         <article><b>@@LW_MEMORY@@</b><h3>空闲内存</h3><p>打开一份 137 KB 文档后静置；含主进程与系统 WebKit 渲染进程合计。</p></article>
-        <article><b>@@LW_CPU@@</b><h3>空闲 CPU</h3><p>静置 60 秒的平均值。Folio 自己只做一件事：每 2 秒看一眼文件是否被其他软件改过。</p></article>
+        <article><b>@@LW_CPU@@</b><h3>空闲 CPU</h3><p>静置 60 秒的平均值。空闲时不定时轮询：文件被其他软件改动由系统文件事件通知，网络卷等无法监听时才退回每 2 秒检查。</p></article>
         <article><b>@@LW_LAUNCH@@</b><h3>启动到可编辑</h3><p>从启动到编辑窗口出现并读入 137 KB 文档，@@LW_LAUNCH_RUNS@@ 次中位。</p></article>
       </div>
       <p class="fineprint">@@LW_NOTE@@</p>

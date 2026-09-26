@@ -1,0 +1,50 @@
+# Folio 1.0.1 (27) 发布包隔离副本，open -g -j -n 打开 137 KB 样例，静置 45 s 后 sample <PID> 20（2026-09-26 10:10，load 约 26-38，内存压力等级 2）
+# 线程样本数（每线程 16,364 个样本 = 全程）
+    16364 Thread_27811520   DispatchQueue_1: com.apple.main-thread  (serial)
+    16364 Thread_27811598: com.apple.NSEventThread
+    16364 Thread_27811718: WebCore: Scrolling
+    16364 Thread_27811901: Log work queue
+    15930 Thread_27811867
+    15753 Thread_27811869
+    10336 Thread_27816421
+    8127 Thread_27815734
+    7775 Thread_27817115
+    3491 Thread_27817575
+    989 Thread_<multiple>   DispatchQueue_373: com.apple.launchservices.clientcallbacks  (serial)
+    292 Thread_<multiple>   DispatchQueue_84: LS database changed notification queue  (serial)
+    150 Thread_<multiple>   DispatchQueue_274: pkd_client  (serial)
+    14 Thread_<multiple>   DispatchQueue_279: discovery driver  (serial)
+    5 Thread_<multiple>   DispatchQueue_34: com.apple.notification_center.server_conn  (serial)
+    3 Thread_27811869   DispatchQueue_296: PKPlugIn sync (com.apple.MarkupUI.Markup)  (serial)
+    3 Thread_27811869   DispatchQueue_292: PKPlugIn sync (com.bigzlabs.peek.renamepdfaction)  (serial)
+    2 Thread_<multiple>   DispatchQueue_277: discovery driver  (serial)
+    2 Thread_27817115   DispatchQueue_276: host  (serial)
+    1 Thread_27811867   DispatchQueue_298: PKPlugIn sync (com.apple.sharing.ShareSheetUI)  (serial)
+    1 Thread_27817115   DispatchQueue_16: com.apple.root.user-initiated-qos  (concurrent)
+# 主线程调用图：16,361/16,364 个样本在 mach_msg 事件等待；1 个在 LSApplicationWorkspaceNotificationCallback
+# Sort by top of stack（前 25 行）
+        __workq_kernreturn  (in libsystem_kernel.dylib)        61375
+        mach_msg2_trap  (in libsystem_kernel.dylib)        49883
+        semaphore_wait_trap  (in libsystem_kernel.dylib)        16364
+        __ulock_wait2  (in libsystem_kernel.dylib)        229
+        <deduplicated_symbol>  (in libobjc.A.dylib)        52
+        start_wqthread  (in libsystem_pthread.dylib)        36
+        _kernelrpc_mach_vm_deallocate_trap  (in libsystem_kernel.dylib)        27
+        -[__NSDictionary0 release]  (in CoreFoundation)        23
+        CSStore2::Store::getUnit(CSStore2::Table const*, unsigned int) const  (in CoreServicesStore)        20
+        __CFStringHash  (in CoreFoundation)        20
+        __CF_IS_OBJC  (in CoreFoundation)        18
+        kevent_id  (in libsystem_kernel.dylib)        17
+        xpc_release  (in libxpc.dylib)        16
+        __getattrlist  (in libsystem_kernel.dylib)        15
+        CSStore2::HashMap<unsigned int, unsigned int, CSStore2::_IdentifierFunctions, 1ull>::Find(CSStore2::Store const&, CSStore2::HashMap<unsigned int, unsigned int, CSStore2::_IdentifierFunctions, 1ull> const*, unsigned int const&)  (in CoreServicesStore)        13
+        __CFStringCreateImmutableFunnel3  (in CoreFoundation)        13
+        objc_msgSend  (in libobjcMsgSend.dylib)        12
+        LSSession::setDatabase(_LSDatabase*)  (in LaunchServices)        11
+        _xzm_malloc_tc  (in libsystem_malloc.dylib)        11
+        __open_nocancel  (in libsystem_kernel.dylib)        8
+        _platform_memmove  (in libsystem_platform.dylib)        8
+        _xzm_free_tc  (in libsystem_malloc.dylib)        7
+        customRR_retain  (in libobjc.A.dylib)        7
+        CSStore2::HashMap<unsigned int, unsigned int, CSStore2::_IdentifierFunctions, 1ull>::BucketsAreValid(CSStore2::Store const&, CSStore2::HashMap<unsigned int, unsigned int, CSStore2::_IdentifierFunctions, 1ull> const*)  (in CoreServicesStore)        6
+        _xzm_xzone_malloc_tiny  (in libsystem_malloc.dylib)        5
