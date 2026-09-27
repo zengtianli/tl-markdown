@@ -1,4 +1,5 @@
 import Foundation
+import SQLite3
 
 struct RecentFile: Codable, Identifiable {
     var path: String
@@ -15,6 +16,8 @@ struct EditorSettings: Codable {
     var contentWidth: Double = 820
     var restoreSession = true
     var imageFolder = "assets"
+    /// Optional full-text index for “全部笔记”; nil uses NoteIndex.defaultPath.
+    var noteIndexPath: String?
 }
 struct OpenDocument: Codable, Identifiable {
     var id = UUID().uuidString
@@ -125,4 +128,141 @@ final class SessionDisk {
 /// User-facing name comes from project.yaml through the built Info.plist.
 enum ProductIdentity {
     static var name: String { Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? ProcessInfo.processInfo.processName }
+}
+
+
+// MARK: - Note search
+// Read-only access to an md-index SQLite FTS5 index (doc + doc_fts, trigram tokenizer),
+// merged from TL MdIndex so reading and cross-note search live in one app. Folio never
+// writes the index; the indexer that maintains it lives outside this app.
+
+/// The trigram tokenizer silently matches nothing for queries under three characters, and
+/// two-character words are the most common Chinese queries. Shorter queries use LIKE instead,
+/// and the UI says which path ran, because the two have different recall.
+let noteTrigramMinimum = 3
+
+struct NoteLineHit: Identifiable, Hashable {
+    let path: String
+    let line: Int        // 1-based line in the indexed body
+    let text: String
+    var id: String { "\(path)#\(line)" }
+}
+struct NoteFileHit: Identifiable, Hashable {
+    let path: String, workspace: String, title: String, modified: String
+    var lines: [NoteLineHit]
+    var id: String { path }
+    var name: String { URL(fileURLWithPath: path).lastPathComponent }
+}
+struct NoteSearchResult {
+    enum Mode: String { case fts = "全文索引", like = "逐字匹配", idle = "" }
+    var query = ""
+    var files: [NoteFileHit] = []
+    var mode: Mode = .idle
+    var elapsed: TimeInterval = 0
+    var truncated = false
+    var error: String?
+}
+
+/// All sqlite calls stay on `queue`; `interrupt()` is the one call SQLite allows from another thread.
+final class NoteIndex: @unchecked Sendable {
+    static var defaultPath: URL {
+        if let env = ProcessInfo.processInfo.environment["MDINDEX_DB"], !env.isEmpty {
+            return URL(fileURLWithPath: (env as NSString).expandingTildeInPath)
+        }
+        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Apps/md-index/indexer/data/md_index.db")
+    }
+    let path: URL
+    let queue = DispatchQueue(label: "cyou.tianli.folio.note-index", qos: .userInitiated)
+    private var db: OpaquePointer?
+    private(set) var openError: String?
+    init(path: URL) { self.path = path }
+    deinit { if let db { sqlite3_close_v2(db) } }
+
+    /// Opens read-only and reports the real reason on failure; never shows substitute data.
+    @discardableResult func open() -> Bool {
+        if db != nil { return true }
+        guard FileManager.default.fileExists(atPath: path.path) else {
+            openError = "没有找到笔记索引：\((path.path as NSString).abbreviatingWithTildeInPath)"; return false
+        }
+        var handle: OpaquePointer?
+        let rc = sqlite3_open_v2("file:\(path.path)?mode=ro", &handle, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, nil)
+        guard rc == SQLITE_OK, let handle else {
+            openError = "无法读取笔记索引（\(rc)）"; sqlite3_close_v2(handle); return false
+        }
+        db = handle
+        var found = Set<String>()
+        rows("SELECT name FROM sqlite_master WHERE name IN ('doc','doc_fts')") { found.insert(Self.text($0, 0)) }
+        guard found == ["doc", "doc_fts"] else {
+            openError = "笔记索引结构不认识"; sqlite3_close_v2(handle); db = nil; return false
+        }
+        openError = nil; return true
+    }
+    func interrupt() { if let db { sqlite3_interrupt(db) } }
+    var documentCount: Int { var n = 0; rows("SELECT COUNT(*) FROM doc") { n = Int(sqlite3_column_int64($0, 0)) }; return n }
+
+    private func rows(_ sql: String, _ params: [String] = [], _ row: (OpaquePointer) -> Void) {
+        guard let db else { return }
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK, let statement else { return }
+        defer { sqlite3_finalize(statement) }
+        for (i, value) in params.enumerated() { sqlite3_bind_text(statement, Int32(i + 1), value, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self)) }
+        while sqlite3_step(statement) == SQLITE_ROW { row(statement) }
+    }
+    private static func text(_ statement: OpaquePointer, _ column: Int32) -> String {
+        sqlite3_column_text(statement, column).map { String(cString: $0) } ?? ""
+    }
+    /// `%`, `_` and `\\` in a query are literal text, not wildcards.
+    static func escapeLike(_ value: String) -> String {
+        var out = ""; for character in value { if "\\%_".contains(character) { out.append("\\") }; out.append(character) }; return out
+    }
+
+    func search(_ raw: String, limit: Int = 60, perFile: Int = 6) -> NoteSearchResult {
+        var result = NoteSearchResult()
+        let query = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        result.query = query
+        guard open() else { result.error = openError; return result }
+        guard !query.isEmpty else { return result }
+        let started = Date()
+        let source: String, condition: String, params: [String]
+        if query.count >= noteTrigramMinimum {
+            result.mode = .fts
+            source = "doc_fts JOIN doc ON doc.id = doc_fts.rowid"; condition = "doc_fts MATCH ?"
+            params = ["{title body} : \"" + query.replacingOccurrences(of: "\"", with: "\"\"") + "\""]
+        } else {
+            result.mode = .like
+            let pattern = "%" + Self.escapeLike(query) + "%"
+            source = "doc"; condition = "(doc.body LIKE ? ESCAPE '\\' OR doc.title LIKE ? ESCAPE '\\')"; params = [pattern, pattern]
+        }
+        rows("SELECT doc.path, doc.ws, doc.title, doc.mtime, doc.body FROM \(source) WHERE \(condition) ORDER BY doc.mtime DESC LIMIT \(limit)", params) { row in
+            let path = Self.text(row, 0)
+            result.files.append(NoteFileHit(path: path, workspace: Self.text(row, 1), title: Self.text(row, 2), modified: Self.text(row, 3),
+                                            lines: Self.lineHits(path: path, body: Self.text(row, 4), needle: query, cap: perFile)))
+        }
+        result.truncated = result.files.count >= limit
+        result.elapsed = Date().timeIntervalSince(started)
+        return result
+    }
+    /// Real 1-based line numbers: opening a hit jumps to exactly this line.
+    static func lineHits(path: String, body: String, needle: String, cap: Int) -> [NoteLineHit] {
+        var out: [NoteLineHit] = [], number = 0
+        body.enumerateLines { line, stop in
+            number += 1
+            if line.range(of: needle, options: .caseInsensitive) != nil {
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                out.append(NoteLineHit(path: path, line: number, text: trimmed.count > 240 ? String(trimmed.prefix(240)) + " …" : trimmed))
+                if out.count >= cap { stop = true }
+            }
+        }
+        return out
+    }
+}
+
+/// UTF-16 offset of the start of a 1-based line — the unit both editors use for positions.
+func noteLineOffset(_ text: String, line: Int) -> Int {
+    let ns = text as NSString
+    var location = 0, current = 1
+    while current < line && location < ns.length {
+        location = NSMaxRange(ns.lineRange(for: NSRange(location: location, length: 0))); current += 1
+    }
+    return min(location, ns.length)
 }

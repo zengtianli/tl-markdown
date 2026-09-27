@@ -11,7 +11,7 @@ source /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
 xcode_env_use macosx
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/scrub_env.sh
 /opt/homebrew/bin/python3 /Users/tianli/Dev/tools/dev/lib/tools/macapp/check_codingkeys.py "$DIR"
-DISPLAY_NAME="$(/Users/tianli/Dev/.venv/bin/python3 -c 'import yaml; print(yaml.safe_load(open("project.yaml"))["display_name"])')"
+DISPLAY_NAME="$(/Users/tianli/Dev/.venv/bin/python3 -c 'import yaml; print(yaml.safe_load(open("project.yaml"))["name_en"])')"
 # Derive every build from catalog's source; an existing ICNS may be stale.
 /Users/tianli/Dev/.venv/bin/python3 - <<'PY'
 import yaml, subprocess, sys

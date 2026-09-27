@@ -17,6 +17,7 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     @Published var closedDrafts: [OpenDocument] = []
     let disk: SessionDisk
     let bridge = EditorBridge()
+    let notes = NoteSearchModel()
     private var saveWork: [String: DispatchWorkItem] = [:]
     private var snapshotWork: DispatchWorkItem?
     private(set) var watcher: ExternalChangeWatcher?
@@ -227,6 +228,15 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
             }
         }
     }
+    /// Opens a search hit and places the cursor at the start of that line.
+    func openNote(path: String, line: Int) {
+        let before = activeID
+        open(URL(fileURLWithPath: path))
+        guard let doc = active, doc.path == URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path else { return }
+        let offset = noteLineOffset(doc.text, line: line)
+        if before == activeID { bridge.send("goto", value: offset) }
+        else { DispatchQueue.main.async { [weak self] in self?.bridge.send("goto", value: offset) } }
+    }
     func settingsChanged() { persist(); bridge.send("settings", value: ["fontSize": settings.fontSize, "contentWidth": settings.contentWidth, "fontFamily": settings.fontFamily ?? "system"]) }
     func toggleSource() { sourceMode.toggle(); bridge.send("mode", value: sourceMode) }
     func command(_ command: String) { bridge.send("command", value: command) }
@@ -243,6 +253,45 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
         guard let id = activeID else { return }; let panel = NSOpenPanel(); panel.allowedContentTypes = [.png, .jpeg, .gif, .tiff, .heic]
         if panel.runModal() == .OK, let url = panel.url {
             do { insertImage(data: try Data(contentsOf: url), ext: url.pathExtension, documentID: id) } catch { banner = error.localizedDescription }
+        }
+    }
+}
+
+// MARK: - Note search
+/// Searches the md-index index off the main thread. Typing is debounced and a newer query
+/// interrupts an older one still scanning; the index opens on first use and stays read-only.
+@MainActor final class NoteSearchModel: ObservableObject {
+    @Published var query = "" { didSet { if query != oldValue { schedule() } } }
+    @Published private(set) var result = NoteSearchResult()
+    @Published private(set) var searching = false
+    @Published var focusRequest = 0
+    private var index: NoteIndex?
+    private var generation = 0
+    private var pending: DispatchWorkItem?
+    var indexPath: URL = NoteIndex.defaultPath { didSet { if indexPath != oldValue { index = nil; schedule() } } }
+
+    func schedule(immediately: Bool = false) {
+        pending?.cancel()
+        let work = DispatchWorkItem { [weak self] in self?.run() }
+        pending = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + (immediately ? 0 : 0.2), execute: work)
+    }
+    private func run() {
+        let text = query
+        if index == nil || index?.path != indexPath { index = NoteIndex(path: indexPath) }
+        guard let index else { return }
+        generation += 1
+        let current = generation
+        guard !text.trimmingCharacters(in: .whitespaces).isEmpty else { result = NoteSearchResult(); searching = false; return }
+        index.interrupt(); searching = true
+        index.queue.async { [weak self] in
+            let found = index.search(text)
+            DispatchQueue.main.async {
+                MainActor.assumeIsolated {
+                    guard let self, current == self.generation else { return }
+                    self.result = found; self.searching = false
+                }
+            }
         }
     }
 }

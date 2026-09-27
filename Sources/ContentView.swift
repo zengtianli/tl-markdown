@@ -1,6 +1,8 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+extension Notification.Name { static let folioSearchNotes = Notification.Name("FolioSearchNotes") }
+
 struct ContentView: View {
     @ObservedObject var store: EditorStore
     var body: some View {
@@ -58,6 +60,11 @@ struct ContentView: View {
         }
         .sheet(isPresented: $store.showSettings) { settingsView }
         .onReceive(store.$documents) { FullPreview.shared.update(documents: $0) }
+        .onReceive(NotificationCenter.default.publisher(for: .folioSearchNotes)) { _ in
+            store.sidebar = true; store.sidebarTab = 2; store.notes.focusRequest += 1
+        }
+        .onAppear { store.notes.indexPath = noteIndexURL }
+        .onChange(of: store.settings.noteIndexPath) { store.notes.indexPath = noteIndexURL }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             for provider in providers {
                 _ = provider.loadObject(ofClass: URL.self) { url, _ in
@@ -71,7 +78,8 @@ struct ContentView: View {
     var sidebar: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack { Image(systemName: "doc.richtext").foregroundStyle(Color.accentColor); Text(ProductIdentity.name).font(.title3.weight(.semibold)); Spacer() }.padding(.top, 20)
-            Picker("侧栏", selection: $store.sidebarTab) { Text("最近文件").tag(0); Text("大纲").tag(1) }.pickerStyle(.segmented)
+            Picker("侧栏", selection: $store.sidebarTab) { Text("最近").tag(0); Text("大纲").tag(1); Text("搜索").tag(2) }.pickerStyle(.segmented).labelsHidden()
+            if store.sidebarTab == 2 { NotesPanel(store: store, notes: store.notes) } else {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 4) {
                     if store.sidebarTab == 0 {
@@ -103,10 +111,15 @@ struct ContentView: View {
                     }
                 }
             }
+            }
             Spacer(minLength: 0)
             if !store.closedDrafts.isEmpty { Button("恢复关闭的草稿（\(store.closedDrafts.count)）") { store.restoreClosedDraft() }.font(.caption).padding(.bottom, 6) }
             if store.sidebarTab == 0 && !store.recent.isEmpty { Button("清空最近记录") { store.clearRecent() }.buttonStyle(.plain).font(.caption).foregroundStyle(.secondary).padding(.bottom, 14) }
         }.padding(.horizontal, 14).background(Color(nsColor: .windowBackgroundColor))
+    }
+    private var noteIndexURL: URL {
+        guard let path = store.settings.noteIndexPath?.trimmingCharacters(in: .whitespaces), !path.isEmpty else { return NoteIndex.defaultPath }
+        return URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
     }
     var tabs: some View {
         ScrollView(.horizontal) {
@@ -140,6 +153,10 @@ struct ContentView: View {
             LabeledContent("正文宽度 · \(Int(store.settings.contentWidth))") { Slider(value: $store.settings.contentWidth, in: 560...1300, step: 20) }
             Toggle("启动时恢复上次打开的文件", isOn: $store.settings.restoreSession)
             LabeledContent("图片目录") { TextField("assets", text: $store.settings.imageFolder).frame(width: 200) }
+            LabeledContent("笔记索引") {
+                TextField((NoteIndex.defaultPath.path as NSString).abbreviatingWithTildeInPath, text: Binding(get: { store.settings.noteIndexPath ?? "" }, set: { store.settings.noteIndexPath = $0.isEmpty ? nil : $0; store.settingsChanged() })).frame(width: 260)
+            }
+            Text("「全部笔记」只读这份 md-index 全文索引，不修改笔记；留空使用默认位置。").font(.caption).foregroundStyle(.secondary)
             Text("图片保存在文档旁的相对目录。未保存的文档会先提示保存。恢复草稿始终保留在本机。").font(.caption).foregroundStyle(.secondary)
             Divider(); Button("清空最近文件记录") { store.clearRecent() }
         }.padding(28).frame(width: 490)
@@ -147,5 +164,60 @@ struct ContentView: View {
             .onChange(of: store.settings.contentWidth) { store.settingsChanged() }
             .onChange(of: store.settings.restoreSession) { store.settingsChanged() }
             .onChange(of: store.settings.imageFolder) { store.settingsChanged() }
+    }
+}
+
+/// Separate view so typing re-renders only the search column, not the editor window.
+struct NotesPanel: View {
+    @ObservedObject var store: EditorStore
+    @ObservedObject var notes: NoteSearchModel
+    @FocusState private var focused: Bool
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                TextField("搜索全部笔记", text: $notes.query).textFieldStyle(.plain).focused($focused)
+                    .onSubmit { if let file = notes.result.files.first { store.openNote(path: file.path, line: file.lines.first?.line ?? 1) } }
+                if notes.searching { ProgressView().controlSize(.mini) }
+                else if !notes.query.isEmpty { Button { notes.query = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.plain).foregroundStyle(.tertiary) }
+            }.font(.system(size: 13)).padding(8).background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 7))
+                .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color.primary.opacity(0.08)))
+            Group {
+                if let error = notes.result.error { Text(error + "。可在设置里指定索引文件。").foregroundStyle(.orange) }
+                else if notes.result.mode != .idle {
+                    Text("\(notes.result.files.count)\(notes.result.truncated ? "+" : "") 篇 · \(notes.result.mode.rawValue) · \(String(format: "%.2f", notes.result.elapsed)) 秒")
+                        .foregroundStyle(.secondary).help(notes.result.mode == .like ? "少于 3 个字时逐字匹配，结果更全但更慢" : "3 个字及以上走全文索引")
+                } else { Text("输入关键词，回车打开第一条；点任一行跳到那一行。⌘⇧F 随时回到这里。").foregroundStyle(.secondary) }
+            }.font(.system(size: 10)).lineSpacing(2)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 10) {
+                    ForEach(notes.result.files) { file in
+                        VStack(alignment: .leading, spacing: 3) {
+                            Button { store.openNote(path: file.path, line: file.lines.first?.line ?? 1) } label: {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(file.title.isEmpty ? file.name : file.title).font(.system(size: 12, weight: .semibold)).lineLimit(1)
+                                    Text(URL(fileURLWithPath: file.path).deletingLastPathComponent().path.replacingOccurrences(of: NSHomeDirectory(), with: "~"))
+                                        .font(.system(size: 9)).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                                }.frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
+                            }.buttonStyle(.plain).help(file.path)
+                            ForEach(file.lines) { hit in
+                                Button { store.openNote(path: hit.path, line: hit.line) } label: {
+                                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                                        Text("\(hit.line)").font(.system(size: 9, design: .monospaced)).foregroundStyle(.tertiary).frame(minWidth: 22, alignment: .trailing)
+                                        Text(hit.text).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(2)
+                                    }.frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
+                                }.buttonStyle(.plain)
+                                .contextMenu {
+                                    Button("拷贝 路径:行号") { NSPasteboard.general.clearContents(); NSPasteboard.general.setString("\(hit.path):\(hit.line)", forType: .string) }
+                                    Button("在 Finder 中显示") { NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: hit.path)]) }
+                                }
+                            }
+                        }.padding(8).frame(maxWidth: .infinity, alignment: .leading)
+                        .background(store.active?.path == file.path ? Color.accentColor.opacity(0.08) : Color.clear, in: RoundedRectangle(cornerRadius: 7))
+                    }
+                }.frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }.frame(maxWidth: .infinity, alignment: .leading).clipped()
+        .onAppear { focused = true }.onChange(of: notes.focusRequest) { focused = true }
     }
 }

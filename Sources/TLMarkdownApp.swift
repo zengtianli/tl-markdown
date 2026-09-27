@@ -166,6 +166,7 @@ private final class FolioRecordingPanel: NSPanel {
             CommandMenu("编辑文档") {
                 Button("搜索与替换") { if !FullPreview.shared.isKey { store.command("find") } }.keyboardShortcut("f")
                 Button("查找下一个") { if !FullPreview.shared.isKey { store.command("findNext") } }.keyboardShortcut("g")
+                Button("搜索全部笔记") { NotificationCenter.default.post(name: .folioSearchNotes, object: nil) }.keyboardShortcut("f", modifiers: [.command, .shift])
                 Divider()
                 Button("加粗") { if !FullPreview.shared.isKey { store.command("bold") } }.keyboardShortcut("b")
                 Button("斜体") { if !FullPreview.shared.isKey { store.command("italic") } }.keyboardShortcut("i")

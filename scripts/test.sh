@@ -24,6 +24,8 @@ if [ "${1:-}" = "--main-editor" ]; then
 fi
 xcrun swiftc Sources/Models.swift Tests/DocumentIOTests.swift -o build/document-io-tests
 build/document-io-tests build/io-tests | tee build/io-test-results.txt
+xcrun swiftc -parse-as-library Sources/Models.swift Tests/NoteSearchTests.swift -o build/note-search-tests
+build/note-search-tests build/note-search-tests-data | tee build/note-search-test-results.txt
 xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/StoreTests.swift -o build/store-tests
 build/store-tests build/store-tests-data | tee build/store-test-results.txt
 xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/WatcherTests.swift -o build/watcher-tests
