@@ -1,0 +1,29 @@
+[xcode_env] Xcode.app (Xcode 27.0, macosx SDK 27.0)
+PASS open Unicode, emoji and spaced Markdown filename
+PASS production open detects BOM and CRLF
+PASS unchanged production store save succeeds
+PASS unchanged save preserves exact UTF-8 bytes
+PASS timed autosave writes edited document
+PASS autosave retains BOM and original CRLF encoding
+PASS open .markdown extension into another tab
+PASS background-tab autosave writes correct document
+PASS background save preserves active tab and unrelated disk file
+PASS duplicate open selects existing tab without duplication
+PASS tab selection resolves original document content
+PASS real asynchronous full-text query completes
+PASS three-plus-character query uses production FTS5
+PASS search finds the synthetic note with exact path
+PASS search line and snippet match the document
+PASS search-result action opens the actual matching document
+PASS search jump offset uses UTF-16 after emoji
+PASS reopening a search hit reuses its tab
+PASS short Chinese query completes
+PASS two-character query falls back to literal matching
+PASS literal symbol query completes
+PASS percent query matches literal symbol rather than wildcard
+PASS production search leaves index bytes unchanged
+PASS production session restores tabs and active document
+PASS session restores content and reading position
+PASS pinned recent document survives session reload
+PASS closing a clean tab leaves its file intact
+Functionality acceptance passed; synthetic data only, no windows or input events.

@@ -10,6 +10,13 @@ origin: own
 # ~/Dev/tools/dev/lib/tools/macapp/app_sop.py 的 SOP_KEYS。
 sop:
   test: bash scripts/test.sh --core-only
+  accept:
+    functionality: bash scripts/accept/functionality.sh
+    recovery: bash scripts/accept/recovery.sh
+    privacy: bash scripts/accept/privacy.sh
+    native_ui: bash scripts/accept/native_ui.sh
+  ui_self_test_flag: --ui-self-test
+  delivery_evidence: perf/delivery-evidence.json
   ui:
   - Sources/**
   - Editor/**

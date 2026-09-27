@@ -1,0 +1,25 @@
+[xcode_env] Xcode.app (Xcode 27.0, macosx SDK 27.0)
+PASS new session directory allows only its owner
+PASS session snapshot allows only its owner
+PASS different state directory cannot see first session
+PASS writing another session leaves first snapshot unchanged
+PASS atomic session rewrite retains private permissions
+PASS invalid image destination is rejected
+PASS invalid image destination is rejected
+PASS invalid image destination is rejected
+PASS invalid image destination is rejected
+PASS invalid destinations neither write nor alter outside files
+PASS valid image destination stays in requested adjacent folder
+PASS production search reads an explicitly read-only synthetic index
+PASS full-text search leaves every database byte unchanged
+PASS search leaves database modification time unchanged
+PASS search creates no write-ahead log or rollback journal
+PASS production WebKit editor uses an ephemeral data store
+PASS production delegate rejects remote programmatic navigation
+PASS production delegate rejects remote programmatic navigation
+PASS production delegate retains local-file navigation
+PASS mdasset returns exact approved image bytes
+PASS mdasset refuses non-image file content before returning bytes
+PASS mdasset refuses unknown document identity
+PASS bridge asset checks leave external fixture unchanged
+Privacy acceptance passed; synthetic runtime boundaries, no packet capture or external traffic.

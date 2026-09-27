@@ -1,0 +1,4 @@
+{
+  "summary": "Production EditorStore/DocumentIO/NoteSearchModel: Unicode and spaced .md/.markdown files; exact UTF-8/BOM/CRLF preservation; timed autosave; background-tab save isolation; duplicate open and tab selection; session/recent restoration; real synthetic FTS5 and short-query search; result-open production action. No GUI input or real note index used; renderer/caret behavior belongs to native_ui.",
+  "environment": "isolated synthetic data; no input synthesis"
+}

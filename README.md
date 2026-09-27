@@ -49,6 +49,15 @@ bash build.sh --install
 
 `bash build.sh --build-only` 只构建，不启动 GUI、不安装；`bash scripts/test.sh --core-only` 验生产文件读写、自动保存与冲突恢复，不创建窗口。完整窗口与系统文件打开验收仍需在允许 UI 操作的隔离会话完成，不能用这两个命令代替。
 
+Chapter 固定验收登记在 `project.yaml`，四项均使用合成数据和独立状态目录：
+
+```sh
+~/Dev/.venv/bin/python ~/Apps/chapter/engine/app_sop.py accept --app folio-mac \
+  --check functionality --check recovery --check privacy --check native_ui --json
+```
+
+`scripts/accept/` 调用生产文件、恢复和检索实现；`native_ui` 构建本仓应用后运行其 `--ui-self-test`，离屏创建真实 ContentView / EditorSurface，直接调用切换源码、重载和关闭等动作，保存截图并断言状态，不合成输入。Chapter 自动维护 `perf/delivery-evidence.json`；脚本不安装应用、不修改真实文档。人工关闭确认框、Dock/Finder 图标和安装版 LaunchServices 行为不在这四项的覆盖范围。
+
 ## 产品发行
 
 `python3 scripts/package-release.py` 从已签名的构建包生成 `build/release/Folio-<版本>-<构建>-arm64.zip`、`release.json` 和 SHA-256。脚本核包内资源、系统依赖、源码指纹与解压后的签名；不启动、安装或上传应用。当前是 macOS 15+、Apple Silicon、本地签名且未公证的直接下载版。运行包包含第三方许可，不包含开发环境或用户会话。

@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "close_tab_and_empty_state": true,
+    "document_content_and_outline": true,
+    "native_render_dimensions_and_bytes": true,
+    "never_visible_or_key": true,
+    "new_and_select_tab": true,
+    "production_content_view_and_editor": true,
+    "reload_updates_editor_and_store": true,
+    "reloaded_dom_css_and_render": true,
+    "source_dom_css_and_render": true,
+    "source_mode_round_trip": true
+  },
+  "ok": true,
+  "scope": "In-process production ContentView/EditorSurface; source mode, new/select, reload, close; isolated fictional data; never ordered or activated.",
+  "screenshots": {
+    "native_ui-editor.png": 46791,
+    "native_ui-editor.web.png": 26341,
+    "native_ui-source.png": 43772,
+    "native_ui-source.web.png": 26667
+  }
+}

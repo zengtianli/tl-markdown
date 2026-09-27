@@ -1,0 +1,4 @@
+{
+  "summary": "进程内离屏真实 ContentView / EditorSurface：源码切换、新建与标签切换、重新载入、关闭与空态；截图尺寸/字节断言；全程无可见窗口、激活或输入合成。",
+  "environment": "isolated synthetic data; no input synthesis"
+}

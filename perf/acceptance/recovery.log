@@ -1,0 +1,20 @@
+[xcode_env] Xcode.app (Xcode 27.0, macosx SDK 27.0)
+PASS external conflict preserves dirty local content
+PASS scheduled autosave does not overwrite external changes
+PASS blocked autosave persists recoverable conflict draft
+PASS reload adopts external file and clears conflict
+PASS reload preserves local content in a separate unsaved draft
+PASS fresh store restores reload backup from persisted session
+PASS fresh store reloads saved document from real disk
+PASS persisted closed draft restores original content
+PASS restoring draft detaches duplicate open path and consumes recovery queue
+PASS restored closed draft survives another store restart
+PASS noninteractive clean close leaves file and recovered dirty draft intact
+PASS read-only save fails without changing original bytes
+PASS read-only save failure keeps draft and actionable error
+PASS failed save draft is recoverable from persisted session
+PASS corrupt session is retained as a recovery backup
+PASS corrupt session bytes remain intact and user receives recovery message
+PASS new drafts persist and restore after corrupt session recovery
+PASS session write failure preserves memory content and reports failure
+PASS recovery acceptance: production store and document I/O; synthetic isolated files; no GUI input

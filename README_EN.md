@@ -38,6 +38,15 @@ Install preview build dependencies with `cd Editor && npm ci`, then run `bash bu
 
 Builds reuse the headquarters Xcode selector, CodingKey checker and icon factory. Runtime needs no Node, Python or server.
 
+Chapter's fixed acceptance commands are registered in `project.yaml` and use synthetic data with isolated state:
+
+```sh
+~/Dev/.venv/bin/python ~/Apps/chapter/engine/app_sop.py accept --app folio-mac \
+  --check functionality --check recovery --check privacy --check native_ui --json
+```
+
+The scripts in `scripts/accept/` exercise production file, recovery and search implementations. `native_ui` builds the repository app and runs its `--ui-self-test`: real ContentView / EditorSurface views render offscreen, production actions switch source mode, reload and close tabs, and screenshots and state assertions verify the result without synthesized input. Chapter writes `perf/delivery-evidence.json`. These checks do not install the app or modify real documents. Modal close confirmations, Dock/Finder icons and installed-app LaunchServices behavior remain outside this coverage. `bash scripts/test.sh --core-only` runs the existing regression suite without windows.
+
 ## Compatibility
 
 The repository now lives at `~/Apps/folio`. The existing bundle ID `cyou.tianli.TLMarkdown` and `~/Library/Application Support/TLMarkdown/session.json` remain compatible, preserving file associations and saved sessions. Chinese UI labels are retained; the product name is Folio in both languages.

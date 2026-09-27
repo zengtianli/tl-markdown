@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 /// Explicit recording mode requires its own session and never opens a key window.
 /// It hosts the production ContentView and store; it does not simulate product UI.
 enum FolioLaunch {
+    static var uiSelfTest: Bool { CommandLine.arguments.contains("--ui-self-test") }
     static var background: Bool {
         let env = ProcessInfo.processInfo.environment
         guard env["FOLIO_BACKGROUND"] == "1", let path = env["TL_MARKDOWN_STATE_DIR"], !path.isEmpty else { return false }
@@ -25,6 +26,7 @@ private final class FolioRecordingPanel: NSPanel {
     var pending: [URL] = []
     private var recordingPanel: NSPanel?
     func applicationWillFinishLaunching(_ notification: Notification) {
+        if FolioLaunch.uiSelfTest { NSApp.setActivationPolicy(.prohibited) }
         if FolioLaunch.background {
             // A nonactivating NSPanel is not a SwiftUI Window scene. AppKit can
             // otherwise mark this accessory process eligible for TAL recycling.
@@ -34,6 +36,10 @@ private final class FolioRecordingPanel: NSPanel {
         }
     }
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if FolioLaunch.uiSelfTest, let store {
+            Task { await FolioUISelfTest.run(store: store) }
+            return
+        }
         if FolioLaunch.background, let store {
             NSApp.setActivationPolicy(.accessory)
             let panel = FolioRecordingPanel(contentRect: NSRect(x: 120, y: 120, width: 1120, height: 780),
@@ -80,7 +86,7 @@ private final class FolioRecordingPanel: NSPanel {
         // Ordinary launches use one SwiftUI Window scene, which exits when its
         // last window closes. The isolated NSPanel is not that scene: recording
         // overlay teardown must not schedule an exit for the still-visible panel.
-        return !FolioLaunch.background
+        return !FolioLaunch.background && !FolioLaunch.uiSelfTest
     }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         if FolioLaunch.background {
@@ -117,7 +123,7 @@ private final class FolioRecordingPanel: NSPanel {
         return .terminateLater
     }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if FolioLaunch.background { return false }
+        if FolioLaunch.background || FolioLaunch.uiSelfTest { return false }
         if !flag { sender.windows.first(where: { $0.canBecomeMain })?.makeKeyAndOrderFront(nil) }; return true
     }
 }
@@ -126,10 +132,15 @@ private final class FolioRecordingPanel: NSPanel {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var store: EditorStore
     init() {
+        // Refuse this diagnostic before creating a store unless its state is isolated.
+        if FolioLaunch.uiSelfTest && !FolioLaunch.background {
+            fputs("--ui-self-test requires FOLIO_BACKGROUND=1 and an isolated TL_MARKDOWN_STATE_DIR\n", stderr)
+            exit(64)
+        }
         let root = ProcessInfo.processInfo.environment["TL_MARKDOWN_STATE_DIR"].map { URL(fileURLWithPath: $0) }
         let model = EditorStore(directory: root)
         _store = StateObject(wrappedValue: model)
-        if FolioLaunch.background { delegate.store = model }
+        if FolioLaunch.background || FolioLaunch.uiSelfTest { delegate.store = model }
     }
     var body: some Scene {
         Window(ProductIdentity.name, id: "editor") {
@@ -140,7 +151,7 @@ private final class FolioRecordingPanel: NSPanel {
                     delegate.reportBenchmarkIfRequested()
                 }
         }.defaultSize(width: 1120, height: 780)
-        .defaultLaunchBehavior(FolioLaunch.background ? .suppressed : .automatic)
+        .defaultLaunchBehavior(FolioLaunch.background || FolioLaunch.uiSelfTest ? .suppressed : .automatic)
         .commands {
             CommandGroup(replacing: .newItem) {
                 Button("新建文档") { store.newDocument() }.keyboardShortcut("n")
@@ -181,6 +192,142 @@ private final class FolioRecordingPanel: NSPanel {
                 Button("放大字号") { store.settings.fontSize = min(26, store.settings.fontSize + 1); store.settingsChanged() }.keyboardShortcut("+")
                 Button("缩小字号") { store.settings.fontSize = max(13, store.settings.fontSize - 1); store.settingsChanged() }.keyboardShortcut("-")
             }
+        }
+    }
+}
+
+/// Exercises the production SwiftUI shell, embedded editor and button action paths.
+/// The panel is never ordered, activated or made key; only fictional files are used.
+@MainActor private enum FolioUISelfTest {
+    private struct Failure: Error { let message: String }
+    private static func require(_ condition: Bool, _ message: String) throws {
+        if !condition { throw Failure(message: message) }
+    }
+    private static func webView(in view: NSView) -> WKWebView? {
+        if let web = view as? WKWebView { return web }
+        return view.subviews.compactMap { webView(in: $0) }.first
+    }
+    private static func inspect(_ web: WKWebView) async throws -> [String: Any] {
+        try await web.evaluateJavaScript("window.tl && window.tl.inspect()") as? [String: Any] ?? [:]
+    }
+    private static func wait(_ message: String, until condition: () async throws -> Bool) async throws {
+        for _ in 0..<100 {
+            if (try? await condition()) == true { return }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        throw Failure(message: "Timed out: " + message)
+    }
+    private static func capture(_ view: NSView, web: WKWebView, source: Bool, text: String, heading: String, to url: URL) async throws -> [String: Int] {
+        let expected = String(decoding: try JSONSerialization.data(withJSONObject: ["source": source, "text": text, "heading": heading]), as: UTF8.self)
+        // inspect() proves editor state only. Check the actual DOM and CSS too,
+        // then ask WebKit to snapshot after committing its latest rendering update.
+        let domCheck = """
+        (() => { const expected = \(expected), content = document.querySelector('.cm-content');
+          return document.body.classList.contains('source') === expected.source
+            && window.tl.getText() === expected.text && !!content
+            && content.innerText.includes(expected.heading)
+            && (expected.source ? content.querySelectorAll('.rendered').length === 0
+                                : content.querySelectorAll('.rendered').length > 0); })()
+        """
+        try await wait("rendered DOM matches screenshot state") { try await web.evaluateJavaScript(domCheck) as? Bool == true }
+        _ = try await web.evaluateJavaScript("window.tl.getView().requestMeasure(); document.body.getBoundingClientRect().height")
+        // Yield the native render transaction. requestAnimationFrame alone is not
+        // reliable for a deliberately never-visible WebView.
+        try await Task.sleep(for: .milliseconds(150))
+        view.layoutSubtreeIfNeeded(); web.layoutSubtreeIfNeeded()
+        let configuration = WKSnapshotConfiguration()
+        configuration.afterScreenUpdates = true
+        let snapshot = try await web.takeSnapshot(configuration: configuration)
+        try require(try await web.evaluateJavaScript(domCheck) as? Bool == true, "DOM changed while capturing")
+        guard let tiff = snapshot.tiffRepresentation, let webBitmap = NSBitmapImageRep(data: tiff),
+              let webPNG = webBitmap.representation(using: .png, properties: [:]) else { throw Failure(message: "No WebKit PNG") }
+        try require(webBitmap.pixelsWide >= 600 && webBitmap.pixelsHigh >= 400 && webPNG.count > 5000, "WebKit screenshot is empty or too small")
+        let webURL = url.deletingPathExtension().appendingPathExtension("web.png")
+        try webPNG.write(to: webURL, options: .atomic)
+        view.needsDisplay = true
+        view.layoutSubtreeIfNeeded(); view.displayIfNeeded()
+        guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { throw Failure(message: "No native bitmap") }
+        view.cacheDisplay(in: view.bounds, to: bitmap)
+        guard let png = bitmap.representation(using: .png, properties: [:]) else { throw Failure(message: "No native PNG") }
+        try png.write(to: url, options: .atomic)
+        try require(bitmap.pixelsWide >= 1120 && bitmap.pixelsHigh >= 780 && png.count > 10000, "Native screenshot is empty or too small")
+        return [url.lastPathComponent: png.count, webURL.lastPathComponent: webPNG.count]
+    }
+    static func run(store: EditorStore) async {
+        var checks: [String: Bool] = [:]
+        var screenshots: [String: Int] = [:]
+        var panel: NSPanel?
+        do {
+            guard let output = ProcessInfo.processInfo.environment["SOP_OUT_DIR"] else { throw Failure(message: "SOP_OUT_DIR is required") }
+            let outputURL = URL(fileURLWithPath: output)
+            try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: store.disk.directory, withIntermediateDirectories: true)
+            let file = store.disk.directory.appendingPathComponent("ui-fixture.md")
+            let original = "# Folio 界面验收\n\n真实编辑器 · 独立合成数据。\n\n## 第二节\n\n- 本地读写\n"
+            try Data(original.utf8).write(to: file)
+            let document = try DocumentIO.open(file)
+            store.documents = [document]; store.activeID = document.id
+            store.settings.noteIndexPath = store.disk.directory.appendingPathComponent("absent-index.sqlite").path
+            let host = NSHostingView(rootView: ContentView(store: store).preferredColorScheme(.light))
+            let window = FolioRecordingPanel(contentRect: NSRect(x: -20000, y: -20000, width: 1120, height: 780),
+                styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+            panel = window; window.isReleasedWhenClosed = false; window.contentView = host
+            host.frame = NSRect(x: 0, y: 0, width: 1120, height: 780); host.layoutSubtreeIfNeeded()
+            try await wait("production EditorSurface exists") { host.layoutSubtreeIfNeeded(); return webView(in: host) != nil }
+            guard let web = webView(in: host) else { throw Failure(message: "Production EditorSurface missing") }
+            try await wait("editor loaded document") { try await inspect(web)["id"] as? String == document.id }
+            let loaded = try await inspect(web)
+            try require(loaded["length"] as? Int == original.utf16.count, "Editor content length differs")
+            try require((loaded["headings"] as? [[String: Any]])?.count == 2, "Heading render differs")
+            checks["production_content_view_and_editor"] = true
+            checks["document_content_and_outline"] = true
+
+            store.toggleSource()
+            try await wait("source toggle") { try await inspect(web)["source"] as? Bool == true }
+            try require(store.sourceMode, "Source state differs")
+            screenshots.merge(try await capture(host, web: web, source: true, text: original, heading: "# Folio 界面验收", to: outputURL.appendingPathComponent("native_ui-source.png"))) { _, new in new }
+            checks["source_dom_css_and_render"] = true
+            store.toggleSource()
+            try await wait("rich toggle") { try await inspect(web)["source"] as? Bool == false }
+            checks["source_mode_round_trip"] = true
+
+            store.newDocument()
+            let draftID = store.activeID
+            try await wait("new document") { try await inspect(web)["id"] as? String == draftID }
+            store.select(document.id)
+            try await wait("tab selection") { try await inspect(web)["id"] as? String == document.id }
+            checks["new_and_select_tab"] = store.documents.count == 2
+
+            let refreshed = "# 刷新后的标题\n\n重新载入的内容。\n"
+            try Data(refreshed.utf8).write(to: file, options: .atomic)
+            store.reload()
+            try await wait("reload action") { try await web.evaluateJavaScript("window.tl.getText()") as? String == refreshed }
+            try require(store.active?.text == refreshed && store.active?.dirty == false, "Reloaded state differs")
+            checks["reload_updates_editor_and_store"] = true
+            screenshots.merge(try await capture(host, web: web, source: false, text: refreshed, heading: "刷新后的标题", to: outputURL.appendingPathComponent("native_ui-editor.png"))) { _, new in new }
+            checks["reloaded_dom_css_and_render"] = true
+
+            store.close(document.id)
+            try await wait("close tab") { try await inspect(web)["id"] as? String == draftID }
+            try require(store.documents.count == 1 && store.activeID == draftID, "Close did not select remaining draft")
+            if let draftID { store.close(draftID) }
+            try require(store.documents.isEmpty && store.active == nil, "Last tab did not close")
+            checks["close_tab_and_empty_state"] = true
+            checks["never_visible_or_key"] = !window.isVisible && !window.isKeyWindow && !window.isMainWindow && !NSApp.isActive
+            checks["native_render_dimensions_and_bytes"] = screenshots.count == 4
+            try require(checks.values.allSatisfy { $0 }, "A state assertion failed")
+            store.persist()
+            let result: [String: Any] = ["ok": true, "checks": checks, "screenshots": screenshots,
+                "scope": "In-process production ContentView/EditorSurface; source mode, new/select, reload, close; isolated fictional data; never ordered or activated."]
+            let data = try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys])
+            FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data("\n".utf8))
+            panel?.contentView = nil
+            exit(0)
+        } catch {
+            let detail = (error as? Failure)?.message ?? error.localizedDescription
+            fputs("Folio UI self-test failed: \(detail)\n", stderr)
+            panel?.contentView = nil
+            exit(1)
         }
     }
 }

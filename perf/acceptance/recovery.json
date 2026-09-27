@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "name": "recovery",
+  "app_id": "folio-mac",
+  "command": "bash scripts/accept/recovery.sh",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-09-28T01:51:08.404032+08:00",
+  "finished_at": "2026-09-28T01:51:19.414530+08:00",
+  "input_sha256": "fc148bbd9f6d653bd68d9187f87567a9f483a3169e5687959cb27eb4ba9fc83b",
+  "log": "perf/acceptance/recovery.log",
+  "log_sha256": "865e71e5a91895b3efcf0799310357dfaebf092ba4aa794c3198baa2cadd944e",
+  "summary": "真实 EditorStore/DocumentIO：外部冲突阻止自动保存、重新载入保留本地副本、会话重建恢复草稿、关闭草稿恢复、只读文件保存失败、损坏会话保留及持久化失败提示；无窗口。关闭草稿恢复使用预存会话，不覆盖人工关闭确认对话框。",
+  "detail": {
+    "summary": "真实 EditorStore/DocumentIO：外部冲突阻止自动保存、重新载入保留本地副本、会话重建恢复草稿、关闭草稿恢复、只读文件保存失败、损坏会话保留及持久化失败提示；无窗口。关闭草稿恢复使用预存会话，不覆盖人工关闭确认对话框。",
+    "environment": "isolated synthetic data; no input synthesis"
+  }
+}

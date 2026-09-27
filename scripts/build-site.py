@@ -75,16 +75,26 @@ def lightweight(release, preview):
             raise SystemExit(f"Site not built: perf/lightweight.json measures {data.get('version')}, release is {expected}; re-measure first")
     idle, launch = data["idle"], next(item for item in data["speed_gui"] if item["key"] == "launch")
     installed = data["size"]["installed_bytes"] / 1e6  # decimal MB, same as Finder and the download button
+    # measure.py's legacy *_mb fields are MiB; public MB uses decimal bytes.
+    memory = (idle["footprint_bytes"] / 1e6 if idle.get("footprint_bytes") is not None
+              else idle["footprint_mb"] * 2**20 / 1e6)
+    main_memory = (idle["main_footprint_bytes"] / 1e6 if idle.get("main_footprint_bytes") is not None
+                   else idle["main_footprint_mb"] * 2**20 / 1e6)
+    runs = len(idle.get("runs") or [])
+    idle_summary = f"{runs} 轮空闲测量取中位" if runs > 1 else "本次空闲测量 1 轮"
     note = (f"实测 Folio {release['version']}（构建 {release['build']}，即本页下载包）· {data['device']} · {data['measured_at']} · "
             f"打开 137 KB 合成 Markdown（标题、表格、代码、公式）。内存为 phys_footprint（活动监视器「内存」列同口径），"
-            f"主进程 {idle['main_footprint_mb']:.0f} MB 加 WebKit 渲染、GPU、网络 3 个辅助进程合计，静置 {idle['settle_s']} 秒后测 {idle['window_s']} 秒；"
-            f"CPU 为这段时间各进程 CPU 时间 ÷ 墙钟，内存在其后采样；{len(idle.get('runs') or []) or 1} 次交替测量取中位；启动为 open -g -j 后台隐藏启动到编辑窗口读入文档，{launch['runs']} 次中位。"
+            f"主进程 {main_memory:.1f} MB 加 WebKit 渲染、GPU、网络 3 个辅助进程合计，页面 MB 均为十进制（字节 ÷ 10⁶）。静置 {idle['settle_s']} 秒后测 {idle['window_s']} 秒；"
+            f"CPU 为这段时间各进程 CPU 时间 ÷ 墙钟；{idle_summary}。内存在 CPU 窗口结束后另采 3 次，各次同一时刻合计取峰值；启动为 open -g -j 后台隐藏启动到编辑窗口读入文档，{launch['runs']} 次中位。"
             "应用以隐藏窗口测量，窗口上屏时渲染进程会略高；测量时本机同时运行其他任务。")
     for key, label in (("memory_note", "内存条件"), ("cpu_note", "CPU 条件")):
         if idle.get(key):
-            note += f" {label}：{idle[key]}"
-    return {"LW_INSTALLED": f"{installed:.1f} MB", "LW_MEMORY": f"{idle['footprint_mb']:.0f} MB",
-            "LW_CPU": f"{idle['cpu_pct']:.1f}%", "LW_LAUNCH": f"{launch['median_ms'] / 1000:.2f} 秒",
+            recorded_note = idle[key]
+            if key == "memory_note" and "MiB" in idle.get("units", ""):
+                recorded_note = re.sub(r"\bMB\b", "MiB", recorded_note)
+            note += f" {label}：{recorded_note}"
+    return {"LW_INSTALLED": f"{installed:.1f} MB", "LW_MEMORY": f"{memory:.1f} MB",
+            "LW_CPU": f"{idle['cpu_pct']:.2f}%", "LW_LAUNCH": f"{launch['median_ms'] / 1000:.2f} 秒",
             "LW_LAUNCH_RUNS": str(launch["runs"]), "LW_NOTE": escape(note)}
 
 
