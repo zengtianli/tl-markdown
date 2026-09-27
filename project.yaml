@@ -1,5 +1,7 @@
 name: folio
-display_name: Folio
+name_en: Folio
+name_zh: 文页
+display_name: Folio · 文页
 form: mac
 lifecycle: active
 bundle_id: cyou.tianli.TLMarkdown
