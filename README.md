@@ -49,6 +49,8 @@ bash build.sh --install
 
 `bash build.sh --build-only` 只构建，不启动 GUI、不安装；`bash scripts/test.sh --core-only` 验生产文件读写、自动保存与冲突恢复，不创建窗口。完整窗口与系统文件打开验收仍需在允许 UI 操作的隔离会话完成，不能用这两个命令代替。
 
+本机装机可用 `python3 scripts/verify-install.py`：先核已装版来源，当前源码已有有效回执时直接跳过；否则沿 `build.sh --install` 构建，完成离屏编辑器和隔离 LaunchServices 文件打开测试，再备份旧程序并安装。装机后核验签名、版本、图标与 Chapter `perf/build-receipt.json`；保留用户状态，不关闭已有用户会话。文件打开测试使用独立 bundle ID 的后台副本，不修改默认文件关联。
+
 Chapter 固定验收登记在 `project.yaml`，四项均使用合成数据和独立状态目录：
 
 ```sh

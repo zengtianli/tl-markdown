@@ -2,9 +2,12 @@
 """Exercise the signed app through LaunchServices, using disposable session state.
 
 No direct EditorStore calls or diagnostic open bypass: the observed session is
-written by the production file-open path. Run against a non-installed build.
+written by the production file-open path. An isolated, re-signed copy retains
+the exact production executable and avoids routing to the user's running app.
+Run against a non-installed build.
 """
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -38,18 +41,36 @@ def main():
     app = args.app.resolve()
     if app.is_relative_to(Path("/Applications")):
         parser.error("Use a build product, not the user's installed application")
+    subprocess.run(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(app)], check=True)
     info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
-    executable = app / "Contents/MacOS" / info["CFBundleExecutable"]
-    if pids(executable):
-        parser.error("This build is already running; will not reuse or stop an existing session")
+    source_executable = app / "Contents/MacOS" / info["CFBundleExecutable"]
     run = Path(__file__).resolve().parents[1] / "build/file-open-tests" / uuid.uuid4().hex
     run.mkdir(parents=True)
+    session = run / "state/session.json"
+    session.parent.mkdir(mode=0o700)
+    # Give LaunchServices an unambiguous target for warm file-open events. The
+    # production executable is unchanged; the copy cannot reuse the user's app
+    # or become a registered handler for their documents.
+    isolated = run / "FolioFileOpen.app"
+    subprocess.run(["/usr/bin/ditto", str(app), str(isolated)], check=True)
+    app = isolated
+    info["CFBundleIdentifier"] = "cyou.tianli.Folio.FileOpenTest." + run.name
+    info["LSUIElement"] = True
+    info["LSEnvironment"] = {"FOLIO_BACKGROUND": "1", "TL_MARKDOWN_STATE_DIR": str(session.parent)}
+    info["NSSupportsAutomaticTermination"] = False
+    info["NSSupportsSuddenTermination"] = False
+    for key in ("CFBundleDocumentTypes", "UTImportedTypeDeclarations", "UTExportedTypeDeclarations"):
+        info.pop(key, None)
+    (app / "Contents/Info.plist").write_bytes(plistlib.dumps(info))
+    executable = app / "Contents/MacOS" / info["CFBundleExecutable"]
+    assert hashlib.sha256(executable.read_bytes()).digest() == hashlib.sha256(source_executable.read_bytes()).digest()
+    subprocess.run(["/usr/bin/codesign", "--force", "--sign", "-", str(app)], check=True)
+    subprocess.run(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(app)], check=True)
     fixtures = [(run / "冷启动 中文 空格.md", "# Cold launch\n独立文件内容 A\n"),
                 (run / "运行中.markdown", "# Warm launch\n独立文件内容 B\n"),
                 (run / "第二份 md.md", "# Multiple files\n独立文件内容 C\n")]
     for path, content in fixtures:
         path.write_text(content)
-    session = run / "state/session.json"
     owned = set()
 
     def snapshot_matches(expected, active=None):
@@ -67,22 +88,26 @@ def main():
         return selected.get("path") in ({str(active)} if active else expected_paths)
 
     try:
-        subprocess.run(["/usr/bin/open", "-n", "-g", "-a", str(app),
+        subprocess.run(["/usr/bin/open", "-n", "-g", "-j", "-a", str(app),
+                        "--env", "FOLIO_BACKGROUND=1",
                         "--env", f"TL_MARKDOWN_STATE_DIR={session.parent}", str(fixtures[0][0])], check=True)
         owned = wait_for(lambda: pids(executable), "LaunchServices did not launch the tested executable")
         assert len(owned) == 1, f"Unexpected process count: {owned}"
         wait_for(lambda: snapshot_matches(fixtures[:1]), "Cold open returned but target document was not loaded")
         print("PASS cold LaunchServices open: Unicode/spaces .md", flush=True)
-        subprocess.run(["/usr/bin/open", "-g", "-a", str(app), *[str(p) for p, _ in fixtures[1:]]], check=True)
+        subprocess.run(["/usr/bin/open", "-g", "-j", "-a", str(app), *[str(p) for p, _ in fixtures[1:]]], check=True)
         wait_for(lambda: snapshot_matches(fixtures), "Warm multi-file open did not load both documents")
         print("PASS warm LaunchServices open: .markdown and multiple files", flush=True)
-        subprocess.run(["/usr/bin/open", "-g", "-a", str(app), str(fixtures[0][0])], check=True)
+        subprocess.run(["/usr/bin/open", "-g", "-j", "-a", str(app), str(fixtures[0][0])], check=True)
         wait_for(lambda: snapshot_matches(fixtures, fixtures[0][0]), "Reopening did not select the existing document")
         print("PASS reopen selects existing tab without duplicates", flush=True)
         assert all(path.read_text() == content for path, content in fixtures), "Opening changed fixture bytes"
         print(f"PASS source bytes unchanged; evidence: {session}", flush=True)
     finally:
         # Only this test's process, with isolated state. Never pkill the app family.
+        # The UUID path can only have been launched by this test, including a
+        # launch that succeeded just before a wait timed out.
+        owned.update(pids(executable))
         for pid in owned & pids(executable):
             os.kill(pid, signal.SIGTERM)
         if owned:

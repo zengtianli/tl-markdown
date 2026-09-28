@@ -67,7 +67,7 @@ codesign --force --sign - "$APP"
 codesign --verify --deep --strict "$APP"
 if [ "$MODE" = "--build-only" ]; then
   echo "Built without launching an app: $APP"
-  echo "GUI/file-open verification is pending; run --verify in an authorized UI session."
+  echo "Production editor/file-open verification is pending; run --verify for isolated checks."
   exit 0
 fi
 bash "$DIR/scripts/test.sh" --main-editor "$APP/Contents/Resources"
@@ -80,7 +80,11 @@ if [ "$MODE" = "--install" ]; then
     mv "$DEST" "$ARCHIVE/"
   fi
   ditto "$APP" "$DEST"
+  codesign --verify --deep --strict "$DEST"
+  /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$DEST/Contents/Info.plist"
+  /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$DEST/Contents/Info.plist"
   echo "Installed: $DEST"
+  echo "Existing user sessions were not stopped or restarted. For a source-bound receipt, use python3 scripts/verify-install.py."
 else
   echo "Built: $APP"
 fi

@@ -38,6 +38,8 @@ Install preview build dependencies with `cd Editor && npm ci`, then run `bash bu
 
 Builds reuse the headquarters Xcode selector, CodingKey checker and icon factory. Runtime needs no Node, Python or server.
 
+For a verified local installation, run `python3 scripts/verify-install.py`. It skips an installed app already covered by a valid current-source receipt; otherwise it uses `build.sh --install`, runs the offscreen editor and isolated LaunchServices checks, backs up the old app, and verifies the installed signature, version, icon and Chapter `perf/build-receipt.json`. User state and running user sessions are preserved. File-open tests use a background copy with its own bundle ID and do not change default file associations.
+
 Chapter's fixed acceptance commands are registered in `project.yaml` and use synthetic data with isolated state:
 
 ```sh
