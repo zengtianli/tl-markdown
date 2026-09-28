@@ -28,7 +28,9 @@ CPU conditions: Released build, a hidden 137 KB synthetic document, 45 s settlin
 
 Open with Cmd+O, save with Cmd+S, find with Cmd+F. Named files autosave; drafts and recent-file history recover locally. Tables, reference links, images, math and diagrams render directly in the editor. Click a block to edit its Markdown; move to another block to render it again. Source mode preserves the original text.
 
-Cmd+Shift+F, or the sidebar Search tab, searches all notes: type a word and click any matching line to open it in Folio at that line; Return opens the first hit. Results come from a local md-index full-text index, read only; queries of three or more characters use the index and shorter ones fall back to a literal scan. The index location can be changed in Settings.
+Cmd+Shift+F, or the sidebar Search tab, searches your notes: add folders in Settings and update the index, then click a matching line to open it at that line. Folio maintains its own local index without changing notes; queries of three or more characters use full-text search and shorter queries use a literal scan. Existing custom index locations remain supported.
+
+The installed app includes `folio index / search / files / stats / graph`, sharing the same Swift engine as the interface. No folders are scanned without configuration. Use `folio graph <folder> --launcher -n` to create a directory graph and a reusable launcher, or choose File → Generate Directory Graph in the app to generate and open it.
 
 Cmd+Shift+P optionally opens a second read-only live preview for side-by-side reading. Ordinary editing does not require it.
 

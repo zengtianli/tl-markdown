@@ -58,13 +58,13 @@ struct ContentView: View {
                 Button { store.showSettings = true } label: { Image(systemName: "slider.horizontal.3") }.help("阅读与编辑设置")
             }
         }
-        .sheet(isPresented: $store.showSettings) { settingsView }
+        .sheet(isPresented: $store.showSettings) { FolioSettingsView(store: store) }
         .onReceive(store.$documents) { FullPreview.shared.update(documents: $0) }
         .onReceive(NotificationCenter.default.publisher(for: .folioSearchNotes)) { _ in
             store.sidebar = true; store.sidebarTab = 2; store.notes.focusRequest += 1
         }
-        .onAppear { store.notes.indexPath = noteIndexURL }
-        .onChange(of: store.settings.noteIndexPath) { store.notes.indexPath = noteIndexURL }
+        .onAppear { store.notes.indexPath = noteIndexURL; store.notes.reloadIndex(); store.indexSettings.useDatabase(noteIndexURL) }
+        .onChange(of: store.settings.noteIndexPath) { store.notes.indexPath = noteIndexURL; store.indexSettings.useDatabase(noteIndexURL) }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             for provider in providers {
                 _ = provider.loadObject(ofClass: URL.self) { url, _ in
@@ -143,8 +143,16 @@ struct ContentView: View {
             Text("本地保存 · 自动恢复 · 即时渲染").font(.caption).foregroundStyle(.tertiary).padding(.top, 22)
         }.padding(30).frame(maxWidth: .infinity, maxHeight: .infinity).background(Color(nsColor: .textBackgroundColor))
     }
-    var settingsView: some View {
-        VStack(alignment: .leading, spacing: 20) {
+}
+
+struct FolioSettingsView: View {
+    @ObservedObject var store: EditorStore
+    @ObservedObject private var indexSettings: NoteIndexSettingsModel
+    init(store: EditorStore) {
+        self.store = store; self.indexSettings = store.indexSettings
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
             HStack { Text("阅读与编辑").font(.title2.bold()); Spacer(); Button("完成") { store.showSettings = false }.keyboardShortcut(.defaultAction) }
             Picker("正文字体", selection: Binding(get: { store.settings.fontFamily ?? "system" }, set: { store.settings.fontFamily = $0; store.settingsChanged() })) {
                 Text("系统字体").tag("system"); Text("宋体").tag("serif"); Text("等宽字体").tag("mono")
@@ -153,17 +161,67 @@ struct ContentView: View {
             LabeledContent("正文宽度 · \(Int(store.settings.contentWidth))") { Slider(value: $store.settings.contentWidth, in: 560...1300, step: 20) }
             Toggle("启动时恢复上次打开的文件", isOn: $store.settings.restoreSession)
             LabeledContent("图片目录") { TextField("assets", text: $store.settings.imageFolder).frame(width: 200) }
-            LabeledContent("笔记索引") {
-                TextField((NoteIndex.defaultPath.path as NSString).abbreviatingWithTildeInPath, text: Binding(get: { store.settings.noteIndexPath ?? "" }, set: { store.settings.noteIndexPath = $0.isEmpty ? nil : $0; store.settingsChanged() })).frame(width: 260)
-            }
-            Text("「全部笔记」只读这份 md-index 全文索引，不修改笔记；留空使用默认位置。").font(.caption).foregroundStyle(.secondary)
             Text("图片保存在文档旁的相对目录。未保存的文档会先提示保存。恢复草稿始终保留在本机。").font(.caption).foregroundStyle(.secondary)
+            Divider()
+            IndexFoldersView(model: indexSettings)
+            LabeledContent("自定义索引文件") {
+                TextField((NoteIndex.defaultPath.path as NSString).abbreviatingWithTildeInPath, text: Binding(get: { store.settings.noteIndexPath ?? "" }, set: { store.settings.noteIndexPath = $0.isEmpty ? nil : $0; store.settingsChanged() })).frame(width: 260)
+            }.disabled(indexSettings.updating)
+            Text("留空使用 Folio 的本机索引。搜索只读索引；更新索引不会修改原文，也不会上传内容。").font(.caption).foregroundStyle(.secondary)
             Divider(); Button("清空最近文件记录") { store.clearRecent() }
-        }.padding(28).frame(width: 490)
+        }.padding(28).frame(width: 580)
+            .onAppear { indexSettings.reloadConfiguration() }
             .onChange(of: store.settings.fontSize) { store.settingsChanged() }
             .onChange(of: store.settings.contentWidth) { store.settingsChanged() }
             .onChange(of: store.settings.restoreSession) { store.settingsChanged() }
             .onChange(of: store.settings.imageFolder) { store.settingsChanged() }
+    }
+}
+
+private struct IndexFoldersView: View {
+    @ObservedObject var model: NoteIndexSettingsModel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack {
+                Text("索引文件夹").font(.headline)
+                Spacer()
+                Button("添加文件夹…") { model.chooseRoots() }.disabled(model.updating || model.configurationError != nil)
+            }
+            if model.config.roots.isEmpty {
+                Text("还没有选择文件夹。添加后点击「更新索引」，即可搜索其中的 Markdown 文档。")
+                    .font(.callout).foregroundStyle(.secondary).padding(.vertical, 8)
+            } else {
+                ScrollView {
+                    VStack(spacing: 5) {
+                        ForEach(model.config.roots, id: \.self) { path in
+                            HStack(spacing: 8) {
+                                Image(systemName: "folder").foregroundStyle(.secondary)
+                                Text((path as NSString).abbreviatingWithTildeInPath).lineLimit(1).truncationMode(.middle).help(path)
+                                Spacer(minLength: 0)
+                                Button { model.removeRoot(path) } label: { Image(systemName: "minus.circle") }
+                                    .buttonStyle(.plain).help("移除此索引文件夹").disabled(model.updating || model.configurationError != nil)
+                            }.font(.callout).padding(.vertical, 3)
+                        }
+                    }
+                }.frame(height: min(112, CGFloat(model.config.roots.count) * 30))
+            }
+            HStack {
+                if model.updating {
+                    ProgressView().controlSize(.small)
+                    Button("取消更新") { model.cancelUpdate() }
+                } else {
+                    Button("更新索引") { model.updateIndex() }
+                        .disabled(model.config.roots.isEmpty || model.configurationError != nil)
+                }
+                Spacer()
+                Text("\(model.documentCount.formatted()) 篇").foregroundStyle(.secondary)
+            }
+            if let updated = model.updatedAt {
+                Text("上次更新：\(updated.formatted(date: .abbreviated, time: .shortened))").font(.caption).foregroundStyle(.secondary)
+            } else { Text("尚未更新索引").font(.caption).foregroundStyle(.secondary) }
+            if let error = model.configurationError { Text(error).font(.caption).foregroundStyle(.orange) }
+            if !model.message.isEmpty { Text(model.message).font(.caption).foregroundStyle(.secondary) }
+        }
     }
 }
 
@@ -183,7 +241,14 @@ struct NotesPanel: View {
             }.font(.system(size: 13)).padding(8).background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 7))
                 .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color.primary.opacity(0.08)))
             Group {
-                if let error = notes.result.error { Text(error + "。可在设置里指定索引文件。").foregroundStyle(.orange) }
+                if !notes.indexAvailable {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("还没有笔记索引").font(.callout.weight(.medium))
+                        Text("在设置中选择文件夹并更新索引，即可搜索本机 Markdown 文档。")
+                        Button("选择索引文件夹…") { store.showSettings = true }
+                    }.foregroundStyle(.secondary).padding(.vertical, 6)
+                }
+                else if let error = notes.result.error { Text(error + "。可在设置里检查索引文件。").foregroundStyle(.orange) }
                 else if notes.result.mode != .idle {
                     Text("\(notes.result.files.count)\(notes.result.truncated ? "+" : "") 篇 · \(notes.result.mode.rawValue) · \(String(format: "%.2f", notes.result.elapsed)) 秒")
                         .foregroundStyle(.secondary).help(notes.result.mode == .like ? "少于 3 个字时逐字匹配，结果更全但更慢" : "3 个字及以上走全文索引")
@@ -218,6 +283,6 @@ struct NotesPanel: View {
                 }.frame(maxWidth: .infinity, alignment: .leading)
             }
         }.frame(maxWidth: .infinity, alignment: .leading).clipped()
-        .onAppear { focused = true }.onChange(of: notes.focusRequest) { focused = true }
+        .onAppear { notes.reloadIndex(); focused = true }.onChange(of: notes.focusRequest) { focused = true }
     }
 }

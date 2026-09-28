@@ -8,7 +8,11 @@ case "$ACCEPT_NAME" in functionality|recovery|privacy|native_ui) ;; *) exit 64 ;
 export SOP_OUT_DIR="${SOP_OUT_DIR:-$ACCEPT_ROOT/perf/acceptance}"
 mkdir -p "$ACCEPT_ROOT/build/accept/$ACCEPT_NAME" "$SOP_OUT_DIR"
 ACCEPT_WORK="$(mktemp -d "$ACCEPT_ROOT/build/accept/$ACCEPT_NAME/run.XXXXXX")"
+export ACCEPT_ROOT ACCEPT_WORK ACCEPT_NAME
 export TL_MARKDOWN_STATE_DIR="$ACCEPT_WORK/state"
+mkdir -p "$ACCEPT_WORK/home"
+export HOME="$ACCEPT_WORK/home"
+export CFFIXED_USER_HOME="$HOME"
 export FOLIO_BACKGROUND=1
 unset TL_MARKDOWN_OPEN TL_MARKDOWN_BENCHMARK MDINDEX_DB
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
@@ -16,7 +20,7 @@ xcode_env_use macosx
 
 # Tests compile the actual production I/O, store, and bridge, not a reimplementation.
 accept_compile_store() {
-  xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift "$1" -o "$ACCEPT_WORK/check"
+  xcrun swiftc -parse-as-library Sources/IndexEngine.swift Sources/GraphEngine.swift Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift "$1" -o "$ACCEPT_WORK/check"
 }
 
 # Only an acceptor's detail is written here; Chapter owns delivery-evidence.json.

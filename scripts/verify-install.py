@@ -29,14 +29,15 @@ def main():
     if installed.exists():
         current, detail = app_sop.verify_build_receipt(app, installed)
         if current:
+            subprocess.run([str(PYTHON), str(ROOT / 'scripts/install-cli.py'), str(installed)], check=True)
             print(json.dumps({"ok": True, "skipped": True, "detail": detail,
                               "artifact": app_sop.artifact_snapshot(installed)}, ensure_ascii=False, indent=2))
             return
     # Enumerate source inputs, not generated Editor assets or mutable receipts.
-    patterns = ["Sources/**", "Tests/**", "TLMarkdown.xcodeproj/**", "Info.plist",
+    patterns = ["Sources/**", "CLI/**", "Tests/**", "TLMarkdown.xcodeproj/**", "Info.plist",
                 "project.yaml", "build.sh", "scripts/*.py", "scripts/*.sh",
                 "Editor/src/**", "Editor/*.mjs", "Editor/package*.json",
-                "Resources/*.txt", "Resources/*.md", "icon/*.png", "icon/*.icns"]
+                "Resources/*.txt", "Resources/*.md", "Resources/graph-view.html", "icon/*.png", "icon/*.icns"]
     command = [str(PYTHON), str(ENGINE / "app_sop.py"), "build-receipt", "--app", "folio-mac",
                "--artifact", str(installed), "--build-command",
                "set -o pipefail; bash build.sh --install 2>&1 | tee build/install-verification.log"]
@@ -50,6 +51,8 @@ def main():
     # Read-only reuse of Chapter's actual receipt verifier, including icon,
     # executable, bundle identity, version and the current input digest.
     ok, detail = app_sop.verify_build_receipt(app, installed)
+    if ok:
+        subprocess.run([str(PYTHON), str(ROOT / 'scripts/install-cli.py'), str(installed)], check=True)
     print(json.dumps({"ok": ok, "installed": str(installed), "detail": detail,
                       "artifact": app_sop.artifact_snapshot(installed)}, ensure_ascii=False, indent=2))
     raise SystemExit(0 if ok else 1)

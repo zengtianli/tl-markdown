@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF0000000000000000000107 /* IndexEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000207; };
+		BF0000000000000000000108 /* GraphEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000208; };
 		BF0000000000000000000101 /* TLMarkdownApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000201 /* TLMarkdownApp.swift */; };
 		BF0000000000000000000102 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000202 /* ContentView.swift */; };
 		BF0000000000000000000103 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000203 /* ViewModel.swift */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF0000000000000000000207 /* IndexEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexEngine.swift; sourceTree = "<group>"; };
+		BF0000000000000000000208 /* GraphEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphEngine.swift; sourceTree = "<group>"; };
 		BF0000000000000000000201 /* TLMarkdownApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TLMarkdownApp.swift; sourceTree = "<group>"; };
 		BF0000000000000000000202 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BF0000000000000000000203 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
@@ -63,6 +67,8 @@
 				BF0000000000000000000203 /* ViewModel.swift */,
 				BF0000000000000000000204 /* BackendClient.swift */,
 				BF0000000000000000000205 /* Models.swift */,
+				BF0000000000000000000207 /* IndexEngine.swift */,
+				BF0000000000000000000208 /* GraphEngine.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -141,6 +147,8 @@
 				BF0000000000000000000103 /* ViewModel.swift in Sources */,
 				BF0000000000000000000104 /* BackendClient.swift in Sources */,
 				BF0000000000000000000105 /* Models.swift in Sources */,
+				BF0000000000000000000107 /* IndexEngine.swift in Sources */,
+				BF0000000000000000000108 /* GraphEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

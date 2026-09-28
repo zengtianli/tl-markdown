@@ -169,7 +169,7 @@ final class NoteIndex: @unchecked Sendable {
         if let env = ProcessInfo.processInfo.environment["MDINDEX_DB"], !env.isEmpty {
             return URL(fileURLWithPath: (env as NSString).expandingTildeInPath)
         }
-        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Apps/md-index/indexer/data/md_index.db")
+        return FolioIndexEngine.defaultDatabaseURL
     }
     let path: URL
     let queue = DispatchQueue(label: "cyou.tianli.folio.note-index", qos: .userInitiated)

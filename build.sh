@@ -57,6 +57,7 @@ ditto "$DIR/Resources" "$APP/Contents/Resources"
 # busts the Finder/Dock icon cache). Xcode's plain AppIcon.icns copy is unused.
 cp "$DIR/icon/AppIcon.icns" "$APP/Contents/Resources/$ICON_NAME.icns"
 rm -f "$APP/Contents/Resources/AppIcon.icns"
+bash "$DIR/scripts/build-cli.sh" "$APP/Contents/Resources/bin/folio"
 EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Contents/Info.plist")"
 # Fail closed if the release executable keeps local symbols (nm type t/d/b/s) or debug entries
 # (type '-', except strip's own radr://5614542 marker); nm puts the type letter in column 18.
@@ -81,6 +82,7 @@ if [ "$MODE" = "--install" ]; then
   fi
   ditto "$APP" "$DEST"
   codesign --verify --deep --strict "$DEST"
+  python3 "$DIR/scripts/install-cli.py" "$DEST"
   /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$DEST/Contents/Info.plist"
   /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$DEST/Contents/Info.plist"
   echo "Installed: $DEST"

@@ -16,4 +16,4 @@ assert data.get('ok') and data.get('checks') and all(data['checks'].values()), d
 pathlib.Path(sys.argv[2]).write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
 print(json.dumps(data, ensure_ascii=False))
 PY
-accept_detail "进程内离屏真实 ContentView / EditorSurface：源码切换、新建与标签切换、重新载入、关闭与空态；截图尺寸/字节断言；全程无可见窗口、激活或输入合成。"
+accept_detail "进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。"

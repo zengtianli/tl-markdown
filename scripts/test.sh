@@ -5,6 +5,7 @@ cd "$DIR"
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
 xcode_env_use macosx
 mkdir -p build
+ENGINES=(Sources/IndexEngine.swift Sources/GraphEngine.swift)
 main_editor_checks() {
   local resources="$1"
   local test_app="$DIR/build/MainEditorTests.app"
@@ -15,27 +16,31 @@ main_editor_checks() {
   /usr/libexec/PlistBuddy -c 'Add CFBundleExecutable string MainEditorTests' "$test_app/Contents/Info.plist"
   /usr/libexec/PlistBuddy -c 'Add CFBundleIdentifier string cyou.tianli.Folio.MainEditorTests' "$test_app/Contents/Info.plist"
   /usr/libexec/PlistBuddy -c 'Add CFBundlePackageType string APPL' "$test_app/Contents/Info.plist"
-  xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/MainEditorTests.swift -o "$test_app/Contents/MacOS/MainEditorTests"
+  xcrun swiftc -parse-as-library "${ENGINES[@]}" Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/MainEditorTests.swift -o "$test_app/Contents/MacOS/MainEditorTests"
   "$test_app/Contents/MacOS/MainEditorTests" "$DIR/build/main-editor-tests-data" | tee "$DIR/build/main-editor-test-results.txt"
 }
 if [ "${1:-}" = "--main-editor" ]; then
   main_editor_checks "${2:?Provide the built application Resources directory}"
   exit 0
 fi
-xcrun swiftc Sources/Models.swift Tests/DocumentIOTests.swift -o build/document-io-tests
+xcrun swiftc "${ENGINES[@]}" Sources/Models.swift Tests/DocumentIOTests.swift -o build/document-io-tests
 build/document-io-tests build/io-tests | tee build/io-test-results.txt
-xcrun swiftc -parse-as-library Sources/Models.swift Tests/NoteSearchTests.swift -o build/note-search-tests
+xcrun swiftc -parse-as-library "${ENGINES[@]}" Sources/Models.swift Tests/NoteSearchTests.swift -o build/note-search-tests
 build/note-search-tests build/note-search-tests-data | tee build/note-search-test-results.txt
-xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/StoreTests.swift -o build/store-tests
+xcrun swiftc -parse-as-library "${ENGINES[@]}" Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/StoreTests.swift -o build/store-tests
 build/store-tests build/store-tests-data | tee build/store-test-results.txt
-xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/WatcherTests.swift -o build/watcher-tests
+xcrun swiftc -parse-as-library "${ENGINES[@]}" Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/WatcherTests.swift -o build/watcher-tests
 build/watcher-tests build/watcher-tests-data | tee build/watcher-test-results.txt
 (cd Editor && node --test structure-tests.mjs)
+for suite in IndexEngine GraphEngine; do
+  xcrun swiftc -parse-as-library "${ENGINES[@]}" "Tests/${suite}Tests.swift" -o "build/${suite}-tests"
+  FOLIO_GRAPH_TEMPLATE="$DIR/Resources/graph-view.html" "build/${suite}-tests" "build/${suite}-tests-data"
+done
 if [ "${1:-}" = "--core-only" ]; then
   echo "Production I/O and store checks passed; no windows, clipboard or browser tests run."
   exit 0
 fi
-xcrun swiftc -parse-as-library Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/NativeEditorTests.swift -o build/native-editor-tests
+xcrun swiftc -parse-as-library "${ENGINES[@]}" Sources/Models.swift Sources/ViewModel.swift Sources/BackendClient.swift Tests/NativeEditorTests.swift -o build/native-editor-tests
 build/native-editor-tests | tee build/native-editor-test-results.txt
 # These components power the main single-pane editor and the optional preview.
 (cd Editor && npm run build && npm test)

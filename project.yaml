@@ -9,6 +9,12 @@ origin: own
 # 交付流程（SOP）事实：app_sop.py 据此检查轻量/测试、演示素材、推广页、装机与发布，字段说明见
 # ~/Dev/tools/dev/lib/tools/macapp/app_sop.py 的 SOP_KEYS。
 sop:
+  cli:
+    commands: [folio]
+  budget:
+    cli_bytes: 2000000
+    installed_growth_bytes: 3000000
+    rationale: Swift 索引与静态目录图谱共用系统 SQLite，无新增运行时或常驻任务。
   test: bash scripts/test.sh --core-only
   accept:
     functionality: bash scripts/accept/functionality.sh

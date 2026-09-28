@@ -160,6 +160,8 @@ private final class FolioRecordingPanel: NSPanel {
                 Button("另存为…") { store.bridge.flushBeforeQuit { if $0 { store.save(saveAs: true) } } }.keyboardShortcut("s", modifiers: [.command, .shift])
                 Button("关闭标签 / 预览") { if !FullPreview.shared.closeIfKey(), let id = store.activeID { store.close(id) } }.keyboardShortcut("w")
                 Button("恢复关闭的草稿") { store.restoreClosedDraft() }.disabled(store.closedDrafts.isEmpty)
+                Divider()
+                Button("生成目录图谱…") { store.generateDirectoryGraphPanel() }.disabled(store.graphGenerating)
             }
             CommandGroup(replacing: .undoRedo) {
                 Button("撤销") { if !FullPreview.shared.isKey { store.command("undo") } }.keyboardShortcut("z")
@@ -253,6 +255,16 @@ private final class FolioRecordingPanel: NSPanel {
         try require(bitmap.pixelsWide >= 1120 && bitmap.pixelsHigh >= 780 && png.count > 10000, "Native screenshot is empty or too small")
         return [url.lastPathComponent: png.count, webURL.lastPathComponent: webPNG.count]
     }
+    private static func captureNative(_ view: NSView, to url: URL) async throws -> Int {
+        try await Task.sleep(for: .milliseconds(150))
+        view.layoutSubtreeIfNeeded(); view.needsDisplay = true; view.displayIfNeeded()
+        guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { throw Failure(message: "No settings bitmap") }
+        view.cacheDisplay(in: view.bounds, to: bitmap)
+        guard let png = bitmap.representation(using: .png, properties: [:]) else { throw Failure(message: "No settings PNG") }
+        try require(bitmap.pixelsWide >= 580 && bitmap.pixelsHigh >= 500 && png.count > 8000, "Settings screenshot is empty or too small")
+        try png.write(to: url, options: .atomic)
+        return png.count
+    }
     static func run(store: EditorStore) async {
         var checks: [String: Bool] = [:]
         var screenshots: [String: Int] = [:]
@@ -313,12 +325,61 @@ private final class FolioRecordingPanel: NSPanel {
             if let draftID { store.close(draftID) }
             try require(store.documents.isEmpty && store.active == nil, "Last tab did not close")
             checks["close_tab_and_empty_state"] = true
+
+            // Use the same settings model and actions as the live controls; no sheet, chooser,
+            // menu tracking or browser is opened by the self-test.
+            store.sidebarTab = 2; store.notes.reloadIndex()
+            try require(!store.notes.indexAvailable && store.indexSettings.config.roots.isEmpty, "Missing-index empty state differs")
+            let emptyURL = outputURL.appendingPathComponent("native_ui-index-empty.png")
+            screenshots[emptyURL.lastPathComponent] = try await captureNative(host, to: emptyURL)
+            checks["missing_index_shows_setup_empty_state"] = true
+            let indexRoot = store.disk.directory.appendingPathComponent("Example Notes", isDirectory: true)
+            try FileManager.default.createDirectory(at: indexRoot, withIntermediateDirectories: true)
+            try Data("# 文件夹笔记\n\n目录索引与两字搜索。\n".utf8).write(to: indexRoot.appendingPathComponent("note.md"))
+            try require(store.indexSettings.addRoot(indexRoot), "Settings could not add a folder")
+            let configured = try FolioIndexConfig.load(from: store.indexSettings.configURL)
+            try require(configured.roots == [indexRoot.path], "Settings root was not persisted")
+            store.indexSettings.removeRoot(indexRoot.path)
+            try require(store.indexSettings.config.roots.isEmpty, "Settings could not remove a folder")
+            try require(store.indexSettings.addRoot(indexRoot), "Settings could not restore a folder")
+            store.indexSettings.useDatabase(URL(fileURLWithPath: store.settings.noteIndexPath!))
+            store.indexSettings.updateIndex()
+            try await wait("settings update index action") { !store.indexSettings.updating }
+            try require(store.indexSettings.documentCount == 1 && store.indexSettings.updatedAt != nil, "Settings index count/time differs: " + store.indexSettings.message)
+            try require(store.notes.indexAvailable, "Search did not see the newly created index")
+            store.notes.query = "索引"; store.notes.schedule(immediately: true)
+            try await wait("search newly created index") { !store.notes.searching && store.notes.result.files.count == 1 }
+            try require(store.notes.result.files[0].lines.first?.line == 3, "Index search line differs")
+            checks["settings_add_remove_and_update_index"] = true
+            checks["updated_index_search_and_line"] = true
+            let settingsHost = NSHostingView(rootView: FolioSettingsView(store: store).preferredColorScheme(.light))
+            let settingsWindow = FolioRecordingPanel(contentRect: NSRect(x: -20000, y: -20000, width: 580, height: 760),
+                styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+            settingsWindow.isReleasedWhenClosed = false; settingsWindow.contentView = settingsHost
+            settingsHost.frame = NSRect(x: 0, y: 0, width: 580, height: 760)
+            let settingsURL = outputURL.appendingPathComponent("native_ui-settings.png")
+            screenshots[settingsURL.lastPathComponent] = try await captureNative(settingsHost, to: settingsURL)
+            try require(!settingsWindow.isVisible && !settingsWindow.isKeyWindow && !settingsWindow.isMainWindow, "Settings became visible")
+            settingsWindow.contentView = nil
+
+            store.generateDirectoryGraph(at: indexRoot, openBrowser: false)
+            try await wait("generate graph menu action") { !store.graphGenerating }
+            guard let graph = store.lastGraphURL else { throw Failure(message: "Graph action failed: " + (store.graphError ?? "unknown")) }
+            let generated = try String(contentsOf: graph, encoding: .utf8)
+            try require(generated.contains("note.md"), "Graph does not contain fixture document")
+            let foreign = "This is a user's existing HTML file."
+            try Data(foreign.utf8).write(to: graph, options: .atomic)
+            store.generateDirectoryGraph(at: indexRoot, openBrowser: false)
+            try await wait("graph refuses overwrite") { !store.graphGenerating }
+            let preserved = try String(contentsOf: graph, encoding: .utf8)
+            try require(store.lastGraphURL == nil && store.graphError != nil && preserved == foreign, "Graph action overwrote a foreign file")
+            checks["graph_menu_action_and_safe_collision"] = true
             checks["never_visible_or_key"] = !window.isVisible && !window.isKeyWindow && !window.isMainWindow && !NSApp.isActive
-            checks["native_render_dimensions_and_bytes"] = screenshots.count == 4
+            checks["native_render_dimensions_and_bytes"] = screenshots.count == 6
             try require(checks.values.allSatisfy { $0 }, "A state assertion failed")
             store.persist()
             let result: [String: Any] = ["ok": true, "checks": checks, "screenshots": screenshots,
-                "scope": "In-process production ContentView/EditorSurface; source mode, new/select, reload, close; isolated fictional data; never ordered or activated."]
+                "scope": "In-process production ContentView/EditorSurface/settings; source, tabs, reload, close, index setup/update/search and graph menu action/collision; isolated fictional data; never ordered or activated."]
             let data = try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys])
             FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data("\n".utf8))
             panel?.contentView = nil

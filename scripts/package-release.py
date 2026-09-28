@@ -24,8 +24,9 @@ def digest(path):
 
 def source_digest():
     files = [ROOT / name for name in ("Info.plist", "Editor/package.json", "Editor/package-lock.json", "Editor/build.mjs",
-                                     "TLMarkdown.xcodeproj/project.pbxproj", "Resources/欢迎使用.md", "icon/AppIcon.icns")]
+                                     "TLMarkdown.xcodeproj/project.pbxproj", "Resources/欢迎使用.md", "Resources/graph-view.html", "icon/AppIcon.icns")]
     files += list((ROOT / "Sources").glob("*.swift")) + list((ROOT / "Editor/src").glob("*"))
+    files += list((ROOT / "CLI").glob("*.swift"))
     sha = hashlib.sha256()
     for path in sorted(files):
         if path.is_file():
@@ -48,7 +49,8 @@ def main():
     if args.stamp:
         stamp = {"source_commit": run("git", "-C", str(ROOT), "rev-parse", "HEAD"),
                  "source_sha256": source_digest(), "built_at": datetime.now(timezone.utc).isoformat(),
-                 "version": info["CFBundleShortVersionString"], "build": info["CFBundleVersion"]}
+                 "version": info["CFBundleShortVersionString"], "build": info["CFBundleVersion"],
+                 "cli_sha256": digest(app / 'Contents/Resources/bin/folio')}
         stamp_file.write_text(json.dumps(stamp, ensure_ascii=False, indent=2) + "\n")
         return
     stamp = json.loads(stamp_file.read_text())
@@ -65,6 +67,12 @@ def main():
         dependency = line.strip().split(" (", 1)[0]
         assert dependency.startswith(("/usr/lib/", "/System/Library/", "@rpath/libswift")), f"Unexpected runtime dependency: {dependency}"
     resources = app / "Contents/Resources"
+    cli = resources / 'bin/folio'
+    assert cli.is_file() and digest(cli) == stamp['cli_sha256'], 'CLI missing or changed after build'
+    assert cli.stat().st_size <= 2000000, 'CLI size budget exceeded'
+    assert b'/Users/' not in cli.read_bytes(), 'Developer paths remain in CLI'
+    run('codesign', '--verify', '--strict', str(cli))
+    assert (resources / 'graph-view.html').is_file(), 'Missing graph template'
     for name in ("Editor/index.html", "Editor/editor.js", "Editor/katex.js", "Editor/katex.css", "Editor/highlight.js", "Editor/mermaid.js", "THIRD-PARTY-NOTICES.txt", "欢迎使用.md"):
         assert (resources / name).is_file(), f"Missing bundled resource: {name}"
     assert (resources / f"{info['CFBundleIconFile']}.icns").is_file(), "Info.plist icon is missing from the bundle"

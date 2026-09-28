@@ -15,7 +15,11 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     @Published var banner = ""
     @Published var showSettings = false
     @Published var closedDrafts: [OpenDocument] = []
+    @Published private(set) var graphGenerating = false
+    @Published private(set) var lastGraphURL: URL?
+    @Published private(set) var graphError: String?
     let disk: SessionDisk
+    let indexSettings: NoteIndexSettingsModel
     let bridge = EditorBridge()
     let notes = NoteSearchModel()
     private var saveWork: [String: DispatchWorkItem] = [:]
@@ -31,7 +35,10 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
 
     init(directory: URL? = nil) {
         let base = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TLMarkdown")
-        disk = SessionDisk(directory: base); bridge.store = self
+        disk = SessionDisk(directory: base)
+        indexSettings = NoteIndexSettingsModel(configURL: directory?.appendingPathComponent("index.json") ?? FolioIndexConfig.defaultURL,
+            database: directory?.appendingPathComponent("md_index.db") ?? NoteIndex.defaultPath)
+        bridge.store = self
         do {
             let old = try disk.read(); settings = old.settings; recent = old.recent; closedDrafts = old.closedDrafts ?? []
             documents = old.documents.filter { settings.restoreSession || $0.dirty }
@@ -59,6 +66,7 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
         // Event-driven: an idle window does no periodic work (formerly a 2 s stat poll).
         watcher = ExternalChangeWatcher { [weak self] in self?.checkExternalChanges() }
         watcher?.update(Set(documents.compactMap(\.path)))
+        indexSettings.onUpdated = { [weak self] in self?.notes.reloadIndex() }
     }
     func persist() {
         guard stateReadable else { return }
@@ -255,20 +263,148 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
             do { insertImage(data: try Data(contentsOf: url), ext: url.pathExtension, documentID: id) } catch { banner = error.localizedDescription }
         }
     }
+
+    /// The menu and the in-process UI check share this action; only the menu asks for a folder.
+    func generateDirectoryGraphPanel() {
+        guard !graphGenerating else { return }
+        let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false; panel.prompt = "生成目录图谱"
+        if panel.runModal() == .OK, let root = panel.url { generateDirectoryGraph(at: root) }
+    }
+    func generateDirectoryGraph(at root: URL, openBrowser: Bool = true) {
+        guard !graphGenerating else { return }
+        if let error = indexSettings.configurationError {
+            graphError = error; banner = error; return
+        }
+        graphGenerating = true; graphError = nil; lastGraphURL = nil
+        let config = indexSettings.config
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let result = Result { try FolioGraphEngine.generate(root: root, config: config) }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.graphGenerating = false
+                switch result {
+                case .success(let output):
+                    self.lastGraphURL = output
+                    self.banner = "目录图谱已生成：\(output.lastPathComponent)"
+                    if openBrowser { NSWorkspace.shared.open(output) }
+                case .failure(let error):
+                    self.graphError = error.localizedDescription
+                    self.banner = "未生成目录图谱：\(error.localizedDescription)"
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Index settings
+/// Cancellation is shared by the low-priority worker and the main-thread button.
+private final class IndexCancellation: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stopped = false
+    func cancel() { lock.lock(); stopped = true; lock.unlock() }
+    var isCancelled: Bool { lock.lock(); defer { lock.unlock() }; return stopped }
+}
+
+@MainActor final class NoteIndexSettingsModel: ObservableObject {
+    @Published private(set) var config = FolioIndexConfig()
+    @Published private(set) var updating = false
+    @Published private(set) var documentCount = 0
+    @Published private(set) var updatedAt: Date?
+    @Published private(set) var message = ""
+    @Published private(set) var configurationError: String?
+    let configURL: URL
+    private(set) var database: URL
+    private var cancellation: IndexCancellation?
+    var onUpdated: (() -> Void)?
+
+    init(configURL: URL, database: URL) {
+        self.configURL = configURL; self.database = database
+        reloadConfiguration()
+    }
+    func reloadConfiguration() {
+        guard !updating else { return }
+        configurationError = nil
+        if FileManager.default.fileExists(atPath: configURL.path) {
+            do { config = try FolioIndexConfig.load(from: configURL) }
+            catch { configurationError = "无法读取索引配置：\(error.localizedDescription)" }
+        } else { config = FolioIndexConfig() }
+        refreshStats()
+    }
+    func useDatabase(_ url: URL) {
+        guard !updating, url != database else { return }
+        database = url; refreshStats()
+    }
+    private func refreshStats() {
+        guard FileManager.default.fileExists(atPath: database.path), let stats = try? FolioIndexEngine.stats(database: database) else {
+            documentCount = 0; updatedAt = nil; return
+        }
+        documentCount = stats.count; updatedAt = stats.updatedAt
+    }
+    @discardableResult func addRoot(_ url: URL) -> Bool {
+        guard !updating, configurationError == nil else { return false }
+        let path = url.standardizedFileURL.path
+        guard !config.roots.contains(path) else { return true }
+        var next = config; next.roots.append(path)
+        return save(next)
+    }
+    func chooseRoots() {
+        guard !updating else { return }
+        let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = true; panel.prompt = "加入索引"
+        if panel.runModal() == .OK { for url in panel.urls { _ = addRoot(url) } }
+    }
+    func removeRoot(_ path: String) {
+        guard !updating, configurationError == nil else { return }
+        var next = config; next.roots.removeAll { $0 == path }; _ = save(next)
+    }
+    private func save(_ next: FolioIndexConfig) -> Bool {
+        do { try next.save(to: configURL); config = next; message = "文件夹已保存；更新索引后生效。"; return true }
+        catch { message = "保存索引配置失败：\(error.localizedDescription)"; return false }
+    }
+    func updateIndex() {
+        guard !updating, configurationError == nil else { return }
+        guard !config.roots.isEmpty else { message = "请先添加要索引的文件夹。"; return }
+        let token = IndexCancellation(), snapshot = config, target = database
+        cancellation = token; updating = true; message = "正在后台更新索引…"
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let result = Result { try FolioIndexEngine.rebuild(config: snapshot, database: target, cancelled: { token.isCancelled }) }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.updating = false; self.cancellation = nil
+                switch result {
+                case .success(let stats):
+                    self.documentCount = stats.count; self.updatedAt = stats.updatedAt
+                    self.message = "索引已更新，共 \(stats.count.formatted()) 篇。"
+                    self.onUpdated?()
+                case .failure(let error):
+                    self.message = token.isCancelled ? "已取消；原索引保持可用。" : "更新失败：\(error.localizedDescription)"
+                }
+            }
+        }
+    }
+    func cancelUpdate() { cancellation?.cancel(); if updating { message = "正在取消…" } }
 }
 
 // MARK: - Note search
-/// Searches the md-index index off the main thread. Typing is debounced and a newer query
+/// Searches Folio's index off the main thread. Typing is debounced and a newer query
 /// interrupts an older one still scanning; the index opens on first use and stays read-only.
 @MainActor final class NoteSearchModel: ObservableObject {
     @Published var query = "" { didSet { if query != oldValue { schedule() } } }
     @Published private(set) var result = NoteSearchResult()
     @Published private(set) var searching = false
     @Published var focusRequest = 0
+    @Published private(set) var indexAvailable = false
     private var index: NoteIndex?
     private var generation = 0
     private var pending: DispatchWorkItem?
-    var indexPath: URL = NoteIndex.defaultPath { didSet { if indexPath != oldValue { index = nil; schedule() } } }
+    var indexPath: URL = NoteIndex.defaultPath { didSet { if indexPath != oldValue { reloadIndex() } } }
+
+    func reloadIndex() {
+        index?.interrupt(); index = nil
+        indexAvailable = FileManager.default.fileExists(atPath: indexPath.path)
+        schedule(immediately: true)
+    }
 
     func schedule(immediately: Bool = false) {
         pending?.cancel()
@@ -278,6 +414,7 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     }
     private func run() {
         let text = query
+        indexAvailable = FileManager.default.fileExists(atPath: indexPath.path)
         if index == nil || index?.path != indexPath { index = NoteIndex(path: indexPath) }
         guard let index else { return }
         generation += 1
