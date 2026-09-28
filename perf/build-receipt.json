@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "built_at": "2026-09-28T11:54:21+08:00",
+  "artifact": {
+    "bundle_id": "cyou.tianli.TLMarkdown",
+    "version": "1.1.0",
+    "build": "40",
+    "executable": "Contents/MacOS/TLMarkdown",
+    "sha256": "0dba8977ba666307dd1f62dfd713192dbaf15ddc1860907a891753b605f9eecc",
+    "icon": {
+      "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
+      "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+    }
+  },
+  "source": {
+    "input_globs": [
+      "Sources/**",
+      "Tests/**",
+      "TLMarkdown.xcodeproj/**",
+      "Info.plist",
+      "project.yaml",
+      "build.sh",
+      "scripts/*.py",
+      "scripts/*.sh",
+      "Editor/src/**",
+      "Editor/*.mjs",
+      "Editor/package*.json",
+      "Resources/*.txt",
+      "Resources/*.md",
+      "icon/*.png",
+      "icon/*.icns"
+    ],
+    "sha256": "7e78ec82909f339f4be5758d8f86f15797d687bb11b8abf073179b7aba224c57",
+    "file_count": 46,
+    "commit": "df33fe3207864b34cba00f6af316587bcd4dd044",
+    "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
+    "dirty": false
+  },
+  "build_command_sha256": "3f736bae245c01c36f33ad8b23ae5f1a55d53219a0efc6028212614359296fd1"
+}

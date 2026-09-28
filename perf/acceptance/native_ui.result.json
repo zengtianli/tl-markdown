@@ -14,7 +14,7 @@
   "ok": true,
   "scope": "In-process production ContentView/EditorSurface; source mode, new/select, reload, close; isolated fictional data; never ordered or activated.",
   "screenshots": {
-    "native_ui-editor.png": 46791,
+    "native_ui-editor.png": 47033,
     "native_ui-editor.web.png": 26341,
     "native_ui-source.png": 43772,
     "native_ui-source.web.png": 26667
