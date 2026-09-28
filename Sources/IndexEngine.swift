@@ -17,6 +17,18 @@ extension URL {
     }
 }
 
+/// The running binary's real location. argv[0] is only "folio" when the
+/// command is started through PATH, so it cannot locate the enclosing .app.
+enum FolioExecutable {
+    static var url: URL {
+        var size: UInt32 = 0
+        _ = _NSGetExecutablePath(nil, &size)
+        var buffer = [CChar](repeating: 0, count: Int(size) + 1)
+        guard _NSGetExecutablePath(&buffer, &size) == 0 else { return URL(fileURLWithPath: CommandLine.arguments[0]).resolvingSymlinksInPath() }
+        return URL(fileURLWithPath: String(cString: buffer)).resolvingSymlinksInPath()
+    }
+}
+
 /// The on-disk configuration is local user state, never part of the app bundle.
 struct FolioIndexConfig: Codable, Sendable {
     var roots: [String] = []

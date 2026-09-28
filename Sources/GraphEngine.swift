@@ -206,7 +206,7 @@ enum FolioGraphEngine {
         var candidates: [URL] = []
         if let override = ProcessInfo.processInfo.environment["FOLIO_GRAPH_TEMPLATE"] { candidates.append(URL(fileURLWithPath: override)) }
         if let resources = Bundle.main.resourceURL { candidates.append(resources.appendingPathComponent("graph-view.html")) }
-        let executable = URL(fileURLWithPath: CommandLine.arguments[0]).resolvingSymlinksInPath()
+        let executable = FolioExecutable.url
         candidates.append(executable.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("graph-view.html"))
         guard let found = candidates.first(where: { FileManager.default.fileExists(atPath: $0.path) }) else { throw Failure(message: "没有找到随 Folio 安装的图谱模板") }
         return found

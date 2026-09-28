@@ -20,7 +20,7 @@ Folio — Markdown 索引与目录图谱
 """
 
 private func version() -> String {
-    let executable = URL(fileURLWithPath: CommandLine.arguments[0]).resolvingSymlinksInPath()
+    let executable = FolioExecutable.url
     // Resources/bin/folio shares the app's version; no second version counter.
     let contents = executable.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     if let data = try? Data(contentsOf: contents.appendingPathComponent("Info.plist")),
