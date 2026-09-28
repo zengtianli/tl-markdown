@@ -25,7 +25,7 @@
         <p class="requirements">macOS @@MIN_MACOS@@ 及以上 · @@CHIP@@<br>v@@VERSION@@ · 安装包 @@SIZE@@（解压后 @@LW_INSTALLED@@）· <a href="#first-open">首次打开说明</a></p>
       </div>
       <aside class="side-note" aria-label="产品特点"><span class="note-number">01 /</span><p>想法留在纸上，<br>文件留在本机。</p><div class="note-line"></div><span>MARKDOWN, AT HOME.</span></aside>
-      <figure class="hero-shot">@@HERO@@<figcaption><span class="caption-dot"></span> Folio 主编辑器 · 真实窗口 · 虚构样例文档</figcaption></figure>
+      <figure class="hero-shot">@@HERO@@<figcaption><span class="caption-dot"></span> @@HERO_CAPTION@@</figcaption></figure>
       <div class="benefit-line"><span>不用注册账号</span><span>一份普通 .md 文件</span><span>写完自动保存</span><span>常用操作都有快捷键</span></div>
     </section>
     <section class="lightweight wrap" id="lightweight" aria-labelledby="lightweight-title">
@@ -46,6 +46,15 @@
         <article><span class="feature-number">03</span><h3>保存，然后安心继续</h3><p>已有文件自动保存；未命名内容保留为本地草稿。碰到外部修改冲突，先保留你的内容，再由你选择处理方式。</p><span class="feature-tag">本地原文 / 草稿恢复</span></article>
       </div>
     </section>
+    <section class="section wrap notes-search" id="search" aria-labelledby="search-title">
+      <div class="section-heading"><p class="eyebrow">1.2 新增 · 全部笔记</p><h2 id="search-title">写过的每一页，都找得回来。</h2><p>把笔记文件夹交给 Folio 建立索引：在侧栏搜索、生成目录图谱，也能在终端里用同一套引擎。</p></div>
+      <div class="features pair">
+        <article><span class="feature-number">04</span><h3>搜索全部笔记，点一下就到</h3><p>按 <kbd>⌘</kbd><kbd>⇧</kbd><kbd>F</kbd> 或点侧栏「搜索」，检索已索引的全部笔记。点命中行，直接打开那份文档并跳到对应行。</p><span class="feature-tag">侧栏搜索 / 跳到命中行</span></article>
+        <article><span class="feature-number">05</span><h3>索引在本机，范围由你决定</h3><p>在设置的「索引文件夹」添加目录，再点「更新索引」。索引由 Folio 在本机维护，只读取笔记、不修改内容；没有配置时不扫描任何目录，建索引和搜索都不联网。</p><span class="feature-tag">索引文件夹 / 更新索引</span></article>
+        <article><span class="feature-number">06</span><h3>一个文件夹，一张离线图谱</h3><p>菜单「文件 → 生成目录图谱…」，选一个文件夹，生成离线的 <code>知识图谱.html</code> 并用默认浏览器打开；已有非 Folio 生成的同名文件时不会覆盖。</p><span class="feature-tag">目录图谱 / 离线 HTML</span></article>
+        <article><span class="feature-number">07</span><h3>终端里，也是同一套引擎</h3><p>应用包内附带 <code>folio</code> 命令（index / search / files / stats / graph），与界面共用引擎，只依赖系统 SQLite，不需要 Python、Node.js 或常驻服务。从本页下载的版本不会自动加入终端路径，可手动链接：<code class="cmd">mkdir -p ~/.local/bin &amp;&amp; ln -s /Applications/Folio.app/Contents/Resources/bin/folio ~/.local/bin/folio</code></p><a class="text-link" href="https://github.com/zengtianli/tl-markdown/blob/main/docs/cli.md" target="_blank" rel="noopener noreferrer">命令行用法 ↗</a></article>
+      </div>
+    </section>
     <section class="demo-section" id="demo"><div class="wrap section">
       <div class="section-heading"><p class="eyebrow">看得见的操作</p><h2>从打开，到下一次继续。</h2><p>三个真实窗口片段。每段都可以暂停、拖动和全屏查看。</p></div>
       <div class="demo-grid">@@VIDEOS@@</div>
@@ -62,13 +71,13 @@
       <aside class="first-open" id="first-open"><div><p class="eyebrow">首次打开</p><h3>当前下载版尚未经过 Apple 公证。</h3></div><div><p>如果系统显示无法验证开发者，先确认文件来自本页且完整。在尝试打开后，进入“系统设置 → 隐私与安全性”，找到 Folio 的阻止记录，按“仍要打开”，再确认“打开”。</p><p>系统若要求密码，使用这台 Mac 的登录密码；Folio 本身不索取 Apple 账户密码。若提示“将损坏你的电脑”或文件已损坏，请停止打开，重新下载并反馈具体信息。</p><a class="text-link" href="https://support.apple.com/zh-cn/102445" target="_blank" rel="noopener noreferrer">查看 Apple 的打开说明 ↗</a></div></aside>
     </section>
     <section class="section wrap working"><div class="section-heading"><p class="eyebrow">日常用起来</p><h2>手不离键盘，想法不断线。</h2><p>Folio 的快捷键只在应用内使用，不占用全局快捷键。</p></div>
-      <dl class="shortcuts"><div><dt>打开文档</dt><dd>⌘ O</dd></div><div><dt>保存文档</dt><dd>⌘ S</dd></div><div><dt>另存为</dt><dd>⌘ ⇧ S</dd></div><div><dt>搜索与替换</dt><dd>⌘ F</dd></div><div><dt>加粗 / 斜体</dt><dd>⌘ B / ⌘ I</dd></div><div><dt>切换源码</dt><dd>⌘ ⇧ /</dd></div></dl>
+      <dl class="shortcuts"><div><dt>打开文档</dt><dd>⌘ O</dd></div><div><dt>保存文档</dt><dd>⌘ S</dd></div><div><dt>另存为</dt><dd>⌘ ⇧ S</dd></div><div><dt>搜索与替换</dt><dd>⌘ F</dd></div><div><dt>搜索全部笔记</dt><dd>⌘ ⇧ F</dd></div><div><dt>加粗 / 斜体</dt><dd>⌘ B / ⌘ I</dd></div><div><dt>切换源码</dt><dd>⌘ ⇧ /</dd></div></dl>
     </section>
     <section class="section wrap faq" id="help"><div class="section-heading"><p class="eyebrow">遇到问题时</p><h2>看一下状态，再决定下一步。</h2></div>
       <details open><summary>怎样确认已经保存？</summary><p>看窗口底栏：“正在保存…”表示还在写入；“已保存”表示本次内容已保存到原文件。“本地草稿”表示文档还没有命名，可用“保存”选择位置。关闭后重新打开同一文件，可以再次核对内容。</p></details>
       <details><summary>看到“需要处理文件冲突”怎么办？</summary><p>这表示同一文件在其他地方也被修改。Folio 会暂停自动保存。选择“另存为”保留当前分支；选择“重新载入”会打开磁盘版本，并把你的本地修改保留为另一份草稿。核对两份内容后再决定保留哪份。</p></details>
       <details><summary>图片没有显示，或提示无法保存？</summary><p>本地图片默认放在文档旁的 assets 文件夹。移动文档时，把图片文件夹一起移动。如果原文件已经移动、删除或没有写入权限，点击“另存为”保存到可写位置。网络图片还需要其原站点可访问。</p></details>
-      <details><summary>文档会上传到哪里？需要联网吗？</summary><p>Folio 不需要账号，也不会主动把文档上传到服务端。文档、最近记录与恢复草稿保存在本机。打开含网络图片的文档时，会向图片地址发起请求；点击外部链接会用系统浏览器打开。将文档放入 iCloud 等同步文件夹时，同步由对应服务处理。</p></details>
+      <details><summary>文档会上传到哪里？需要联网吗？</summary><p>Folio 不需要账号，也不会主动把文档上传到服务端。文档、最近记录与恢复草稿保存在本机。打开含网络图片的文档时，会向图片地址发起请求；点击外部链接会用系统浏览器打开。全部笔记的搜索索引只保存在本机，建立和搜索都不联网。将文档放入 iCloud 等同步文件夹时，同步由对应服务处理。</p></details>
       <details><summary>能打开哪些文件？可以替代 Word 吗？</summary><p>Folio 主要编辑 UTF-8 编码的 .md 和 .markdown 文件，也可打开纯文本。它适合笔记、文章和技术文档，不提供 Word 排版、PDF 导出或团队协作。已有 Markdown 文件可以继续在其他编辑器使用。</p></details>
       <details><summary>更新或移除 Folio，会删除我的文档吗？</summary><p>更新时替换应用程序中的 Folio.app；已有文档和本地草稿不在应用包里。移除应用不会删除你保存的文档。若准备清理所有应用数据，请先把未命名草稿另存为普通文件。</p></details>
     </section>

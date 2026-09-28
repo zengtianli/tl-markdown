@@ -30,7 +30,7 @@ Open with Cmd+O, save with Cmd+S, find with Cmd+F. Named files autosave; drafts 
 
 Cmd+Shift+F, or the sidebar Search tab, searches your notes: add folders in Settings and update the index, then click a matching line to open it at that line. Folio maintains its own local index without changing notes; queries of three or more characters use full-text search and shorter queries use a literal scan. Existing custom index locations remain supported.
 
-The installed app includes `folio index / search / files / stats / graph`, sharing the same Swift engine as the interface. No folders are scanned without configuration. Use `folio graph <folder> --launcher -n` to create a directory graph and a reusable launcher, or choose File → Generate Directory Graph in the app to generate and open it.
+The app bundle includes `folio index / search / files / stats / graph`, sharing the same Swift engine as the interface. No folders are scanned without configuration. For the downloaded app, link `/Applications/Folio.app/Contents/Resources/bin/folio` to `~/.local/bin/folio` to use it in Terminal (see [docs/cli.md](docs/cli.md)). Use `folio graph <folder> --launcher -n` to create a directory graph and a reusable launcher, or choose File → Generate Directory Graph in the app to generate and open it.
 
 Cmd+Shift+P optionally opens a second read-only live preview for side-by-side reading. Ordinary editing does not require it.
 

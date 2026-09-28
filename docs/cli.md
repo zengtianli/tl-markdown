@@ -1,6 +1,10 @@
 # Folio 命令行
 
-安装后的 `~/.local/bin/folio` 指向 App 内的命令，GUI 与 CLI 共用 Swift 索引和目录图谱引擎；仅依赖系统 SQLite，不需要 Python、Node 或常驻服务。
+命令在应用包内：`/Applications/Folio.app/Contents/Resources/bin/folio`，GUI 与 CLI 共用 Swift 索引和目录图谱引擎；仅依赖系统 SQLite，不需要 Python、Node 或常驻服务。从官网下载 ZIP 安装后，需要手动把它加入终端路径（从源码 `./build.sh --install` 安装时会自动建立同一链接）：
+
+```sh
+mkdir -p ~/.local/bin && ln -s /Applications/Folio.app/Contents/Resources/bin/folio ~/.local/bin/folio
+```
 
 ```sh
 folio --help
