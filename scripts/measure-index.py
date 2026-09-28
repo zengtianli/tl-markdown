@@ -201,8 +201,8 @@ def measure(runs):
     result["incremental"] = {
         "folio": incremental, "python": None, "python_note": "Python 基线每次都整库重建，没有增量路径",
         "note": ("全量后立即重复 folio index（不带 --full）。扫描的是正在使用的真实工作区，其他进程可能在期间改动文件；"
-                 "files_per_run 为 folio 自报的 changed/unchanged/removed 篇数。当前实现只要 changed 或 removed 非零，"
-                 "就对整个 FTS 表执行 rebuild，所以这类样本的耗时接近全量")}
+                 "files_per_run 为 folio 自报的 changed/unchanged/removed 篇数。无改动时只遍历目录并比对 mtime/size 签名；"
+                 "有改动时按行维护 FTS，只有 --full 或首次接管旧库才整表 rebuild")}
     result["search"] = [{"term": t, "path": how, "folio": f_search[t], "python": p_search[t],
                          "folio_vs_python_median": ratio(f_search[t]["median_ms"], p_search[t]["median_ms"])}
                         for t, how in TERMS]

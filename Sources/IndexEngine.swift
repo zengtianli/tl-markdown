@@ -84,9 +84,19 @@ struct FolioIndexConfig: Codable, Sendable {
         try encoder.encode(self).write(to: url, options: .atomic)
         try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
     }
+    /// Exclusion patterns are matched against every walked entry; expanding
+    /// them once per HOME keeps the walk dominated by filesystem calls.
+    private static let expandedCache = NSCache<NSString, NSString>()
     static func expanded(_ path: String) -> String {
-        let p = path == "~" ? home : path.hasPrefix("~/") ? home + String(path.dropFirst()) : path
-        return URL(fileURLWithPath: p).lexicalPath
+        // Only "~" patterns depend on HOME; reading the environment builds a
+        // dictionary, so it stays off the path for absolute patterns.
+        let tilde = path == "~" || path.hasPrefix("~/"), home = tilde ? home : ""
+        let key = (home + "\u{0}" + path) as NSString
+        if let hit = expandedCache.object(forKey: key) { return hit as String }
+        let p = !tilde ? path : path == "~" ? home : home + String(path.dropFirst())
+        let value = URL(fileURLWithPath: p).lexicalPath
+        expandedCache.setObject(value as NSString, forKey: key)
+        return value
     }
     static func inside(_ path: String, _ root: String) -> Bool { path == root || path.hasPrefix(root == "/" ? root : root + "/") }
     /// A trailing /**/name denotes a component anywhere below that prefix.
@@ -222,7 +232,9 @@ enum FolioIndexEngine {
         let fm = FileManager.default
         func visit(_ path: String, _ workspace: String, _ inheritedRepo: String, _ root: String) throws {
             try check(cancelled)
-            guard !config.excludes(path, fullText: true), let info = lstatPath(path), isType(info, S_IFDIR), noSymlinkComponents(path, root: root) else { return }
+            // Children are only visited after lstat proved them real directories,
+            // so only the configured root needs its ancestors checked.
+            guard !config.excludes(path, fullText: true), let info = lstatPath(path), isType(info, S_IFDIR), path != root || noSymlinkComponents(path, root: root) else { return }
             let entries = try fm.contentsOfDirectory(atPath: path)
             let repo = entries.contains(".git") ? path : inheritedRepo
             for name in entries {
