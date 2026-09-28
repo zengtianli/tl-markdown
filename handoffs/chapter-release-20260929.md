@@ -13,22 +13,13 @@
   - 新增 `scripts/release/fold-lightweight.py`（放子目录，不是装机回执的构建输入）。
 - 推送：8 个提交推到 GitHub main，回读远端 = 本地 `847db74`；推送前按禁用字符串清单扫描干净；仓库无 workflows / ci_scripts / webhook，Actions runs 0，pre-push 只有 Git LFS，未触发构建或部署。
 
-## 受阻（auto）
+## 05:0x 发版完成（接续上面的受阻项）
 
-- 正式发版：`perf/lightweight.json` 测的是 (49) 包，站点构建要求与 (51) 包逐字节对应；(51) 重测时空闲门失败（负载 23→67，其他会话批量任务）。线上 `/release.json` 仍为 1.0.1 (27)。空闲后：
-
-```sh
-cd ~/Apps/folio
-~/Dev/.venv/bin/python -c 'import os,sys; sys.path.insert(0,os.path.expanduser("~/Apps/chapter/engine")); import app_sop; ok,why=app_sop.steady(); print(why); sys.exit(0 if ok else 78)' && \
-python3 scripts/measure-lightweight.py --zip build/release-1.2.0/Folio-1.2.0-51-arm64.zip --raw build/perf-1.2.0-51.json && \
-python3 scripts/release/fold-lightweight.py --raw build/perf-1.2.0-51.json && \
-python3 scripts/build-site.py --release build/release-1.2.0/release.json --out build/site && \
-bash ~/Apps/apps-portal/site/deploy.sh --products-only folio-mac --dry-run
-# 审读 dry-run 计划后：bash ~/Apps/apps-portal/site/deploy.sh --products-only folio-mac --deploy --plan <计划路径>
-# 回读：curl -s https://app-mac-folio.tianli.cyou/release.json
-```
-
-若期间又有提交改动 `scripts/*.py` 等构建输入，需先 `python3 scripts/verify-install.py` 重装、重新打包，并把 `capture.json` 的 reused_for 键与哈希改到新构建号（reason/tests 可沿用，源码指纹不变时）。
+- 空闲门通过（空闲约 3.3 小时、负载 4.2→4.9，前后各一次）后实测 (51) 发行包：下载 3,101,287 字节、解压 7,561,216 字节、空闲 118 MiB（页面按十进制 123.7 MB）/ CPU 约 0%、启动 7 次中位 310 ms；`scripts/release/fold-lightweight.py` 并入 `perf/lightweight.json`（(49) 转入 measurement_history，上一发行版对比仍为 1.0.1 (27)）。
+- README / README_EN 资源块由共享 `~/Apps/apps-portal/site/perf_block.py` 重写；发行说明数字同步。
+- 正式站构建 `build-site.py --release build/release-1.2.0/release.json` 通过（非 preview）；`deploy.sh --products-only folio-mac` 先 dry-run 审读计划（只写 `/var/www/apps-products/mac/folio`，含备份与 rollback.sh），再 `--deploy --plan …/20260928T210556Z-24bad34d/plan.json`，服务器逐文件哈希校验 OK。
+- 线上回读：`/release.json` = 1.2.0 (51)，下载包 SHA256 `2e0f1650…` 与本地一致；本机装机 (51) 源码指纹 `5f28a536…` 与发行一致。app_sop homepage_desktop、homepage_mobile、media_playback、icon_review 在线上页面 passed。
+- 仍为 ad-hoc 签名、未公证的官网 ZIP，未新开 GitHub Release / App Store 通路。
 
 ## 需要本人
 

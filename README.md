@@ -13,15 +13,11 @@
 
 | 安装包 | 空闲内存 | 空闲 CPU | 启动到编辑窗口出现并读入 137 KB 样例文档 |
 |---|---|---|---|
-| **2.7 MB**（装好后 6.7 MB） | **112 MB** | **0.02%** | **1.1 s** |
+| **3.1 MB**（装好后 7.6 MB） | **124 MB** | **0%** | **310 ms** |
 
 编辑区是包内 CodeMirror 网页组件，跑在系统 WebKit 里，多出网页、GPU、网络三个辅助进程；公式（KaTeX）、代码着色与 Mermaid 图表都在文档用到时才加载；外部修改由系统文件事件通知，空闲时不轮询；无服务器与后台任务。
 
-内存口径：主进程与 WebKit 辅助进程同一时刻合计，采样峰值 107 MB。此次 WebContent 已回收缓存；未回收时通常约多 40 MB，生命周期峰值与进程明细保留在原始记录。
-
-CPU 口径：正式发布包隐藏打开 137 KB 合成文稿，静置 45 秒后采样 60 秒；主进程及 WebKit 辅助进程合计 0.02%。整机 load average 4.9–8.5；此前高负载窗口的 0.76% 保留在历史记录。
-
-<sub>v1.0.1 (27) · Mac16,12 / Apple M4 / 16 GB / macOS 27.2 · 合成 Markdown 样例 136,703 字节（200 节：标题、中文正文、表格、任务列表、代码块、10 个公式），由 scripts/measure-lightweight.py 生成；未打开用户文档 · 2026-09-26。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+<sub>v1.2.0 (51) · Mac16,12 / Apple M4 / 16 GB / macOS 27.2 · 合成 Markdown 样例 136,703 字节（200 节：标题、中文正文、表格、任务列表、代码块、10 个公式），由 scripts/measure-lightweight.py 生成；未打开用户文档 · 2026-09-29。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
 ## 使用
