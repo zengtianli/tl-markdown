@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "name": "cli_entry",
+  "app_id": "folio-mac",
+  "command": "~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/cli_entry.py",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-09-29T02:41:58.741521+08:00",
+  "finished_at": "2026-09-29T02:41:58.879852+08:00",
+  "input_sha256": "0fe9b5fd7bc7fae254f94457e4785177c0937c9bf848a2385c9e078b406369fe",
+  "log": "perf/acceptance/cli_entry.log",
+  "log_sha256": "226e9d896ca46d5117f4c53f6c67fb5747636ee3ca29754f9567faf7af69767c",
+  "summary": "命令行在 App 里：folio — Folio — Markdown 索引与目录图谱",
+  "detail": {
+    "summary": "命令行在 App 里：folio — Folio — Markdown 索引与目录图谱",
+    "passed": true,
+    "commands": [
+      "folio"
+    ],
+    "app": "cyou.tianli.TLMarkdown",
+    "host_app": "/Applications/Folio.app",
+    "target": "/Applications/Folio.app/Contents/Resources/bin/folio",
+    "inside_app": true,
+    "help_summary": "Folio — Markdown 索引与目录图谱",
+    "entries": [
+      {
+        "command": "folio",
+        "link": "~/.local/bin/folio",
+        "target": "/Applications/Folio.app/Contents/Resources/bin/folio",
+        "inside_app": true,
+        "executable": true,
+        "exit_code": 0,
+        "summary": "Folio — Markdown 索引与目录图谱",
+        "error": null
+      }
+    ]
+  }
+}
