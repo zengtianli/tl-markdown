@@ -259,11 +259,14 @@ enum FolioIndexEngine {
         var persist: Int32 = 1
         sqlite3_file_control(db.handle, "main", SQLITE_FCNTL_PERSIST_WAL, &persist)
     }
-    private static func databaseForWrite(_ url: URL) throws -> (FolioSQLite, String?) {
+    /// `thorough` scans every page (seconds on a large index), so only full
+    /// rebuilds pay for it; incremental runs read the schema, which already
+    /// rejects a non-database file, and retry as full on page corruption.
+    private static func databaseForWrite(_ url: URL, thorough: Bool) throws -> (FolioSQLite, String?) {
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
         do {
             let db = try FolioSQLite(url)
-            try db.rows("PRAGMA quick_check") { s in
+            try db.rows(thorough ? "PRAGMA quick_check" : "SELECT 'ok' FROM sqlite_master LIMIT 1") { s in
                 if FolioSQLite.text(s, 0) != "ok" { throw FolioSQLiteError(code: SQLITE_CORRUPT, detail: FolioSQLite.text(s, 0)) }
             }
             try schema(db)
@@ -279,6 +282,13 @@ enum FolioIndexEngine {
         }
     }
     static func rebuild(config: FolioIndexConfig, database: URL, full: Bool = false, cancelled: () -> Bool = { false }) throws -> FolioIndexStats {
+        do { return try update(config: config, database: database, full: full, cancelled: cancelled) }
+        catch let error as FolioSQLiteError where !full && (error.code & 0xff == SQLITE_CORRUPT || error.code & 0xff == SQLITE_NOTADB) {
+            // The failed transaction rolled back; a full pass archives and rebuilds.
+            return try update(config: config, database: database, full: true, cancelled: cancelled)
+        }
+    }
+    private static func update(config: FolioIndexConfig, database: URL, full: Bool, cancelled: () -> Bool) throws -> FolioIndexStats {
         let start = Date()
         guard !config.roots.isEmpty else { throw FolioIndexError.message("尚未配置索引文件夹；请先在 Folio 设置中选择文件夹。") }
         try check(cancelled)
@@ -288,7 +298,7 @@ enum FolioIndexEngine {
         // remove that document from an existing index, rather than retain stale data.
         guard !found.isEmpty || FileManager.default.fileExists(atPath: database.path) else { throw FolioIndexError.message("扫描目录下 0 篇 md；尚未建立索引。") }
         try check(cancelled)
-        let (db, recovered) = try databaseForWrite(database)
+        let (db, recovered) = try databaseForWrite(database, thorough: full)
         defer { db.close() }
         try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: database.path)
         var prior: [String: Signature] = [:], oldPaths = Set<String>()
@@ -299,7 +309,14 @@ enum FolioIndexEngine {
         let signature = try db.prepare("INSERT OR REPLACE INTO folio_file(path,mtime_ns,size) VALUES(?,?,?)")
         let delete = try db.prepare("DELETE FROM doc WHERE path=?")
         let deleteSignature = try db.prepare("DELETE FROM folio_file WHERE path=?")
-        defer { for s in [insert, signature, delete, deleteSignature] { sqlite3_finalize(s) } }
+        // External-content FTS5 is kept in step row by row: the old terms are
+        // removed with the stored values before the row changes, then re-added.
+        let ftsRemove = try db.prepare("INSERT INTO doc_fts(doc_fts,rowid,title,body) SELECT 'delete',id,title,body FROM doc WHERE path=?")
+        let ftsAdd = try db.prepare("INSERT INTO doc_fts(rowid,title,body) SELECT id,title,body FROM doc WHERE path=?")
+        defer { for s in [insert, signature, delete, deleteSignature, ftsRemove, ftsAdd] { sqlite3_finalize(s) } }
+        // A database without Folio signatures (first takeover, or --full) has an
+        // FTS view this run did not maintain; rebuild it once instead.
+        let rebuildFTS = full || prior.isEmpty
         let formatter = DateFormatter(); formatter.locale = Locale(identifier: "en_US_POSIX"); formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         let titleRegex = try NSRegularExpression(pattern: "^#\\s+(.+)$", options: [.anchorsMatchLines])
         try db.exec("BEGIN IMMEDIATE")
@@ -334,15 +351,22 @@ enum FolioIndexEngine {
             let match = titleRegex.firstMatch(in: body, range: NSRange(location: 0, length: nsBody.length))
             let title = match.map { nsBody.substring(with: $0.range(at: 1)).trimmingCharacters(in: .whitespacesAndNewlines) } ?? URL(fileURLWithPath: file.path).deletingPathExtension().lastPathComponent
             let rel = String(file.path.dropFirst(file.repo.count + 1))
-            try db.run(insert, [file.path, file.workspace, file.repo, rel, scalarPrefix(title, 120), body, String(body.unicodeScalars.count), formatter.string(from: Date(timeIntervalSince1970: Double(info.st_mtimespec.tv_sec)))])
+            let values = [file.path, file.workspace, file.repo, rel, scalarPrefix(title, 120), body, String(body.unicodeScalars.count), formatter.string(from: Date(timeIntervalSince1970: Double(info.st_mtimespec.tv_sec)))]
+            if !rebuildFTS && oldPaths.contains(file.path) { try db.run(ftsRemove, [file.path]) }
+            try db.run(insert, values)
+            if !rebuildFTS { try db.run(ftsAdd, [file.path]) }
             try db.run(signature, [file.path, "\(info.st_mtimespec.tv_sec):\(info.st_mtimespec.tv_nsec)", String(info.st_size)])
             validPaths.insert(file.path); changed += 1
         }
         let removed = oldPaths.subtracting(validPaths)
-        for path in removed { try check(cancelled); try db.run(delete, [path]); try db.run(deleteSignature, [path]) }
+        for path in removed {
+            try check(cancelled)
+            if !rebuildFTS { try db.run(ftsRemove, [path]) }
+            try db.run(delete, [path]); try db.run(deleteSignature, [path])
+        }
         try check(cancelled)
         // The content table and FTS view change together in the same transaction.
-        if changed > 0 || !removed.isEmpty || full { try db.exec("INSERT INTO doc_fts(doc_fts) VALUES('rebuild')") }
+        if rebuildFTS { try db.exec("INSERT INTO doc_fts(doc_fts) VALUES('rebuild')") }
         try check(cancelled)
         let meta = try db.prepare("INSERT OR REPLACE INTO folio_meta(key,value) VALUES('updated_at',?)")
         defer { sqlite3_finalize(meta) }

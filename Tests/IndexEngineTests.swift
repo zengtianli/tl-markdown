@@ -56,6 +56,17 @@ import Darwin
         check(try FolioIndexEngine.search(database: database, query: q).isEmpty, "removed text disappears from FTS")
         q.query = "updated"
         check(try FolioIndexEngine.search(database: database, query: q).map(\.path) == [a.path], "updated text enters FTS")
+        func ftsConsistent() -> Bool {
+            var handle: OpaquePointer?
+            defer { sqlite3_close(handle) }
+            // rank=1 compares the FTS index against the external content table.
+            return sqlite3_open(database.path, &handle) == SQLITE_OK
+                && sqlite3_exec(handle, "INSERT INTO doc_fts(doc_fts, rank) VALUES('integrity-check', 1)", nil, nil, nil) == SQLITE_OK
+        }
+        check(ftsConsistent(), "row-level incremental FTS maintenance matches content table")
+        try write(c, "# New\nnew body again\n")
+        _ = try FolioIndexEngine.rebuild(config: config, database: database)
+        check(ftsConsistent(), "second incremental update keeps FTS consistent")
         var totalPolls = 0
         _ = try FolioIndexEngine.rebuild(config: config, database: database, full: true, cancelled: { totalPolls += 1; return false })
         let beforeCancellation = try FolioIndexEngine.stats(database: database).updatedAt
