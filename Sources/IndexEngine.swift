@@ -39,6 +39,8 @@ struct FolioIndexConfig: Codable, Sendable {
     var skipHidden: Bool = true
     var restrictedNames: [String] = []
     var restrictedPrefixes: [String] = []
+    /// Graph-only: a component containing any of these texts is withheld.
+    var restrictedSubstrings: [String] = []
 
     init() {}
 
@@ -55,6 +57,7 @@ struct FolioIndexConfig: Codable, Sendable {
         case roots, skipDirectories = "skip_directories", skipPaths = "skip_paths"
         case fullTextExcludedPaths = "full_text_excluded_paths", skipDirectorySuffixes = "skip_directory_suffixes"
         case skipHidden = "skip_hidden", restrictedNames = "restricted_names", restrictedPrefixes = "restricted_prefixes"
+        case restrictedSubstrings = "restricted_substrings"
     }
     init(from decoder: Decoder) throws {
         self.init()
@@ -67,6 +70,7 @@ struct FolioIndexConfig: Codable, Sendable {
         skipHidden = try c.decodeIfPresent(Bool.self, forKey: .skipHidden) ?? skipHidden
         restrictedNames = try c.decodeIfPresent([String].self, forKey: .restrictedNames) ?? restrictedNames
         restrictedPrefixes = try c.decodeIfPresent([String].self, forKey: .restrictedPrefixes) ?? restrictedPrefixes
+        restrictedSubstrings = try c.decodeIfPresent([String].self, forKey: .restrictedSubstrings) ?? restrictedSubstrings
     }
     static func load(from url: URL) throws -> Self {
         guard FileManager.default.fileExists(atPath: url.path) else {

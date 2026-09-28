@@ -27,11 +27,12 @@ folio graph ~/Documents/Notes --launcher -n
   "skip_directory_suffixes": [],
   "skip_hidden": true,
   "restricted_names": [],
-  "restricted_prefixes": []
+  "restricted_prefixes": [],
+  "restricted_substrings": []
 }
 ```
 
-`skip_paths` 排除整棵子树，支持 `目录/**/名称` 排除该目录下任意层的指定名称；`full_text_excluded_paths` 仅排除全文索引。图谱的受限名称及前缀由本机配置指定，公开默认没有私有规则。
+`skip_paths` 排除整棵子树，支持 `目录/**/名称` 排除该目录下任意层的指定名称；`full_text_excluded_paths` 仅排除全文索引。图谱的受限名称、前缀及名称片段（`restricted_substrings`）由本机配置指定，公开默认没有私有规则。
 
 更新仅读取普通 Markdown 文件，不跟随软链，跳过含 NUL 的文件及 FIFO。取消会保留原索引；坏库保留为 `.corrupt` 后重建。索引读取连接保持只读，写入在一个事务中完成。
 

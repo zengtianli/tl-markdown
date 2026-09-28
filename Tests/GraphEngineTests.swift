@@ -56,6 +56,7 @@ import Darwin
         try write("quiet/skip.md", "# Should not be read\n")
         try write("temp-old/skip.md", "# Should not be read\n")
         try write("cache-area/skip.md", "# Should not be read\n")
+        try write("notes-摘录区-2026/skip.md", "# Should not be read\n")
         try write("text-only/visible.md", "# Graph visible, excluded from full text\n")
         try write("catalog.yaml", """
         display_name: Catalog title
@@ -94,6 +95,7 @@ import Darwin
         config.fullTextExcludedPaths = [root.appendingPathComponent("text-only").path]
         config.restrictedNames = ["QUIET"]
         config.restrictedPrefixes = ["cache-"]
+        config.restrictedSubstrings = ["摘录区"]
         config.skipDirectorySuffixes = ["-old"]
         let output = try FolioGraphEngine.generate(root: root, launcher: true, config: config)
         let result = try payload(output)
@@ -106,7 +108,7 @@ import Darwin
         check(nodes["home"]?["name"] as? String == "Selected folder", "project registration overrides catalog while retaining knowledge metadata")
         check(result["static_mode"] as? Bool == true && (result["domains"] as? [String])?.isEmpty == true, "static selected-directory scope has no preconfigured domains")
         check(paths.contains(root.appendingPathComponent("docs/图 文.markdown").path), "Unicode and markdown extension preserved")
-        check(!paths.contains(where: { $0.contains("linked") || $0.contains("pipe.md") || $0.contains(".hidden") || $0.contains("node_modules") || $0.contains("/excluded/") || $0.contains("/quiet") || $0.contains("temp-old") || $0.contains("cache-area") }), "symlinks FIFO hidden and configured restrictions excluded")
+        check(!paths.contains(where: { $0.contains("linked") || $0.contains("pipe.md") || $0.contains(".hidden") || $0.contains("node_modules") || $0.contains("/excluded/") || $0.contains("/quiet") || $0.contains("temp-old") || $0.contains("cache-area") || $0.contains("摘录区") }), "symlinks FIFO hidden and configured restrictions excluded")
         check(paths.contains(root.appendingPathComponent("text-only/visible.md").path), "full-text-only exclusion does not remove graph metadata")
         check((result["home_overview"] as? [String]) == ["topic:guide", aliases["doc:overview"]!], "curated overview resolves topic aliases and real file identities")
         check(graphNodes.contains(where: { $0["id"] as? String == "topic:guide" && ($0["desc"] as? String)?.contains("First line\nSecond line") == true }), "block scalar topic description and catalog node retained")

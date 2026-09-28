@@ -294,7 +294,7 @@ enum FolioGraphEngine {
             if path == output.path || ["知识图谱.html", "知识图谱.command", "知识图谱.html.tmp"].contains(URL(fileURLWithPath: path).lastPathComponent) { return false }
             let relative = path == root.path ? "" : String(path.dropFirst(root.path.count + 1))
             for part in relative.split(separator: "/").map(String.init) {
-                if config.skipDirectories.contains(part) || config.restrictedNames.contains(where: { $0.lowercased() == part.lowercased() }) || config.restrictedPrefixes.contains(where: { part.hasPrefix($0) }) || config.skipDirectorySuffixes.contains(where: { part.hasSuffix($0) }) || (config.skipHidden && part.hasPrefix(".")) { return false }
+                if config.skipDirectories.contains(part) || config.restrictedNames.contains(where: { $0.lowercased() == part.lowercased() }) || config.restrictedPrefixes.contains(where: { part.hasPrefix($0) }) || config.restrictedSubstrings.contains(where: { !$0.isEmpty && part.contains($0) }) || config.skipDirectorySuffixes.contains(where: { part.hasSuffix($0) }) || (config.skipHidden && part.hasPrefix(".")) { return false }
             }
             return true
         }
