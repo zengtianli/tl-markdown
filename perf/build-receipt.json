@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "built_at": "2026-09-29T02:41:52+08:00",
+  "built_at": "2026-09-29T03:07:02+08:00",
   "artifact": {
     "bundle_id": "cyou.tianli.TLMarkdown",
     "version": "1.2.0",
-    "build": "44",
+    "build": "49",
     "executable": "Contents/MacOS/TLMarkdown",
-    "sha256": "3267c0af888f2044f23595d7950954245771421805dded223171d78c77418fa1",
+    "sha256": "6451de72b3795c90b45911618a5fedf8ee32790d47b9e9d1770a4d314a9745d6",
     "icon": {
       "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
       "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
@@ -32,9 +32,9 @@
       "icon/*.png",
       "icon/*.icns"
     ],
-    "sha256": "e3697dc83ab998239c8528534842198d4188457adffe55d75b1153af185489ab",
-    "file_count": 54,
-    "commit": "bdd7c12e60c755062544baa851a2ca685771e307",
+    "sha256": "45dd0baba4556ad9b1d7e86b7ade70e70368bb3ec405a0b49ea50fa47df028b7",
+    "file_count": 55,
+    "commit": "fae0be15d373d027d79e68161572be4bf8412127",
     "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
     "dirty": false
   },

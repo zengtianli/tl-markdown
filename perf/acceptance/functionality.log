@@ -27,3 +27,5 @@ PASS session restores content and reading position
 PASS pinned recent document survives session reload
 PASS closing a clean tab leaves its file intact
 Functionality acceptance passed; synthetic data only, no windows or input events.
+{"ok": true, "mode": "functionality", "scope": "synthetic CLI and shared engine"}
+PASS PATH-invoked installed layout reports bundle version and finds graph template

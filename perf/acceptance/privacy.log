@@ -23,3 +23,4 @@ PASS mdasset refuses non-image file content before returning bytes
 PASS mdasset refuses unknown document identity
 PASS bridge asset checks leave external fixture unchanged
 Privacy acceptance passed; synthetic runtime boundaries, no packet capture or external traffic.
+{"ok": true, "mode": "privacy", "scope": "synthetic CLI and shared engine"}

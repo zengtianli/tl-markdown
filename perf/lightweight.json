@@ -1193,5 +1193,200 @@
         "cpu_note": "空闲 CPU 来自系统 LaunchServices / PlugInKit 的应用注册变更回调：sample 20 秒，主线程 16,361/16,364 个样本在事件等待，其余活动集中在 launchservices.clientcallbacks、LS database changed、pkd_client 队列（perf/raw/rel-1.0.1-27-sample-summary.txt）；测量时其他会话频繁注册/注销应用副本。Folio 自身空闲时没有周期唤醒。"
       }
     }
-  ]
+  ],
+  "index_cli": {
+    "measured_at": "2026-09-29 03:01:46 +0800",
+    "device": "Mac16,12 / Apple M4 / 16 GB / macOS 27.2",
+    "cli": {
+      "file": "Folio.app/Contents/Resources/bin/folio",
+      "version": "folio 1.2.0 (48)",
+      "bytes": 313424,
+      "mb": 0.31,
+      "sha256": "584198f9c1fff168b3884425667711cbfccf04652ccaeb1f93a1a31c3477d086"
+    },
+    "baseline": {
+      "what": "md-index indexer md_index.py（Python，固定提交）",
+      "commit": "d06f313e870067aec02bfe5e07e8b730d8b8338e",
+      "sha256": "0b522559c93b3baed6994cbedfdcc1472b82649c9318f61edb6b091cc60e62e3",
+      "python": "Python 3.14.7",
+      "source_bytes": 17757
+    },
+    "load_before": {
+      "at": "03:01:46",
+      "loadavg": "{ 5.59 6.17 7.34 }",
+      "memory_pressure_level": "2"
+    },
+    "load_after": {
+      "at": "03:02:41",
+      "loadavg": "{ 8.79 6.79 7.48 }",
+      "memory_pressure_level": "2"
+    },
+    "corpus": {
+      "folio": {
+        "documents": 4624,
+        "characters": 58087426
+      },
+      "python": {
+        "documents": 4624,
+        "characters": 58087426
+      },
+      "note": "同一台机器、同一时段、各自按生产范围扫描；只记篇数与字符数"
+    },
+    "full_build": {
+      "folio": {
+        "wall_s": 11.3639,
+        "cpu_s": 10.5844,
+        "user_s": 9.457,
+        "sys_s": 1.127,
+        "peak_rss_mb": 164.7
+      },
+      "python": {
+        "wall_s": 19.3946,
+        "cpu_s": 18.536,
+        "user_s": 15.193,
+        "sys_s": 3.343,
+        "peak_rss_mb": 70.5
+      },
+      "folio_vs_python": {
+        "wall_s": 0.586,
+        "cpu_s": 0.571,
+        "peak_rss_mb": 2.336
+      }
+    },
+    "incremental": {
+      "folio": {
+        "runs": 5,
+        "files_per_run": [
+          {
+            "changed": 0,
+            "unchanged": 4624,
+            "removed": 0
+          },
+          {
+            "changed": 0,
+            "unchanged": 4624,
+            "removed": 0
+          },
+          {
+            "changed": 0,
+            "unchanged": 4624,
+            "removed": 0
+          },
+          {
+            "changed": 0,
+            "unchanged": 4624,
+            "removed": 0
+          },
+          {
+            "changed": 0,
+            "unchanged": 4624,
+            "removed": 0
+          }
+        ],
+        "median_ms": 3855.3,
+        "median_cpu_ms": 3844.4,
+        "peak_rss_mb": 51.8,
+        "samples_ms": [
+          3199.8,
+          3842.6,
+          3855.3,
+          6421.1,
+          5308.5
+        ]
+      },
+      "python": null,
+      "python_note": "Python 基线每次都整库重建，没有增量路径",
+      "note": "全量后立即重复 folio index（不带 --full）。扫描的是正在使用的真实工作区，其他进程可能在期间改动文件；files_per_run 为 folio 自报的 changed/unchanged/removed 篇数。无改动时只遍历目录并比对 mtime/size 签名；有改动时按行维护 FTS，只有 --full 或首次接管旧库才整表 rebuild"
+    },
+    "search": [
+      {
+        "term": "水库",
+        "path": "2 字，LIKE 回退",
+        "folio": {
+          "runs": 5,
+          "median_ms": 30.4,
+          "median_cpu_ms": 27.8,
+          "peak_rss_mb": 9.7,
+          "samples_ms": [
+            30.8,
+            30.5,
+            30.3,
+            30.4,
+            30.3
+          ]
+        },
+        "python": {
+          "runs": 5,
+          "median_ms": 98.2,
+          "median_cpu_ms": 90.4,
+          "peak_rss_mb": 30.0,
+          "samples_ms": [
+            109.2,
+            89.8,
+            92.6,
+            98.9,
+            98.2
+          ]
+        },
+        "folio_vs_python_median": 0.31
+      },
+      {
+        "term": "汛限水位",
+        "path": "4 字，FTS trigram",
+        "folio": {
+          "runs": 5,
+          "median_ms": 91.4,
+          "median_cpu_ms": 89.1,
+          "peak_rss_mb": 21.1,
+          "samples_ms": [
+            98.1,
+            90.8,
+            91.4,
+            90.6,
+            93.3
+          ]
+        },
+        "python": {
+          "runs": 5,
+          "median_ms": 112.6,
+          "median_cpu_ms": 108.6,
+          "peak_rss_mb": 37.3,
+          "samples_ms": [
+            101.9,
+            107.5,
+            112.6,
+            120.9,
+            117.7
+          ]
+        },
+        "folio_vs_python_median": 0.812
+      }
+    ],
+    "prior_records": {
+      "python_full_build_20260926": {
+        "wall_s": 12.2,
+        "cpu_s": 10.2,
+        "peak_rss_mb": 69.6,
+        "source": "md-index indexer perf/index-build.json（2026-09-26，生产全量刷新）"
+      },
+      "gui_note_search_20260927": {
+        "docs": 4540,
+        "水库_like_s": 0.13,
+        "汛限水位_fts_s": 0.17,
+        "source": "handoffs/note-search-merge.md（Folio 侧栏搜索，进程内查询，非 CLI）"
+      }
+    },
+    "units": "*_s 秒；*_ms 毫秒；peak_rss_mb 为 MiB（ru_maxrss / 2^20）；cli.mb 为十进制 MB",
+    "method": "每个子进程单独 os.wait4 取 rusage：墙钟（perf_counter）、CPU = user + sys、峰值 RSS = ru_maxrss。folio 用本机真实索引配置只读（前后 sha256 一致），写入 build/perf-index/ 临时库，测完删除；全量 1 次，随后无变化增量与两条搜索各跑 runs 次取中位数（输出丢弃）。Python 基线为 md_index.py@d06f313e8700（校验 sha256），从临时副本运行，INDEX_PATH 指向临时库，__file__ 保持原目录以沿用同一排除；每次搜索含解释器启动，与 CLI 实际调用同口径。空闲门 app_sop.steady() 在测量前后都通过才写入。",
+    "idle_gate": {
+      "before": {
+        "ok": true,
+        "why": "空闲 4525 秒、负载 5.6"
+      },
+      "after": {
+        "ok": true,
+        "why": "空闲 4580 秒、负载 8.8"
+      }
+    }
+  }
 }

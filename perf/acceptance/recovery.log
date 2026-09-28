@@ -18,3 +18,29 @@ PASS corrupt session bytes remain intact and user receives recovery message
 PASS new drafts persist and restore after corrupt session recovery
 PASS session write failure preserves memory content and reports failure
 PASS recovery acceptance: production store and document I/O; synthetic isolated files; no GUI input
+{"ok": true, "mode": "recovery", "scope": "synthetic CLI and shared engine"}
+PASS configuration round-trips
+PASS configuration keys use snake_case
+PASS regular Markdown only; NUL/FIFO/hidden/build/private scope excluded
+PASS symlinks excluded and nearest repository retained
+PASS WAL coordination retained for read-only clients
+PASS FTS finds long words
+PASS two-character query falls back to LIKE
+PASS workspace/repo/path/since/title filters combine
+PASS since filter excludes older documents
+PASS unchanged mtime and size skip document reads
+PASS incremental modifies, inserts, and removes in one refresh
+PASS removed text disappears from FTS
+PASS updated text enters FTS
+PASS row-level incremental FTS maintenance matches content table
+PASS second incremental update keeps FTS consistent
+PASS cancellation propagates as a distinct failure
+PASS cancelled refresh preserves previous searchable contents
+PASS cancelled transaction preserves update metadata
+PASS full forces all documents to be read
+PASS bad database is archived and rebuilt
+PASS missing config fails without creating configuration or scanning
+PASS empty roots do not create a database
+PASS stats reads real database
+PASS deleting all documents commits an empty index
+Index engine checks passed
