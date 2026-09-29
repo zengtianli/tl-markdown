@@ -31,3 +31,24 @@
 - 按发行 1.2.0 (51) 重建正式站（非 preview），`facts.json` 绑定 build 51、下载 3,101,287 字节、空闲 124 MB（十进制）/ 0% / 310 ms；dry-run 计划只写 `/var/www/apps-products/mac/folio`（23 个文件），部署后服务器哈希逐项 OK；线上 `facts.json` 与本地逐字节一致，`/release.json` 仍为 1.2.0 (51)。
 - 注意：`9cb0ea1` 改了 `scripts/build-site.py`（装机回执的构建输入），本轮 `verify-install.py` 因回执失效按既有入口重装为 1.2.0 (57)；源码指纹 `5f28a536…` 与发行 (51) 相同，应用代码无差别，只是构建号不同。重装后 cli_entry、functionality、recovery、privacy、native_ui、homepage_desktop 均 passed；homepage_mobile 首次在负载约 26 时探针未回报，重跑 passed。
 - 若 Chapter 要求装机与发行构建号一致，需在空闲门通过时按上文发版链路对 (57) 重新打包、实测、改 capture.json 的 reused_for 键并部署。
+
+## 23:2x–23:4x 装机 (57) 与发行 (51) 对齐：已备好，等空闲门
+
+- 回读：本机已是当前构建 1.2.0 (57)（receipt 匹配，跳过重装）；线上 `/release.json` 1.2.0 (51)。两者源码指纹同为 `5f28a536…`，差别只有构建号。
+- 已按既有入口从装机版打包 `build/release-1.2.0/Folio-1.2.0-57-arm64.zip`：3,101,286 字节，SHA256 `fac92aea33131021e1197f8e4fd44de95a1c19d3d5fadace76f0acfffe178990`，包签名/资源/系统依赖检查通过；(51) 包移到 `build/release-1.2.0-51/`（线上仍是它）。
+- `docs/demo/media/capture.json` 已登记 `reused_for["1.2.0 (57)"]`（理由同 51，tests 写明 (57) 上通过的五项验收）。
+- 站点构建要求 `perf/lightweight.json` 测的正是本次发行包（版本与字节数），不能把 (51) 的数字改标成 (57)；空闲门在 15 分钟内一直不通过（用户持续操作、负载 11.4），未测量、未部署。空闲后一条链接手：
+
+```sh
+cd ~/Apps/folio
+~/Dev/.venv/bin/python -c 'import os,sys; sys.path.insert(0,os.path.expanduser("~/Apps/chapter/engine")); import app_sop; ok,why=app_sop.steady(); print(why); sys.exit(0 if ok else 78)' && \
+python3 scripts/measure-lightweight.py --zip build/release-1.2.0/Folio-1.2.0-57-arm64.zip --raw build/perf-1.2.0-57.json && \
+python3 scripts/release/fold-lightweight.py --raw build/perf-1.2.0-57.json && \
+~/Dev/.venv/bin/python ~/Apps/apps-portal/site/perf_block.py "$PWD" && \
+python3 scripts/build-site.py --release build/release-1.2.0/release.json --out build/site && \
+bash ~/Apps/apps-portal/site/deploy.sh --products-only folio-mac --dry-run
+# 审读计划后：bash ~/Apps/apps-portal/site/deploy.sh --products-only folio-mac --deploy --plan <计划路径>
+# 回读：curl -s https://app-mac-folio.tianli.cyou/release.json ；curl -s https://app-mac-folio.tianli.cyou/facts.json
+```
+
+若之后又有提交改动构建输入（`scripts/*.py`、Sources 等），先 `python3 scripts/verify-install.py` 重装并重新打包，再把 capture.json 的 reused_for 键改到新构建号。
