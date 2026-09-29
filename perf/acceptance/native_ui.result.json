@@ -18,10 +18,10 @@
   "ok": true,
   "scope": "In-process production ContentView/EditorSurface/settings; source, tabs, reload, close, index setup/update/search and graph menu action/collision; isolated fictional data; never ordered or activated.",
   "screenshots": {
-    "native_ui-editor.png": 47026,
+    "native_ui-editor.png": 47007,
     "native_ui-editor.web.png": 26341,
     "native_ui-index-empty.png": 58602,
-    "native_ui-settings.png": 51004,
+    "native_ui-settings.png": 51046,
     "native_ui-source.png": 43772,
     "native_ui-source.web.png": 26667
   }
