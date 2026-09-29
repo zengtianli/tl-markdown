@@ -11,7 +11,11 @@ import re
 import shutil
 import struct
 import subprocess
+import sys
 import tempfile
+
+sys.path.insert(0, str(Path.home() / "Apps/apps-portal/site"))
+import product_facts  # facts.json published with the page for the portal and Chapter
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENES = (
@@ -238,6 +242,11 @@ def main():
         change = f'''<p>当前下载：Folio {values['VERSION']}，构建 {values['BUILD']}，{values['CHIP']}，macOS {values['MIN_MACOS']} 及以上。</p><h2>1.2.0：全部笔记，由 Folio 自己索引</h2><ul><li>设置新增「索引文件夹」与「更新索引」：索引由 Folio 在本机维护，只读取笔记、不修改内容；没有配置时不扫描，建立和搜索都不联网。</li><li>侧栏「搜索」改读 Folio 自己的索引，任何用户添加文件夹后即可使用；点命中行打开文档并跳到该行。</li><li>菜单「文件 → 生成目录图谱…」：为一个文件夹生成离线 <code>知识图谱.html</code>，不覆盖非 Folio 生成的同名文件。</li><li>应用包内附带 <code>folio</code> 命令（index / search / files / stats / graph），与界面共用引擎，只依赖系统 SQLite。</li></ul><h2>1.1.0：侧栏搜索</h2><ul><li>侧栏新增「搜索」（⌘⇧F），跨笔记检索并跳到命中行。</li></ul><h2>1.0.1：更轻、更安静</h2><ul><li>外部修改检测改由系统文件事件通知，空闲时不再每 2 秒轮询；网络卷等无法监听的位置才退回轮询。</li><li>公式（KaTeX）与代码着色改为文档里用到时才加载，编辑器主脚本 1.44 MB → 0.74 MB；去掉重复打包的 KaTeX 和不会用到的字体格式。</li><li>输入时只重算块级结构：编辑器组件基准（无头浏览器）中，1.1 MB 文档单次按键中位 59.9 → 50.9 毫秒。</li><li>文件被移走或删除后再出现时重新比对内容，内容回到原样即解除冲突提示，自动保存不再被卡住。</li><li>安装包 4.4 MB → 2.7 MB（解压后 9.3 MB → 6.7 MB）。</li></ul><h2>这个版本可以做什么</h2><ul><li>在主编辑区阅读并编辑 Markdown，直接显示表格、公式与图表。</li><li>支持源码切换、标题大纲、最近文件、搜索替换及图片插入。</li><li>自动保存已命名文件，并在外部修改冲突时保留本地草稿。</li><li>从应用“帮助”菜单进入产品主页与使用指南。</li></ul><h2>分发说明</h2><p>当前提供直接下载的 ZIP，尚未经过 Apple 公证。首次打开方法见<a href="index.html#first-open">安装指南</a>。应用代码没有在本页开放下载。</p><p><a href="downloads/SHA256SUMS.txt">查看此安装包的 SHA-256</a>。</p>'''
         (stage / "changelog.html").write_text(document_page("版本记录", change))
         validate(stage)
+        # sop.release names the deployed copy (build/site/release.json), which is the previous build
+        # while this one is staged, so bind facts to the release being packaged here.
+        name = product_facts.from_repo(ROOT, product_id="folio-mac")["name"]
+        product_facts.write(stage, product_facts.build(ROOT / "perf/lightweight.json", product_id="folio-mac", name=name,
+                                                       release_path=args.release, icon="images/icon.png"))
         files = [{"path": str(path.relative_to(stage)), "sha256": sha(path), "bytes": path.stat().st_size}
                  for path in sorted(stage.rglob("*")) if path.is_file()]
         manifest = {"schema_version": 1, "product": "Folio", "preview": args.preview,
