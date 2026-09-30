@@ -13,7 +13,7 @@ A local Markdown editor for macOS with a SwiftUI window and a bundled WebKit sin
 
 | Download | Idle memory | Idle CPU | Launch to editor window with the 137 KB sample loaded |
 |---|---|---|---|
-| **3.1 MB** (installed 7.6 MB) | **119 MB** | **0.13%** | **357 ms** |
+| **3.1 MB** (installed 7.6 MB) | **125 MB** | **0%** | **297 ms** |
 
 The editor is a bundled CodeMirror web component running in the system WebKit, which adds three helper processes (web content, GPU, networking); math (KaTeX), code highlighting and Mermaid diagrams load only when a document uses them; external edits arrive as file-system events, so nothing polls while idle. No server or background jobs.
 
