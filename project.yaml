@@ -9,6 +9,10 @@ origin: own
 # 交付流程（SOP）事实：app_sop.py 据此检查轻量/测试、演示素材、推广页、装机与发布，字段说明见
 # ~/Dev/tools/dev/lib/tools/macapp/app_sop.py 的 SOP_KEYS。
 sop:
+  measure:
+    command: ~/Dev/.venv/bin/python scripts/release/measure-sop.py
+    outputs:
+    - perf/lightweight.json
   cli:
     commands: [folio]
   budget:
