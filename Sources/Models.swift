@@ -1,5 +1,6 @@
 import Foundation
 import SQLite3
+import UniformTypeIdentifiers
 
 struct RecentFile: Codable, Identifiable {
     var path: String
@@ -43,7 +44,7 @@ struct SessionSnapshot: Codable {
     var closedDrafts: [OpenDocument]? = []
 }
 enum DocumentError: LocalizedError {
-    case conflict, missing, encoding, readOnly, imageFolder, state(String)
+    case conflict, missing, encoding, readOnly, imageFolder, imageTooLarge, imageType, state(String)
     var errorDescription: String? {
         switch self {
         case .conflict: return "文件已被其他软件修改。你的修改已保留，请选择重新载入或另存为。"
@@ -51,6 +52,8 @@ enum DocumentError: LocalizedError {
         case .encoding: return "文件不是 UTF-8 文本，暂不支持直接编辑；原文件未改动。"
         case .readOnly: return "文件为只读或不可写。你的修改已保留，请另存为。"
         case .imageFolder: return "图片目录必须是文档旁的相对目录，不能包含 .. 或绝对路径。"
+        case .imageTooLarge: return "图片过大（上限 40 MB）"
+        case .imageType: return "不是可插入的图片文件"
         case .state(let detail): return "恢复记录无法读取：\(detail)；原记录已保留。"
         }
     }
@@ -108,6 +111,18 @@ struct DocumentIO {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         return directory.appendingPathComponent("image-\(UUID().uuidString.prefix(12)).\(ext)")
     }
+    /// Paste, drag, the Insert Image menu and `folio asset add` share this size limit.
+    static let imageByteLimit = 40_000_000
+    /// A dropped or chosen file is insertable when its extension names an image type.
+    static func isImageFile(_ url: URL) -> Bool { UTType(filenameExtension: url.pathExtension)?.conforms(to: .image) ?? false }
+    /// Copies image bytes beside the document under `folder` with a unique name and returns the
+    /// Markdown reference the editor inserts. The document itself is not modified.
+    static func storeImage(_ data: Data, extension ext: String, document: OpenDocument, folder: String) throws -> (url: URL, markdown: String) {
+        guard data.count < imageByteLimit else { throw DocumentError.imageTooLarge }
+        let url = try imageDestination(document: document, folder: folder, extension: ext)
+        try data.write(to: url, options: .atomic)
+        return (url, "![图片](<\(folder)/\(url.lastPathComponent)>)")
+    }
 }
 final class SessionDisk {
     let directory: URL
@@ -132,14 +147,10 @@ enum ProductIdentity {
 
 
 // MARK: - Note search
-// Read-only access to an md-index SQLite FTS5 index (doc + doc_fts, trigram tokenizer),
-// merged from TL MdIndex so reading and cross-note search live in one app. Folio never
-// writes the index; the indexer that maintains it lives outside this app.
-
-/// The trigram tokenizer silently matches nothing for queries under three characters, and
-/// two-character words are the most common Chinese queries. Shorter queries use LIKE instead,
-/// and the UI says which path ran, because the two have different recall.
-let noteTrigramMinimum = 3
+// The sidebar's read-only view of Folio's SQLite FTS5 index (doc + doc_fts, trigram tokenizer).
+// Folio's IndexEngine maintains that index (Settings 更新索引 and `folio index`); search itself is
+// FolioIndexEngine.find, the same implementation `folio search/files` prints. This connection only
+// adds a serial queue and interruption for typing, and never writes.
 
 struct NoteLineHit: Identifiable, Hashable {
     let path: String
@@ -165,12 +176,8 @@ struct NoteSearchResult {
 
 /// All sqlite calls stay on `queue`; `interrupt()` is the one call SQLite allows from another thread.
 final class NoteIndex: @unchecked Sendable {
-    static var defaultPath: URL {
-        if let env = ProcessInfo.processInfo.environment["MDINDEX_DB"], !env.isEmpty {
-            return URL(fileURLWithPath: (env as NSString).expandingTildeInPath)
-        }
-        return FolioIndexEngine.defaultDatabaseURL
-    }
+    /// Without a custom path in Settings: MDINDEX_DB, else the default beside index.json.
+    static var defaultPath: URL { FolioIndexConfig.resolveDatabase(setting: nil).url }
     let path: URL
     let queue = DispatchQueue(label: "cyou.tianli.folio.note-index", qos: .userInitiated)
     private var db: OpaquePointer?
@@ -211,49 +218,25 @@ final class NoteIndex: @unchecked Sendable {
     private static func text(_ statement: OpaquePointer, _ column: Int32) -> String {
         sqlite3_column_text(statement, column).map { String(cString: $0) } ?? ""
     }
-    /// `%`, `_` and `\\` in a query are literal text, not wildcards.
-    static func escapeLike(_ value: String) -> String {
-        var out = ""; for character in value { if "\\%_".contains(character) { out.append("\\") }; out.append(character) }; return out
-    }
-
     func search(_ raw: String, limit: Int = 60, perFile: Int = 6) -> NoteSearchResult {
         var result = NoteSearchResult()
         let query = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         result.query = query
         guard open() else { result.error = openError; return result }
-        guard !query.isEmpty else { return result }
-        let started = Date()
-        let source: String, condition: String, params: [String]
-        if query.count >= noteTrigramMinimum {
-            result.mode = .fts
-            source = "doc_fts JOIN doc ON doc.id = doc_fts.rowid"; condition = "doc_fts MATCH ?"
-            params = ["{title body} : \"" + query.replacingOccurrences(of: "\"", with: "\"\"") + "\""]
-        } else {
-            result.mode = .like
-            let pattern = "%" + Self.escapeLike(query) + "%"
-            source = "doc"; condition = "(doc.body LIKE ? ESCAPE '\\' OR doc.title LIKE ? ESCAPE '\\')"; params = [pattern, pattern]
-        }
-        rows("SELECT doc.path, doc.ws, doc.title, doc.mtime, doc.body FROM \(source) WHERE \(condition) ORDER BY doc.mtime DESC LIMIT \(limit)", params) { row in
-            let path = Self.text(row, 0)
-            result.files.append(NoteFileHit(path: path, workspace: Self.text(row, 1), title: Self.text(row, 2), modified: Self.text(row, 3),
-                                            lines: Self.lineHits(path: path, body: Self.text(row, 4), needle: query, cap: perFile)))
-        }
-        result.truncated = result.files.count >= limit
-        result.elapsed = Date().timeIntervalSince(started)
-        return result
-    }
-    /// Real 1-based line numbers: opening a hit jumps to exactly this line.
-    static func lineHits(path: String, body: String, needle: String, cap: Int) -> [NoteLineHit] {
-        var out: [NoteLineHit] = [], number = 0
-        body.enumerateLines { line, stop in
-            number += 1
-            if line.range(of: needle, options: .caseInsensitive) != nil {
-                let trimmed = line.trimmingCharacters(in: .whitespaces)
-                out.append(NoteLineHit(path: path, line: number, text: trimmed.count > 240 ? String(trimmed.prefix(240)) + " …" : trimmed))
-                if out.count >= cap { stop = true }
+        guard !query.isEmpty, let db else { return result }
+        var request = FolioIndexQuery(); request.query = query; request.limit = limit; request.perFile = perFile
+        do {
+            let found = try FolioIndexEngine.find(handle: db, query: request)
+            result.mode = found.mode == .fts ? .fts : .like
+            result.files = found.files.map { hit in
+                NoteFileHit(path: hit.path, workspace: hit.workspace, title: hit.title, modified: hit.mtime, lines: hit.lines.map {
+                    // Opening a hit jumps to exactly this line; the sidebar shows at most 240 characters of it.
+                    NoteLineHit(path: hit.path, line: $0.line, text: $0.text.count > 240 ? String($0.text.prefix(240)) + " …" : $0.text)
+                })
             }
-        }
-        return out
+            result.truncated = found.truncated; result.elapsed = found.elapsed
+        } catch { result.error = error.localizedDescription }
+        return result
     }
 }
 

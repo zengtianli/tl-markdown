@@ -51,6 +51,14 @@ import Foundation
         try check(image.deletingLastPathComponent().lastPathComponent == "assets", "relative image folder")
         rejected = false; do { _ = try DocumentIO.imageDestination(document: imageDoc, folder: "../outside", extension: "png") } catch { rejected = true }
         try check(rejected, "image folder traversal rejected")
+        let stored = try DocumentIO.storeImage(Data([1, 2, 3]), extension: "png", document: imageDoc, folder: "pics/sub")
+        try check(stored.markdown == "![图片](<pics/sub/\(stored.url.lastPathComponent)>)" && Data(contentsOf: stored.url) == Data([1, 2, 3]), "stored image and inserted Markdown reference agree")
+        try check(stored.url.lastPathComponent.hasPrefix("image-") && stored.url.deletingLastPathComponent().path == file.deletingLastPathComponent().appendingPathComponent("pics/sub").path, "image lands beside the document")
+        rejected = false; do { _ = try DocumentIO.storeImage(Data(count: DocumentIO.imageByteLimit), extension: "png", document: imageDoc, folder: "assets") } catch DocumentError.imageTooLarge { rejected = true }
+        try check(rejected, "images at the 40 MB limit are rejected")
+        rejected = false; do { _ = try DocumentIO.storeImage(Data([1]), extension: "png", document: imageDoc, folder: "/abs") } catch DocumentError.imageFolder { rejected = true }
+        try check(rejected, "absolute image folder rejected")
+        try check(DocumentIO.isImageFile(URL(fileURLWithPath: "/x/a.PNG")) && DocumentIO.isImageFile(URL(fileURLWithPath: "/x/a.heic")) && !DocumentIO.isImageFile(URL(fileURLWithPath: "/x/a.md")), "image type follows the file extension")
         let symlink = root.appendingPathComponent("link.md"); try FileManager.default.createSymbolicLink(at: symlink, withDestinationURL: file)
         imageDoc = try DocumentIO.open(symlink); imageDoc.text += "编辑软链目标"; try DocumentIO.save(&imageDoc)
         try check(DocumentIO.open(file).text == imageDoc.text, "symlink opens and saves the actual target")

@@ -36,6 +36,10 @@ for suite in IndexEngine GraphEngine; do
   xcrun swiftc -parse-as-library "${ENGINES[@]}" "Tests/${suite}Tests.swift" -o "build/${suite}-tests"
   FOLIO_GRAPH_TEMPLATE="$DIR/Resources/graph-view.html" "build/${suite}-tests" "build/${suite}-tests-data"
 done
+# The shipped command line (the agent's surface): build the real CLI, run it on synthetic files only.
+bash scripts/build-cli.sh "$DIR/build/cli-tests/folio"
+rm -rf "$DIR/build/cli-tests/work"
+FOLIO_GRAPH_TEMPLATE="$DIR/Resources/graph-view.html" python3 scripts/accept/cli_cases.py "$DIR/build/cli-tests/folio" "$DIR/build/cli-tests/work" functionality
 if [ "${1:-}" = "--core-only" ]; then
   echo "Production I/O and store checks passed; no windows, clipboard or browser tests run."
   exit 0

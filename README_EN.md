@@ -26,9 +26,37 @@ Open with Cmd+O, save with Cmd+S, find with Cmd+F. Named files autosave; drafts 
 
 Cmd+Shift+F, or the sidebar Search tab, searches your notes: add folders in Settings and update the index, then click a matching line to open it at that line. Folio maintains its own local index without changing notes; queries of three or more characters use full-text search and shorter queries use a literal scan. Existing custom index locations remain supported.
 
-The app bundle includes `folio index / search / files / stats / graph`, sharing the same Swift engine as the interface. No folders are scanned without configuration. For the downloaded app, link `/Applications/Folio.app/Contents/Resources/bin/folio` to `~/.local/bin/folio` to use it in Terminal (see [docs/cli.md](docs/cli.md)). Use `folio graph <folder> --launcher -n` to create a directory graph and a reusable launcher, or choose File → Generate Directory Graph in the app to generate and open it.
+The app bundle includes the `folio` command, which shares the interface's Swift business layer; see Command line below. File → Generate Directory Graph and `folio graph <folder> --launcher -n` produce the same directory graph and reusable launcher.
 
 Cmd+Shift+P optionally opens a second read-only live preview for side-by-side reading. Ordinary editing does not require it.
+
+## Command line (for scripts and agents)
+
+The window is for people; the `folio` command is for scripts and agents. Both call the same Swift code, and every index, search, state and file operation you can see or do in the window has a command. For the downloaded app, link `/Applications/Folio.app/Contents/Resources/bin/folio` to `~/.local/bin/folio`; installing from source links it automatically. Full reference, `--json` shapes and exit codes: [docs/cli.md](docs/cli.md) (Chinese).
+
+```sh
+folio search 水库 --since 2026-01-01          # same implementation as the sidebar search: path:line + matching line
+folio files reservoir --repo notes --json      # files only; --json prints {ok, mode, count, files:[…]}
+folio stats --json                             # document count, last update, distribution
+folio config --json                            # effective configuration, index database and its source, folders
+folio session --file ~/notes/a.md --json       # is this file open, unsaved or in conflict in Folio?
+folio roots add ~/Documents/Notes && folio index
+folio graph ~/Documents/Notes --launcher --json
+folio asset add notes/a.md shot.png            # copies the image into assets/ and prints the Markdown to insert
+```
+
+| Command | Interface counterpart |
+|---|---|
+| `search` / `files` (read) | Sidebar Search (Cmd+Shift+F) |
+| `stats` / `config` / `roots` (read) | Settings → Index folders, custom index location |
+| `session` (read) | Unsaved/conflict state of tabs, sidebar Recent, closed drafts, reading settings |
+| `roots add/remove`, `index` (write) | Settings → Add folder, Remove, Update index |
+| `graph` (write) | File → Generate Directory Graph |
+| `asset add` (write) | The save rule of Insert Image (menu, drag, paste) |
+
+Every command has `--help` and `--json`; exit status is 0 on success (including no matches), 1 on failure and 2 on a usage error. Search returns at most 20 files by default and `--limit 0` removes the cap; a blank query (for example an empty variable) and a `--since` value that is not a date are usage errors, so they never list the whole index or return a silent empty result. Settings → Update index always rebuilds from index.json as it is on disk, so a folder list the window read earlier never overwrites changes made with `folio roots`. Read commands never write state. `session.json` is written only by the app, so tab, recent-file, pin and reading-setting changes stay in the window. Pure interface gestures (editing, preview, undo, opening a window) have no command; agents edit Markdown files directly, and Folio reloads unmodified tabs and flags a conflict, without overwriting, on tabs with unsaved edits.
+
+In 1.2.0 (57) and earlier, `search`/`files --json` returned an array of full documents, treated `%` and `_` as wildcards, matched short queries against bodies only and found matching lines case-sensitively. Later builds return an object and match exactly like the sidebar; the text output format is unchanged.
 
 ## Build and verify
 

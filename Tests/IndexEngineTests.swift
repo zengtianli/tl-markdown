@@ -38,13 +38,13 @@ import Darwin
         check(first.symlinks == 1 && first.repositories == 1 && first.updatedAt != nil, "symlinks excluded and nearest repository retained")
         check(FileManager.default.fileExists(atPath: database.path + "-wal") && FileManager.default.fileExists(atPath: database.path + "-shm"), "WAL coordination retained for read-only clients")
         var q = FolioIndexQuery(); q.query = "生态流量"
-        check(try FolioIndexEngine.search(database: database, query: q).map(\.path) == [a.path], "FTS finds long words")
+        check(try FolioIndexEngine.find(database: database, query: q).files.map(\.path) == [a.path], "FTS finds long words")
         q.query = "水库"
-        check(try FolioIndexEngine.search(database: database, query: q).count == 1, "two-character query falls back to LIKE")
+        check(try FolioIndexEngine.find(database: database, query: q).files.count == 1, "two-character query falls back to LIKE")
         q.workspace = "Notes"; q.repository = "project"; q.path = "a.md"; q.since = "2020-01-01"; q.titleOnly = true
-        check(try FolioIndexEngine.search(database: database, query: q).count == 1, "workspace/repo/path/since/title filters combine")
+        check(try FolioIndexEngine.find(database: database, query: q).files.count == 1, "workspace/repo/path/since/title filters combine")
         q.since = "2999-01-01"
-        check(try FolioIndexEngine.search(database: database, query: q).isEmpty, "since filter excludes older documents")
+        check(try FolioIndexEngine.find(database: database, query: q).files.isEmpty, "since filter excludes older documents")
         let unchanged = try FolioIndexEngine.rebuild(config: config, database: database)
         check(unchanged.changed == 0 && unchanged.unchanged == 2, "unchanged mtime and size skip document reads")
         try write(a, "# Changed\nupdated body\n")
@@ -53,9 +53,9 @@ import Darwin
         let incremental = try FolioIndexEngine.rebuild(config: config, database: database)
         check(incremental.count == 2 && incremental.changed == 2 && incremental.removed == 1, "incremental modifies, inserts, and removes in one refresh")
         q = FolioIndexQuery(); q.query = "生态流量"
-        check(try FolioIndexEngine.search(database: database, query: q).isEmpty, "removed text disappears from FTS")
+        check(try FolioIndexEngine.find(database: database, query: q).files.isEmpty, "removed text disappears from FTS")
         q.query = "updated"
-        check(try FolioIndexEngine.search(database: database, query: q).map(\.path) == [a.path], "updated text enters FTS")
+        check(try FolioIndexEngine.find(database: database, query: q).files.map(\.path) == [a.path], "updated text enters FTS")
         func ftsConsistent() -> Bool {
             var handle: OpaquePointer?
             defer { sqlite3_close(handle) }
@@ -77,7 +77,7 @@ import Darwin
         do { _ = try FolioIndexEngine.rebuild(config: config, database: database, full: true, cancelled: { polls += 1; return polls == totalPolls }) }
         catch FolioIndexError.cancelled { cancelled = true }
         check(cancelled, "cancellation propagates as a distinct failure")
-        check(try FolioIndexEngine.search(database: database, query: q).map(\.path) == [a.path], "cancelled refresh preserves previous searchable contents")
+        check(try FolioIndexEngine.find(database: database, query: q).files.map(\.path) == [a.path], "cancelled refresh preserves previous searchable contents")
         check(try FolioIndexEngine.stats(database: database).updatedAt == beforeCancellation, "cancelled transaction preserves update metadata")
         let rebuilt = try FolioIndexEngine.rebuild(config: config, database: database, full: true)
         check(rebuilt.changed == 2 && rebuilt.unchanged == 0, "full forces all documents to be read")
@@ -93,9 +93,76 @@ import Darwin
         do { _ = try FolioIndexEngine.rebuild(config: FolioIndexConfig(), database: temporary.appendingPathComponent("never.db")) } catch { emptyFailed = true }
         check(emptyFailed && !FileManager.default.fileExists(atPath: temporary.appendingPathComponent("never.db").path), "empty roots do not create a database")
         check(try FolioIndexEngine.stats(database: database).count == 2, "stats reads real database")
+        let summary = try FolioIndexEngine.summary(database: database), full = try FolioIndexEngine.stats(database: database)
+        check(summary.count == full.count && summary.updatedAt == full.updatedAt, "summary matches the full statistics")
         try FileManager.default.removeItem(at: a); try FileManager.default.removeItem(at: c)
         let emptied = try FolioIndexEngine.rebuild(config: config, database: database)
         check(emptied.count == 0 && emptied.removed == 2, "deleting all documents commits an empty index")
+
+        // One search implementation serves the sidebar and `folio search/files`.
+        let search = temporary.appendingPathComponent("Search"), searchRepo = search.appendingPathComponent("my_repo")
+        try FileManager.default.createDirectory(at: searchRepo.appendingPathComponent(".git"), withIntermediateDirectories: true)
+        try write(searchRepo.appendingPathComponent("percent.md"), "# Plan\n取 10% 多年平均\n  Reservoir level  \nreservoir again\nRESERVOIR third\n")
+        try write(searchRepo.appendingPathComponent("under.md"), "# Other\nsnake_case name\n")
+        try write(searchRepo.appendingPathComponent("水库.md"), "no heading here\n")
+        var searchConfig = FolioIndexConfig(); searchConfig.roots = [search.path]
+        let searchDB = temporary.appendingPathComponent("state/search.db")
+        _ = try FolioIndexEngine.rebuild(config: searchConfig, database: searchDB)
+        func found(_ text: String, _ edit: (inout FolioIndexQuery) -> Void = { _ in }) throws -> FolioSearchResult {
+            var request = FolioIndexQuery(); request.query = text; edit(&request); return try FolioIndexEngine.find(database: searchDB, query: request)
+        }
+        check(try found("%").files.map { URL(fileURLWithPath: $0.path).lastPathComponent } == ["percent.md"], "percent is literal, not a wildcard")
+        check(try found("_").files.map { URL(fileURLWithPath: $0.path).lastPathComponent } == ["under.md"], "underscore is literal, not a wildcard")
+        let titleOnly = try found("水库")
+        check(titleOnly.mode == .like && titleOnly.files.count == 1 && titleOnly.files[0].lines.isEmpty, "short query matches title or body; title-only match has no line hits")
+        let reservoir = try found("  reservoir  ")
+        check(reservoir.query == "reservoir" && reservoir.mode == .fts, "query is trimmed before choosing the path")
+        check(reservoir.files.first?.lines.map(\.line) == [3, 4, 5] && reservoir.files.first?.lines.first?.text == "Reservoir level", "line hits are case-insensitive, 1-based and trimmed")
+        check(try found("reservoir") { $0.perFile = 1 }.files.first?.lines.count == 1, "per-file cap limits line hits")
+        check(try found("reservoir") { $0.perFile = 0 }.files.first?.lines.isEmpty == true, "per-file 0 skips line hits")
+        check(try found("reservoir").files.first?.body == nil && found("reservoir") { $0.includeBody = true }.files.first?.body?.contains("again") == true, "bodies only on request")
+        check(try found("   ").mode == .filter && found("   ").files.count == 3, "blank query lists by filters only")
+        check(try found("") { $0.limit = 2 }.truncated && !(try found("") { $0.limit = 4 }).truncated, "truncation reported when the limit is reached")
+        let unlimited = try found("") { $0.limit = 0 }
+        check(unlimited.files.count == 3 && !unlimited.truncated, "limit 0 means no limit, never an empty result")
+        check(try found("") { $0.path = "percent" }.files.count == 1 && found("") { $0.path = "percen_" }.files.isEmpty, "path filter is a literal substring")
+        check(try found("reservoir") { $0.titleOnly = true }.files.isEmpty && found("Plan") { $0.titleOnly = true }.files.count == 1, "title-only search")
+
+        // Database resolution: --db, MDINDEX_DB, the custom path saved in Settings, the default.
+        unsetenv("MDINDEX_DB")
+        check(FolioIndexConfig.resolveDatabase(setting: nil).source == "default", "default database when nothing is set")
+        check(FolioIndexConfig.resolveDatabase(setting: " /tmp/custom.db ").url.path == "/tmp/custom.db", "Settings custom path applies")
+        setenv("MDINDEX_DB", "/tmp/env.db", 1)
+        check(FolioIndexConfig.resolveDatabase(setting: "/tmp/custom.db").source == "environment", "environment overrides the saved setting")
+        check(FolioIndexConfig.resolveDatabase(explicit: "/tmp/option.db", setting: "/tmp/custom.db").url.path == "/tmp/option.db", "explicit path wins")
+        unsetenv("MDINDEX_DB")
+        let sessionState = temporary.appendingPathComponent("session-state")
+        try FileManager.default.createDirectory(at: sessionState, withIntermediateDirectories: true)
+        try write(sessionState.appendingPathComponent("session.json"), #"{"documents":[{"text":"\"noteIndexPath\": x"}],"settings":{"imageFolder":"assets"}}"#)
+        check(FolioIndexConfig.savedIndexSetting(in: sessionState) == nil, "escaped key text inside a document is not a setting")
+        try write(sessionState.appendingPathComponent("session.json"), #"{"documents":[],"settings":{"noteIndexPath":"~/custom.db"}}"#)
+        check(FolioIndexConfig.savedIndexSetting(in: sessionState) == "~/custom.db", "saved custom index path is read")
+        check(FolioIndexConfig.savedIndexSetting(in: temporary.appendingPathComponent("absent")) == nil, "missing session has no setting")
+
+        // Index folders: Settings and `folio roots` share add/remove.
+        let rootsURL = temporary.appendingPathComponent("roots/index.json")
+        let added = try FolioIndexConfig.addRoots([search.path, search.path + "/"], at: rootsURL)
+        check(added.added == [search.path] && added.unchanged == [search.path] && added.roots == [search.path], "add standardizes and de-duplicates")
+        check((try FileManager.default.attributesOfItem(atPath: rootsURL.path)[.posixPermissions] as? Int) == 0o600, "saved configuration is private")
+        let before = try Data(contentsOf: rootsURL)
+        var missingRoot = false
+        do { _ = try FolioIndexConfig.addRoots([search.path, temporary.appendingPathComponent("nope").path], at: rootsURL) } catch { missingRoot = true }
+        check(try missingRoot && Data(contentsOf: rootsURL) == before, "a missing folder rejects the whole change")
+        let again = try FolioIndexConfig.addRoots([search.path], at: rootsURL)
+        check(try !again.changed && Data(contentsOf: rootsURL) == before, "adding an existing folder writes nothing")
+        var external = try FolioIndexConfig.load(from: rootsURL); external.roots.append(root.path); external.skipHidden = false; try external.save(to: rootsURL)
+        let removed = try FolioIndexConfig.removeRoots([search.path, "/not/configured"], at: rootsURL)
+        let kept = try FolioIndexConfig.load(from: rootsURL)
+        check(removed.removed == [search.path] && removed.notFound == ["/not/configured"] && kept.roots == [root.path] && !kept.skipHidden, "remove re-reads the file and keeps other edits")
+        try write(rootsURL, "{ not json")
+        var unreadable = false
+        do { _ = try FolioIndexConfig.addRoots([search.path], at: rootsURL) } catch { unreadable = true }
+        check(try unreadable && String(contentsOf: rootsURL, encoding: .utf8) == "{ not json", "an unreadable configuration is never replaced")
         print(failures == 0 ? "Index engine checks passed" : "\(failures) checks failed")
         exit(failures == 0 ? 0 : 1)
     }

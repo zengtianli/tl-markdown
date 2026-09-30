@@ -160,6 +160,16 @@ enum FolioGraphYAML {
     }
 }
 
+struct FolioGraphReport: Codable {
+    var path: String
+    var launcher: String?
+    var directories: Int
+    var files: Int
+    var nodes: Int
+    var edges: Int
+    var metadataWarnings: Int
+}
+
 enum FolioGraphEngine {
     static let marker = "<meta name=\"folder-graph-generator\" content=\"folio-folder-graph-v1\">"
     private static let legacyMarker = "<meta name=\"folder-graph-generator\" content=\"shared-folder-graph-v1\">"
@@ -176,6 +186,11 @@ enum FolioGraphEngine {
     /// Generates an offline document, never opens a browser or takes UI focus.
     static func generate(root: URL, output: URL? = nil, launcher: Bool = false,
                          config: FolioIndexConfig, cancelled: @escaping () -> Bool = { false }) throws -> URL {
+        URL(fileURLWithPath: try generateReport(root: root, output: output, launcher: launcher, config: config, cancelled: cancelled).path)
+    }
+    /// The same generation, plus the counts the page itself shows (for `folio graph --json`).
+    static func generateReport(root: URL, output: URL? = nil, launcher: Bool = false,
+                               config: FolioIndexConfig, cancelled: @escaping () -> Bool = { false }) throws -> FolioGraphReport {
         let root = lexical(root)
         let output = lexical(output ?? root.appendingPathComponent("知识图谱.html"))
         let command = root.appendingPathComponent("知识图谱.command")
@@ -200,7 +215,12 @@ enum FolioGraphEngine {
             let script = "#!/bin/zsh\n" + commandMarker + "\nset -eu\nexport PATH=\"$HOME/.local/bin:$PATH\"\ncd \"${0:A:h}\"\nfolio graph \"$PWD\" --launcher\n"
             try atomicWrite(script, to: command, mode: 0o700)
         }
-        return output
+        let status = payload["status"] as? [String: Any], counts = status?["counts"] as? [String: Any]
+        let coverage = payload["coverage"] as? [String: Any], atlas = payload["atlas"] as? [String: Any]
+        return FolioGraphReport(path: output.path, launcher: launcher ? command.path : nil,
+                                directories: counts?["directory"] as? Int ?? 0, files: counts?["file"] as? Int ?? 0,
+                                nodes: coverage?["rendered_nodes"] as? Int ?? 0, edges: (atlas?["edges"] as? [Any])?.count ?? 0,
+                                metadataWarnings: (payload["metadata_warnings"] as? [Any])?.count ?? 0)
     }
     private static func templateURL() throws -> URL {
         var candidates: [URL] = []

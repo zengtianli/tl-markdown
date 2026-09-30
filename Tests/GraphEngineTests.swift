@@ -121,6 +121,10 @@ import Darwin
         let command = try String(contentsOf: root.appendingPathComponent("知识图谱.command"), encoding: .utf8)
         check(command.contains("folio graph \"$PWD\" --launcher") && !command.contains("python"), "launcher invokes installed Folio CLI")
         check((try fm.attributesOfItem(atPath: root.appendingPathComponent("知识图谱.command").path)[.posixPermissions] as? Int) == 0o700, "launcher private executable permissions")
+        let report = try FolioGraphEngine.generateReport(root: root, launcher: true, config: config)
+        let counts = (result["status"] as! [String: Any])["counts"] as! [String: Int]
+        check(report.path == output.path && report.launcher != nil && report.directories == counts["directory"] && report.files == counts["file"]
+              && report.nodes == nodes.count && report.edges == edges.count, "generation report carries the page's own counts")
         let refreshed = try payload(FolioGraphEngine.generate(root: root, launcher: true, config: config))
         check((refreshed["nodes"] as! [String: Any]).count == nodes.count, "idempotent refresh excludes generated HTML and launcher")
         let original = try Data(contentsOf: output)

@@ -1,9 +1,17 @@
 # CLAUDE.md — Folio
 
-SwiftUI macOS app（脚手架生成自 macapp_scaffold）。产品范围与实际架构先读本项目
+SwiftUI macOS app（脚手架生成自 macapp_scaffold），全 Swift，无外部 Python 后端。产品范围与实际架构先读本项目
 `README.md` 和 `project.yaml`；上级 `~/Apps/CLAUDE.md` 是产品工作区约定。
-默认能全 Swift 就全 Swift；生成的 Python demo 只是连通性示例，不是强制运行时依赖。
-只有实际依赖重型 Python 库或总部外部消费者时，才保留相应后端通路。
+
+## 命令行（agent 入口）
+
+界面给人用，`folio` 给程序和 agent 用，共用同一业务层：`Sources/IndexEngine.swift`（索引、检索 `FolioIndexEngine.find`、
+库位置 `resolveDatabase`、索引文件夹增删）、`Sources/GraphEngine.swift`（目录图谱）、`Sources/Models.swift`（会话记录
+`SessionDisk`、插图 `DocumentIO.storeImage`）。入口 `CLI/main.swift`，由 `scripts/build-cli.sh` 与上述三文件一起编进
+`Folio.app/Contents/Resources/bin/folio`（签名 `cyou.tianli.TLMarkdown.cli`，≤2 MB），`scripts/install-cli.py` 链接
+`~/.local/bin/folio`。新增界面能力时同步补命令：读命令只读、支持 `--json`（`{ok: …}`）；写命令复用界面的校验；
+退出码 0/1/2 = 成功/失败/用法错误。`session.json` 只由运行中的 App 写，命令行对它只读。命令清单、JSON 结构与
+仅界面的手势见 `docs/cli.md`；真二进制回归在 `scripts/accept/cli_cases.py`（`scripts/test.sh --core-only` 也会跑）。
 
 新需求先读 playbook：`~/Dev/tools/configs/playbooks/native-console-app.md`（决策树 + 全部坑单）。
 
@@ -39,11 +47,8 @@ python3 /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.py list
 - `build.sh` 对签名后的真实 .app 自动运行 `scripts/test_file_open.py`：通过 LaunchServices 验证冷启动、运行中多文件、Unicode/空格、两种扩展名和重复打开；读取隔离会话中真实文档内容。失败不安装。发布时再通过 CUA 核对安装版窗口内容；组件测试或 open 返回 0 不能替代。
 
 - bundle id `cyou.tianli.TLMarkdown`；部署目标见 pbxproj `MACOSX_DEPLOYMENT_TARGET`。
-- **若使用外部 Python 后端**：stdout 纯 JSON；`gui-*` 子命令一律 exit 0，失败 = `{"ok": false, "error": "人话"}`；
-  字段 snake_case（Swift 侧 `.convertFromSnakeCase` 自动映射）。改 `Models.swift` = 同步改后端输出。
-- 需要共享 Python 后端时放 `~/Dev/tools/dev/lib/tools/` 下（平台-子公司模型），按实际接口接入；
-  全 Swift 应用移除 demo，核心读写用生产代码测试，不额外维持占位后端。
+- 核心读写用生产代码测试，不维持占位后端；CLI 与界面共用 Sources 里的实现，不另写第二套。
 - 新增源文件要动 pbxproj 4 处（PBXBuildFile / PBXFileReference / Sources group / Sources build
-  phase）—— 小增量优先 append 进现有 5 文件，MARK 分节。
+  phase），CLI 需要时还要加进 `scripts/build-cli.sh`—— 小增量优先 append 进 Sources 现有 7 个文件，MARK 分节。
 - UI 坑单（语义色零硬编码 / 禁 `fixedSize(h:false,v:true)` / detail 根 minWidth 600 / 并发 drain /
   GUI PATH 注入）已以代码+注释固化在 Sources/ 里，删注释前先读 playbook。

@@ -75,7 +75,7 @@ private struct NativeImageOverlay {
         let urls = sender.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []
         for url in urls {
             if ["md", "markdown", "txt"].contains(url.pathExtension.lowercased()) { bridge?.store?.open(url) }
-            else if let type = UTType(filenameExtension: url.pathExtension), type.conforms(to: .image), let data = try? Data(contentsOf: url) {
+            else if DocumentIO.isImageFile(url), let data = try? Data(contentsOf: url) {
                 bridge?.acceptImage(data, ext: url.pathExtension, id: documentID)
             }
         }
@@ -321,7 +321,7 @@ private struct NativeImageOverlay {
         return true
     }
     func acceptImage(_ data: Data, ext: String, id: String) {
-        guard data.count < 40_000_000 else { store?.banner = "图片过大（上限 40 MB）"; return }
+        guard data.count < DocumentIO.imageByteLimit else { store?.banner = DocumentError.imageTooLarge.localizedDescription; return }
         store?.insertImage(data: data, ext: ext, documentID: id)
     }
     private func go(_ position: Int) {
@@ -581,7 +581,7 @@ struct EditorSurface: NSViewRepresentable {
         case "mode": store.sourceMode = body["source"] as? Bool ?? false
         case "copy": NSPasteboard.general.clearContents(); NSPasteboard.general.setString(body["text"] as? String ?? "", forType: .string)
         case "image":
-            guard let encoded = body["data"] as? String, let data = Data(base64Encoded: encoded), data.count < 40_000_000 else { store.banner = "图片过大或无法读取（上限 40 MB）"; return }
+            guard let encoded = body["data"] as? String, let data = Data(base64Encoded: encoded), data.count < DocumentIO.imageByteLimit else { store.banner = "图片过大或无法读取（上限 40 MB）"; return }
             let mime = body["mime"] as? String ?? "image/png"
             let ext = UTType(mimeType: mime)?.preferredFilenameExtension ?? "png"
             store.insertImage(data: data, ext: ext, documentID: id)

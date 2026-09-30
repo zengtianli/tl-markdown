@@ -38,6 +38,21 @@ import AppKit
         try check(restored.documents.count == store.documents.count && restored.settings.fontSize == 21, "real store restores tabs, drafts and settings")
         try check(restored.recent.contains(where:{$0.pinned}), "real store restores pinned recent entry")
         restored.clearRecent();try check(restored.recent.isEmpty && FileManager.default.fileExists(atPath:a.path), "clearing history leaves documents intact")
+        // Settings "更新索引" rebuilds from index.json as it is on disk: a folder added by
+        // `folio roots add` after Settings read the file is indexed, not dropped.
+        let settingsModel = store.indexSettings, notes = root.appendingPathComponent("notes")
+        try FileManager.default.createDirectory(at: notes, withIntermediateDirectories: true)
+        try Data("# 笔记\n\n水库\n".utf8).write(to: notes.appendingPathComponent("n.md"))
+        try check(settingsModel.config.roots.isEmpty, "settings start without index folders")
+        _ = try FolioIndexConfig.addRoots([notes.path], at: settingsModel.configURL)
+        settingsModel.updateIndex()
+        var waited = 0
+        while settingsModel.updating && waited < 200 { try await Task.sleep(for: .milliseconds(50)); waited += 1 }
+        try check(settingsModel.config.roots.count == 1 && settingsModel.documentCount == 1, "settings update index re-reads folders changed by folio roots: " + settingsModel.message)
+        _ = try FolioIndexConfig.removeRoots([notes.path], at: settingsModel.configURL)
+        try Data("{bad".utf8).write(to: settingsModel.configURL)
+        settingsModel.updateIndex()
+        try check(!settingsModel.updating && settingsModel.configurationError != nil && settingsModel.documentCount == 1, "unreadable index.json stops the update and keeps the index")
         print("Store integration checks passed: \(root.path)")
     }
 }

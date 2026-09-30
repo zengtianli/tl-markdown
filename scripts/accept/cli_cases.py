@@ -30,6 +30,149 @@ def run(*args, code=0):
     return result
 
 
+def run_env(extra, *args, code=0):
+    result = subprocess.run([str(binary), *map(str, args)], env={**env, **extra}, text=True,
+                            capture_output=True, timeout=30)
+    assert result.returncode == code, (args, result.returncode, result.stdout, result.stderr)
+    return result
+
+
+def same(a, b):
+    return os.path.realpath(str(a)) == os.path.realpath(str(b))
+
+
+def agent_surface():
+    """Agent-facing commands: help, exit codes, stable JSON, sandboxed writes, read-only state."""
+    for name in ['index', 'build', 'search', 'files', 'stats', 'config', 'roots', 'session', 'graph', 'asset']:
+        assert run(name, '--help').stdout.startswith('用法：folio'), name
+    run('bogus', code=2)
+    run(code=2)
+    run('stats', 'extra', code=2)
+    run('stats', '--full', code=2)
+    run('search', '--limit', '-1', code=2)
+    failure = json.loads(run('bogus', '--json', code=2).stdout)
+    assert failure['ok'] is False and failure['usage'] is True and failure['error'], failure
+    missing = json.loads(run('stats', '--db', base / 'absent.db', '--json', code=1).stdout)
+    assert missing['ok'] is False and missing['usage'] is False
+    assert not (base / 'absent.db').exists()
+
+    agent = home / 'Agent'
+    (agent / '.git').mkdir(parents=True)
+    plan = agent / 'plan.md'
+    plan.write_text('# Plan\n取 10% 多年平均\n  Reservoir level\nreservoir again\n')
+    (agent / 'snake.md').write_text('# Snake\nsnake_case\n')
+    (agent / '水库.md').write_text('no heading\n')
+    cfg, agent_db = base / 'agent.json', base / 'agent.db'
+
+    # roots: the Settings add/remove rules, only on the named index.json
+    added = json.loads(run('roots', 'add', agent, '--config', cfg, '--json').stdout)
+    assert added['ok'] and added['changed'] and len(added['added']) == 1 and same(added['added'][0], agent), added
+    again = json.loads(run('roots', 'add', agent, '--config', cfg, '--json').stdout)
+    assert not again['changed'] and len(again['unchanged']) == 1
+    saved = cfg.read_bytes()
+    run('roots', 'add', base / 'no-such-folder', '--config', cfg, code=1)
+    assert cfg.read_bytes() == saved and (cfg.stat().st_mode & 0o777) == 0o600
+    assert same(json.loads(run('roots', '--config', cfg, '--json').stdout)['roots'][0], agent)
+    built = json.loads(run('index', '--config', cfg, '--db', agent_db, '--json').stdout)
+    assert built['ok'] and built['count'] == 3 and built['database_source'] == 'option' and 'changed' in built, built
+
+    def q(*args):
+        return json.loads(run(*args, '--db', agent_db, '--json').stdout)
+
+    def names(result):
+        return [Path(f['path']).name for f in result['files']]
+    # search semantics are the sidebar's: literal %/_, title or body, trimmed, case-insensitive lines
+    percent = q('files', '%')
+    assert percent['ok'] and percent['mode'] == 'like' and names(percent) == ['plan.md'] and percent['files'][0]['lines'] == []
+    assert names(q('files', '_')) == ['snake.md']
+    assert names(q('files', '水库')) == ['水库.md']
+    hits = q('search', ' reservoir ')
+    assert hits['query'] == 'reservoir' and hits['mode'] == 'fts' and hits['count'] == 1, hits
+    assert hits['files'][0]['lines'] == [{'line': 3, 'text': 'Reservoir level'}, {'line': 4, 'text': 'reservoir again'}]
+    assert 'body' not in hits['files'][0] and 'again' in q('search', 'reservoir', '--body')['files'][0]['body']
+    assert q('files', '--limit', '2')['truncated'] is True and q('files')['mode'] == 'filter'
+    unlimited = q('files', '--limit', '0')
+    assert unlimited['count'] == 3 and unlimited['truncated'] is False and unlimited['limit'] == 0, unlimited
+    # an empty shell variable must not list the whole index
+    blank = json.loads(run('files', '   ', '--db', agent_db, '--json', code=2).stdout)
+    assert blank['ok'] is False and blank['usage'] is True, blank
+    run('search', '', '--db', agent_db, code=2)
+    # --since takes a real date; a malformed one is a usage error, not a silent empty result
+    for bad in ['notadate', '2026-02-30', '2026-1-01', '2026-01-01T25:00', '2026-01-01 10:00']:
+        run('files', '--since', bad, '--db', agent_db, code=2)
+    assert q('files', '--since', '2000-01-01')['count'] == 3 and q('files', '--since', '2000-01-01T00:00')['count'] == 3
+    assert q('files', '--since', '2999-12-31')['count'] == 0
+    nothing = run('search', 'zzqqxxnomatch', '--db', agent_db, '--json')
+    assert json.loads(nothing.stdout)['count'] == 0
+    assert ':3\tReservoir level' in run('search', 'reservoir', '--db', agent_db).stdout
+    stats = q('stats')
+    assert stats['count'] == 3 and stats['updated_at'] and 'changed' not in stats
+    assert '\tupdated=' in run('stats', '--db', agent_db).stdout
+    config = json.loads(run('config', '--config', cfg, '--db', agent_db, '--json').stdout)
+    assert config['ok'] and config['database']['source'] == 'option' and config['index']['count'] == 3
+    assert config['roots'][0]['exists'] and 'rule_values' not in config
+    assert 'rule_values' in json.loads(run('config', '--config', cfg, '--db', agent_db, '--show-rules', '--json').stdout)
+
+    # session: read-only view of the app's own session.json (never written by the CLI)
+    state = base / 'state'
+    state.mkdir(exist_ok=True)
+    def document(id, path, text, saved, conflict=False, message=''):
+        doc = {'id': id, 'text': text, 'savedText': saved, 'lineEnding': '\n', 'bom': False, 'scroll': 0,
+               'selection': 0, 'revision': 0, 'conflict': conflict, 'message': message}
+        return {**doc, 'path': str(path)} if path else doc
+    snapshot = {'documents': [document('A', plan, 'edited', 'orig', True, 'conflict'), document('B', None, 'draft text', '')],
+                'activeID': 'A', 'recent': [{'path': str(plan), 'opened': 0, 'pinned': True, 'scroll': 0, 'selection': 0}],
+                'settings': {'fontFamily': 'system', 'fontSize': 17, 'contentWidth': 820, 'restoreSession': True,
+                             'imageFolder': 'pics', 'noteIndexPath': str(agent_db)},
+                'closedDrafts': [document('C', None, 'closed draft', '')]}
+    session_file = state / 'session.json'
+    session_file.write_text(json.dumps(snapshot))
+    before = (session_file.stat().st_mtime_ns, sorted(p.name for p in state.iterdir()))
+    view = json.loads(run('session', '--json').stdout)
+    a, b = view['documents']
+    assert view['ok'] and view['active_id'] == 'A' and a['active'] and a['dirty'] and a['conflict'] and a['characters'] == 6
+    assert 'text' not in a and 'path' not in b and b['dirty'] and view['recent'][0]['pinned']
+    assert view['closed_drafts'][0]['characters'] == len('closed draft') and view['settings']['image_folder'] == 'pics'
+    texts = json.loads(run('session', '--text', '--json').stdout)
+    assert texts['documents'][0]['text'] == 'edited' and texts['closed_drafts'][0]['text'] == 'closed draft'
+    only = json.loads(run('session', '--file', plan, '--json').stdout)
+    assert [d['id'] for d in only['documents']] == ['A'] and only['closed_drafts'] == []
+    assert 'plan.md' in run('session').stdout
+    # the custom index path saved in Settings applies to every command; MDINDEX_DB still overrides it
+    assert json.loads(run('stats', '--json').stdout)['database_source'] == 'settings'
+    assert json.loads(run_env({'MDINDEX_DB': str(agent_db)}, 'stats', '--json').stdout)['database_source'] == 'environment'
+
+    # asset add: the editor's insert-image rule; the document is not modified
+    png = base / 'pixel.png'
+    png.write_bytes(bytes.fromhex('89504e470d0a1a0a0000000d49484452'))
+    plan_bytes = plan.read_bytes()
+    asset = json.loads(run('asset', 'add', plan, png, '--json').stdout)
+    stored = Path(asset['path'])
+    assert asset['ok'] and asset['folder'] == 'pics' and same(stored.parent, agent / 'pics') and stored.name.startswith('image-')
+    assert asset['markdown'] == f'![图片](<pics/{stored.name}>)' and stored.read_bytes() == png.read_bytes()
+    assert plan.read_bytes() == plan_bytes
+    assert 'assets/' in run('asset', 'add', plan, png, '--folder', 'assets').stdout
+    run('asset', 'add', plan, png, '--folder', '../outside', code=1)
+    (base / 'note.txt').write_text('not an image')
+    run('asset', 'add', plan, base / 'note.txt', code=1)
+    run('asset', 'add', plan, code=2)
+    assert (session_file.stat().st_mtime_ns, sorted(p.name for p in state.iterdir())) == before
+
+    # an unreadable session fails without being rewritten
+    session_file.write_text('not json')
+    broken = json.loads(run('session', '--json', code=1).stdout)
+    assert broken['ok'] is False and session_file.read_text() == 'not json'
+
+    # graph --json never opens a browser and reports the page's counts
+    graph = json.loads(run('graph', agent, '--json', '--config', cfg).stdout)
+    assert graph['ok'] and Path(graph['path']).name == '知识图谱.html' and graph['files'] >= 3 and graph['nodes'] >= 1
+
+    removed = json.loads(run('roots', 'remove', agent, '--config', cfg, '--json').stdout)
+    assert removed['changed'] and removed['roots'] == []
+    absent = json.loads(run('roots', 'remove', agent, '--config', cfg, '--json').stdout)
+    assert not absent['changed'] and len(absent['not_found']) == 1
+
+
 def index(*args):
     return run('index', '--config', config, '--db', db, *args)
 
@@ -88,6 +231,7 @@ if mode == 'functionality':
     html.write_text('User-owned content')
     run('graph', root, '-n', '--config', config, code=1)
     assert html.read_text() == 'User-owned content'
+    agent_surface()
 elif mode == 'recovery':
     db.write_bytes(b'corrupt database fixture')
     index()

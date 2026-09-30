@@ -10,7 +10,7 @@ if [ -z "${DEVELOPER_DIR:-}" ]; then
 fi
 xcrun swiftc -Osize -whole-module-optimization -parse-as-library \
   -target arm64-apple-macosx15.0 \
-  Sources/IndexEngine.swift Sources/GraphEngine.swift CLI/main.swift -o "$OUT"
+  Sources/IndexEngine.swift Sources/GraphEngine.swift Sources/Models.swift CLI/main.swift -o "$OUT"
 xcrun strip -x "$OUT"
 test "$(stat -f %z "$OUT")" -le 2000000
 # codesign reports "<absolute path>: replacing existing signature" on success;

@@ -117,10 +117,8 @@ struct ContentView: View {
             if store.sidebarTab == 0 && !store.recent.isEmpty { Button("清空最近记录") { store.clearRecent() }.buttonStyle(.plain).font(.caption).foregroundStyle(.secondary).padding(.bottom, 14) }
         }.padding(.horizontal, 14).background(Color(nsColor: .windowBackgroundColor))
     }
-    private var noteIndexURL: URL {
-        guard let path = store.settings.noteIndexPath?.trimmingCharacters(in: .whitespaces), !path.isEmpty else { return NoteIndex.defaultPath }
-        return URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
-    }
+    /// Same resolution as `folio`: MDINDEX_DB, then this custom path, then the default.
+    private var noteIndexURL: URL { FolioIndexConfig.resolveDatabase(setting: store.settings.noteIndexPath).url }
     var tabs: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 2) {
@@ -171,6 +169,8 @@ struct FolioSettingsView: View {
             Divider(); Button("清空最近文件记录") { store.clearRecent() }
         }.padding(28).frame(width: 580)
             .onAppear { indexSettings.reloadConfiguration() }
+            // Returning to Folio shows folders another writer (`folio roots`) changed meanwhile.
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in indexSettings.reloadConfiguration() }
             .onChange(of: store.settings.fontSize) { store.settingsChanged() }
             .onChange(of: store.settings.contentWidth) { store.settingsChanged() }
             .onChange(of: store.settings.restoreSession) { store.settingsChanged() }

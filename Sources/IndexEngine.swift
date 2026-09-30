@@ -113,6 +113,81 @@ struct FolioIndexConfig: Codable, Sendable {
     func excludesComponent(_ name: String) -> Bool {
         skipDirectories.contains(name) || (skipHidden && name.hasPrefix(".")) || skipDirectorySuffixes.contains(where: name.hasSuffix)
     }
+
+    // MARK: Index database location
+    /// Every reader and writer (Settings, sidebar search, `folio`) resolves the database the same
+    /// way: an explicit path, then MDINDEX_DB, then the custom index path saved in Folio Settings,
+    /// then md_index.db beside index.json. `setting` is only evaluated when it is needed.
+    static func resolveDatabase(explicit: String? = nil, setting: @autoclosure () -> String?) -> (url: URL, source: String) {
+        if let explicit, !explicit.isEmpty { return (URL(fileURLWithPath: expanded(explicit)), "option") }
+        if let env = ProcessInfo.processInfo.environment["MDINDEX_DB"], !env.isEmpty { return (URL(fileURLWithPath: expanded(env)), "environment") }
+        if let saved = setting()?.trimmingCharacters(in: .whitespaces), !saved.isEmpty { return (URL(fileURLWithPath: expanded(saved)), "settings") }
+        return (FolioIndexEngine.defaultDatabaseURL, "default")
+    }
+    /// The custom index path the running app saved in session.json (settings.noteIndexPath). The
+    /// session file is large (base64 tab snapshots), so a byte scan skips the parse when the key is
+    /// absent; a quoted key cannot occur inside escaped JSON string content. Read-only.
+    static func savedIndexSetting(in directory: URL = stateDirectory) -> String? {
+        let file = directory.appendingPathComponent("session.json")
+        guard let data = try? Data(contentsOf: file, options: .mappedIfSafe), data.range(of: Data("\"noteIndexPath\"".utf8)) != nil,
+              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let settings = object["settings"] as? [String: Any], let path = settings["noteIndexPath"] as? String else { return nil }
+        let trimmed = path.trimmingCharacters(in: .whitespaces)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    // MARK: Index folders (Settings 添加/移除文件夹 and `folio roots`)
+    /// A root as Settings stores it: tilde-expanded and standardized, like an NSOpenPanel URL.
+    static func normalizedRoot(_ path: String) -> String {
+        let tilde = path == "~" || path.hasPrefix("~/")
+        let raw = tilde ? (path == "~" ? home : home + String(path.dropFirst())) : path
+        return URL(fileURLWithPath: raw).standardizedFileURL.path
+    }
+    /// Re-reads the file before every change so a stale copy never overwrites another writer's
+    /// edit. A missing file starts from defaults; an unreadable one is never replaced.
+    static func loadForEditing(from url: URL) throws -> Self {
+        guard FileManager.default.fileExists(atPath: url.path) else { return Self() }
+        do { return try JSONDecoder().decode(Self.self, from: Data(contentsOf: url)) }
+        catch { throw FolioIndexError.message("无法读取索引配置 \(url.path)：\(error.localizedDescription)；未做任何修改。") }
+    }
+    static func addRoots(_ paths: [String], at url: URL) throws -> FolioRootsChange {
+        var config = try loadForEditing(from: url), change = FolioRootsChange(configPath: url.path)
+        for raw in paths {
+            let path = normalizedRoot(raw)
+            var directory: ObjCBool = false
+            guard FileManager.default.fileExists(atPath: path, isDirectory: &directory), directory.boolValue else {
+                throw FolioIndexError.message("不是存在的文件夹：\(path)；未做任何修改。")
+            }
+            if config.roots.contains(where: { $0 == path || expanded($0) == path }) || change.added.contains(path) { change.unchanged.append(path) }
+            else { config.roots.append(path); change.added.append(path) }
+        }
+        if !change.added.isEmpty { try config.save(to: url) }
+        change.roots = config.roots
+        return change
+    }
+    static func removeRoots(_ paths: [String], at url: URL) throws -> FolioRootsChange {
+        var config = try loadForEditing(from: url), change = FolioRootsChange(configPath: url.path)
+        for raw in paths {
+            // Settings removes the stored text itself; typed paths also match their expanded form.
+            let path = normalizedRoot(raw)
+            let matches = config.roots.filter { $0 == raw || $0 == path || expanded($0) == path }
+            if matches.isEmpty { change.notFound.append(raw) }
+            else { config.roots.removeAll { matches.contains($0) }; change.removed.append(contentsOf: matches) }
+        }
+        if !change.removed.isEmpty { try config.save(to: url) }
+        change.roots = config.roots
+        return change
+    }
+}
+
+struct FolioRootsChange: Codable {
+    var configPath: String
+    var roots: [String] = []
+    var added: [String] = []
+    var removed: [String] = []
+    var unchanged: [String] = []
+    var notFound: [String] = []
+    var changed: Bool { !added.isEmpty || !removed.isEmpty }
 }
 
 enum FolioIndexError: Error, LocalizedError {
@@ -141,6 +216,7 @@ struct FolioIndexStats: Codable {
     var elapsed: Double = 0
     var recoveredDatabase: String?
 }
+struct FolioIndexSummary: Codable { var count: Int; var updatedAt: Date? }
 struct FolioIndexQuery {
     var query = ""
     var workspace: String?
@@ -148,12 +224,31 @@ struct FolioIndexQuery {
     var path: String?
     var since: String?
     var titleOnly = false
+    /// Maximum files; 0 = no limit.
     var limit = 20
+    /// Matching lines reported per file; 0 skips reading bodies for line hits.
     var perFile = 3
     var width = 120
+    var includeBody = false
 }
-struct FolioIndexDocument: Codable {
-    var id: Int; var path: String; var repository: String; var title: String; var mtime: String; var body: String
+/// fts: trigram full-text index; like: literal scan for queries under three characters;
+/// filter: no query text, only workspace/repository/path/date filters.
+enum FolioSearchMode: String, Codable { case fts, like, filter }
+struct FolioLineHit: Codable, Hashable {
+    var line: Int        // 1-based line in the indexed body
+    var text: String     // the line with surrounding spaces trimmed
+}
+struct FolioSearchHit: Codable {
+    var id: Int; var path: String; var workspace: String; var repository: String; var title: String; var mtime: String
+    var lines: [FolioLineHit]
+    var body: String?
+}
+struct FolioSearchResult: Codable {
+    var query: String
+    var mode: FolioSearchMode
+    var elapsed: Double
+    var truncated: Bool
+    var files: [FolioSearchHit]
 }
 
 private struct FolioSQLiteError: Error, LocalizedError {
@@ -162,7 +257,9 @@ private struct FolioSQLiteError: Error, LocalizedError {
 }
 private final class FolioSQLite {
     var handle: OpaquePointer?
+    private let owned: Bool
     init(_ url: URL, readonly: Bool = false) throws {
+        owned = true
         let flags = readonly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
         let result = sqlite3_open_v2(url.path, &handle, flags | SQLITE_OPEN_FULLMUTEX, nil)
         guard result == SQLITE_OK else {
@@ -170,8 +267,10 @@ private final class FolioSQLite {
         }
         sqlite3_busy_timeout(handle, 3000)
     }
-    deinit { close() }
-    func close() { if let handle { sqlite3_close_v2(handle); self.handle = nil } }
+    /// A connection someone else opened and closes (the sidebar's interruptible reader).
+    init(borrowing handle: OpaquePointer) { self.handle = handle; owned = false }
+    deinit { if owned { close() } }
+    func close() { if owned, let handle { sqlite3_close_v2(handle); self.handle = nil } }
     func failure(_ code: Int32) -> FolioSQLiteError {
         FolioSQLiteError(code: code, detail: handle.map { String(cString: sqlite3_errmsg($0)) } ?? "SQLite error \(code)")
     }
@@ -396,12 +495,24 @@ enum FolioIndexEngine {
         return try FolioSQLite(database, readonly: true)
     }
     static func stats(database: URL) throws -> FolioIndexStats { try readStats(openReader(database)) }
+    /// What Settings shows (count and last update) without the full-table aggregates of `stats`:
+    /// about 1 ms instead of ~100 ms on a large index, so it is cheap on the main thread.
+    static func summary(database: URL) throws -> FolioIndexSummary {
+        let db = try openReader(database)
+        var result = FolioIndexSummary(count: 0, updatedAt: updatedAt(db))
+        try db.rows("SELECT COUNT(*) FROM doc") { result.count = Int(sqlite3_column_int64($0, 0)) }
+        return result
+    }
+    private static func updatedAt(_ db: FolioSQLite) -> Date? {
+        var value: Date?
+        try? db.rows("SELECT value FROM folio_meta WHERE key='updated_at'") { s in value = Double(FolioSQLite.text(s, 0)).map { Date(timeIntervalSince1970: $0) } }
+        return value
+    }
     private static func readStats(_ db: FolioSQLite) throws -> FolioIndexStats {
-        var result = FolioIndexStats(count: 0, updatedAt: nil)
+        var result = FolioIndexStats(count: 0, updatedAt: updatedAt(db))
         try db.rows("SELECT COUNT(*),COALESCE(SUM(nchar),0),COUNT(DISTINCT repo) FROM doc") { s in
             result.count = Int(sqlite3_column_int64(s, 0)); result.characters = Int(sqlite3_column_int64(s, 1)); result.repositories = Int(sqlite3_column_int64(s, 2))
         }
-        try? db.rows("SELECT value FROM folio_meta WHERE key='updated_at'") { s in result.updatedAt = Double(FolioSQLite.text(s, 0)).map { Date(timeIntervalSince1970: $0) } }
         func group(_ sql: String) throws -> [FolioIndexGroup] {
             var values: [FolioIndexGroup] = []
             try db.rows(sql) { s in values.append(FolioIndexGroup(name: FolioSQLite.text(s, 0), count: Int(sqlite3_column_int64(s, 1)), characters: Int(sqlite3_column_int64(s, 2)))) }; return values
@@ -411,28 +522,65 @@ enum FolioIndexEngine {
         result.months = try group("SELECT substr(mtime,1,7),COUNT(*),0 FROM doc GROUP BY 1 ORDER BY 1 DESC LIMIT 12")
         return result
     }
-    static func search(database: URL, query: FolioIndexQuery) throws -> [FolioIndexDocument] {
-        let db = try openReader(database)
+    // MARK: Search (sidebar ⌘⇧F and `folio search/files` share this one implementation)
+    /// The trigram tokenizer silently matches nothing for queries under three characters, and
+    /// two-character words are the most common Chinese queries; shorter queries scan literally.
+    static let trigramMinimum = 3
+    /// `%`, `_` and `\` in a query are literal text, not wildcards.
+    static func escapeLike(_ value: String) -> String {
+        var out = ""; for character in value { if "\\%_".contains(character) { out.append("\\") }; out.append(character) }; return out
+    }
+    /// Real 1-based line numbers (the unit the editor jumps to), matched case-insensitively
+    /// like the trigram index itself.
+    static func lineHits(body: String, needle: String, cap: Int) -> [FolioLineHit] {
+        guard cap > 0, !needle.isEmpty else { return [] }
+        var out: [FolioLineHit] = [], number = 0
+        body.enumerateLines { line, stop in
+            number += 1
+            if line.range(of: needle, options: .caseInsensitive) != nil {
+                out.append(FolioLineHit(line: number, text: line.trimmingCharacters(in: .whitespaces)))
+                if out.count >= cap { stop = true }
+            }
+        }
+        return out
+    }
+    static func find(database: URL, query: FolioIndexQuery) throws -> FolioSearchResult { try find(openReader(database), query) }
+    /// For a caller that owns the connection, e.g. to interrupt a superseded query from another thread.
+    static func find(handle: OpaquePointer, query: FolioIndexQuery) throws -> FolioSearchResult { try find(FolioSQLite(borrowing: handle), query) }
+    private static func find(_ db: FolioSQLite, _ query: FolioIndexQuery) throws -> FolioSearchResult {
+        let started = Date()
+        let text = query.query.trimmingCharacters(in: .whitespacesAndNewlines)
         var conditions: [String] = [], params: [String] = []
         if let value = query.workspace { conditions.append("doc.ws = ?"); params.append(value) }
-        if let value = query.repository { conditions.append("doc.repo LIKE ?"); params.append("%" + value + "%") }
-        if let value = query.path { conditions.append("doc.path LIKE ?"); params.append("%" + value + "%") }
+        if let value = query.repository { conditions.append("doc.repo LIKE ? ESCAPE '\\'"); params.append("%" + escapeLike(value) + "%") }
+        if let value = query.path { conditions.append("doc.path LIKE ? ESCAPE '\\'"); params.append("%" + escapeLike(value) + "%") }
         if let value = query.since { conditions.append("doc.mtime >= ?"); params.append(value) }
-        var source = "doc"
-        if !query.query.isEmpty, query.query.unicodeScalars.count >= 3 {
-            source = "doc_fts JOIN doc ON doc.id = doc_fts.rowid"
+        var source = "doc", mode = FolioSearchMode.filter
+        if text.count >= trigramMinimum {
+            mode = .fts; source = "doc_fts JOIN doc ON doc.id = doc_fts.rowid"
             conditions.append("doc_fts MATCH ?")
-            params.append((query.titleOnly ? "title" : "{title body}") + " : \"" + query.query.replacingOccurrences(of: "\"", with: "\"\"") + "\"")
-        } else if !query.query.isEmpty {
-            conditions.append(query.titleOnly ? "doc.title LIKE ?" : "doc.body LIKE ?")
-            // Preserve the original CLI's LIKE semantics, including wildcard queries.
-            params.append("%" + query.query + "%")
+            params.append((query.titleOnly ? "title" : "{title body}") + " : \"" + text.replacingOccurrences(of: "\"", with: "\"\"") + "\"")
+        } else if !text.isEmpty {
+            mode = .like
+            let pattern = "%" + escapeLike(text) + "%"
+            if query.titleOnly { conditions.append("doc.title LIKE ? ESCAPE '\\'"); params.append(pattern) }
+            else { conditions.append("(doc.body LIKE ? ESCAPE '\\' OR doc.title LIKE ? ESCAPE '\\')"); params += [pattern, pattern] }
         }
-        let sql = "SELECT doc.id,doc.path,doc.repo,doc.title,doc.mtime,doc.body FROM " + source + (conditions.isEmpty ? "" : " WHERE " + conditions.joined(separator: " AND ")) + " ORDER BY doc.mtime DESC LIMIT ?"
-        params.append(String(query.limit))
-        var result: [FolioIndexDocument] = []
-        try db.rows(sql, params) { s in result.append(FolioIndexDocument(id: Int(sqlite3_column_int64(s, 0)), path: FolioSQLite.text(s, 1), repository: FolioSQLite.text(s, 2), title: FolioSQLite.text(s, 3), mtime: FolioSQLite.text(s, 4), body: FolioSQLite.text(s, 5))) }
-        return result
+        let wantsLines = mode != .filter && !query.titleOnly && query.perFile > 0
+        let body = wantsLines || query.includeBody ? "doc.body" : "''"
+        let sql = "SELECT doc.id,doc.path,doc.ws,doc.repo,doc.title,doc.mtime," + body + " FROM " + source + (conditions.isEmpty ? "" : " WHERE " + conditions.joined(separator: " AND ")) + " ORDER BY doc.mtime DESC LIMIT ?"
+        // 0 (or less) means no limit; SQLite reads a negative LIMIT as unbounded.
+        let limit = max(0, query.limit)
+        params.append(String(limit > 0 ? limit : -1))
+        var files: [FolioSearchHit] = []
+        try db.rows(sql, params) { s in
+            let content = FolioSQLite.text(s, 6)
+            files.append(FolioSearchHit(id: Int(sqlite3_column_int64(s, 0)), path: FolioSQLite.text(s, 1), workspace: FolioSQLite.text(s, 2), repository: FolioSQLite.text(s, 3),
+                                        title: FolioSQLite.text(s, 4), mtime: FolioSQLite.text(s, 5),
+                                        lines: wantsLines ? lineHits(body: content, needle: text, cap: query.perFile) : [],
+                                        body: query.includeBody ? content : nil))
+        }
+        return FolioSearchResult(query: text, mode: mode, elapsed: Date().timeIntervalSince(started), truncated: limit > 0 && files.count >= limit, files: files)
     }
     static func scalarPrefix(_ string: String, _ count: Int) -> String {
         String(String.UnicodeScalarView(string.unicodeScalars.prefix(max(0, count))))

@@ -252,9 +252,8 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
         guard let i = documents.firstIndex(where: { $0.id == documentID }) else { return }
         if documents[i].path == nil && !save(id: documentID) { return }
         do {
-            let url = try DocumentIO.imageDestination(document: documents[i], folder: settings.imageFolder, extension: ext)
-            try data.write(to: url, options: .atomic)
-            bridge.send("insert", value: ["id": documentID, "text": "![图片](<\(settings.imageFolder)/\(url.lastPathComponent)>)"])
+            let stored = try DocumentIO.storeImage(data, extension: ext, document: documents[i], folder: settings.imageFolder)
+            bridge.send("insert", value: ["id": documentID, "text": stored.markdown])
         } catch { banner = "插入图片失败：\(error.localizedDescription)" }
     }
     func insertImagePanel() {
@@ -273,6 +272,7 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     }
     func generateDirectoryGraph(at root: URL, openBrowser: Bool = true) {
         guard !graphGenerating else { return }
+        indexSettings.reloadConfiguration()  // skip/restricted rules as saved now, not when Settings opened
         if let error = indexSettings.configurationError {
             graphError = error; banner = error; return
         }
@@ -336,17 +336,15 @@ private final class IndexCancellation: @unchecked Sendable {
         database = url; refreshStats()
     }
     private func refreshStats() {
-        guard FileManager.default.fileExists(atPath: database.path), let stats = try? FolioIndexEngine.stats(database: database) else {
+        guard FileManager.default.fileExists(atPath: database.path), let stats = try? FolioIndexEngine.summary(database: database) else {
             documentCount = 0; updatedAt = nil; return
         }
         documentCount = stats.count; updatedAt = stats.updatedAt
     }
+    /// Same rule as `folio roots add`: re-read index.json, standardize, dedupe, save atomically.
     @discardableResult func addRoot(_ url: URL) -> Bool {
         guard !updating, configurationError == nil else { return false }
-        let path = url.standardizedFileURL.path
-        guard !config.roots.contains(path) else { return true }
-        var next = config; next.roots.append(path)
-        return save(next)
+        return apply { try FolioIndexConfig.addRoots([url.path], at: configURL) }
     }
     func chooseRoots() {
         guard !updating else { return }
@@ -356,14 +354,23 @@ private final class IndexCancellation: @unchecked Sendable {
     }
     func removeRoot(_ path: String) {
         guard !updating, configurationError == nil else { return }
-        var next = config; next.roots.removeAll { $0 == path }; _ = save(next)
+        _ = apply { try FolioIndexConfig.removeRoots([path], at: configURL) }
     }
-    private func save(_ next: FolioIndexConfig) -> Bool {
-        do { try next.save(to: configURL); config = next; message = "文件夹已保存；更新索引后生效。"; return true }
-        catch { message = "保存索引配置失败：\(error.localizedDescription)"; return false }
+    private func apply(_ change: () throws -> FolioRootsChange) -> Bool {
+        do {
+            let result = try change()
+            // The file was re-read first, so edits made by `folio roots` meanwhile are kept.
+            config = try FolioIndexConfig.loadForEditing(from: configURL)
+            if result.changed { message = "文件夹已保存；更新索引后生效。" }
+            return true
+        } catch { message = "保存索引配置失败：\(error.localizedDescription)"; return false }
     }
     func updateIndex() {
-        guard !updating, configurationError == nil else { return }
+        guard !updating else { return }
+        // `folio roots` may have changed index.json since Settings read it; rebuilding from that
+        // older copy would drop the agent's folders from the index (or bring removed ones back).
+        reloadConfiguration()
+        if let error = configurationError { message = error; return }
         guard !config.roots.isEmpty else { message = "请先添加要索引的文件夹。"; return }
         let token = IndexCancellation(), snapshot = config, target = database
         cancellation = token; updating = true; message = "正在后台更新索引…"

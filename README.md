@@ -28,10 +28,38 @@
 - 命名文件自动保存；未命名内容存为本地恢复草稿。
 - 左侧最近文件可固定、重新定位或移除；标题大纲可跳转。
 - ⌘⇧F 或侧栏「搜索」检索全部笔记：先在设置的「索引文件夹」添加目录并更新索引，再输入关键词，点命中行即打开并跳到对应行。索引由 Folio 在本机维护，不修改笔记；3 个字及以上走全文索引，更短的词自动逐字匹配。已有自定义索引位置继续保留。
-- 应用包内附带 `folio index / search / files / stats / graph` 命令，与界面共用 Swift 引擎；无配置时不会扫描。下载版把 `/Applications/Folio.app/Contents/Resources/bin/folio` 链接到 `~/.local/bin/folio` 即可在终端使用（见 [docs/cli.md](docs/cli.md)）。`folio graph <目录> --launcher -n` 生成目录图谱及再次生成的入口；菜单「文件 → 生成目录图谱…」也可直接生成并打开。
+- 应用包内附带 `folio` 命令，与界面共用同一 Swift 业务层，见下方「命令行」。菜单「文件 → 生成目录图谱…」与 `folio graph <目录> --launcher -n` 生成同一份目录图谱及再次生成的入口。
 - 图片可拖入、粘贴或从菜单插入，默认保存至文档旁 `assets/`。
 - 主编辑区直接显示网格表格和引用式链接；引用定义在渲染模式隐藏，在源码模式可编辑。
 - ⌘⇧P / 工具栏「完整预览」可另开只读实时预览，适合对照阅读；日常编辑无需打开此窗口。
+
+## 命令行（给程序和 agent 用）
+
+界面给人用，`folio` 命令给程序和 agent 用：两者调用同一套 Swift 代码，界面里能看到、能做的索引、检索、状态与文件操作都有对应命令。下载版把 `/Applications/Folio.app/Contents/Resources/bin/folio` 链接到 `~/.local/bin/folio` 即可在终端使用；从源码安装时自动链接。完整说明、`--json` 结构与退出码见 [docs/cli.md](docs/cli.md)。
+
+```sh
+folio search 水库 --since 2026-01-01          # 与侧栏搜索同一实现：path:line + 命中行
+folio files reservoir --repo notes --json      # 只列文件；--json 输出 {ok, mode, count, files:[…]}
+folio stats --json                             # 篇数、最后更新、分布
+folio config --json                            # 生效的配置、索引库位置及来源、索引文件夹
+folio session --file ~/notes/a.md --json       # 该文件在 Folio 里是否打开、未保存或冲突
+folio roots add ~/Documents/Notes && folio index
+folio graph ~/Documents/Notes --launcher --json
+folio asset add notes/a.md shot.png            # 复制图片到 assets/，输出要插入的 Markdown
+```
+
+| 命令 | 对应界面 |
+|---|---|
+| `search` / `files`（读） | 侧栏「搜索」（⌘⇧F） |
+| `stats` / `config` / `roots`（读） | 设置「索引文件夹」、自定义索引位置 |
+| `session`（读） | 标签页的未保存/冲突状态、侧栏「最近」、关闭的草稿、阅读设置 |
+| `roots add/remove`、`index`（写） | 设置「添加文件夹」「移除」「更新索引」 |
+| `graph`（写） | 菜单「文件 → 生成目录图谱…」 |
+| `asset add`（写） | 插入图片（菜单、拖入、粘贴）的保存规则 |
+
+每个命令都有 `--help` 和 `--json`；退出码 0 成功（含无命中）、1 失败、2 用法错误。检索默认最多 20 篇，`--limit 0` 不限；空白查询词（如空变量）和不是日期的 `--since` 都按用法错误处理，不会列出整个索引或静默返回空结果。设置里的「更新索引」每次按磁盘上的 index.json 重建，不会用窗口里的旧文件夹列表覆盖 `folio roots` 的修改。只读命令不写任何状态；`session.json` 只由 App 写入，所以标签、最近记录、固定与阅读设置的修改留在界面里。编辑、预览、撤销、打开窗口等纯界面手势没有命令；agent 直接改 Markdown 文件，Folio 会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。
+
+1.2.0 (57) 及更早版本的 `search`/`files --json` 输出带整篇正文的数组，且 `%`、`_` 当通配符、短词只查正文、命中行区分大小写；之后的构建输出对象，匹配规则与侧栏一致，文本输出格式不变。
 
 ## 构建
 
