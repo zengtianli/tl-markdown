@@ -52,3 +52,28 @@ bash ~/Apps/apps-portal/site/deploy.sh --products-only folio-mac --dry-run
 ```
 
 若之后又有提交改动构建输入（`scripts/*.py`、Sources 等），先 `python3 scripts/verify-install.py` 重装并重新打包，再把 capture.json 的 reused_for 键改到新构建号。
+
+## 09-30 09:1x 只读复核（本人在用机器，未构建、未测量、未装机、未发布）
+
+- 线上 `/release.json`、`facts.json`、`site-manifest.json` 均为 1.2.0 (51)，preview=false；本地 `build/site/release.json`（Chapter 的 `sop.release`）也是 51。
+- 备好的 `build/release-1.2.0/Folio-1.2.0-57-arm64.zip` SHA256 `fac92aea…` 与 SHA256SUMS 一致；解包后与 `/Applications/Folio.app` 做 `diff -rq`，整棵树无差异——本机装的就是这个包。
+- 51 包与 57 包逐文件比：只差 `Info.plist` 的 CFBundleVersion、`Resources/FolioBuild.json`（build、source_commit、built_at）、`_CodeSignature` 和主可执行文件；主可执行文件去掉签名后 SHA256 相同（`b2741b8d…`），`bin/folio` 相同（`584198f9…`）。即应用内容一样，差别只是构建号与随之变化的签名。
+- `perf/lightweight.json` 仍是 1.2.0 (51) 的实测；`scripts/build-site.py` 第 77–79 行要求版本和下载字节数都等于本次发行包（57 为 3,101,286 字节），所以发布 57 必须先在空闲门下实测 57，属于重任务。
+- 装机图标：`AppIcon-a51366356ae2baca.icns` 与 `icon/AppIcon.icns` 逐字节相同（`a5136635…`）；iconutil 解出的 10 个尺寸与源 icns 逐像素相同，1024 图与 `icon/AppIcon.png` 逐像素相同；app_sop 回读 installed_icon_matches=True。`perf/delivery-evidence.json` 里从来没有 installed_icon 记录，只能本人看 Dock/Finder 后在 Chapter 点「图标没问题」。该证据绑定源图标与装机图标文件（文件名含内容哈希），发 57 或同图标重建都不会让它失效。
+- Chapter 板上装机项的「装发布版」方向是反的：会把 57 降成 51，51 的可执行文件与回执不符，build-receipt 随即变 stale，再触发重建出更大的构建号。正确方向是把 57 发布出去。
+- 反复出现的原因：装机回执的输入（`scripts/verify-install.py` 第 37–39 行）包含 `scripts/*.py`、`scripts/*.sh`。09-29 的 `9cb0ea1` 只改了不进 App 的 `scripts/build-site.py`，回执就失效了，于是重装，git-count 构建号从 51 变成 57，装机与发行不再一致，只能重新实测、重新发版。建议下次 Sources 等真正要改、本来就得重装时，在同一提交里把这两条收窄为 build.sh 实际调用的 `scripts/build-cli.sh`、`scripts/test.sh`、`scripts/package-release.py`、`scripts/test_file_open.py`、`scripts/install-cli.py`。这个文件本身也在回执输入里，单独改会立刻让回执失效，所以本轮没改。
+
+空闲后发布 57（与上一节相同，只给 fold 补上 57 的测试说明）：
+
+```sh
+cd ~/Apps/folio
+~/Dev/.venv/bin/python -c 'import os,sys; sys.path.insert(0,os.path.expanduser("~/Apps/chapter/engine")); import app_sop; ok,why=app_sop.steady(); print(why); sys.exit(0 if ok else 78)' && \
+python3 scripts/measure-lightweight.py --zip build/release-1.2.0/Folio-1.2.0-57-arm64.zip --raw build/perf-1.2.0-57.json && \
+python3 scripts/release/fold-lightweight.py --raw build/perf-1.2.0-57.json --tests "1.2.0 (57) 装机构建：build.sh --install 内 MainEditor WKWebView 与 LaunchServices 文件打开测试通过；app_sop 固定验收 functionality、recovery、privacy、native_ui（离屏 --ui-self-test）、cli_entry 均 passed，2026-09-29" && \
+~/Dev/.venv/bin/python ~/Apps/apps-portal/site/perf_block.py "$PWD" && \
+python3 scripts/build-site.py --release build/release-1.2.0/release.json --out build/site && \
+bash ~/Apps/apps-portal/site/deploy.sh --products-only folio-mac --dry-run
+# 审读计划后：bash ~/Apps/apps-portal/site/deploy.sh --products-only folio-mac --deploy --plan <计划路径>
+# 回读：curl -s https://app-mac-folio.tianli.cyou/release.json ；curl -s https://app-mac-folio.tianli.cyou/facts.json
+# 然后：~/Dev/.venv/bin/python ~/Apps/chapter/engine/app_sop.py run --app folio-mac --check-only --retry --json
+```
