@@ -162,13 +162,42 @@ def replace_generated_site(stage, out):
     return previous
 
 
+def measured_release():
+    """The packaged release (build/release*/release.json) that perf/lightweight.json measured.
+
+    The page may only publish measured numbers, so without --release (Chapter's sop.site_build) the site is
+    built for the newest release that has been measured, never for an unmeasured newer package or the old
+    build/release default. Without a measured package the newest one is returned and lightweight() refuses it.
+    """
+    candidates = []
+    for path in ROOT.glob("build/release*/release.json"):
+        try:
+            data = json.loads(path.read_text())
+            key = (tuple(int(part) for part in str(data["version"]).split(".")), int(data["build"]))
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+        candidates.append((key, path, data))
+    if not candidates:
+        raise SystemExit("Site not built: no packaged release under build/release*/; package one first")
+    try:
+        perf = json.loads((ROOT / "perf/lightweight.json").read_text())
+        measured = [item for item in candidates
+                    if f"{item[2]['version']} ({item[2]['build']})" == perf.get("version")
+                    and item[2].get("bytes") == perf["size"].get("download_bytes")]
+    except (OSError, ValueError, KeyError, TypeError):
+        measured = []
+    return max(measured or candidates, key=lambda item: item[0])[1]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--release", type=Path, default=ROOT / "build/release/release.json")
+    parser.add_argument("--release", type=Path, default=None,
+                        help="release.json to publish (default: the packaged release perf/lightweight.json measured)")
     parser.add_argument("--media", type=Path, default=ROOT / "docs/demo/media")
     parser.add_argument("--out", type=Path, default=ROOT / "build/site")
     parser.add_argument("--preview", action="store_true", help="Explicit incomplete internal preview; never publish this output")
     args = parser.parse_args()
+    args.release = args.release or measured_release()
     release = json.loads(args.release.read_text())
     archive = args.release.parent / release["filename"]
     assert archive.is_file() and sha(archive) == release["sha256"], "Release ZIP is missing or its hash changed"
