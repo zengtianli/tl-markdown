@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "built_at": "2026-09-29T09:54:01+08:00",
+  "built_at": "2026-10-01T10:20:52+08:00",
   "artifact": {
     "bundle_id": "cyou.tianli.TLMarkdown",
     "version": "1.2.0",
-    "build": "57",
+    "build": "68",
     "executable": "Contents/MacOS/TLMarkdown",
-    "sha256": "9b15a0c1c5a2362a57cd060e0b3cee95b5ba4a662d5078f6cb993ec99282dc4d",
+    "sha256": "d8d2286dc5dc7aa3e6550a90da1e99f06d5e383a7360f35b4902f09939db5e5a",
     "icon": {
       "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
       "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
@@ -21,8 +21,11 @@
       "Info.plist",
       "project.yaml",
       "build.sh",
-      "scripts/*.py",
-      "scripts/*.sh",
+      "scripts/build-cli.sh",
+      "scripts/test.sh",
+      "scripts/package-release.py",
+      "scripts/test_file_open.py",
+      "scripts/install-cli.py",
       "Editor/src/**",
       "Editor/*.mjs",
       "Editor/package*.json",
@@ -32,9 +35,9 @@
       "icon/*.png",
       "icon/*.icns"
     ],
-    "sha256": "8a73dd6124715ce1f2aaa59c7ea02dc7c3d0e0cf87a252cc1601f4ec8a87ecb4",
-    "file_count": 55,
-    "commit": "9cb0ea189ee996d33653fc466d1b8666ce16b933",
+    "sha256": "29a993ae97b6b6f83b2cb22b9df523c07fc870fd381148ae90f4b83445d74c4e",
+    "file_count": 48,
+    "commit": "85f3d1d748524864ade16122ce063170c2ce8ccc",
     "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
     "dirty": false
   },

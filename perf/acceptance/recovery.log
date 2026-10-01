@@ -42,5 +42,32 @@ PASS bad database is archived and rebuilt
 PASS missing config fails without creating configuration or scanning
 PASS empty roots do not create a database
 PASS stats reads real database
+PASS summary matches the full statistics
 PASS deleting all documents commits an empty index
+PASS percent is literal, not a wildcard
+PASS underscore is literal, not a wildcard
+PASS short query matches title or body; title-only match has no line hits
+PASS query is trimmed before choosing the path
+PASS line hits are case-insensitive, 1-based and trimmed
+PASS per-file cap limits line hits
+PASS per-file 0 skips line hits
+PASS bodies only on request
+PASS blank query lists by filters only
+PASS truncation reported when the limit is reached
+PASS limit 0 means no limit, never an empty result
+PASS path filter is a literal substring
+PASS title-only search
+PASS default database when nothing is set
+PASS Settings custom path applies
+PASS environment overrides the saved setting
+PASS explicit path wins
+PASS escaped key text inside a document is not a setting
+PASS saved custom index path is read
+PASS missing session has no setting
+PASS add standardizes and de-duplicates
+PASS saved configuration is private
+PASS a missing folder rejects the whole change
+PASS adding an existing folder writes nothing
+PASS remove re-reads the file and keeps other edits
+PASS an unreadable configuration is never replaced
 Index engine checks passed

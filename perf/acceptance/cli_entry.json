@@ -5,14 +5,14 @@
   "command": "~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/cli_entry.py",
   "exit_code": 0,
   "status": "passed",
-  "started_at": "2026-09-29T09:55:01.322131+08:00",
-  "finished_at": "2026-09-29T09:55:01.620819+08:00",
-  "input_sha256": "9f6c1deca9d4917674805d3a3fa060c7fc174673ea554068ff33f04a62f17bcf",
+  "started_at": "2026-10-01T10:21:11.378847+08:00",
+  "finished_at": "2026-10-01T10:21:11.789482+08:00",
+  "input_sha256": "9ccae505f0b17257be5ec52644f198e0de5b1a651d4fe6149ab5ede0428cb520",
   "log": "perf/acceptance/cli_entry.log",
-  "log_sha256": "226e9d896ca46d5117f4c53f6c67fb5747636ee3ca29754f9567faf7af69767c",
-  "summary": "命令行在 App 里：folio — Folio — Markdown 索引与目录图谱",
+  "log_sha256": "8fc584c05ad50c6e7526de0dbac017e42955da931991e504396eef24310a7002",
+  "summary": "命令行在 App 里：folio — Folio — Markdown 索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
   "detail": {
-    "summary": "命令行在 App 里：folio — Folio — Markdown 索引与目录图谱",
+    "summary": "命令行在 App 里：folio — Folio — Markdown 索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
     "passed": true,
     "commands": [
       "folio"
@@ -21,7 +21,7 @@
     "host_app": "/Applications/Folio.app",
     "target": "/Applications/Folio.app/Contents/Resources/bin/folio",
     "inside_app": true,
-    "help_summary": "Folio — Markdown 索引与目录图谱",
+    "help_summary": "Folio — Markdown 索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
     "entries": [
       {
         "command": "folio",
@@ -30,7 +30,7 @@
         "inside_app": true,
         "executable": true,
         "exit_code": 0,
-        "summary": "Folio — Markdown 索引与目录图谱",
+        "summary": "Folio — Markdown 索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
         "error": null
       }
     ]
