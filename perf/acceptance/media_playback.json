@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "name": "media_playback",
+  "app_id": "folio-mac",
+  "command": "~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/media_playback.py",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-03T06:08:30.438942+08:00",
+  "finished_at": "2026-10-03T06:08:36.201229+08:00",
+  "input_sha256": "5ccad0f48a4c005a8916d0048b10d735baed41605eab3168abfb78ef022d4bb9",
+  "log": "perf/acceptance/media_playback.log",
+  "log_sha256": "3d1e96ac2bb7aceebcb932fa45a1a9f70ac5c0feb7252c9b15bd59c37f6ed239",
+  "summary": "4 个本地视频 ffprobe/ffmpeg 全量解码通过（docs/demo/media/edit.mp4 16.7s h264、docs/demo/media/open.mp4 12.8s h264、docs/demo/media/save.mp4 11.2s h264、docs/demo/media/tutorial.mp4 40.7s h264）；推广页 3 个视频在无界面浏览器中实际播放（1.2/13s、1.3/17s、1.2/11s）",
+  "detail": {
+    "summary": "4 个本地视频 ffprobe/ffmpeg 全量解码通过（docs/demo/media/edit.mp4 16.7s h264、docs/demo/media/open.mp4 12.8s h264、docs/demo/media/save.mp4 11.2s h264、docs/demo/media/tutorial.mp4 40.7s h264）；推广页 3 个视频在无界面浏览器中实际播放（1.2/13s、1.3/17s、1.2/11s）",
+    "passed": true,
+    "local_videos": [
+      {
+        "path": "docs/demo/media/edit.mp4",
+        "bytes": 449798,
+        "sha256": "27924069304e1f4382dace52ad453d56815cd3d10d4dc4764ff78d136f7b3952",
+        "duration": 16.7,
+        "codec": "h264",
+        "size": [
+          1280,
+          1056
+        ],
+        "decode_ok": true,
+        "decode_errors": null,
+        "ok": true
+      },
+      {
+        "path": "docs/demo/media/open.mp4",
+        "bytes": 320218,
+        "sha256": "f38ef3205be4c3a8174e30914950b7f19031bb0990bf29dd9e1ed1db4ca34347",
+        "duration": 12.8,
+        "codec": "h264",
+        "size": [
+          1280,
+          1056
+        ],
+        "decode_ok": true,
+        "decode_errors": null,
+        "ok": true
+      },
+      {
+        "path": "docs/demo/media/save.mp4",
+        "bytes": 314721,
+        "sha256": "8faae2f14adb5383769f7a734837a38b8141bccc3c3cb67384d89a3517408162",
+        "duration": 11.2,
+        "codec": "h264",
+        "size": [
+          1280,
+          1056
+        ],
+        "decode_ok": true,
+        "decode_errors": null,
+        "ok": true
+      },
+      {
+        "path": "docs/demo/media/tutorial.mp4",
+        "bytes": 1083023,
+        "sha256": "93e64f503a8596b0206dedc0127e740f8ef9bcbdcdd9115f96f06182de0e483c",
+        "duration": 40.7,
+        "codec": "h264",
+        "size": [
+          1280,
+          1056
+        ],
+        "decode_ok": true,
+        "decode_errors": null,
+        "ok": true
+      }
+    ],
+    "page_url": "https://app-mac-folio.tianli.cyou/",
+    "page_videos": [
+      {
+        "src": "https://app-mac-folio.tianli.cyou/media/open.mp4",
+        "ready_state": 4,
+        "duration": 12.8,
+        "current_time": 1.238235,
+        "paused": false,
+        "error": null,
+        "video_width": 1280,
+        "video_height": 1056,
+        "tracks": 1,
+        "play_error": null,
+        "ok": true
+      },
+      {
+        "src": "https://app-mac-folio.tianli.cyou/media/edit.mp4",
+        "ready_state": 4,
+        "duration": 16.7,
+        "current_time": 1.255613,
+        "paused": false,
+        "error": null,
+        "video_width": 1280,
+        "video_height": 1056,
+        "tracks": 1,
+        "play_error": null,
+        "ok": true
+      },
+      {
+        "src": "https://app-mac-folio.tianli.cyou/media/save.mp4",
+        "ready_state": 4,
+        "duration": 11.2,
+        "current_time": 1.173363,
+        "paused": false,
+        "error": null,
+        "video_width": 1280,
+        "video_height": 1056,
+        "tracks": 1,
+        "play_error": null,
+        "ok": true
+      }
+    ],
+    "page_title": "Folio — 打开一页，继续写下去",
+    "page_screenshot": "perf/acceptance/media_playback.png",
+    "browser": {
+      "binary": "/Users/tianli/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+      "kind": "headless_shell",
+      "version": "Google Chrome for Testing 151.0.7922.34"
+    },
+    "local_sha256": [
+      "27924069304e1f4382dace52ad453d56815cd3d10d4dc4764ff78d136f7b3952",
+      "8faae2f14adb5383769f7a734837a38b8141bccc3c3cb67384d89a3517408162",
+      "93e64f503a8596b0206dedc0127e740f8ef9bcbdcdd9115f96f06182de0e483c",
+      "f38ef3205be4c3a8174e30914950b7f19031bb0990bf29dd9e1ed1db4ca34347"
+    ],
+    "method": "ffprobe/ffmpeg 全量解码 + 隔离无界面浏览器静音播放（readyState/currentTime/duration）",
+    "limits": [
+      "静音自动播放；字幕文字与拖动进度未做人工审阅"
+    ]
+  }
+}

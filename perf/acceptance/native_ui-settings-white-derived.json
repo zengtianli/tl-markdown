@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "kind": "folio-native-ui-alpha-composite",
+  "app": "folio-mac",
+  "derived_at": "2026-10-03T06:21:14+08:00",
+  "raw_image": {
+    "path": "perf/acceptance/native_ui-settings.png",
+    "sha256": "7ea216765578c2c6e322f46680b4cb1f80a5ffca349785c515bbff3530c083de",
+    "bytes": 50846,
+    "mode": "RGBA",
+    "size": [
+      580,
+      561
+    ]
+  },
+  "derived_image": {
+    "path": "perf/acceptance/native_ui-settings-white-derived.png",
+    "sha256": "6cbec4b31654065cd2caa73cacf41bda9cc45632208b6adf4011a41efefc24d7",
+    "bytes": 57496,
+    "mode": "RGB",
+    "size": [
+      580,
+      561
+    ]
+  },
+  "transform": {
+    "api": "sim_lane.flatten_alpha",
+    "background": "white",
+    "shared_tool": "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py",
+    "shared_tool_sha256": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34"
+  },
+  "original_native_ui_result": {
+    "path": "perf/acceptance/native_ui.result.json",
+    "sha256": "ffec0901b1f8aea848612b4c050cf95c50edaf7d19fcf9a33aee2d3eef6770c1",
+    "recorded_settings_bytes": 50846
+  },
+  "original_build_receipt": {
+    "path": "perf/build-receipt.json",
+    "sha256": "b63db518612fd7a7f903e9f29739363e7f59d3ad47f31b5ca4c2fcd7f8aa00df",
+    "recorded_by_native_ui_sha256": "b63db518612fd7a7f903e9f29739363e7f59d3ad47f31b5ca4c2fcd7f8aa00df"
+  },
+  "source": {
+    "current": {
+      "input_globs": [
+        "Sources/**",
+        "CLI/**",
+        "Tests/**",
+        "TLMarkdown.xcodeproj/**",
+        "Info.plist",
+        "project.yaml",
+        "build.sh",
+        "scripts/build-cli.sh",
+        "scripts/test.sh",
+        "scripts/package-release.py",
+        "scripts/test_file_open.py",
+        "scripts/install-cli.py",
+        "Editor/src/**",
+        "Editor/*.mjs",
+        "Editor/package*.json",
+        "Resources/*.txt",
+        "Resources/*.md",
+        "Resources/graph-view.html",
+        "icon/*.png",
+        "icon/*.icns"
+      ],
+      "sha256": "1f383742242cd6eb195588817f69d798f07f314393958de2bc5871ef3fe6b752",
+      "file_count": 48,
+      "commit": "d168c8dce1f1717aec53562fff27b9b494703493",
+      "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
+      "dirty": false
+    },
+    "receipt_source": {
+      "input_globs": [
+        "Sources/**",
+        "CLI/**",
+        "Tests/**",
+        "TLMarkdown.xcodeproj/**",
+        "Info.plist",
+        "project.yaml",
+        "build.sh",
+        "scripts/build-cli.sh",
+        "scripts/test.sh",
+        "scripts/package-release.py",
+        "scripts/test_file_open.py",
+        "scripts/install-cli.py",
+        "Editor/src/**",
+        "Editor/*.mjs",
+        "Editor/package*.json",
+        "Resources/*.txt",
+        "Resources/*.md",
+        "Resources/graph-view.html",
+        "icon/*.png",
+        "icon/*.icns"
+      ],
+      "sha256": "1f383742242cd6eb195588817f69d798f07f314393958de2bc5871ef3fe6b752",
+      "file_count": 48,
+      "commit": "77ea97768c34e1e4aeac73c90cfa8d247df687f2",
+      "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
+      "dirty": true
+    },
+    "native_ui_source": {
+      "input_globs": [
+        "Sources/**",
+        "CLI/**",
+        "Tests/**",
+        "TLMarkdown.xcodeproj/**",
+        "Info.plist",
+        "project.yaml",
+        "build.sh",
+        "scripts/build-cli.sh",
+        "scripts/test.sh",
+        "scripts/package-release.py",
+        "scripts/test_file_open.py",
+        "scripts/install-cli.py",
+        "Editor/src/**",
+        "Editor/*.mjs",
+        "Editor/package*.json",
+        "Resources/*.txt",
+        "Resources/*.md",
+        "Resources/graph-view.html",
+        "icon/*.png",
+        "icon/*.icns"
+      ],
+      "sha256": "1f383742242cd6eb195588817f69d798f07f314393958de2bc5871ef3fe6b752",
+      "file_count": 48,
+      "commit": "77ea97768c34e1e4aeac73c90cfa8d247df687f2",
+      "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
+      "dirty": true
+    }
+  },
+  "original_executable": {
+    "path": "/Users/tianli/Apps/folio/build/DerivedData/Build/Products/Release/TLMarkdown.app/Contents/MacOS/TLMarkdown",
+    "sha256": "0ff36712c0bde31e5843d6c21e9cf8276aff22de3648e26c2a90da4375587bdf",
+    "recorded_by_native_ui_sha256": "0ff36712c0bde31e5843d6c21e9cf8276aff22de3648e26c2a90da4375587bdf"
+  },
+  "binding_checks": {
+    "original_settings_size_matches_result": true,
+    "receipt_matches_native_ui_record": true,
+    "current_source_matches_receipt_and_native_ui": true,
+    "original_executable_matches_native_ui_record": true,
+    "originals_unchanged_during_composition": true
+  },
+  "facts": "Only the existing transparent settings PNG was composited over white using the shared helper. This is a derived image, not a new App run, capture, measurement or acceptance PASS. The original PNG, machine result, receipt, source and executable were not modified.",
+  "visual_review": {
+    "status": "passed",
+    "reviewer": "Root",
+    "scope": "Settings title, font/size/width controls, image directory, index folder, update action, path and help text are readable in the white composite of the actual transparent capture. This does not add a new runtime or system UI interaction claim."
+  }
+}

@@ -15,70 +15,70 @@
       "result": "passed",
       "scope": "promo_ui",
       "method": "ui_automation",
-      "checked_at": "2026-09-30T23:22:07.140909+08:00",
-      "input_sha256": "bc1e1f5112b03b33a5ab5566e891e4cbd239dba0fae400d385e2ffc767a623d3",
+      "checked_at": "2026-10-01T13:41:40.622945+08:00",
+      "input_sha256": "e1b5da4149f066b32dea5261ee52bcd7f9a1c7e555be2f94195998ec8ed83cac",
       "evidence": "perf/acceptance/homepage_desktop.json",
-      "evidence_sha256": "296431bda3a33d98686ca0d5eb3061584f0c2325f1fbae62e96009bacfb653ee",
+      "evidence_sha256": "97e7a37a66e1c1643a4e0ff292e873eb0ca2a7df74b1c0a72b41fd9f52b80f5b",
       "detail": "builtin:homepage_desktop：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/homepage.py --viewport desktop → desktop 1440px：HTTP 200，标题「Folio — 打开一页，继续写下去」，无横向溢出，4 张图片全部加载"
     },
     "homepage_mobile": {
       "result": "passed",
       "scope": "promo_ui",
       "method": "ui_automation",
-      "checked_at": "2026-09-30T23:22:07.730287+08:00",
-      "input_sha256": "bc1e1f5112b03b33a5ab5566e891e4cbd239dba0fae400d385e2ffc767a623d3",
+      "checked_at": "2026-10-01T13:41:40.597526+08:00",
+      "input_sha256": "e1b5da4149f066b32dea5261ee52bcd7f9a1c7e555be2f94195998ec8ed83cac",
       "evidence": "perf/acceptance/homepage_mobile.json",
-      "evidence_sha256": "0988d9c721882c7d04365df1db4830d9eb1df65cffc91c68f0b6232cf1e68c0f",
+      "evidence_sha256": "689964ced95f23b21d21318578da11083ca9aacad31916c088b9312459ca0cf1",
       "detail": "builtin:homepage_mobile：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/homepage.py --viewport mobile → mobile 390px：HTTP 200，标题「Folio — 打开一页，继续写下去」，无横向溢出，4 张图片全部加载"
     },
     "media_playback": {
       "result": "passed",
       "scope": "media",
       "method": "ui_automation",
-      "checked_at": "2026-10-01T10:37:35.699489+08:00",
-      "input_sha256": "7781720de47a93cefd3626e1ecf78453f13e2fffe286b1dad97cadfca5678519",
+      "checked_at": "2026-10-03T06:08:36.201229+08:00",
+      "input_sha256": "5ccad0f48a4c005a8916d0048b10d735baed41605eab3168abfb78ef022d4bb9",
       "evidence": "perf/acceptance/media_playback.json",
-      "evidence_sha256": "855b575d6ccdefd6a51d807f8a79f3e3bd67cec40384272c234c5f39f419e847",
-      "detail": "builtin:media_playback：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/media_playback.py → 4 个本地视频 ffprobe/ffmpeg 全量解码通过（docs/demo/media/edit.mp4 16.7s h264、docs/demo/media/open.mp4 12.8s h264、docs/demo/media/save.mp4 11.2s h264、docs/demo/media/tutorial.mp4 40.7s h264）；推广页 3 个视频在无界面浏览器中实际播放（1.3/13s、1.2/17s、1.3/11s）"
+      "evidence_sha256": "ab2cd7019d64aff6c26403da0f0ee5a77752ccaf294a45339567c3a2de5b8986",
+      "detail": "builtin:media_playback：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/media_playback.py → 4 个本地视频 ffprobe/ffmpeg 全量解码通过（docs/demo/media/edit.mp4 16.7s h264、docs/demo/media/open.mp4 12.8s h264、docs/demo/media/save.mp4 11.2s h264、docs/demo/media/tutorial.mp4 40.7s h264）；推广页 3 个视频在无界面浏览器中实际播放（1.2/13s、1.3/17s、1.2/11s）"
     },
     "native_ui": {
       "result": "passed",
       "scope": "ui",
       "method": "ui_automation",
-      "checked_at": "2026-10-01T10:22:08.589886+08:00",
-      "input_sha256": "4ff306a069b47a467c0f51e92d64db7bf92fbd114a8ace43d7e3c2eec60887f3",
+      "checked_at": "2026-10-03T06:08:13.787645+08:00",
+      "input_sha256": "9fcd2a4d61c8e73ac770ee43fdc3200cd83e67a56ccd136084218362057d4a24",
       "evidence": "perf/acceptance/native_ui.json",
-      "evidence_sha256": "1a20f36ee08baf3150ee8a53f3dc8604099b47e39947b8d713a779e797ad18fb",
+      "evidence_sha256": "d55333f253cce2ccf7f7dbe460142855209f29f5153cfa74c6c8d86b9efa2655",
       "detail": "sop.accept：bash scripts/accept/native_ui.sh → 进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。"
     },
     "functionality": {
       "result": "passed",
       "scope": "code",
       "method": "real_product",
-      "checked_at": "2026-10-01T10:25:01.080380+08:00",
-      "input_sha256": "608717dce40ddcf92585672bb608b9b46724c13bf58acf4bca2309e91788b94c",
+      "checked_at": "2026-10-03T06:06:53.999036+08:00",
+      "input_sha256": "8c14e8187815982adc9f29aae3ffed385056933a1bbfa9c841fbfe54d2dd32da",
       "evidence": "perf/acceptance/functionality.json",
-      "evidence_sha256": "7ec98d617ff9d57d772dc07619015b1ea6a2f0a033b0f376e4215999761be46f",
+      "evidence_sha256": "3c11f11501db5317f32155dca9e878f60e3ff5898385830ca5a6da69598ed955",
       "detail": "sop.accept：bash scripts/accept/functionality.sh → Production EditorStore/DocumentIO/NoteSearchModel: Unicode and spaced .md/.markdown files; exact UTF-8/BOM/CRLF preservation; timed autosave; background-tab save isolation; duplicate open and tab selection; session/recent restoration; real synthetic FTS5 and short-query search; result-open production action. No GUI input or real note index used; renderer/caret behavior belongs to native_ui."
     },
     "recovery": {
       "result": "passed",
       "scope": "code",
       "method": "real_product",
-      "checked_at": "2026-10-01T10:25:02.877797+08:00",
-      "input_sha256": "608717dce40ddcf92585672bb608b9b46724c13bf58acf4bca2309e91788b94c",
+      "checked_at": "2026-10-03T06:07:24.998798+08:00",
+      "input_sha256": "8c14e8187815982adc9f29aae3ffed385056933a1bbfa9c841fbfe54d2dd32da",
       "evidence": "perf/acceptance/recovery.json",
-      "evidence_sha256": "4feeb51adbaf6bacf72a8993019f3ff5a07503d2ea6c59bacb6177fb5feb4369",
+      "evidence_sha256": "0125a7bc2331562167992d4589f5f4245e68ec7e8530d2ebead33c9100455018",
       "detail": "sop.accept：bash scripts/accept/recovery.sh → 真实 EditorStore/DocumentIO：外部冲突阻止自动保存、重新载入保留本地副本、会话重建恢复草稿、关闭草稿恢复、只读文件保存失败、损坏会话保留及持久化失败提示；无窗口。关闭草稿恢复使用预存会话，不覆盖人工关闭确认对话框。"
     },
     "privacy": {
       "result": "passed",
       "scope": "code",
       "method": "real_product",
-      "checked_at": "2026-10-01T10:24:57.786187+08:00",
-      "input_sha256": "608717dce40ddcf92585672bb608b9b46724c13bf58acf4bca2309e91788b94c",
+      "checked_at": "2026-10-03T06:07:54.038568+08:00",
+      "input_sha256": "8c14e8187815982adc9f29aae3ffed385056933a1bbfa9c841fbfe54d2dd32da",
       "evidence": "perf/acceptance/privacy.json",
-      "evidence_sha256": "03529cb1f42e0110d93ed0f9a0acf1d4c43fe897d3340ab88fa01a4e61184349",
+      "evidence_sha256": "c4c406f7bf952ba37e8a0a82c030a1eca21a6bd2f45a89eb96e453663928131e",
       "detail": "sop.accept：bash scripts/accept/privacy.sh → Runtime privacy checks against production SessionDisk/DocumentIO/NoteIndex/RichEditorBridge: private session permissions and state separation; synthetic SQLite bytes and metadata unchanged by search; invalid image destinations rejected without outside writes; nonpersistent WebKit data store; remote programmatic navigation cancelled; mdasset serves approved image bytes but refuses non-image content and unknown document identities. No real notes, external requests, input synthesis, or packet captu"
     },
     "cli_entry": {
@@ -102,5 +102,5 @@
       "detail": "builtin:installed_icon：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/installed_icon.py → 系统实际显示的装机图标与源图标一致（Folio.app 1.2.0 (68)：256px 均差 6.05 超差 0.00%，512px 均差 6.18 超差 0.02%；macOS 27.2.0，离屏读取）"
     }
   },
-  "updated_at": "2026-10-01T10:37:37.147079+08:00"
+  "updated_at": "2026-10-03T06:08:36.695956+08:00"
 }
