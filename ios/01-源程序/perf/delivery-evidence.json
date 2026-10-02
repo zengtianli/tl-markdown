@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "checks": {
+    "cli_entry": {
+      "result": "passed",
+      "scope": "cli_entry",
+      "method": "real_product",
+      "checked_at": "2026-10-03T03:15:10.712092+08:00",
+      "input_sha256": "b8be91c7a4e59b00e1d2e4169c30794c054d0c0d581f3a2a4c4c3f4892c6516c",
+      "evidence": "perf/acceptance/cli_entry.json",
+      "evidence_sha256": "5e546d27028d5567339268e7fd2334ac5a0256565ed7d10e8c0276ee53fa5a89",
+      "detail": "builtin:cli_entry：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/cli_entry.py → 命令行在 App 里：folio — Folio — Markdown 索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。"
+    },
+    "functionality": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T04:07:23.183356+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
+      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
+      "detail": "Actual shared DocumentIO/DocumentWorkspace: encoding, explicit save/export, two-editor generation/revision and per-scene flush; compiled development CLI help passed."
+    },
+    "recovery": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T04:07:23.183356+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
+      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
+      "detail": "Actual crash/local draft restoration, external conflict/reload protection, corrupt session/bookmark draft preservation and safe save-as passed."
+    },
+    "privacy": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T04:07:23.183356+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
+      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
+      "detail": "Actual directory authorization and FD reads/writes: parent/leaf/root replacement, user symlink, FIFO, size/growth rejection; only exact root-owned OS aliases accepted. Shared canonical IndexEngine only adds the MachO import required by the real iOS SDK; its behavior is unchanged."
+    },
+    "hosted_sdk_editor": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-02T20:44:07.461607+00:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/hosted-sdk-20261003.json",
+      "evidence_sha256": "81ce3bdabd6df4a4f4b548f21c0eac2392088975f6cc4a7f049b02386621ec9d",
+      "detail": "Actual iPhone SDK hosted XCTest 3 passed/0 failed/0 skipped with source62=4aa and test42dd. Real bundled reading DOM/Editor JS/WebKit safe save preserving BOM/CRLF and conflict; two WK stale/concurrent-draft behavior; mdasset PNG and damaged-authority recovery/export. Does not cover system Files grants/picker, OS Scenes, process relaunch, iPad/Vision runtime or resource budgets."
+    }
+  },
+  "updated_at": "2026-10-03T04:49:15.907155+08:00"
+}

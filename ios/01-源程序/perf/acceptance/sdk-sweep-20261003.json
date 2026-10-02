@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "scope": "real SDK compilation and current source/frozen-copy/binary reuse validation only",
+  "checked_at": "2026-10-03T04:12:50.556374+08:00",
+  "builds": [
+    {
+      "platform": "iphone",
+      "scheme": "FolioMobile",
+      "configuration": "Debug",
+      "compilation_conditions": [],
+      "sdk": "iphonesimulator27.0",
+      "xcode": {
+        "name": "Xcode.app",
+        "version": "27.0",
+        "build": "27A266a",
+        "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+      },
+      "receipt": "/tmp/sweep-sdk-20261003/folio-vision-guard1/iphone-debug-build.json",
+      "receipt_sha256": "e43db4e75efa2bf425e8d3de56b7cd99a5afec5c6fe92cf7a769930471e4b691",
+      "executable_sha256": "bf92c008c08310a676ca6622d05039f759d1bba227225a50b6831e192244a239",
+      "log": "/private/tmp/sweep-sdk-20261003/folio-vision-guard1/iphone-debug-work/build-iphone-Debug.log",
+      "log_sha256": "b44c80be68fea226f5f60f4d1126c43465aa5f0764be33681cc7d3aa8a752abe",
+      "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+      "input_count": 62,
+      "reuse_verified": true,
+      "embedded_watch_origin": null
+    },
+    {
+      "platform": "vision",
+      "scheme": "FolioMobile",
+      "configuration": "Debug",
+      "compilation_conditions": [],
+      "sdk": "xrsimulator27.0",
+      "xcode": {
+        "name": "Xcode.app",
+        "version": "27.0",
+        "build": "27A266a",
+        "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+      },
+      "receipt": "/tmp/sweep-sdk-20261003/folio-vision-guard1/vision-debug-build.json",
+      "receipt_sha256": "1764a505ee90ee1053bee21b3a1f9549eb136890bcd3feaf11fd9ef185aebe88",
+      "executable_sha256": "e1a33db9fc478f6202b2910a61ae62d5fac3c7ca6c779340f0d5e5d83d3997d3",
+      "log": "/private/tmp/sweep-sdk-20261003/folio-vision-guard1/vision-debug-work/build-vision-Debug.log",
+      "log_sha256": "a68fa583e49c93a387b52cc189aa1fbf12ce9a6a8a3e12e1c1c23aca05f82f3d",
+      "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+      "input_count": 62,
+      "reuse_verified": true,
+      "embedded_watch_origin": null
+    }
+  ],
+  "limits": "No simulator boot, UI interaction, Files provider grant, performance, or WatchConnectivity transport in these SDK builds."
+}

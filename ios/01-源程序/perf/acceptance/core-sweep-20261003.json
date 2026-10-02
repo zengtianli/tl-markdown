@@ -1,0 +1,22 @@
+{
+  "app_id": "folio",
+  "started_at": "2026-10-03T03:15:37.878145+08:00",
+  "finished_at": "2026-10-03T03:15:50.751342+08:00",
+  "command": "bash scripts/test-core.sh",
+  "exit_code": 0,
+  "input_sha256": "03f7ed6bdb4466a5e3eb82d944d2a446cbde6d2a0ca8ea6a0d3d9e0c4aed5fae",
+  "after_input_sha256": "03f7ed6bdb4466a5e3eb82d944d2a446cbde6d2a0ca8ea6a0d3d9e0c4aed5fae",
+  "input_stable": true,
+  "log": "perf/acceptance/core-sweep-20261003.log",
+  "log_sha256": "ba6fb8b66ea8a8874477d43eb376bf3a86eca68b0a750dbdf2dc77a00775323e",
+  "global_lock": "/Users/tianli/Library/Application Support/app-sop/lock",
+  "lock_mode": "LOCK_EX | LOCK_NB",
+  "schema_version": 1,
+  "status": "passed",
+  "coverage": {
+    "functionality": "Actual shared DocumentIO/DocumentWorkspace: encoding, explicit save/export, two-editor generation/revision and per-scene flush; compiled development CLI help passed.",
+    "recovery": "Actual crash/local draft restoration, external conflict/reload protection, corrupt session/bookmark draft preservation and safe save-as passed.",
+    "privacy": "Actual directory authorization and FD reads/writes: parent/leaf/root replacement, user symlink, FIFO, size/growth rejection; only exact root-owned OS aliases accepted. Original Mac sources unchanged."
+  },
+  "original_record_sha256": "2754f2f88035ce02b8916eb623b9260778adb3400359ebe1b959ae113d58d697"
+}

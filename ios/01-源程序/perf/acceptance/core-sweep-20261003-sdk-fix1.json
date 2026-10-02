@@ -1,0 +1,23 @@
+{
+  "app_id": "folio",
+  "started_at": "2026-10-03T04:07:10.939058+08:00",
+  "finished_at": "2026-10-03T04:07:23.183356+08:00",
+  "command": "bash scripts/test-core.sh",
+  "exit_code": 0,
+  "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+  "after_input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+  "input_stable": true,
+  "log": "perf/acceptance/core-sweep-20261003-sdk-fix1.log",
+  "log_sha256": "66beb63619a91310426d4a6c9c3e69d9f87d882107e027ccf19236b226546b5d",
+  "schema_version": 1,
+  "status": "passed",
+  "coverage": {
+    "functionality": "Actual shared DocumentIO/DocumentWorkspace: encoding, explicit save/export, two-editor generation/revision and per-scene flush; compiled development CLI help passed.",
+    "recovery": "Actual crash/local draft restoration, external conflict/reload protection, corrupt session/bookmark draft preservation and safe save-as passed.",
+    "privacy": "Actual directory authorization and FD reads/writes: parent/leaf/root replacement, user symlink, FIFO, size/growth rejection; only exact root-owned OS aliases accepted. Shared canonical IndexEngine only adds the MachO import required by the real iOS SDK; its behavior is unchanged."
+  },
+  "original_record_sha256": "c87541286a0992dbeec91d08538be8d9d55ca6c4d05256b5a6aa87c16d0677ad",
+  "global_lock": "/Users/tianli/Library/Application Support/app-sop/lock",
+  "lock_mode": "LOCK_EX | LOCK_NB",
+  "limits": "Core only. Real hosted WebKit/Files/scene/permission/UI/paired WC are separate acceptance."
+}

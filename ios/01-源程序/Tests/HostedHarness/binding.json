@@ -1,0 +1,14 @@
+{
+  "status": "repository-workflow-static-only-not-executed",
+  "files": {
+    "bind.py": "4438f8868da3ef18e17958d8dda65e6665e2fe620228c8246f70f6068d50759c",
+    "prepare.py": "6fd420a2050d063ae4acaed6d263e347d19eed4a1b418d781842be4b05df816b",
+    "run.py": "6f1af3fa63fd4c224e0a027da30cc7ba4fb4e4f6ad46e6394759d41d767135d8",
+    "README.md": "2e7d2c3835b8888b7ac122fe0251bac83f1483edee5e073a7b99dfeeb2dc925c"
+  },
+  "derived_from": {
+    "prepare_sha256": "8bf22beaa3ca74a07beca35a2910133469664e320dbffc85d5dbe8b1edf22a2e",
+    "runtime_driver_sha256": "2acfdcb6957358b80e8610c9ec1717b0a18e02dbae9b2651269d90d7ff60906e"
+  },
+  "production_inputs_unchanged": true
+}

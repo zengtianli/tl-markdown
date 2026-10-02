@@ -1,6 +1,7 @@
 import Foundation
 import SQLite3
 import Darwin
+import MachO
 
 /// Lexical "." / ".." cleanup that keeps a leading /private. Foundation's
 /// standardizedFileURL rewrites /private/var to the /var symlink, so paths

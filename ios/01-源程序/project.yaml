@@ -1,0 +1,77 @@
+name: folio
+name_en: Folio
+name_zh: 文页
+display_name: Folio · 文页
+family: folio
+form: ios
+platforms: [iphone, ipad, vision]
+lifecycle: active
+bundle_id: cyou.tianli.TLMarkdown.mobile
+origin: own
+sop:
+  test: bash scripts/test-core.sh
+  source_root: ../..
+  # Shared family sources are first-class monitored inputs. Chapter must bind
+  # these references in both original and staged receipts before reusing cache.
+  source:
+  - ios/01-源程序/Sources/**
+  - ios/01-源程序/Shared/**
+  - ios/01-源程序/Resources/**
+  - ios/01-源程序/Fixtures/**
+  - ios/01-源程序/project.yml
+  - ios/01-源程序/scripts/**
+  - Sources/Models.swift
+  - Sources/IndexEngine.swift
+  - Resources/Editor/**
+  - Resources/THIRD-PARTY-NOTICES.txt
+  - AppIcon.icns
+  - icon/provenance.json
+  - Info.plist
+  test_inputs: [ios/01-源程序/Tests/**, ios/01-源程序/CLI/**, ios/01-源程序/scripts/**]
+  ui: [ios/01-源程序/Sources/**, ios/01-源程序/Shared/**, ios/01-源程序/Resources/**, Resources/Editor/**]
+  cli:
+    commands: [folio]
+    app: cyou.tianli.TLMarkdown
+  accept:
+    functionality: bash scripts/test-core.sh
+    recovery: bash scripts/test-core.sh
+    privacy: bash scripts/test-core.sh
+    launch_iphone: bash scripts/launch.sh iphone
+    launch_ipad: bash scripts/launch.sh ipad
+    launch_vision: bash scripts/launch.sh vision
+  platforms:
+    iphone:
+      scheme: FolioMobile
+      simulator: {device_type: iPhone-17-Pro}
+      launch_args: [-folio-demo]
+      store_shots: shots/appstore/iphone/*.png
+      budget: {memory_mb: 150, cpu: 0.5, size_mb: 12, cold_launch_ms: 1500}
+      distribution: none
+    ipad:
+      scheme: FolioMobile
+      simulator: {device_type: iPad-Pro-13-inch-M5-12GB}
+      launch_args: [-folio-demo]
+      store_shots: shots/appstore/ipad/*.png
+      budget: {memory_mb: 150, cpu: 0.5, size_mb: 12, cold_launch_ms: 1500}
+      distribution: none
+    vision:
+      scheme: FolioMobile
+      simulator: {device_type: Apple-Vision-Pro-4K}
+      launch_args: [-folio-demo]
+      store_shots: shots/appstore/vision/*.png
+      budget: {memory_mb: 150, cpu: 0.5, size_mb: 12, cold_launch_ms: 2000}
+      distribution: none
+    mac: {component: folio-mac}
+    watch:
+      not_applicable: 文稿的阅读、光标定位和正文编辑需要足够屏幕与输入；手表没有独立有用的文稿流程。
+  measure:
+    command: bash scripts/measure-platforms.sh
+    outputs: [perf/platforms]
+    in_use: true
+  budget:
+    rationale: 系统 SwiftUI/WebKit 与现有按需加载 Editor；无服务器、轮询或驻留工作线程。数值为预算，尚无移动实测。
+  product:
+    distribution: public
+    source_visibility: public
+    source_url: https://github.com/zengtianli/tl-markdown
+    rationale: 同一 Folio 产品的移动文稿入口；公开政策继承原产品，移动构建尚未发行。

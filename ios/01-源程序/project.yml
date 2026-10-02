@@ -1,0 +1,69 @@
+name: FolioMobile
+options:
+  bundleIdPrefix: cyou.tianli
+  deploymentTarget: { iOS: "18.0", visionOS: "26.0" }
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.2.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: B9LJH93LA4
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+targetTemplates:
+  FolioDocumentApp:
+    type: application
+    sources:
+      - path: Sources
+      - path: Shared
+      # env.sh points to the actual family checkout, including in sim_lane's
+      # temporary component copy. Neither Foundation nor Editor is vendored.
+      - path: ${FOLIO_FAMILY_ROOT}/Sources/Models.swift
+      - path: ${FOLIO_FAMILY_ROOT}/Sources/IndexEngine.swift
+      - path: ${FOLIO_FAMILY_ROOT}/Resources/Editor
+        type: folder
+        buildPhase: resources
+      - path: ${FOLIO_FAMILY_ROOT}/Resources/THIRD-PARTY-NOTICES.txt
+        buildPhase: resources
+      - path: Resources/Assets.xcassets
+      - path: Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
+      - path: Fixtures/demo.md
+        buildPhase: resources
+    dependencies:
+      - sdk: libsqlite3.tbd
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cyou.tianli.TLMarkdown.mobile
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        PRODUCT_NAME: Folio
+        GENERATE_INFOPLIST_FILE: NO
+    info:
+      path: Generated/${target_name}-Info.plist
+      properties:
+        CFBundleDisplayName: Folio · 文页
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        LSSupportsOpeningDocumentsInPlace: true
+        UIFileSharingEnabled: false
+        ITSAppUsesNonExemptEncryption: false
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Markdown document
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [net.daringfireball.markdown, public.plain-text]
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: net.daringfireball.markdown
+            UTTypeDescription: Markdown document
+            UTTypeConformsTo: [public.plain-text]
+            UTTypeTagSpecification:
+              public.filename-extension: [md, markdown]
+              public.mime-type: text/markdown
+targets:
+  FolioMobile:
+    templates: [FolioDocumentApp]
+    supportedDestinations: [iOS, visionOS]
+    scheme: {testTargets: []}
