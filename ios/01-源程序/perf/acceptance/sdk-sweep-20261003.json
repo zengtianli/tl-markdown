@@ -47,7 +47,274 @@
       "input_count": 62,
       "reuse_verified": true,
       "embedded_watch_origin": null
+    },
+    {
+      "platform": "iphone",
+      "scheme": "FolioMobile",
+      "configuration": "Release",
+      "compilation_conditions": [],
+      "sdk": "iphonesimulator27.0",
+      "xcode": {
+        "name": "Xcode.app",
+        "version": "27.0",
+        "build": "27A266a",
+        "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+      },
+      "executable_sha256": "8e05f0689102c080f7ec2187a686b09c93fa10f1ff1bf85d578b1dc236a909ed",
+      "mode": "release",
+      "started_at": "2026-10-03T06:25:57.305820+08:00",
+      "finished_at": "2026-10-03T06:26:09.335944+08:00",
+      "receipt": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/release/iphone-release-build.json",
+      "receipt_sha256": "a003963bd426e2aabce2a10d1a629dc36c931d7436073db4ec3004633614b803",
+      "log": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/release/iphone-work/build-iphone-Release.log",
+      "log_sha256": "9784d02837e3bb56bac9c6d68565e52a9fefe6648b9949e7a0b8043a6b245652",
+      "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+      "input_count": 62,
+      "reuse_verified": true,
+      "embedded_watch_origin": null,
+      "source_layout": {
+        "schema_version": 1,
+        "source_base": "src",
+        "component": "src/ios/01-源程序",
+        "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+        "external_files": {}
+      },
+      "sdk_batch": "root-v3-20261003",
+      "producer_scope": "actual SDK compilation; fixture is Release optimization plus DEBUG, not ordinary Release resources",
+      "compile_validation": {
+        "actual_target_commands": 6,
+        "command_sha256": [
+          "82783aa3535a9790115df9c0b5b756a4340875fd2f97ff1b3a6465c0b06b3252",
+          "58ec4c8978929dacd396b1ec4bf23ed3c1ba3f155c7fdb2e379236acab23caef",
+          "87239aa5b6fc79eb13079b037f1f740a9595e0a6b4bfc2f85969d04c2b0abedf",
+          "3f52aa15f2868addc1de3ac3207fbbcacdfd7b4b87f90d6fd4b6de37f586031b",
+          "d1b9a2f2395f3a8920e19b3842fceba2c85dffc5e638a71acc59384e7db33d7b",
+          "02563d9e7114563f0e6edfb235518d757a095f2abe43ce094019a27155abc741"
+        ],
+        "targets": [
+          "arm64-apple-ios18.0-simulator",
+          "x86_64-apple-ios18.0-simulator"
+        ],
+        "actual_compilation_conditions": [],
+        "optimization": "-O",
+        "source": "original xcodebuild log; not inferred from parent flags"
+      }
+    },
+    {
+      "platform": "vision",
+      "scheme": "FolioMobile",
+      "configuration": "Release",
+      "compilation_conditions": [],
+      "sdk": "xrsimulator27.0",
+      "xcode": {
+        "name": "Xcode.app",
+        "version": "27.0",
+        "build": "27A266a",
+        "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+      },
+      "executable_sha256": "4d400e10f36bfddfb27adaf41caeb757f326816be4f00624ddade91fa60645f9",
+      "mode": "release",
+      "started_at": "2026-10-03T06:26:09.761189+08:00",
+      "finished_at": "2026-10-03T06:26:18.100405+08:00",
+      "receipt": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/release/vision-release-build.json",
+      "receipt_sha256": "89bd84fd0b07284c4b1e152d1888f00d68d9c5976fde115873926e0493fd249d",
+      "log": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/release/vision-work/build-vision-Release.log",
+      "log_sha256": "1201b1abaa0c9de9acdb20e3d7cc9469ab97d6ff8af9b77f7cf877b4ecdea6b1",
+      "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+      "input_count": 62,
+      "reuse_verified": true,
+      "embedded_watch_origin": null,
+      "source_layout": {
+        "schema_version": 1,
+        "source_base": "src",
+        "component": "src/ios/01-源程序",
+        "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+        "external_files": {}
+      },
+      "sdk_batch": "root-v3-20261003",
+      "producer_scope": "actual SDK compilation; fixture is Release optimization plus DEBUG, not ordinary Release resources",
+      "compile_validation": {
+        "actual_target_commands": 6,
+        "command_sha256": [
+          "16dc168cb029d00707c767f1bf32926ea734329ec49296f5119cec0d698ed62c",
+          "4272bf53975ab0d176e099406b9451d46c5bd9a0a6dd944333928aad5b37e279",
+          "a11f1720c8f509273257520c57e704a548ca71ab779dce900607349580406481",
+          "03e99a73177f6313b0534bc4ef7d41220b8adcb029e25a3d7643d487716d59f4",
+          "b114b006bba493906482099d5ddf39a5c03e4a8a871c06a9ab16adb55f4afb49",
+          "321c7c9e664fa3f51be24e178e1b98f829d6ba1cb4239e7c0c39f1cf22c99126"
+        ],
+        "targets": [
+          "arm64-apple-xros26.0-simulator",
+          "x86_64-apple-xros26.0-simulator"
+        ],
+        "actual_compilation_conditions": [],
+        "optimization": "-O",
+        "source": "original xcodebuild log; not inferred from parent flags"
+      }
+    },
+    {
+      "platform": "iphone",
+      "scheme": "FolioMobile",
+      "configuration": "Release",
+      "compilation_conditions": [
+        "DEBUG"
+      ],
+      "sdk": "iphonesimulator27.0",
+      "xcode": {
+        "name": "Xcode.app",
+        "version": "27.0",
+        "build": "27A266a",
+        "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+      },
+      "executable_sha256": "8427e39008e027b1406c0be9f4b183ac954dcce8f5c0e394d2262ed77dd491e3",
+      "mode": "fixture",
+      "started_at": "2026-10-03T06:26:18.532703+08:00",
+      "finished_at": "2026-10-03T06:26:26.455291+08:00",
+      "receipt": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/fixture/iphone-fixture-build.json",
+      "receipt_sha256": "8bd031527d4943ecee500fe0a8cd509f5de4c3700d14c71e129bb4248d465139",
+      "log": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/fixture/iphone-work/build-iphone-Release.log",
+      "log_sha256": "104c72eaf994e7dd48c1aeffb46180206efd1310f7c721fe4f460bb9abd77477",
+      "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+      "input_count": 62,
+      "reuse_verified": true,
+      "embedded_watch_origin": null,
+      "source_layout": {
+        "schema_version": 1,
+        "source_base": "src",
+        "component": "src/ios/01-源程序",
+        "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+        "external_files": {}
+      },
+      "sdk_batch": "root-v3-20261003",
+      "producer_scope": "actual SDK compilation; fixture is Release optimization plus DEBUG, not ordinary Release resources",
+      "compile_validation": {
+        "actual_target_commands": 6,
+        "command_sha256": [
+          "1e3afce5b60bb76c971bdf79b95b2b04502cbc877461f1408ebfa7eefb05818a",
+          "0783b284c6ef8afd34de15151474b7255da43074c647192202fc39f2c9b2f532",
+          "01eb27f2067b32f401d2480d74a0f693323dbdb626e7bfc29e50bb7dc267ed59",
+          "4956098caa13c1d20e734e5b42daeb630d5d0a1782f314566f4112da82fe3345",
+          "7c2be2d527f600112b169ad0c89e97ef1fbb102613ffb370e36fb3bd496a5495",
+          "f8ac54164516848e6b7fff3f823a39a99c59826e832cad2f1659c2fdaf33713e"
+        ],
+        "targets": [
+          "arm64-apple-ios18.0-simulator",
+          "x86_64-apple-ios18.0-simulator"
+        ],
+        "actual_compilation_conditions": [
+          "DEBUG"
+        ],
+        "optimization": "-O",
+        "source": "original xcodebuild log; not inferred from parent flags"
+      }
+    },
+    {
+      "platform": "vision",
+      "scheme": "FolioMobile",
+      "configuration": "Release",
+      "compilation_conditions": [
+        "DEBUG"
+      ],
+      "sdk": "xrsimulator27.0",
+      "xcode": {
+        "name": "Xcode.app",
+        "version": "27.0",
+        "build": "27A266a",
+        "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+      },
+      "executable_sha256": "e32f951ffc87d119e9f59bd7013e5000de17c77cb955846ba8411038cdcd68f2",
+      "mode": "fixture",
+      "started_at": "2026-10-03T06:26:26.874995+08:00",
+      "finished_at": "2026-10-03T06:26:35.249786+08:00",
+      "receipt": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/fixture/vision-fixture-build.json",
+      "receipt_sha256": "d92178b2c8cb1b273b87d06768b14019a1d301a64919435d6634f2ff5159141f",
+      "log": "/private/tmp/daily-release-plan/attempts/root-v3-20261003/folio/fixture/vision-work/build-vision-Release.log",
+      "log_sha256": "0a747bc8ba11198b2d09cddfff1f530f971790e6b8b4223abd84239f707d4967",
+      "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+      "input_count": 62,
+      "reuse_verified": true,
+      "embedded_watch_origin": null,
+      "source_layout": {
+        "schema_version": 1,
+        "source_base": "src",
+        "component": "src/ios/01-源程序",
+        "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+        "external_files": {}
+      },
+      "sdk_batch": "root-v3-20261003",
+      "producer_scope": "actual SDK compilation; fixture is Release optimization plus DEBUG, not ordinary Release resources",
+      "compile_validation": {
+        "actual_target_commands": 6,
+        "command_sha256": [
+          "052b44e66b934eb97a656a750f8b792bfed22fa147169376c5e9a01064f0456e",
+          "12bc10611159491903aae7b80a02673612cea93737a2bef2913678adc00e3123",
+          "e1a784b029ab9c40d2e6e8a276ad1f2535eee114f03271fcb2ea966a5ec40876",
+          "8e2d73b305c9967417a60e1536a7f434623f1b0cba6899278da652eeccfc0d7d",
+          "fce27f67675ec869a55882e227aa4364785c547629e523f7cd180c4bed23323a",
+          "7b16fda575539e9aaba472a17c73b7b26b0b17d16f20d794fad60ef59d8e9eae"
+        ],
+        "targets": [
+          "arm64-apple-xros26.0-simulator",
+          "x86_64-apple-xros26.0-simulator"
+        ],
+        "actual_compilation_conditions": [
+          "DEBUG"
+        ],
+        "optimization": "-O",
+        "source": "original xcodebuild log; not inferred from parent flags"
+      }
     }
   ],
-  "limits": "No simulator boot, UI interaction, Files provider grant, performance, or WatchConnectivity transport in these SDK builds."
+  "limits": "No simulator boot, UI interaction, Files provider grant, performance, or WatchConnectivity transport in these SDK builds.",
+  "sdk_batches": [
+    {
+      "id": "root-v3-20261003",
+      "status": "passed",
+      "scope": "real SDK compilation and current source/frozen-copy/binary reuse validation only",
+      "checked_at": "2026-10-03T06:34:22.287352+08:00",
+      "started_at": "2026-10-03T06:25:56.385353+08:00",
+      "finished_at": "2026-10-03T06:27:18.598258+08:00",
+      "queue": "/tmp/daily-release-plan/attempts/root-v3-20261003/queue-sdk-result.json",
+      "queue_sha256": "bbd126625a317bf5132cf562932dc54ca45ee475b1a7cf9cd9149f48f9f426b7",
+      "execution_log": "/tmp/daily-release-plan/root-sdk-v3-execute.log",
+      "execution_log_sha256": "7ab7a299b5e4f5562739f6a4196dbd739d252b09e2ee9c36388824b9bddf2d14",
+      "canonical_sdk_module_binding": {
+        "module": "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py",
+        "expected_sha256": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34",
+        "loaded_source_sha256": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34",
+        "before_sha256": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34",
+        "after_sha256": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34",
+        "unchanged": true,
+        "version_wrapper_sha256": "eba09d3d8e1ce7c69b1569970ef9d2d5ceae3f16aa31b61c9b2beddabb1f9ce7",
+        "frozen_controller_sha256": "1bbfdd6337a44a1bad28b55e891ed59a95fb0cb52a03ca13b4a81012c18014f5",
+        "module_binding_file_sha256": "d4b9309db6e2ceecfa4153a3eb76f9c7d96f3439451870a78f8fba7922560c19"
+      },
+      "readonly_verification": {
+        "proof": "/tmp/sdk-v3-mobile-proof-20261003/verified.json",
+        "proof_sha256": "0d9f99de238866b699826de22ecbff7f8c06ccf927dd69b51d5fbfc739b3fddf",
+        "main_receipts_added": 4,
+        "embedded_watch_artifacts": 0,
+        "source_bindings": {
+          "iphone": {
+            "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+            "file_count": 62
+          },
+          "vision": {
+            "input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+            "file_count": 62
+          }
+        },
+        "input_stable": true,
+        "heavy_operations": 0,
+        "method": "canonical readonly reuse verifier, actual target log flags/source filelists, Info.plist SDK and executable SHA"
+      },
+      "previous_proof": {
+        "backup": "/tmp/sdk-v3-mobile-proof-20261003/folio-sdk-before.json",
+        "sha256": "6c637d57632e108d662653b8424b86313d61d0fcc5ce77bec4be18e90f8bb238",
+        "build_count": 2,
+        "preserved": true
+      },
+      "limits": "SDK compile/reuse only. Fixture is Release optimization plus actual DEBUG compile conditions; does not replace ordinary Release resource evidence. Embedded Watch is derived actual parent artifact, not independent build. No iPad runtime, launch/perf/Files/Scene/WatchConnectivity PASS."
+    }
+  ]
 }
