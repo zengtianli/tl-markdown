@@ -25,7 +25,7 @@ def digest(path):
 def source_digest():
     files = [ROOT / name for name in ("Info.plist", "Editor/package.json", "Editor/package-lock.json", "Editor/build.mjs",
                                      "TLMarkdown.xcodeproj/project.pbxproj", "Resources/欢迎使用.md", "Resources/graph-view.html", "icon/AppIcon.icns")]
-    files += list((ROOT / "Sources").glob("*.swift")) + list((ROOT / "Editor/src").glob("*"))
+    files += list((ROOT / "Sources").rglob("*.swift")) + list((ROOT / "Editor/src").glob("*"))
     files += list((ROOT / "CLI").glob("*.swift"))
     sha = hashlib.sha256()
     for path in sorted(files):
