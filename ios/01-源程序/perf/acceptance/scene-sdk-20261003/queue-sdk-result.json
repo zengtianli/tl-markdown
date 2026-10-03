@@ -1,0 +1,202 @@
+{
+  "status": "sdk_compiled",
+  "exit_code": 0,
+  "slot": "root-grant-scenes-six-release-20261003-1020",
+  "actual_elapsed_s": 104.97331933298847,
+  "start_and_final_budget_s": 600,
+  "completed": [
+    {
+      "app_id": "folio",
+      "scheme": "FolioMobile",
+      "repo": "/Users/tianli/Apps/folio/ios/01-源程序",
+      "platform": "iphone",
+      "configuration": "Release",
+      "fixture_debug": false,
+      "source_env": true,
+      "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-build.json",
+      "receipt_sha256": "70f89499f733cb29723a289b905dca7043d8c329dc70493b9d4f6a1e216140ac",
+      "executable_sha256": "af29132f1c66765a07dc0310c3a5750461736a384ee10d6f8655439332948cf4",
+      "sdk": "iphonesimulator27.0",
+      "original_reuse_verified": true,
+      "actual_info": {
+        "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/dd/Build/Products/Release-iphonesimulator/Folio.app",
+        "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/dd/Build/Products/Release-iphonesimulator/Folio.app/Info.plist",
+        "Info_sha256": "3fe0b96aba72da60082ae3557008de5cad1788851efd7127e6d15b954c88ef6d",
+        "actual_scene_manifest": {
+          "UIApplicationSupportsMultipleScenes": true
+        },
+        "embedded_watch": []
+      }
+    },
+    {
+      "app_id": "folio",
+      "scheme": "FolioMobile",
+      "repo": "/Users/tianli/Apps/folio/ios/01-源程序",
+      "platform": "vision",
+      "configuration": "Release",
+      "fixture_debug": false,
+      "source_env": true,
+      "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-build.json",
+      "receipt_sha256": "24d04c831e3587a829f85b1a715a66d1a9b5c75fce81e75f2614fdc9869f3c3d",
+      "executable_sha256": "021cd91a83f7099e431e80178b4435cef2391775c817a56e4c5f8e89e5458287",
+      "sdk": "xrsimulator27.0",
+      "original_reuse_verified": true,
+      "actual_info": {
+        "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-work/dd/Build/Products/Release-xrsimulator/Folio.app",
+        "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-work/dd/Build/Products/Release-xrsimulator/Folio.app/Info.plist",
+        "Info_sha256": "bfb96a58e04ad23cceeb415c0445429ada3bc7802d0eafb2152352fa190519db",
+        "actual_scene_manifest": {
+          "UIApplicationSupportsMultipleScenes": true
+        },
+        "embedded_watch": []
+      }
+    },
+    {
+      "app_id": "photo-desk-mobile",
+      "scheme": "PhotoDeskMobile",
+      "repo": "/Users/tianli/Apps/photo-desk/ios/01-源程序",
+      "platform": "iphone",
+      "configuration": "Release",
+      "fixture_debug": false,
+      "source_env": false,
+      "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/photo-desk-mobile/iphone-release-build.json",
+      "receipt_sha256": "81ebc773d3d7b5609791b720fa66fca9ca8d4e44d29a53d8d91ae4ad22bf12d7",
+      "executable_sha256": "d94fcc58b7ea41a407ea31303b42e2a1d7f5ab553c928745a2192a274bfd9038",
+      "sdk": "iphonesimulator27.0",
+      "original_reuse_verified": true,
+      "actual_info": {
+        "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/photo-desk-mobile/iphone-release-work/dd/Build/Products/Release-iphonesimulator/PhotoDeskMobile.app",
+        "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/photo-desk-mobile/iphone-release-work/dd/Build/Products/Release-iphonesimulator/PhotoDeskMobile.app/Info.plist",
+        "Info_sha256": "7a4f212cd4223cd20d546112dcdce529f2f95f03c1396c9926a40d1614296fc2",
+        "actual_scene_manifest": {
+          "UIApplicationSupportsMultipleScenes": true
+        },
+        "embedded_watch": []
+      }
+    },
+    {
+      "app_id": "photo-desk-mobile",
+      "scheme": "PhotoDeskMobile",
+      "repo": "/Users/tianli/Apps/photo-desk/ios/01-源程序",
+      "platform": "vision",
+      "configuration": "Release",
+      "fixture_debug": false,
+      "source_env": false,
+      "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/photo-desk-mobile/vision-release-build.json",
+      "receipt_sha256": "2f909e2b51e82167d206cb90a65a4d6bfca00f7979eaa0d9cf93564041f6fedd",
+      "executable_sha256": "209cd4ae7218ae30136fe7c0542ac7b9031fde999f477153dfc1656a2bfee942",
+      "sdk": "xrsimulator27.0",
+      "original_reuse_verified": true,
+      "actual_info": {
+        "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/photo-desk-mobile/vision-release-work/dd/Build/Products/Release-xrsimulator/PhotoDeskMobile.app",
+        "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/photo-desk-mobile/vision-release-work/dd/Build/Products/Release-xrsimulator/PhotoDeskMobile.app/Info.plist",
+        "Info_sha256": "0374fe454cda13d047e90ef2e2e7b179fa4d99dd6ed5ebf56defc8edca23e911",
+        "actual_scene_manifest": {
+          "UIApplicationSupportsMultipleScenes": true
+        },
+        "embedded_watch": []
+      }
+    },
+    {
+      "app_id": "daily-review-mobile",
+      "scheme": "DailyReviewMobile",
+      "repo": "/Users/tianli/Apps/investment/ios/daily-review/01-源程序",
+      "platform": "iphone",
+      "configuration": "Release",
+      "fixture_debug": false,
+      "source_env": true,
+      "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/iphone-release-build.json",
+      "receipt_sha256": "45f10ce04928cb2f5493d161806211dda7520bf86886ddeac77086d6d33372e9",
+      "executable_sha256": "1cd3a87ca38df733d02c6a11566bd612daf6a05de3e2b15fb25c8c86b7831e6b",
+      "sdk": "iphonesimulator27.0",
+      "original_reuse_verified": true,
+      "actual_info": {
+        "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/iphone-release-work/dd/Build/Products/Release-iphonesimulator/DailyReviewMobile.app",
+        "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/iphone-release-work/dd/Build/Products/Release-iphonesimulator/DailyReviewMobile.app/Info.plist",
+        "Info_sha256": "35c1ba660bf8de9c659ef54310c174cbba7a66c22b60e4248772e1d820f0f5ad",
+        "actual_scene_manifest": {
+          "UIApplicationSupportsMultipleScenes": true
+        },
+        "embedded_watch": [
+          {
+            "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/iphone-release-work/dd/Build/Products/Release-iphonesimulator/DailyReviewMobile.app/Watch/DailyReviewWatch.app",
+            "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/iphone-release-work/dd/Build/Products/Release-iphonesimulator/DailyReviewMobile.app/Watch/DailyReviewWatch.app/Info.plist",
+            "Info_sha256": "01b682a261aedd6d951ce598193b8473e93a50503fe37096ca35f9716b88f186",
+            "bundle_id": "cyou.tianli.dailyreview.mobile.watchkitapp",
+            "sdk": "watchsimulator27.0",
+            "executable_sha256": "bb9fa2167a3f9753e2dc9da6eb96bfac722638e72a93cd937c076c1142887823",
+            "origin": "actual parent-compiled embedded Watch, not an independent build receipt",
+            "parent_receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/iphone-release-build.json",
+            "parent_receipt_sha256": "45f10ce04928cb2f5493d161806211dda7520bf86886ddeac77086d6d33372e9"
+          }
+        ]
+      }
+    },
+    {
+      "app_id": "daily-review-mobile",
+      "scheme": "DailyReviewMobile",
+      "repo": "/Users/tianli/Apps/investment/ios/daily-review/01-源程序",
+      "platform": "vision",
+      "configuration": "Release",
+      "fixture_debug": false,
+      "source_env": true,
+      "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/vision-release-build.json",
+      "receipt_sha256": "cd73e5ee8a631d46f1c952680c34518c1968c662db59de59de9318025a12cc5b",
+      "executable_sha256": "1ae56290fe09c0145ee74ae9199dec8de2ec470463c5ae71595b5910d57160aa",
+      "sdk": "xrsimulator27.0",
+      "original_reuse_verified": true,
+      "actual_info": {
+        "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/vision-release-work/dd/Build/Products/Release-xrsimulator/DailyReviewMobile.app",
+        "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/daily-review-mobile/vision-release-work/dd/Build/Products/Release-xrsimulator/DailyReviewMobile.app/Info.plist",
+        "Info_sha256": "3e7229938e63033bf7260785cfcc936d0c24d78d8a6d44d36be9ca4b674c95e6",
+        "actual_scene_manifest": {
+          "UIApplicationSupportsMultipleScenes": true
+        },
+        "embedded_watch": []
+      }
+    }
+  ],
+  "pending": [],
+  "reason": null,
+  "cleanup_failures": [],
+  "source_before": {
+    "folio": {
+      "iphone": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+      "vision": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0"
+    },
+    "photo-desk-mobile": {
+      "iphone": "01c3eda7441e1c1d16d1d17bbc139ea747d7d32c566cbcf55c9b0509b892167a",
+      "vision": "01c3eda7441e1c1d16d1d17bbc139ea747d7d32c566cbcf55c9b0509b892167a"
+    },
+    "daily-review-mobile": {
+      "iphone": "37b514405a27eba3e471126c45d2bb0f669cd03c05d1e875dd6145b8d6e1bd69",
+      "vision": "37b514405a27eba3e471126c45d2bb0f669cd03c05d1e875dd6145b8d6e1bd69"
+    }
+  },
+  "source_after": {
+    "folio": {
+      "iphone": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+      "vision": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0"
+    },
+    "photo-desk-mobile": {
+      "iphone": "01c3eda7441e1c1d16d1d17bbc139ea747d7d32c566cbcf55c9b0509b892167a",
+      "vision": "01c3eda7441e1c1d16d1d17bbc139ea747d7d32c566cbcf55c9b0509b892167a"
+    },
+    "daily-review-mobile": {
+      "iphone": "37b514405a27eba3e471126c45d2bb0f669cd03c05d1e875dd6145b8d6e1bd69",
+      "vision": "37b514405a27eba3e471126c45d2bb0f669cd03c05d1e875dd6145b8d6e1bd69"
+    }
+  },
+  "pins": {
+    "/Users/tianli/Apps/chapter/engine/app_sop.py": "85356a28d180a40f5ba03574578236fae2e52219d60b18953dba06a722b26a24",
+    "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34",
+    "/Users/tianli/Apps/investment/ios/daily-review/01-源程序/Tests/HostedHarness/locking.py": "c923f22447ef0ff6dafa28a97724ff062cad53539e52c304753c14b8335fed1e",
+    "/tmp/daily-release-plan/sdk_entry.py": "1bbfdd6337a44a1bad28b55e891ed59a95fb0cb52a03ca13b4a81012c18014f5",
+    "/tmp/daily-release-plan/sdk_entry_v3.py": "eba09d3d8e1ce7c69b1569970ef9d2d5ceae3f16aa31b61c9b2beddabb1f9ce7"
+  },
+  "entry_sha256": "5cc5f440d04264089f43dd5f4fc0357d7bd1cc12613c7ac7dadb0de7a4eaba7b",
+  "plan_sha256": "0b7b9c0d000269fe634f1d42bbbbd4a5c19a4ca2ad7c4ff5618cef7c0bd76623",
+  "global_lock": "/Users/tianli/Library/Application Support/app-sop/lock",
+  "lane_lock": "/Users/tianli/Library/Caches/sim-lane/lock",
+  "scope": "SDK + actual Scene Info only; no launch/GUI/performance/store/WC"
+}

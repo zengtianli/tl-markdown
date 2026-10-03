@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "status": "two_current_ordinaryRelease_SDKs_actual_scene_Info_and_strictreuse_passed",
+  "app_id": "folio",
+  "source_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+  "source_before_after_stable": true,
+  "actual_queue_all_six_completed": true,
+  "actual_full_queue_elapsed_s": 104.97331933298847,
+  "actual_queue_sha256": "dfd6b2d0d8e101175e9db0a98b612db3216cf07b13e7feed5da2526e3ac7cb13",
+  "actual_root_terminal_sha256": "2ca388f2fe72dbddeb7e75a4615a43f842e455e25f977dc0f1b7d23ad9c4b57c",
+  "original_byte_copies": {
+    "perf/acceptance/scene-sdk-20261003/queue-sdk-result.json": {
+      "original": "/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/queue-sdk-result.json",
+      "sha256": "dfd6b2d0d8e101175e9db0a98b612db3216cf07b13e7feed5da2526e3ac7cb13"
+    },
+    "perf/acceptance/scene-sdk-20261003/root-terminal-readback.json": {
+      "original": "/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/root-terminal-readback.json",
+      "sha256": "2ca388f2fe72dbddeb7e75a4615a43f842e455e25f977dc0f1b7d23ad9c4b57c"
+    },
+    "perf/acceptance/scene-sdk-20261003/iphone-release-build.json": {
+      "original": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-build.json",
+      "sha256": "70f89499f733cb29723a289b905dca7043d8c329dc70493b9d4f6a1e216140ac"
+    },
+    "perf/acceptance/scene-sdk-20261003/iphone-release-observation.json": {
+      "original": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-observation.json",
+      "sha256": "bca3281752b4f8d9d15dc9f0761b64908c29a1ea921a60d7e624671c6cfe6c41"
+    },
+    "perf/acceptance/scene-sdk-20261003/vision-release-build.json": {
+      "original": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-build.json",
+      "sha256": "24d04c831e3587a829f85b1a715a66d1a9b5c75fce81e75f2614fdc9869f3c3d"
+    },
+    "perf/acceptance/scene-sdk-20261003/vision-release-observation.json": {
+      "original": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-observation.json",
+      "sha256": "03bc976f3d1dfed4791bdeea3b85b8d2f749c6d22d58a0ebc7385a489e736f77"
+    }
+  },
+  "stage_observations": [
+    {
+      "platform": "iphone",
+      "source_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+      "actual_scene_Info_path": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/dd/Build/Products/Release-iphonesimulator/Folio.app/Info.plist",
+      "actual_scene_Info_sha256": "3fe0b96aba72da60082ae3557008de5cad1788851efd7127e6d15b954c88ef6d",
+      "supports_multiple_scenes": true,
+      "actual_receipt_sha256": "70f89499f733cb29723a289b905dca7043d8c329dc70493b9d4f6a1e216140ac",
+      "actual_observation_sha256": "bca3281752b4f8d9d15dc9f0761b64908c29a1ea921a60d7e624671c6cfe6c41",
+      "actual_executable_sha256": "af29132f1c66765a07dc0310c3a5750461736a384ee10d6f8655439332948cf4",
+      "original_log_paths_sha256": [
+        {
+          "original_path": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/build-iphone-Release.log",
+          "sha256": "0cdb85e38ac07ca7bf889b8cace43ba99e7ea297191e1a33d9f7eaa0770a6b00"
+        }
+      ],
+      "embedded_watch_actual_parent_origin": [],
+      "SDK_only_not_GUI_PASS": true
+    },
+    {
+      "platform": "vision",
+      "source_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+      "actual_scene_Info_path": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-work/dd/Build/Products/Release-xrsimulator/Folio.app/Info.plist",
+      "actual_scene_Info_sha256": "bfb96a58e04ad23cceeb415c0445429ada3bc7802d0eafb2152352fa190519db",
+      "supports_multiple_scenes": true,
+      "actual_receipt_sha256": "24d04c831e3587a829f85b1a715a66d1a9b5c75fce81e75f2614fdc9869f3c3d",
+      "actual_observation_sha256": "03bc976f3d1dfed4791bdeea3b85b8d2f749c6d22d58a0ebc7385a489e736f77",
+      "actual_executable_sha256": "021cd91a83f7099e431e80178b4435cef2391775c817a56e4c5f8e89e5458287",
+      "original_log_paths_sha256": [
+        {
+          "original_path": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-work/build-vision-Release.log",
+          "sha256": "a0d2827325fdc9e0f084e249f8fe131769cf5f77f99f4488843aacfab71cdbf7"
+        }
+      ],
+      "embedded_watch_actual_parent_origin": [],
+      "SDK_only_not_GUI_PASS": true
+    }
+  ],
+  "current_reusable_build_paths": [
+    "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-build.json",
+    "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-build.json"
+  ],
+  "old_QA_SDK_acceptance_not_rebound": true,
+  "future_Files_Scene_GUI_WC_resource": "not validated by this SDK-only proof",
+  "new_call_lock_SDK_Sim_GUI_test_or_review": false,
+  "commit_push": false
+}

@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "platform": "iphone",
+  "configuration": "Release",
+  "scheme": "FolioMobile",
+  "compilation_conditions": [],
+  "app_path": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/dd/Build/Products/Release-iphonesimulator/Folio.app",
+  "bundle_id": "cyou.tianli.TLMarkdown.mobile",
+  "version": "1.2.0",
+  "build": "1",
+  "executable_sha256": "af29132f1c66765a07dc0310c3a5750461736a384ee10d6f8655439332948cf4",
+  "sdk": "iphonesimulator27.0",
+  "xcode": {
+    "name": "Xcode.app",
+    "version": "27.0",
+    "build": "27A266a",
+    "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+  },
+  "destination": "generic/platform=iOS Simulator",
+  "signing": "unsigned simulator build (CODE_SIGNING_ALLOWED=NO)",
+  "log": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/build-iphone-Release.log",
+  "work_dir": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work",
+  "seconds": 11.8,
+  "generated_info_plists": [],
+  "source_layout": {
+    "schema_version": 1,
+    "source_base": "src",
+    "component": "src/ios/01-源程序",
+    "input_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+    "external_files": {}
+  }
+}

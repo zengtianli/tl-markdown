@@ -1,0 +1,27 @@
+{
+  "scope": "two-line XcodeGen Scene manifest declaration only; zero new SDK/runtime/GUI/Scene PASS",
+  "source_before": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+  "source_after": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+  "count_before": 62,
+  "count_after": 62,
+  "changed_inputs": {
+    "ios/01-源程序/project.yml": {
+      "before": "a0e3bbc52f78c51943b5b7db1271ee4eb727fa7209beea8b5c668fcedfa41ebe",
+      "after": "abb6340b5236a5866f0d847653f40cd66316c646bb34170e21b213d091761075"
+    }
+  },
+  "saved_old": {
+    "iphone-before-Info.plist": "1990cc2a77a75454f08c6d810a6dd1d2bfc34c39816e50ec2f5fa69733739394",
+    "inputs-before.json": "269bcae5e3316fa5ac9415265f812abbbe87e3497ab62c9bafaed1e02c5dbef3",
+    "vision-before-Info.plist": "08ec87ea18bb585ece50be1f4e7389e599ac3f392f78a82b2fcce8ccc7e33c8c",
+    "project-before.yml": "a0e3bbc52f78c51943b5b7db1271ee4eb727fa7209beea8b5c668fcedfa41ebe"
+  },
+  "actual_old_scene_flags": {
+    "iphone-before-Info.plist": null,
+    "vision-before-Info.plist": null
+  },
+  "production_file": "/Users/tianli/Apps/folio/ios/01-源程序/project.yml",
+  "new_project_sha256": "abb6340b5236a5866f0d847653f40cd66316c646bb34170e21b213d091761075",
+  "unchanged": "canonical Mac/Models/Editor, source count, frozen QA/Store/tools, document sharing, bundle/version; old 4aa proofs not rewritten",
+  "required_next": "Root serial real iOS and Vision ordinary Release SDK build from new source; actual Files/OS Scenes CUA"
+}

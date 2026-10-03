@@ -1,0 +1,23 @@
+{
+  "app_id": "folio",
+  "scheme": "FolioMobile",
+  "repo": "/Users/tianli/Apps/folio/ios/01-源程序",
+  "platform": "iphone",
+  "configuration": "Release",
+  "fixture_debug": false,
+  "source_env": true,
+  "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-build.json",
+  "receipt_sha256": "70f89499f733cb29723a289b905dca7043d8c329dc70493b9d4f6a1e216140ac",
+  "executable_sha256": "af29132f1c66765a07dc0310c3a5750461736a384ee10d6f8655439332948cf4",
+  "sdk": "iphonesimulator27.0",
+  "original_reuse_verified": true,
+  "actual_info": {
+    "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/dd/Build/Products/Release-iphonesimulator/Folio.app",
+    "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/iphone-release-work/dd/Build/Products/Release-iphonesimulator/Folio.app/Info.plist",
+    "Info_sha256": "3fe0b96aba72da60082ae3557008de5cad1788851efd7127e6d15b954c88ef6d",
+    "actual_scene_manifest": {
+      "UIApplicationSupportsMultipleScenes": true
+    },
+    "embedded_watch": []
+  }
+}

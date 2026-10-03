@@ -1,0 +1,13 @@
+{
+  "read_at": "2026-10-03T10:23:50.076026+08:00",
+  "queue_sha256": "dfd6b2d0d8e101175e9db0a98b612db3216cf07b13e7feed5da2526e3ac7cb13",
+  "entry_exit_code": 0,
+  "six_actual_release_builds": 6,
+  "all_actual_info_scene_flags_true": true,
+  "all_original_reuse_verified": true,
+  "source_before_after_equal": true,
+  "final_complete_elapsed_s": 104.97331933298847,
+  "canonical_directory_lock_exists": false,
+  "kernel_ps_scoped_actual_attempt_candidates": [],
+  "scope": "SDK configuration verification only; no new GUI, Scene creation, Files, performance or Watch transport claim"
+}

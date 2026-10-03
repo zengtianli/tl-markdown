@@ -1,0 +1,23 @@
+{
+  "app_id": "folio",
+  "scheme": "FolioMobile",
+  "repo": "/Users/tianli/Apps/folio/ios/01-源程序",
+  "platform": "vision",
+  "configuration": "Release",
+  "fixture_debug": false,
+  "source_env": true,
+  "receipt": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-build.json",
+  "receipt_sha256": "24d04c831e3587a829f85b1a715a66d1a9b5c75fce81e75f2614fdc9869f3c3d",
+  "executable_sha256": "021cd91a83f7099e431e80178b4435cef2391775c817a56e4c5f8e89e5458287",
+  "sdk": "xrsimulator27.0",
+  "original_reuse_verified": true,
+  "actual_info": {
+    "app": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-work/dd/Build/Products/Release-xrsimulator/Folio.app",
+    "Info_plist": "/private/tmp/sweep-sdk-20261003/scene-attempts/root-scenes-six-release-20261003-1/folio/vision-release-work/dd/Build/Products/Release-xrsimulator/Folio.app/Info.plist",
+    "Info_sha256": "bfb96a58e04ad23cceeb415c0445429ada3bc7802d0eafb2152352fa190519db",
+    "actual_scene_manifest": {
+      "UIApplicationSupportsMultipleScenes": true
+    },
+    "embedded_watch": []
+  }
+}
