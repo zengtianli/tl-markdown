@@ -131,6 +131,7 @@ private final class FolioRecordingPanel: NSPanel {
 @main struct TLMarkdownApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var store: EditorStore
+    private let configuration: AppConfiguration?
     init() {
         // Refuse this diagnostic before creating a store unless its state is isolated.
         if FolioLaunch.uiSelfTest && !FolioLaunch.background {
@@ -140,6 +141,13 @@ private final class FolioRecordingPanel: NSPanel {
         let root = ProcessInfo.processInfo.environment["TL_MARKDOWN_STATE_DIR"].map { URL(fileURLWithPath: $0) }
         let model = EditorStore(directory: root)
         _store = StateObject(wrappedValue: model)
+        if !FolioLaunch.background && !FolioLaunch.uiSelfTest {
+            let session = FolioIndexConfig.stateDirectory.appendingPathComponent("session.json")
+            let config = AppConfiguration(productID: "cyou.tianli.TLMarkdown", files: [AppConfigurationFile(url: session, keys: ["settings.fontFamily", "settings.fontSize", "settings.contentWidth", "settings.restoreSession", "settings.imageFolder"])])
+            config.onChange = { [weak model] in model?.reloadConfiguration() }
+            configuration = config
+            AppLifecycleUI.install(name: "Folio", configuration: config, updateSource: .manifest(URL(string: "https://app-mac-folio.tianli.cyou/release.json")!))
+        } else { configuration = nil }
         if FolioLaunch.background || FolioLaunch.uiSelfTest { delegate.store = model }
     }
     var body: some Scene {
@@ -167,7 +175,11 @@ private final class FolioRecordingPanel: NSPanel {
                 Button("撤销") { if !FullPreview.shared.isKey { store.command("undo") } }.keyboardShortcut("z")
                 Button("重做") { if !FullPreview.shared.isKey { store.command("redo") } }.keyboardShortcut("z", modifiers: [.command, .shift])
             }
-            CommandGroup(replacing: .appSettings) { Button("设置…") { store.showSettings = true }.keyboardShortcut(",") }
+            CommandGroup(replacing: .appSettings) {
+                Button("设置…") { store.showSettings = true }.keyboardShortcut(",")
+                Button("配置与更新…") { AppLifecycleUI.shared.show() }
+                Button("检查更新…") { AppLifecycleUI.shared.checkForUpdates() }
+            }
             CommandGroup(replacing: .help) {
                 Button("Folio 使用指南") {
                     if let url = URL(string: "https://app-mac-folio.tianli.cyou/#start") { NSWorkspace.shared.open(url) }

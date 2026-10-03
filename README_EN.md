@@ -1,5 +1,7 @@
 # Folio
 
+The Mac app menu includes **Configuration and updates…** for editor preference export/import and optional iCloud settings sync, off by default. It transfers font, size, content width, restore-session preference and the relative image-folder name. Documents, recovery drafts, search roots and local index paths stay local. Enable iCloud Drive and settings sync on both Macs using the same Apple account to restore existing preferences, with backups before changes and damaged files retained. **Check for updates…** reads the product release manifest and offers published downloads/upgrades.
+
 [中文](README.md) | **English**
 
 [Product homepage, download and guide](https://app-mac-folio.tianli.cyou/)

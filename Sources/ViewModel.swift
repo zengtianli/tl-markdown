@@ -246,6 +246,16 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
         else { DispatchQueue.main.async { [weak self] in self?.bridge.send("goto", value: offset) } }
     }
     func settingsChanged() { persist(); bridge.send("settings", value: ["fontSize": settings.fontSize, "contentWidth": settings.contentWidth, "fontFamily": settings.fontFamily ?? "system"]) }
+    func reloadConfiguration() {
+        do {
+            // Read only preferences from the session; the active draft and document list stay in memory.
+            let restored = try disk.read().settings
+            settings.fontFamily = restored.fontFamily; settings.fontSize = restored.fontSize
+            settings.contentWidth = restored.contentWidth; settings.restoreSession = restored.restoreSession
+            settings.imageFolder = restored.imageFolder
+            settingsChanged()
+        } catch { banner = "配置恢复未完成：\(error.localizedDescription)" }
+    }
     func toggleSource() { sourceMode.toggle(); bridge.send("mode", value: sourceMode) }
     func command(_ command: String) { bridge.send("command", value: command) }
     func insertImage(data: Data, ext: String, documentID: String) {
