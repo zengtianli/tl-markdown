@@ -6,6 +6,8 @@
 
 ## 当前可执行的原 GUI 准备
 
+2026-10-03 govern后共享app_sop仅修launch子进程Python与显式无界面media准入，冻结`8191f47`/SHA `145c1a26…`、27窄案例通过。原resource PIN跟到此真实版本，62源及两份Scene普通Release SDK不变，不重编、不重测旧host资源。旧b6准备保留；下一使用原prepare生成的新独立目录`/private/tmp/folio-gui-scene-current-20261003-145c`，默认dry和真实GUI门仍保持。此PIN更新不是Files/Scene PASS。
+
 2026-10-03 后续仅更新原 `resource.py` 的两个已评阅工具 PIN：Chapter `b6d60b6d…`（固定平台 capture，原锁及验收保全不变），measurer `8b477d95…`（既有 SDK 原回执缓存复用，原采样/负载门不变）。其他工具、62 生产输入与普通 SDK 不变；旧准备和原件保留。新准备由本目录原 `prepare.py` 实际生成，绑定文件 SHA `3dcfe75ef8edca054496611963d6f198e145c5c893890399acad9f4f10a96d29`，[持久原件与范围](../../../../perf/acceptance/gui-scene-prepared-current-20261003/manifest.json)。一条 iPad 默认 dry 与旧 ABI 的纯拒绝反例通过，均未查询设备、boot、截图或操作 Files。
 
 新 workdir `/private/tmp/folio-gui-scene-current-20261003-b6d` 使用仓内 `perf/acceptance/scene-sdk-20261003/{iphone,vision}-release-build.json` 原回执。iPad 复用普通 iPhone 包及原 owner `FF227F5B-7D8C-4C26-8831-9897C3ABA235`，iPhone owner 为 `61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D`；这里只读原 owner，实际身份/Shutdown仍须执行时按原门核。

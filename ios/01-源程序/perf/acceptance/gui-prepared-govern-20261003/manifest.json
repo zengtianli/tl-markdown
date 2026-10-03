@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-03T23:57:35.567789+08:00",
+  "scope": "original prepare and iPad default dry only; no SDK/device/GUI/resource PASS",
+  "workdir": "/private/tmp/folio-gui-scene-current-20261003-145c",
+  "app_sop_sha256": "145c1a26f514c50caf19dea46aabbefc11c991c97a7fa4070dd81d8563ab4f55",
+  "source": {
+    "sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+    "file_count": 62
+  },
+  "artifacts": [
+    {
+      "name": "receipts.json",
+      "source": "/private/tmp/folio-gui-scene-current-20261003-145c/receipts.json",
+      "sha256": "049e80e003eb37fc88219828698bebf8f4b3440b6c39ca10694c092b2ecad2fd",
+      "bytes": 239
+    },
+    {
+      "name": "owned-config.json",
+      "source": "/private/tmp/folio-gui-scene-current-20261003-145c/owned-config.json",
+      "sha256": "0afa85a6410885d8a10a97b26e3cfaa9e5e30e484a367c2ec758885701767dba",
+      "bytes": 255
+    },
+    {
+      "name": "gui-binding.json",
+      "source": "/private/tmp/folio-gui-scene-current-20261003-145c/gui-binding.json",
+      "sha256": "496778a8ecf528cc5f47e1c0efef8eba1400fe37359a4e7668da8ba9153d138e",
+      "bytes": 27224
+    },
+    {
+      "name": "FolioGUIFixture.zip",
+      "source": "/private/tmp/folio-gui-scene-current-20261003-145c/FolioGUIFixture.zip",
+      "sha256": "082b734e4a2b28375f2bb6be49ebc15e90d7fa3a24c51949edb4d2c941825934",
+      "bytes": 907
+    }
+  ]
+}
