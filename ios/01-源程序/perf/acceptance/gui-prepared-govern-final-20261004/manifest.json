@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-04T00:15:46.470210+08:00",
+  "scope": "original prepare and iPad default dry; no SDK/device/GUI/resource PASS",
+  "app_sop_sha256": "e8ed9e008543cb1655d5c961538beb43663d5efcca618c52de0828e4c330f873",
+  "workdir": "/private/tmp/folio-gui-scene-current-20261004-e8ed",
+  "binding_sha256": "2a92e21cd780ab4c9b83f21c1ca31faf6b0aba534c20e3a07b228d0c7faef4ad",
+  "source": {
+    "sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+    "file_count": 62
+  },
+  "artifacts": [
+    {
+      "source": "/private/tmp/folio-gui-scene-current-20261004-e8ed/gui-binding.json",
+      "file": "gui-binding.json",
+      "sha256": "2a92e21cd780ab4c9b83f21c1ca31faf6b0aba534c20e3a07b228d0c7faef4ad",
+      "bytes": 27224
+    },
+    {
+      "source": "/private/tmp/folio-e8ed-prepare-20261004.json",
+      "file": "prepare.json",
+      "sha256": "4bc539a2a420f29c579699d59f54ac3e3029a9c25b6026507b4255d112a9fde0",
+      "bytes": 1132
+    },
+    {
+      "source": "/private/tmp/folio-e8ed-dry-20261004.json",
+      "file": "ipad-dry.json",
+      "sha256": "6fa51bdcccd87493ee40366d050d5fd2ca3edba7eae46d212aa5a0e8bf3c5a71",
+      "bytes": 9449
+    }
+  ]
+}

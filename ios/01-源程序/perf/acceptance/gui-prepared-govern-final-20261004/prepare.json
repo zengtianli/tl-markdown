@@ -1,0 +1,31 @@
+{
+  "status": "prepared-only-no-device",
+  "workdir": "/private/tmp/folio-gui-scene-current-20261004-e8ed",
+  "binding_sha256": "2a92e21cd780ab4c9b83f21c1ca31faf6b0aba534c20e3a07b228d0c7faef4ad",
+  "source": {
+    "sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+    "file_count": 62
+  },
+  "scene_manifest": {
+    "UIApplicationSupportsMultipleScenes": true
+  },
+  "fixture": {
+    "files": {
+      "FolioGUIFixture/folio-gui.md": {
+        "sha256": "e0a322b050fa6a9ee76097a1b6299e209722a810b7d68922891115358beb95c3",
+        "bytes": 228
+      },
+      "FolioGUIFixture/assets/pixel.png": {
+        "sha256": "668172c6fe9c474d37ca991608df8a3b09ab1182b7686dbfc6fb1cc9d4098fb6",
+        "bytes": 123
+      },
+      "FolioGUIFixture/README.txt": {
+        "sha256": "ff5bda3bf9826284bd762a632237010fefa01166a3ef96dce6f68a2d28ef2dc9",
+        "bytes": 134
+      }
+    },
+    "zip_sha256": "082b734e4a2b28375f2bb6be49ebc15e90d7fa3a24c51949edb4d2c941825934",
+    "encoding": "UTF-8 BOM; CRLF Markdown",
+    "scope": "fictional document and generated RGB image only; zero permission/session metadata"
+  }
+}
