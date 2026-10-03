@@ -16,7 +16,7 @@ PINS={
  '/Users/tianli/Apps/.claude/skills/app-lightweight/scripts/measure.py':'9b4f3cb22190a295fade42759bdb19f27da7c5dbd13449e78cb14743472ed94c',
  '/Users/tianli/Apps/.claude/skills/app-lightweight/scripts/platform_measure.py':'09a2cc684be508ceb576a0da6957871aacc18fdaa25402720033277dd92057b6',
  '/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py':'ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34',
- '/Users/tianli/Apps/chapter/engine/app_sop.py':'c82518099ac3206e9b9b66c74c54824c6c05a7390ee515b694446ed2f82b2c89',
+ '/Users/tianli/Apps/chapter/engine/app_sop.py':'85356a28d180a40f5ba03574578236fae2e52219d60b18953dba06a722b26a24',
  str(REPO/'Tests/HostedHarness/run.py'):'6f1af3fa63fd4c224e0a027da30cc7ba4fb4e4f6ad46e6394759d41d767135d8'}
 LANE=Path(list(PINS)[2]);MEASURE=Path(list(PINS)[1])
 PHONE='12B97992-764F-4AAE-9C54-C41E5BEADA0B'

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "status": "prepared-only",
+  "scope": "four Folio-owned QA inputs; eight pure temporary fake-Lane counterexamples and six default dry commands; no actual device/gate/SDK build/runtime",
+  "python_inputs": {
+    "devices.py": "06147708e13e48f27064ea881595eedf32811f360d910214d4c031c2d7e50590",
+    "prepare.py": "7c449c4449dd4d2e7adfea1f1c49e41f8e6732f30817105fb743a788889fecf0",
+    "run.py": "fb1d12c29c6284776094f82cec54065389135d9bbaac58dae50a8d7c064ef393",
+    "test_devices.py": "ea6360cceff179a26b497738ba75e557720970c5547eb7677bd4edf41ab032aa"
+  },
+  "parent_frozen_python_inputs": {
+    "budget.py": "cc7c9f280c97426051a0463f92947bb8e1fb2f87413bf4d847b99c51b439e2e7",
+    "guard.py": "14a2dbbcf3d17903b09461a757655d755f42dacf9deaec81fc3d39beb3439ec3",
+    "prepare.py": "1b40f896843837f51e708f4d48a8aa1d231af352545e34b9732e54d94b889622",
+    "resource.py": "e048e72007f3f2119f48ba1c3f11b473621253064aef1480c7712c5f8bc1f1b4",
+    "test_budget.py": "766b07f82a1d2a0794beffa572eabd7e5f911e32ac31b09702e4f53dc3fabf48",
+    "thin.py": "0a1267b138ab392765ad572e2478760f08b8fccaa2759d4d336c8279cf646a16"
+  },
+  "production_source": {
+    "sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+    "file_count": 62
+  },
+  "external_binding": "/tmp/folio-owned-store-ready-20261003/owned-binding.json",
+  "external_binding_sha256": "3bff1c188d208a1bc1b3e21ba12d419eae60114a59d7396be4f7d8a8ff251ac5",
+  "files": {
+    "receipts.json": {
+      "original": "/tmp/folio-owned-store-ready-20261003/receipts.json",
+      "sha256": "4a3ea7c1d43d9df9e5ce5c5572cd08f0edfe12282672d7e372f00659b2c81181",
+      "bytes": 229
+    },
+    "owned-config.json": {
+      "original": "/tmp/folio-owned-store-ready-20261003/owned-config.json",
+      "sha256": "ccf69d510cc81964856596218f840784869ada7b7259a4bf4b85ce61a385191e",
+      "bytes": 25
+    },
+    "owned-binding.json": {
+      "original": "/tmp/folio-owned-store-ready-20261003/owned-binding.json",
+      "sha256": "3bff1c188d208a1bc1b3e21ba12d419eae60114a59d7396be4f7d8a8ff251ac5",
+      "bytes": 47302
+    },
+    "dry-results.json": {
+      "original": "/tmp/folio-owned-store-ready-20261003/dry-results.json",
+      "sha256": "a017ae2fa2d895665de61478246664809d279599d552734adb292693bd3c8750",
+      "bytes": 4244
+    },
+    "launch-ipad-dry.log": {
+      "original": "/tmp/folio-owned-store-ready-20261003/launch-ipad-dry.log",
+      "sha256": "065c420ef85006998394b1542264c123946d0dc668b5d40bc5ba7d80c34c4233",
+      "bytes": 8405
+    },
+    "launch-iphone-dry.log": {
+      "original": "/tmp/folio-owned-store-ready-20261003/launch-iphone-dry.log",
+      "sha256": "34b61c2ed3b178ef3a85df0ba7e26897ca22bc7b661de7ac4c73048ba9e81881",
+      "bytes": 8475
+    },
+    "launch-vision-dry.log": {
+      "original": "/tmp/folio-owned-store-ready-20261003/launch-vision-dry.log",
+      "sha256": "1ad22afbc55c9485f5bf4f3b2141ee16098d1a29c7c5d5c89df0bf9782e4ae45",
+      "bytes": 8196
+    },
+    "store-ipad-dry.log": {
+      "original": "/tmp/folio-owned-store-ready-20261003/store-ipad-dry.log",
+      "sha256": "0b31051f91ab1639bb0a9c9a75f87a8096cb403a2d007647fe9b79f80fd652fe",
+      "bytes": 8404
+    },
+    "store-iphone-dry.log": {
+      "original": "/tmp/folio-owned-store-ready-20261003/store-iphone-dry.log",
+      "sha256": "7a0145984ee2234e76b2962dfdcb2422d146853410392943ac71d801146dcd87",
+      "bytes": 8400
+    },
+    "store-vision-dry.log": {
+      "original": "/tmp/folio-owned-store-ready-20261003/store-vision-dry.log",
+      "sha256": "a1c20c86a399ab96f529ebe50ad42ef7095e187503c3cadac861147efb7b9058",
+      "bytes": 8195
+    },
+    "pure-devices.log": {
+      "original": "/tmp/folio-owned-store-pure-20261003.log",
+      "sha256": "97705f4dc4706351ee67c5a48a1ed6f96eb1ed7c10c7729e457592c6bad2aed9",
+      "bytes": 1200
+    }
+  },
+  "pure_test_count": 8,
+  "pure_test_result": "passed",
+  "dry_case_count": 6,
+  "dry_result": "passed-default-dry-only",
+  "actual_owner_receipt": null,
+  "actual_runtime": "not run; Root new native grant required",
+  "not_claimed": [
+    "Store capture runtime",
+    "iPad/Vision runtime",
+    "OS Files/Scenes/user input",
+    "five-start median",
+    "helper-inclusive resources",
+    "upload"
+  ]
+}

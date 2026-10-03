@@ -1,0 +1,21 @@
+{
+  "status": "verified-existing-single-store-image-scope-only",
+  "platform": "iphone",
+  "result_sha256": "bc04272763bd6f284de4dc905c42edf460b77500b352f8b37a9eaf885a524c4c",
+  "original_png_sha256": "bdf64283833dfa4c0d99314b9fa72e4d1fa4d127b04d94597dd91752f63d173f",
+  "actual_device": {
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "name": "Folio Store iPhone 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro-Max",
+    "state": "Shutdown",
+    "available": true
+  },
+  "dimensions": [
+    1320,
+    2868
+  ],
+  "recorded_terminal": "source-bound original final guard Shutdown/group-empty/own-gate-cleared; no fresh device query",
+  "scope": "one unscaled ordinary Release production-demo image, not complete Store set/Files/OS Scene/median/resources/upload",
+  "verifier_sha256": "53b0be3f7dbe45865456294ed8d2fd59f07fb169ae795a87692a3ee8a5f8cde5"
+}

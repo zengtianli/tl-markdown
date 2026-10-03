@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "artifact": "01-markdown-release-20261003.png",
+  "sha256": "bdf64283833dfa4c0d99314b9fa72e4d1fa4d127b04d94597dd91752f63d173f",
+  "scope": "one raw unscaled synthetic production-demo Store first screen",
+  "actual_result": "../../../perf/acceptance/store-iphone-20261003.json",
+  "actual_result_sha256": "a3ca76a36da6e7fa17022067e8bcbffca79cce74044dd5a15eba9477d7cb4588",
+  "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/launch-0.png",
+  "actual_device": {
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "name": "Folio Store iPhone 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro-Max",
+    "state": "Shutdown",
+    "available": true
+  },
+  "dimensions": [
+    1320,
+    2868
+  ],
+  "display_type": "APP_IPHONE_67",
+  "production_source_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+  "registered_by": "existing sop.platforms.iphone.store_shots glob",
+  "project_yaml_sha256": "7dce7a872e0ce5ad221abc2a96307a53973ba34e808604740e1426467d0d0ba9",
+  "project_yaml_modified": false,
+  "not_claimed": [
+    "complete Store set",
+    "upload",
+    "Files/OS Scenes",
+    "resource budgets"
+  ]
+}

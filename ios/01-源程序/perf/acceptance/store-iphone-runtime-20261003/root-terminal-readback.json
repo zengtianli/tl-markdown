@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "observed_at": "2026-10-03T09:39:48.483104+08:00",
+  "exec_session_id": 72670,
+  "natural_exit_code": 0,
+  "result_sha256": "bc04272763bd6f284de4dc905c42edf460b77500b352f8b37a9eaf885a524c4c",
+  "device_current": {
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "name": "Folio Store iPhone 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro-Max",
+    "state": "Shutdown",
+    "available": true
+  },
+  "remaining_original_worker_group": [],
+  "original_directory_absent": true,
+  "cleanup_original_sha256": "ca6a2d3a248d868a6b78e7d345fc8029001a5b3bbad85009a88637c691f705c7",
+  "input_stable": true,
+  "total_budget": {
+    "seconds": 600.0,
+    "elapsed_seconds": 62.598876792006195,
+    "includes": "initial input freeze, admission, child natural finish, own cleanup, file NB release, final inputs",
+    "over_budget": false,
+    "deadline_does_not_kill_existing_child": true
+  },
+  "original_png_sha256": "bdf64283833dfa4c0d99314b9fa72e4d1fa4d127b04d94597dd91752f63d173f",
+  "root_visual_review": {
+    "original_png_viewed": true,
+    "visible": "合成演示标题、正文、粗斜体、三列表格、清单、代码块",
+    "dimensions": [
+      1320,
+      2868
+    ],
+    "not_covered": [
+      "Files permission",
+      "OS Scene input",
+      "full asset set",
+      "resource metrics",
+      "upload"
+    ]
+  },
+  "queue_fd": "controller naturally exited; own regular NB FD closed, no assertion about others"
+}

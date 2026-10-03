@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "scope": "immutable actual one ordinary Release iPhone17ProMax Store frame and originals",
+  "files": {
+    "admission.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/admission.json",
+      "sha256": "7f2bca0f4d82f5ef0dc9b25ab520873dbf72a5aad6dd1aae90511ed617f6f02e",
+      "bytes": 1174
+    },
+    "capture.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/capture.json",
+      "sha256": "46eedc859a8da5feff4df1f6b74aefcf5b8c4c3e26c672c663136a5ee9bc14a6",
+      "bytes": 4534
+    },
+    "cleanup.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/cleanup.json",
+      "sha256": "ca6a2d3a248d868a6b78e7d345fc8029001a5b3bbad85009a88637c691f705c7",
+      "bytes": 1709
+    },
+    "creation-gate.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/creation-gate.json",
+      "sha256": "2045076ca04a8c83bfdca494f4762668f38cd17b99b0b7a5789634843b78df59",
+      "bytes": 1068
+    },
+    "creation-returned.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/creation-returned.json",
+      "sha256": "35a58c9dbdd02606307bfe83e2f95aed886da0d8a9b173a975c2127baebe32b2",
+      "bytes": 1453
+    },
+    "launch-0.png": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/launch-0.png",
+      "sha256": "bdf64283833dfa4c0d99314b9fa72e4d1fa4d127b04d94597dd91752f63d173f",
+      "bytes": 358013
+    },
+    "observations.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/observations.json",
+      "sha256": "8ce9c9e1ea002b639eb93115d2dc1c1d35716eadd89ef1024b314a78683ea30e",
+      "bytes": 3851
+    },
+    "operation.log": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/operation.log",
+      "sha256": "63397f47fefd1c6c1d58c59162c11b4d6b38f567013741af2c5fcca7a971bc02",
+      "bytes": 171
+    },
+    "owner.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/owner.json",
+      "sha256": "0f9137dacceb82523d0444caf3fa214ec78c3d52464d396c53d2ffe440fdccb8",
+      "bytes": 8868
+    },
+    "result.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/result.json",
+      "sha256": "bc04272763bd6f284de4dc905c42edf460b77500b352f8b37a9eaf885a524c4c",
+      "bytes": 23617
+    },
+    "root-terminal-readback.json": {
+      "original": "/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/root-terminal-readback.json",
+      "sha256": "cb13c24f158966eead838d53117c18f0df429f2600e791e4c9cb3598de6f26e6",
+      "bytes": 1505
+    },
+    "readonly-consumer.stdout.json": {
+      "original": "new read-only consumer stdout; existing result, no runtime rerun",
+      "sha256": "77f625567c3f723f45f6e3b0a4d37eb179b3d035078de6a3ac37d3ca7e138204",
+      "bytes": 921
+    },
+    "readonly-consumer.stderr.log": {
+      "original": "new read-only consumer stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "qa_prepared_manifest": "../../../Tests/HostedHarness/ReleaseQA/Store/evidence/abi853-20261003/manifest.json",
+  "qa_prepared_manifest_sha256": "7996f89ed70168d2e5cda09cd3ea61ccb868f2a3e6b53aaaeeae29ef7afc64dc",
+  "consumer_sha256": "53b0be3f7dbe45865456294ed8d2fd59f07fb169ae795a87692a3ee8a5f8cde5",
+  "consumer_scope": "new read-back of original recorded terminal; not a device query or runtime rerun"
+}

@@ -1,0 +1,48 @@
+{
+  "scope": "only new iPad/Vision Store default dry; no phone run, device, lock or build",
+  "cases": [
+    {
+      "platform": "ipad",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-store-ipad-vision-ready-20261003",
+        "--purpose",
+        "store",
+        "--platform",
+        "ipad",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-store-ipad-vision-ready-20261003/store-ipad-dry.log",
+      "sha256": "4cd9e3796117aab2725c979e607988e05ad6f9a32cc1b38d7d4b21ce52cad147",
+      "actual_uid": null,
+      "owner_pending": true
+    },
+    {
+      "platform": "vision",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-store-ipad-vision-ready-20261003",
+        "--purpose",
+        "store",
+        "--platform",
+        "vision",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-store-ipad-vision-ready-20261003/store-vision-dry.log",
+      "sha256": "a56c41c439c9074fd73fc821fbc895f61c7d69100aeec7b2d7e13f38ce173505",
+      "actual_uid": null,
+      "owner_pending": true
+    }
+  ],
+  "owned_runs_exists": false
+}

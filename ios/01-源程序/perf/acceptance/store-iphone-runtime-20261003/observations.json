@@ -1,0 +1,65 @@
+[
+  {
+    "index": 0,
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "pid": 45517,
+    "pid_started": "Sat Oct  3 09:35:27 2026",
+    "actual_args": [
+      "-folio-demo"
+    ],
+    "ready_seconds": 3.583,
+    "ready_signal": "os_log",
+    "actual_ready": {
+      "raw": "{\"timezoneName\":\"\",\"messageType\":\"Default\",\"eventType\":\"logEvent\",\"source\":null,\"launchPersonaName\":\"\",\"formatString\":\"lane-ready %{public}s\",\"userID\":502,\"activityIdentifier\":0,\"subsystem\":\"cyou.tianli.TLMarkdown.mobile\",\"category\":\"lane\",\"personaType\":0,\"threadID\":41379737,\"launchPersonaType\":0,\"senderImageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\",\"launchPersonaID\":4294967295,\"backtrace\":{\"frames\":[{\"imageOffset\":114776,\"imageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\"}]},\"bootUUID\":\"\",\"processImagePath\":\"\\/Users\\/tianli\\/Library\\/Developer\\/CoreSimulator\\/Devices\\/61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D\\/data\\/Containers\\/Bundle\\/Application\\/477F51A8-CD4E-477A-A529-561E4AD7BEC5\\/Folio.app\\/Folio\",\"senderImagePath\":\"\\/Users\\/tianli\\/Library\\/Developer\\/CoreSimulator\\/Devices\\/61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D\\/data\\/Containers\\/Bundle\\/Application\\/477F51A8-CD4E-477A-A529-561E4AD7BEC5\\/Folio.app\\/Folio\",\"personaID\":4294967295,\"timestamp\":\"2026-10-03 09:35:30.687204+0800\",\"machTimestamp\":14331650393679,\"personaName\":\"\",\"eventMessage\":\"lane-ready markdown\",\"processImageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\",\"traceID\":953826370781188,\"processID\":45517,\"senderProgramCounter\":114776,\"parentActivityIdentifier\":0}",
+      "event": {
+        "timezoneName": "",
+        "messageType": "Default",
+        "eventType": "logEvent",
+        "source": null,
+        "launchPersonaName": "",
+        "formatString": "lane-ready %{public}s",
+        "userID": 502,
+        "activityIdentifier": 0,
+        "subsystem": "cyou.tianli.TLMarkdown.mobile",
+        "category": "lane",
+        "personaType": 0,
+        "threadID": 41379737,
+        "launchPersonaType": 0,
+        "senderImageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980",
+        "launchPersonaID": 4294967295,
+        "backtrace": {
+          "frames": [
+            {
+              "imageOffset": 114776,
+              "imageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980"
+            }
+          ]
+        },
+        "bootUUID": "",
+        "processImagePath": "/Users/tianli/Library/Developer/CoreSimulator/Devices/61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D/data/Containers/Bundle/Application/477F51A8-CD4E-477A-A529-561E4AD7BEC5/Folio.app/Folio",
+        "senderImagePath": "/Users/tianli/Library/Developer/CoreSimulator/Devices/61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D/data/Containers/Bundle/Application/477F51A8-CD4E-477A-A529-561E4AD7BEC5/Folio.app/Folio",
+        "personaID": 4294967295,
+        "timestamp": "2026-10-03 09:35:30.687204+0800",
+        "machTimestamp": 14331650393679,
+        "personaName": "",
+        "eventMessage": "lane-ready markdown",
+        "processImageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980",
+        "traceID": 953826370781188,
+        "processID": 45517,
+        "senderProgramCounter": 114776,
+        "parentActivityIdentifier": 0
+      }
+    },
+    "frame": "/private/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336/launch-0.png",
+    "frame_sha256": "bdf64283833dfa4c0d99314b9fa72e4d1fa4d127b04d94597dd91752f63d173f",
+    "verdict": {
+      "non_blank": true,
+      "changed_from_baseline": true,
+      "stable": true,
+      "diff_baseline": 0.9503,
+      "diff_prev": 0.0
+    },
+    "session_sha256": "5efa75a2be51c34534c8ffb67bd3aeace53da10c92425703b2b7f33055ee4cef",
+    "demo_state": "App-created session.json, one active unnamed draft, exact bundled demo text, no grant metadata"
+  }
+]

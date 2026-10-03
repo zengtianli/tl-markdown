@@ -1,0 +1,38 @@
+{
+  "controller": {
+    "pid": 44336,
+    "pid_started": "Sat Oct  3 09:34:37 2026"
+  },
+  "worker": {
+    "pid": 44375,
+    "pid_started": "Sat Oct  3 09:34:38 2026"
+  },
+  "platform": "iphone",
+  "destination": "/private/tmp/folio-store-abi853-final-20261003/owned-runs/20261003-093438-store-iphone-44336",
+  "phase": "boot-admitted",
+  "device": {
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "name": "Folio Store iPhone 20261003",
+    "device_type": "iPhone-17-Pro-Max",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "available": true
+  },
+  "state_before": "Shutdown",
+  "locks": [
+    {
+      "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+      "dev": 16777234,
+      "ino": 492912773,
+      "record": {
+        "pid": 44375,
+        "pid_started": "Sat Oct  3 09:34:38 2026",
+        "label": "Folio owned store iphone",
+        "at": "2026-10-03T09:34:40+08:00",
+        "udid": null,
+        "keep_booted": false
+      },
+      "record_sha256": "c83ed0a972e3f46ffe9d38499001f2e7630ea7e484546c8efbe9443bbcdef3f4"
+    }
+  ],
+  "session_work": "/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/sim-lane-shots.dok5ycyo"
+}

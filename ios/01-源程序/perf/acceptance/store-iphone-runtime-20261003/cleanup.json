@@ -1,0 +1,51 @@
+{
+  "scope": "own worker/device only",
+  "clear": true,
+  "actions": [],
+  "errors": [],
+  "worker": {
+    "pid": 44375,
+    "pid_started": "Sat Oct  3 09:34:38 2026",
+    "exit_code": 0,
+    "remaining_group": {}
+  },
+  "journal_sha256": "7f2bca0f4d82f5ef0dc9b25ab520873dbf72a5aad6dd1aae90511ed617f6f02e",
+  "directory_lock": "absent: original Session released its gate",
+  "controller_cleanup_lock": {
+    "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+    "dev": 16777234,
+    "ino": 492932121,
+    "record": {
+      "pid": 44336,
+      "pid_started": "Sat Oct  3 09:34:37 2026",
+      "label": "Folio controller own-device terminal check",
+      "at": "2026-10-03T09:35:38+08:00",
+      "udid": null,
+      "keep_booted": false
+    },
+    "record_sha256": "4568c7b3b1c086b91506fe51b3a7ee5908522aae6685b034f35b5c72bc78687b"
+  },
+  "device_before_cleanup": {
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "name": "Folio Store iPhone 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro-Max",
+    "state": "Shutdown",
+    "available": true
+  },
+  "device_after_cleanup": {
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "name": "Folio Store iPhone 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro-Max",
+    "state": "Shutdown",
+    "available": true
+  },
+  "original_session_work_final": {
+    "path": "/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/sim-lane-shots.dok5ycyo",
+    "exists": false
+  },
+  "directory_lock_final": "absent",
+  "controller_cleanup_lock_final": "released by original Lock.release",
+  "chapter_global_held_during_observation": true
+}

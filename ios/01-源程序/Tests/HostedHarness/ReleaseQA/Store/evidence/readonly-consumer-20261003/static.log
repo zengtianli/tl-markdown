@@ -1,0 +1,2 @@
+AST parsed; --help exit0; existing non-Store phone result rejected exit1.
+{"status": "not-verified", "error": "ValueError: not an actual passed single Store result; launch/phone/preparation cannot substitute"}

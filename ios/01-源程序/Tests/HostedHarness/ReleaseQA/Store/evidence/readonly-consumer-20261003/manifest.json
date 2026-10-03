@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scope": "existing-result read-only consumer; independent of four runtime QA inputs",
+  "status": "static-only",
+  "checks": "AST/help and existing non-Store phone result rejected; no Store actual verified",
+  "files": {
+    "verify.py": {
+      "original": "/tmp/folio-store-result-readonly-20261003.py",
+      "sha256": "53b0be3f7dbe45865456294ed8d2fd59f07fb169ae795a87692a3ee8a5f8cde5"
+    },
+    "static.log": {
+      "original": "/tmp/folio-store-result-readonly-static-20261003.log",
+      "sha256": "19d8330b363c603e2045aaef97b1e754b02c244da9543986cdb1044399d368d5"
+    }
+  },
+  "device_api_calls": false,
+  "runtime": "not run"
+}

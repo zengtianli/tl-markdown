@@ -1,0 +1,11 @@
+{
+  "original_manifest": "../prepared-20261003/manifest.json",
+  "original_manifest_sha256": "826a4c475d81f1d6af9a22992ef1954fc078bb3f4bb499e8bddf3620465fe9bf",
+  "source_files": {
+    "devices.py": "06147708e13e48f27064ea881595eedf32811f360d910214d4c031c2d7e50590",
+    "prepare.py": "7c449c4449dd4d2e7adfea1f1c49e41f8e6732f30817105fb743a788889fecf0",
+    "run.py": "fb1d12c29c6284776094f82cec54065389135d9bbaac58dae50a8d7c064ef393",
+    "test_devices.py": "ea6360cceff179a26b497738ba75e557720970c5547eb7677bd4edf41ab032aa"
+  },
+  "scope": "pre-delta four Store QA sources; original proof kept unchanged"
+}

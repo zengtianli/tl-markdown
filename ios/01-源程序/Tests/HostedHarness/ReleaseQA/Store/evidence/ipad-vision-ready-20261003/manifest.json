@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "prepared-only",
+  "scope": "new independent one-Store iPad/Vision candidates; no phone rerun, devices, real gates, build or runtime",
+  "ready_cases": [
+    "store/ipad",
+    "store/vision"
+  ],
+  "external_binding": "/tmp/folio-store-ipad-vision-ready-20261003/owned-binding.json",
+  "external_binding_sha256": "12b780d564086f5daf75e3757ac21926ec4dbaf29e54807bd6434eb2f9e80424",
+  "python_inputs": {
+    "devices.py": "245f3db0d697686acc0a6776169556d854e415b580c55499f86513b1e8dd06d9",
+    "prepare.py": "7c449c4449dd4d2e7adfea1f1c49e41f8e6732f30817105fb743a788889fecf0",
+    "run.py": "fb1d12c29c6284776094f82cec54065389135d9bbaac58dae50a8d7c064ef393",
+    "test_devices.py": "068087f66a58618218f92124b460692376dca5c907cd43c0d7872cb776bf749b"
+  },
+  "parent_python_inputs": {
+    "budget.py": "cc7c9f280c97426051a0463f92947bb8e1fb2f87413bf4d847b99c51b439e2e7",
+    "guard.py": "14a2dbbcf3d17903b09461a757655d755f42dacf9deaec81fc3d39beb3439ec3",
+    "prepare.py": "1b40f896843837f51e708f4d48a8aa1d231af352545e34b9732e54d94b889622",
+    "resource.py": "e1a55eec43344f8d323c5af077fadf45a467ffd05b89178acf0a3f12bc1aa560",
+    "test_budget.py": "766b07f82a1d2a0794beffa572eabd7e5f911e32ac31b09702e4f53dc3fabf48",
+    "thin.py": "0a1267b138ab392765ad572e2478760f08b8fccaa2759d4d336c8279cf646a16"
+  },
+  "production_source": {
+    "sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+    "file_count": 62
+  },
+  "files": {
+    "receipts.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/receipts.json",
+      "sha256": "4a3ea7c1d43d9df9e5ce5c5572cd08f0edfe12282672d7e372f00659b2c81181"
+    },
+    "owned-config.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-config.json",
+      "sha256": "ccf69d510cc81964856596218f840784869ada7b7259a4bf4b85ce61a385191e"
+    },
+    "owned-binding.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-binding.json",
+      "sha256": "12b780d564086f5daf75e3757ac21926ec4dbaf29e54807bd6434eb2f9e80424"
+    },
+    "ipad-vision-dry-results.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/ipad-vision-dry-results.json",
+      "sha256": "3f7d236d8b0343e32e5814fafb54aa49f59860aa6e4357d5902175d4169627dd"
+    },
+    "store-ipad-dry.log": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/store-ipad-dry.log",
+      "sha256": "4cd9e3796117aab2725c979e607988e05ad6f9a32cc1b38d7d4b21ce52cad147"
+    },
+    "store-vision-dry.log": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/store-vision-dry.log",
+      "sha256": "a56c41c439c9074fd73fc821fbc895f61c7d69100aeec7b2d7e13f38ce173505"
+    }
+  },
+  "actual_uid": {
+    "ipad": null,
+    "vision": null
+  },
+  "owner_status": "future real before-absent original ensure + readback required",
+  "previous_abi_manifest": "../abi853-20261003/manifest.json",
+  "previous_abi_manifest_sha256": "7996f89ed70168d2e5cda09cd3ea61ccb868f2a3e6b53aaaeeae29ef7afc64dc",
+  "actual_phone_unchanged": "source-bound iPhone Store proof is separate; not rerun",
+  "actual": "Root new one-platform native grant required"
+}

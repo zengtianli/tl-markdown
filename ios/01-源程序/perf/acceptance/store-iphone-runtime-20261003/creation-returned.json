@@ -1,0 +1,48 @@
+{
+  "gate": {
+    "controller": {
+      "pid": 44336,
+      "pid_started": "Sat Oct  3 09:34:37 2026"
+    },
+    "worker": {
+      "pid": 44375,
+      "pid_started": "Sat Oct  3 09:34:38 2026"
+    },
+    "phase": "creation-admitted-no-boot",
+    "platform": "iphone",
+    "purpose": "store",
+    "request": {
+      "name": "Folio Store iPhone 20261003",
+      "device_type": "iPhone-17-Pro-Max",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0"
+    },
+    "locks": [
+      {
+        "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+        "dev": 16777234,
+        "ino": 492912654,
+        "record": {
+          "pid": 44375,
+          "pid_started": "Sat Oct  3 09:34:38 2026",
+          "label": "Folio owned creation store iphone",
+          "at": "2026-10-03T09:34:39+08:00",
+          "udid": null,
+          "keep_booted": false
+        },
+        "record_sha256": "17bc0e5df493a47c30244aca8c0deba6e3a6734a1bc4ec15bf7c6c64f848c053"
+      }
+    ],
+    "at": "2026-10-03T09:34:39.337260+08:00",
+    "before_inventory_sha256": "8e2b573d38dcbf67a4fbc498d2d8370e74e4e0ddeb54988554239b96aff470ef",
+    "before_name_matches": []
+  },
+  "ensure_return": {
+    "udid": "61D5B9F4-6669-41F0-BC0F-EBE48AF0E02D",
+    "name": "Folio Store iPhone 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "runtime_version": "27.0",
+    "device_type": "iPhone-17-Pro-Max",
+    "state": "Shutdown",
+    "created": true
+  }
+}

@@ -1,0 +1,13 @@
+test_changed_original_uid_rejected (__main__.PureDevices.test_changed_original_uid_rejected) ... ok
+test_creation_is_gated_and_bound (__main__.PureDevices.test_creation_is_gated_and_bound) ... ok
+test_creation_readback_failure_retains_real_incomplete_evidence (__main__.PureDevices.test_creation_readback_failure_retains_real_incomplete_evidence) ... ok
+test_foreign_journal_never_changes_device_policy_or_skips_child_cleanup (__main__.PureDevices.test_foreign_journal_never_changes_device_policy_or_skips_child_cleanup) ... ok
+test_malformed_owner_still_runs_bound_child_cleanup (__main__.PureDevices.test_malformed_owner_still_runs_bound_child_cleanup) ... ok
+test_missing_owner_actual_journal_allows_only_bound_identity_cleanup (__main__.PureDevices.test_missing_owner_actual_journal_allows_only_bound_identity_cleanup) ... ok
+test_owner_reuse_preserves_original_creation_twice (__main__.PureDevices.test_owner_reuse_preserves_original_creation_twice) ... ok
+test_same_name_without_owner_never_reclaims_or_creates (__main__.PureDevices.test_same_name_without_owner_never_reclaims_or_creates) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.012s
+
+OK

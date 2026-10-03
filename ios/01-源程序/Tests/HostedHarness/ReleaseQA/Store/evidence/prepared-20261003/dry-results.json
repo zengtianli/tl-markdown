@@ -1,0 +1,138 @@
+{
+  "scope": "default dry only; no actual gate/Sim/runtime/build",
+  "cases": [
+    {
+      "purpose": "launch",
+      "platform": "iphone",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-owned-store-ready-20261003",
+        "--platform",
+        "iphone",
+        "--purpose",
+        "launch",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-owned-store-ready-20261003/launch-iphone-dry.log",
+      "sha256": "34b61c2ed3b178ef3a85df0ba7e26897ca22bc7b661de7ac4c73048ba9e81881",
+      "actual_udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+      "owner_pending": true
+    },
+    {
+      "purpose": "launch",
+      "platform": "ipad",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-owned-store-ready-20261003",
+        "--platform",
+        "ipad",
+        "--purpose",
+        "launch",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-owned-store-ready-20261003/launch-ipad-dry.log",
+      "sha256": "065c420ef85006998394b1542264c123946d0dc668b5d40bc5ba7d80c34c4233",
+      "actual_udid": null,
+      "owner_pending": true
+    },
+    {
+      "purpose": "launch",
+      "platform": "vision",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-owned-store-ready-20261003",
+        "--platform",
+        "vision",
+        "--purpose",
+        "launch",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-owned-store-ready-20261003/launch-vision-dry.log",
+      "sha256": "1ad22afbc55c9485f5bf4f3b2141ee16098d1a29c7c5d5c89df0bf9782e4ae45",
+      "actual_udid": null,
+      "owner_pending": true
+    },
+    {
+      "purpose": "store",
+      "platform": "iphone",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-owned-store-ready-20261003",
+        "--platform",
+        "iphone",
+        "--purpose",
+        "store",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-owned-store-ready-20261003/store-iphone-dry.log",
+      "sha256": "7a0145984ee2234e76b2962dfdcb2422d146853410392943ac71d801146dcd87",
+      "actual_udid": null,
+      "owner_pending": true
+    },
+    {
+      "purpose": "store",
+      "platform": "ipad",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-owned-store-ready-20261003",
+        "--platform",
+        "ipad",
+        "--purpose",
+        "store",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-owned-store-ready-20261003/store-ipad-dry.log",
+      "sha256": "0b31051f91ab1639bb0a9c9a75f87a8096cb403a2d007647fe9b79f80fd652fe",
+      "actual_udid": null,
+      "owner_pending": true
+    },
+    {
+      "purpose": "store",
+      "platform": "vision",
+      "command": [
+        "/Users/tianli/Dev/.venv/bin/python",
+        "-B",
+        "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/Tests/HostedHarness/ReleaseQA/Store/run.py",
+        "--workdir",
+        "/tmp/folio-owned-store-ready-20261003",
+        "--platform",
+        "vision",
+        "--purpose",
+        "store",
+        "--slot-seconds",
+        "600"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/folio-owned-store-ready-20261003/store-vision-dry.log",
+      "sha256": "a1c20c86a399ab96f529ebe50ad42ef7095e187503c3cadac861147efb7b9058",
+      "actual_udid": null,
+      "owner_pending": true
+    }
+  ],
+  "runs_exists": false
+}

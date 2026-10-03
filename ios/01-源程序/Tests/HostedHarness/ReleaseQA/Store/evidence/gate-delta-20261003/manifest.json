@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "prepared-only",
+  "scope": "Store creation-release identity delta; no true gate/Sim/runtime/build",
+  "python_inputs": {
+    "devices.py": "245f3db0d697686acc0a6776169556d854e415b580c55499f86513b1e8dd06d9",
+    "prepare.py": "7c449c4449dd4d2e7adfea1f1c49e41f8e6732f30817105fb743a788889fecf0",
+    "run.py": "fb1d12c29c6284776094f82cec54065389135d9bbaac58dae50a8d7c064ef393",
+    "test_devices.py": "068087f66a58618218f92124b460692376dca5c907cd43c0d7872cb776bf749b"
+  },
+  "parent_frozen_python_inputs": {
+    "budget.py": "cc7c9f280c97426051a0463f92947bb8e1fb2f87413bf4d847b99c51b439e2e7",
+    "guard.py": "14a2dbbcf3d17903b09461a757655d755f42dacf9deaec81fc3d39beb3439ec3",
+    "prepare.py": "1b40f896843837f51e708f4d48a8aa1d231af352545e34b9732e54d94b889622",
+    "resource.py": "e048e72007f3f2119f48ba1c3f11b473621253064aef1480c7712c5f8bc1f1b4",
+    "test_budget.py": "766b07f82a1d2a0794beffa572eabd7e5f911e32ac31b09702e4f53dc3fabf48",
+    "thin.py": "0a1267b138ab392765ad572e2478760f08b8fccaa2759d4d336c8279cf646a16"
+  },
+  "production_source": {
+    "sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+    "file_count": 62
+  },
+  "external_binding": "/tmp/folio-store-gate-final-20261003/owned-binding.json",
+  "external_binding_sha256": "c83f67b984643bf33aab823729d74dc05fc9241a4135426b58bb28e22fa5c858",
+  "files": {
+    "receipts.json": {
+      "original": "/tmp/folio-store-gate-final-20261003/receipts.json",
+      "sha256": "4a3ea7c1d43d9df9e5ce5c5572cd08f0edfe12282672d7e372f00659b2c81181",
+      "bytes": 229
+    },
+    "owned-config.json": {
+      "original": "/tmp/folio-store-gate-final-20261003/owned-config.json",
+      "sha256": "ccf69d510cc81964856596218f840784869ada7b7259a4bf4b85ce61a385191e",
+      "bytes": 25
+    },
+    "owned-binding.json": {
+      "original": "/tmp/folio-store-gate-final-20261003/owned-binding.json",
+      "sha256": "c83f67b984643bf33aab823729d74dc05fc9241a4135426b58bb28e22fa5c858",
+      "bytes": 47302
+    },
+    "dry-results.json": {
+      "original": "/tmp/folio-store-gate-final-20261003/dry-results.json",
+      "sha256": "90435fe2a45e073e07ff3c4e074587b7cf44627a04afb6762473c772c7a203d8",
+      "bytes": 4255
+    },
+    "launch-ipad-dry.log": {
+      "original": "/tmp/folio-store-gate-final-20261003/launch-ipad-dry.log",
+      "sha256": "aca1788cf343047156720fe4a6f3b5ea93bcc0e37d308ea268d5e97bc0bafeac",
+      "bytes": 8405
+    },
+    "launch-iphone-dry.log": {
+      "original": "/tmp/folio-store-gate-final-20261003/launch-iphone-dry.log",
+      "sha256": "0cc886e9335f45a740c9919b0bbbe7973837baff078091a32cc2b3624358373d",
+      "bytes": 8475
+    },
+    "launch-vision-dry.log": {
+      "original": "/tmp/folio-store-gate-final-20261003/launch-vision-dry.log",
+      "sha256": "14cc85f42963d0ec12f4a173e4099f820322b99f2e398b63d5e8d95f904ec0c7",
+      "bytes": 8196
+    },
+    "store-ipad-dry.log": {
+      "original": "/tmp/folio-store-gate-final-20261003/store-ipad-dry.log",
+      "sha256": "ebb7c83f8e80ea0cc31f2c6f437ba3350aac703f6fa42c4369973e14e063935a",
+      "bytes": 8404
+    },
+    "store-iphone-dry.log": {
+      "original": "/tmp/folio-store-gate-final-20261003/store-iphone-dry.log",
+      "sha256": "84cf9723aeebc63c398d40f72d362fb6461582bb5a74d6751bb90ed8df2f358a",
+      "bytes": 8400
+    },
+    "store-vision-dry.log": {
+      "original": "/tmp/folio-store-gate-final-20261003/store-vision-dry.log",
+      "sha256": "90f76357205c30f60e343e5d8d2e141b8adc4bb08b560b4a03c5e427de3598e8",
+      "bytes": 8195
+    },
+    "foreign-gate-delta.log": {
+      "original": "/tmp/folio-store-foreign-gate-delta-20261003.log",
+      "sha256": "107431056639ebc1c25c096ea262947a116ba3e926b6c654974fb89db5159d6b",
+      "bytes": 1786
+    }
+  },
+  "pure_delta_cases": [
+    "test_foreign_replaced_gate_is_not_removed",
+    "test_creation_is_gated_and_bound"
+  ],
+  "pure_delta_result": "two targeted cases passed; original whole suite not repeated",
+  "dry_case_count": 6,
+  "dry_result": "passed-default-dry-only",
+  "old_evidence_manifest": "../prepared-20261003/manifest.json",
+  "old_evidence_manifest_sha256": "826a4c475d81f1d6af9a22992ef1954fc078bb3f4bb499e8bddf3620465fe9bf",
+  "old_sources": "../frozen-826-20261003/archive.json",
+  "actual_owner_receipt": null,
+  "actual_runtime": "not run; new Root native grant required",
+  "remaining_api_limit": "Same snapshot is checked immediately before original Lock.release; shared API has no expected-owner atomic release. Changed/unknown gates are preserved as failed durable tails."
+}

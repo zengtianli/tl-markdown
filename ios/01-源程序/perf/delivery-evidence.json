@@ -60,7 +60,17 @@
       "evidence": "perf/acceptance/release-phone-20261003.json",
       "evidence_sha256": "a3248a0773edba4f40389d60c5500c53fcd28180bfd4e7f99bd57421306eeae9",
       "detail": "One ordinary Release iPhone17Pro production-demo Markdown launch and unscaled 1206x2622 first screen passed; real os_log ready 4.372s. Source62/SDK/QA stable; own device Shutdown/group empty/gates released. Not five-start median, helper resources, 6.9 Store image, Files/OS Scene, iPad/Vision or upload acceptance."
+    },
+    "release_store_iphone_single_image": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T09:35:40.069564+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/store-iphone-20261003.json",
+      "evidence_sha256": "a3ca76a36da6e7fa17022067e8bcbffca79cce74044dd5a15eba9477d7cb4588",
+      "detail": "One ordinary Release iPhone17ProMax production-demo Markdown Store PNG passed: raw1320x2868 APP_IPHONE_67, actual ready3.583s, source62/SDK/current ABI stable; actual dedicated creation, own Shutdown/group/gates and fresh Root readback. It is one image, not a complete Store set/upload, five-start median, resources, Files/OS Scene or iPad/Vision acceptance."
     }
   },
-  "updated_at": "2026-10-03T08:44:02.117043+08:00"
+  "updated_at": "2026-10-03T09:46:29.034193+08:00"
 }
