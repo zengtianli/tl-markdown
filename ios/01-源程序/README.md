@@ -35,3 +35,14 @@ bash scripts/test-core.sh      # 低负载窗口内运行，编译原 Foundation
 2026-10-03 后续实际 SDK 与非 UI hosted 证据分别保存在 [sdk-sweep](perf/acceptance/sdk-sweep-20261003.json) 和 [hosted-sdk](perf/acceptance/hosted-sdk-20261003.json)：普通/fixture Release 的 iPhone、Vision SDK 接线及三个 hosted API/WebKit 测试具有各自源绑定。它们不覆盖系统 Files 提供方、真实 OS Scene、多平台实际画面或完整 WebKit 辅助进程资源。
 
 可复现的普通 Release QA 已回到 [Tests/HostedHarness/ReleaseQA](Tests/HostedHarness/ReleaseQA/README.md)。手机薄入口、源/SDK 绑定、两个预算跨界纯反例及两条默认 dry 日志已独立复核并 [持久保存](perf/acceptance/release-qa-phone-prepared-20261003/manifest.json)，生产 62 输入保持 `4aa36541…`。2026-10-03 08:34:32—08:35:13，本人 17 Pro 的单次普通 Release `-folio-demo` Markdown 首屏启动/原图已 [实际通过](perf/acceptance/release-phone-20261003.json)：真实 ready 4.372 秒，原图 1206×2622，源/SDK/QA 稳定，本人设备最终 Shutdown、进程组及目录门已清理。[原 JSON、PNG 与日志](perf/acceptance/release-phone-runtime-20261003/manifest.json) 保留原字节。此图不是 17 Pro Max 的 6.9 英寸商店规格；单次 ready 不代表五次中位数或正式资源预算，尚未覆盖 iPad/Vision 实际画面、系统 Files/Scene 或完整 WebKit 辅助进程资源。Store 使用独立 17 Pro Max 创建与 owner 记录。预算覆盖源冻结、取门、运行、本人清理与最终核验，过界不能由 exit0 变为 PASS。原 Core、SDK、hosted 和旧失败证据保留各自范围。
+
+
+## 配置与 App 更新
+
+新构建在主界面下方提供「配置与更新」，显示当前安装包的真实版本和构建号。
+
+当前没有独立可迁移的偏好配置，界面不提供空的 iCloud 开关。账号、访问凭据、业务内容、本机权限与缓存继续使用各自原有入口。
+
+移动版尚未配置商店或 TestFlight 发行渠道，界面显示当前包版本和本地构建渠道。现有组件入口仅负责构建；签名包需通过总部现有真机安装流程分发，目前无法自动查询最新发行版本。资料或后台数据刷新仍在原入口。
+
+版本号更新属于本轮新构建；手机上的新版本需通过签名安装或原商店/TestFlight 渠道取得，发行状态以现有发布记录为准。

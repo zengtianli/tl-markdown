@@ -5,6 +5,7 @@ import SwiftUI
     var body: some Scene {
         WindowGroup {
             ContentView(store: store)
+                .appLifecycleMobile(productID: "folio-mobile", channel: MobileProductLifecycle.channel, configuration: MobileProductLifecycle.configuration)
                 .task { LaneSignal.applyOrientation(); LaneSignal.applyWindowFrame() }
         }
         #if os(visionOS)
