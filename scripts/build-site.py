@@ -13,9 +13,11 @@ import struct
 import subprocess
 import sys
 import tempfile
+import zipfile
 
 sys.path.insert(0, str(Path.home() / "Apps/apps-portal/site"))
 import product_facts  # facts.json published with the page for the portal and Chapter
+import perf_block
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENES = (
@@ -33,12 +35,29 @@ def probe(path):
     return json.loads(subprocess.check_output(["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(path)], text=True))
 
 
-def check_media(media, release):
+def check_media(media, release, history_tests=None):
     required = ["folio-editor.png", "capture.json"] + [f"{name}.{suffix}" for name, _, _ in SCENES for suffix in ("mp4", "jpg", "vtt")]
     missing = [name for name in required if not (media / name).is_file()]
     if missing:
         raise ValueError("Missing real media: " + ", ".join(missing))
     capture = json.loads((media / "capture.json").read_text())
+    if history_tests is not None:
+        proof = json.loads(history_tests.read_text())
+        assert proof.get("passed") is True, "Historical media reuse needs passing current-release tests"
+        for key, value in (("version", release["version"]), ("build", release["build"]),
+                           ("release_sha256", release["sha256"]), ("release_source_sha256", release["source_sha256"])):
+            assert str(proof.get(key)) == str(value), "History tests do not bind the current archive and source"
+        tests = {test["name"]: test for test in proof.get("tests", [])}
+        assert {"main_editor", "file_open"}.issubset(tests), "Current native editor and production file-open tests are required"
+        for name in ("main_editor", "file_open"):
+            test = tests[name]
+            assert test.get("passed") and test.get("exit_code") == 0 and sha(Path(test["log"])) == test["log_sha256"], "History test log is missing or changed"
+        capture.setdefault("reused_for", {})[f"{release['version']} ({release['build']})"] = {
+            "release_sha256": release["sha256"], "release_source_sha256": release["source_sha256"],
+            "reason": "历史参考、不代表新版新测。沿用已审阅的打开、编辑和保存录像；新版的配置与更新窗口未在旧录像中出现。",
+            "tests": "当前发行源码和资源上的原生主编辑器测试、当前发行可执行文件的隔离 LaunchServices 文件打开测试通过。",
+            "checked": proof["tested_at"], "hero_note": "新版配置与更新窗口未覆盖"}
+        capture["not_covered"] = list(capture.get("not_covered", [])) + ["新版配置与更新窗口及真实跨设备 iCloud 同步"]
     assert capture["source"] == "real-app-window" and capture["synthetic_input"] is True, "Media must use an actual app window and synthetic input"
     if str(capture["app_version"]) == release["version"] and str(capture["app_build"]) == release["build"]:
         assert capture.get("release_source_sha256") == release["source_sha256"] and capture.get("release_sha256") == release["sha256"], "Recording must bind the actual released build and archive"
@@ -69,13 +88,13 @@ def check_media(media, release):
     return required, capture
 
 
-def lightweight(release, preview):
+def lightweight(release, preview, keep_history=False):
     """Page numbers come only from perf/lightweight.json, measured on this exact release."""
     path = ROOT / "perf/lightweight.json"
     data = json.loads(path.read_text())
     expected = f"{release['version']} ({release['build']})"
     if data.get("version") != expected or data["size"].get("download_bytes") != release["bytes"]:
-        if not preview:
+        if not preview and not keep_history:
             raise SystemExit(f"Site not built: perf/lightweight.json measures {data.get('version')}, release is {expected}; re-measure first")
     idle, launch = data["idle"], next(item for item in data["speed_gui"] if item["key"] == "launch")
     installed = data["size"]["installed_bytes"] / 1e6  # decimal MB, same as Finder and the download button
@@ -86,7 +105,8 @@ def lightweight(release, preview):
                    else idle["main_footprint_mb"] * 2**20 / 1e6)
     runs = len(idle.get("runs") or [])
     idle_summary = f"{runs} 轮空闲测量取中位" if runs > 1 else "本次空闲测量 1 轮"
-    note = (f"实测 Folio {release['version']}（构建 {release['build']}，即本页下载包）· {data['device']} · {data['measured_at']} · "
+    measured = f"历史实测 Folio {data['version']}（历史参考、不代表新版新测）" if keep_history else f"实测 Folio {release['version']}（构建 {release['build']}，即本页下载包）"
+    note = (f"{measured} · {data['device']} · {data['measured_at']} · "
             f"打开 137 KB 合成 Markdown（标题、表格、代码、公式）。内存为 phys_footprint（活动监视器「内存」列同口径），"
             f"主进程 {main_memory:.1f} MB 加 WebKit 渲染、GPU、网络 3 个辅助进程合计，页面 MB 均为十进制（字节 ÷ 10⁶）。静置 {idle['settle_s']} 秒后测 {idle['window_s']} 秒；"
             f"CPU 为这段时间各进程 CPU 时间 ÷ 墙钟；{idle_summary}。内存在 CPU 窗口结束后另采 3 次，各次同一时刻合计取峰值；启动为 open -g -j 后台隐藏启动到编辑窗口读入文档，{launch['runs']} 次中位。"
@@ -196,7 +216,13 @@ def main():
     parser.add_argument("--media", type=Path, default=ROOT / "docs/demo/media")
     parser.add_argument("--out", type=Path, default=ROOT / "build/site")
     parser.add_argument("--preview", action="store_true", help="Explicit incomplete internal preview; never publish this output")
+    parser.add_argument("--keep-history", action="store_true", help="Explicitly retain reviewed old media/performance with their original versions and dates")
+    parser.add_argument("--history-tests", type=Path, help="Current archive/source-bound native editor and file-open test proof required with --keep-history")
     args = parser.parse_args()
+    if args.keep_history and (args.preview or args.release is None or args.history_tests is None):
+        parser.error("--keep-history requires explicit --release and --history-tests, without --preview")
+    if args.history_tests is not None and not args.keep_history:
+        parser.error("--history-tests requires --keep-history")
     args.release = args.release or measured_release()
     release = json.loads(args.release.read_text())
     archive = args.release.parent / release["filename"]
@@ -205,7 +231,7 @@ def main():
     assert release["architectures"] == ["arm64"], "Update device copy before adding other architectures"
     media_files, capture, media_error = [], {}, ""
     try:
-        media_files, capture = check_media(args.media, release)
+        media_files, capture = check_media(args.media, release, args.history_tests if args.keep_history else None)
     except (AssertionError, ValueError, KeyError, OSError, subprocess.CalledProcessError) as error:
         if not args.preview:
             raise SystemExit(f"Site not built: {error}")
@@ -229,6 +255,9 @@ def main():
                     shutil.copyfile(args.media / name, stage / "media" / name)
             public_capture = {key: capture[key] for key in ("app_version", "app_build", "release_sha256", "release_source_sha256", "recorded_at", "environment", "source", "synthetic_input", "scenes", "clips", "checks", "editing", "not_covered")}
             public_capture["notes"] = capture.get("notes", "")
+            if args.keep_history:
+                public_capture["historical_reference"] = True
+                public_capture["reused_for"] = {f"{release['version']} ({release['build']})": capture["reused_for"][f"{release['version']} ({release['build']})"]}
             (stage / "media/capture.json").write_text(json.dumps(public_capture, ensure_ascii=False, indent=2) + "\n")
             hero = '<img src="media/folio-editor.png" alt="Folio 真实主编辑窗口：本地文档、最近文件、排版好的标题与表格" width="1440" height="1000" fetchpriority="high">'
         else:
@@ -260,11 +289,26 @@ def main():
                   "SIZE": f"{release['bytes'] / 1e6:.1f} MB", "DOWNLOAD_URL": escape(release["download_url"], quote=True),
                   "HERO": hero, "HERO_CAPTION": escape(hero_caption), "VIDEOS": "\n".join(videos), "CAPTURE_NOTE": escape(capture_note),
                   "TUTORIAL": '<p><a class="text-link" href="media/tutorial.mp4" download>下载三段完整演示 ↓</a></p>' if "tutorial.mp4" in media_files else '',
-                  **lightweight(release, args.preview),
+                  **lightweight(release, args.preview, args.keep_history),
                   "PREVIEW_NOTICE": '<div class="preview-notice">内部预览 · 实机素材或最终验收尚未完成 · 不可发布</div>' if args.preview else ''}
+        if args.keep_history:
+            measured = json.loads((ROOT / "perf/lightweight.json").read_text())
+            notice = (f"历史参考、不代表新版新测。当前下载为 Folio {release['version']}（{release['build']}）；"
+                      f"截图与录像来自 {capture['app_version']}（{capture['app_build']}，{capture['recorded_at']}），"
+                      f"性能来自 {measured['version']}（{measured['measured_at']}）。新版配置与更新窗口未在旧素材中展示。")
+            values["PREVIEW_NOTICE"] = '<div class="preview-notice" role="note">' + escape(notice) + '</div>'
+            with zipfile.ZipFile(archive) as packed:
+                unpacked_bytes = sum(item.file_size for item in packed.infolist() if not item.is_dir())
+            values["LW_INSTALLED"] = f"{unpacked_bytes / 1e6:.1f} MB"
         page = (ROOT / "site/index.html").read_text()
         for key, value in values.items():
             page = page.replace(f"@@{key}@@", value)
+        if args.keep_history:
+            block = perf_block.standalone_section(ROOT / "perf/lightweight.json", measured["version"].split(" ")[0], "#476d59")
+            block = '<p class="wrap" role="note">' + escape(notice) + '</p>' + block
+            block = block.replace("数字来自所列设备实测，版本更新后重新测量。", "数字来自上述旧版本原始实测，本次仅作历史参考。")
+            page, count = re.subn(r'<section class="lightweight wrap".*?</section>', lambda _: block, page, count=1, flags=re.S)
+            assert count == 1, "Historical performance block must replace the exact original section"
         (stage / "index.html").write_text(page)
         privacy = '''<p>Folio 是本地 Markdown 编辑器。无需注册账号，也不内置文档上传、广告或分析追踪服务。</p><h2>文件与恢复记录</h2><p>文档保存在你选择的位置。最近文件、设置和恢复草稿位于本机 <code>~/Library/Application Support/TLMarkdown/</code>。清空最近记录不会删除原文件；卸载应用前，请先把需要的未命名草稿另存为。</p><h2>什么时候会连接网络？</h2><p>文档中含有网络图片时，编辑器可能访问该图片的原站点，原站点可能收到 IP 地址等通常的网络请求信息。点击外部链接或产品帮助链接，会由系统浏览器打开相应网站。Folio 不代管这些网站的数据政策。</p><p>将文档存入 iCloud 或其他同步文件夹时，同步由对应的服务负责；Folio 没有另建一份云端文档库。</p><h2>这份产品网站</h2><p>本网站经 Cloudflare 提供服务，并加载 Cloudflare Web Analytics，用于统计网页访问与页面性能。统计发生在网站页面，不读取 Folio 应用中的本地文档。详见 <a href="https://developers.cloudflare.com/web-analytics/about/">Cloudflare Web Analytics 官方说明</a>。</p><p>视频由本站提供，访问服务器可能保留常规访问日志。维护者联系方式见 <a href="https://github.com/zengtianli">GitHub 个人主页</a>。</p>'''
         (stage / "privacy.html").write_text(document_page("隐私说明", privacy))
@@ -274,12 +318,23 @@ def main():
         # sop.release names the deployed copy (build/site/release.json), which is the previous build
         # while this one is staged, so bind facts to the release being packaged here.
         name = product_facts.from_repo(ROOT, product_id="folio-mac")["name"]
-        product_facts.write(stage, product_facts.build(ROOT / "perf/lightweight.json", product_id="folio-mac", name=name,
-                                                       release_path=args.release, icon="images/icon.png"))
+        facts = product_facts.build(ROOT / "perf/lightweight.json", product_id="folio-mac", name=name,
+                                    release_path=args.release, icon="images/icon.png")
+        if args.keep_history:
+            facts.update(download_bytes=release["bytes"], installed_bytes=unpacked_bytes,
+                         measured_version=measured["version"], historical_reference=True,
+                         download_source="release.json", not_covered=["新版配置与更新窗口", "新版运行性能"])
+            facts["card_line"] = f"当前下载 {release['bytes'] / 1e6:.1f} MB · 历史实测 {escape(measured['version'])}（{escape(measured['measured_at'])}）：" + facts["card_line"]
+            facts["card_text"] = product_facts.card_text(facts["card_line"])
+        product_facts.write(stage, facts)
         files = [{"path": str(path.relative_to(stage)), "sha256": sha(path), "bytes": path.stat().st_size}
                  for path in sorted(stage.rglob("*")) if path.is_file()]
         manifest = {"schema_version": 1, "product": "Folio", "preview": args.preview,
                     "version": release["version"], "build": release["build"], "files": files}
+        if args.keep_history:
+            manifest.update(historical_reference=True, measured_version=measured["version"],
+                            measured_at=measured["measured_at"], recorded_version=f"{capture['app_version']} ({capture['app_build']})",
+                            recorded_at=capture["recorded_at"], not_covered=["新版配置与更新窗口", "新版运行性能"])
         (stage / "site-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
         # Overlay copies retain obsolete downloads. Replace the entire generated
         # directory only after the new stage passes; keep old output outside it.
