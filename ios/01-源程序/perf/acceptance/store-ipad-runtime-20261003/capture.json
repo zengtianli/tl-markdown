@@ -1,0 +1,79 @@
+{
+  "purpose": "store",
+  "platform": "ipad",
+  "owner": "/private/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/owner.json",
+  "owner_sha256": "01414be6d81d3707bd407c75b8b055bab1b186ab97ac06026e164620babdff62",
+  "install_seconds": 12.2,
+  "baseline_stable": true,
+  "launch": {
+    "index": 0,
+    "udid": "FF227F5B-7D8C-4C26-8831-9897C3ABA235",
+    "pid": 66335,
+    "pid_started": "Sat Oct  3 10:05:28 2026",
+    "actual_args": [
+      "-folio-demo"
+    ],
+    "ready_seconds": 12.136,
+    "ready_signal": "os_log",
+    "actual_ready": {
+      "raw": "{\"timezoneName\":\"\",\"messageType\":\"Default\",\"eventType\":\"logEvent\",\"source\":null,\"launchPersonaName\":\"\",\"formatString\":\"lane-ready %{public}s\",\"userID\":502,\"activityIdentifier\":0,\"subsystem\":\"cyou.tianli.TLMarkdown.mobile\",\"category\":\"lane\",\"personaType\":0,\"threadID\":41511538,\"launchPersonaType\":0,\"senderImageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\",\"launchPersonaID\":4294967295,\"backtrace\":{\"frames\":[{\"imageOffset\":114776,\"imageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\"}]},\"bootUUID\":\"\",\"processImagePath\":\"\\/Users\\/tianli\\/Library\\/Developer\\/CoreSimulator\\/Devices\\/FF227F5B-7D8C-4C26-8831-9897C3ABA235\\/data\\/Containers\\/Bundle\\/Application\\/FCF634FD-53A5-44DB-B2D3-A598AE322512\\/Folio.app\\/Folio\",\"senderImagePath\":\"\\/Users\\/tianli\\/Library\\/Developer\\/CoreSimulator\\/Devices\\/FF227F5B-7D8C-4C26-8831-9897C3ABA235\\/data\\/Containers\\/Bundle\\/Application\\/FCF634FD-53A5-44DB-B2D3-A598AE322512\\/Folio.app\\/Folio\",\"personaID\":4294967295,\"timestamp\":\"2026-10-03 10:05:33.715404+0800\",\"machTimestamp\":14374922682857,\"personaName\":\"\",\"eventMessage\":\"lane-ready markdown\",\"processImageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\",\"traceID\":953826370781188,\"processID\":66335,\"senderProgramCounter\":114776,\"parentActivityIdentifier\":0}",
+      "event": {
+        "timezoneName": "",
+        "messageType": "Default",
+        "eventType": "logEvent",
+        "source": null,
+        "launchPersonaName": "",
+        "formatString": "lane-ready %{public}s",
+        "userID": 502,
+        "activityIdentifier": 0,
+        "subsystem": "cyou.tianli.TLMarkdown.mobile",
+        "category": "lane",
+        "personaType": 0,
+        "threadID": 41511538,
+        "launchPersonaType": 0,
+        "senderImageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980",
+        "launchPersonaID": 4294967295,
+        "backtrace": {
+          "frames": [
+            {
+              "imageOffset": 114776,
+              "imageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980"
+            }
+          ]
+        },
+        "bootUUID": "",
+        "processImagePath": "/Users/tianli/Library/Developer/CoreSimulator/Devices/FF227F5B-7D8C-4C26-8831-9897C3ABA235/data/Containers/Bundle/Application/FCF634FD-53A5-44DB-B2D3-A598AE322512/Folio.app/Folio",
+        "senderImagePath": "/Users/tianli/Library/Developer/CoreSimulator/Devices/FF227F5B-7D8C-4C26-8831-9897C3ABA235/data/Containers/Bundle/Application/FCF634FD-53A5-44DB-B2D3-A598AE322512/Folio.app/Folio",
+        "personaID": 4294967295,
+        "timestamp": "2026-10-03 10:05:33.715404+0800",
+        "machTimestamp": 14374922682857,
+        "personaName": "",
+        "eventMessage": "lane-ready markdown",
+        "processImageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980",
+        "traceID": 953826370781188,
+        "processID": 66335,
+        "senderProgramCounter": 114776,
+        "parentActivityIdentifier": 0
+      }
+    },
+    "frame": "/private/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/launch-0.png",
+    "frame_sha256": "712282be2ebdc191778c0b62ad42bf7e97f3626b50c82778df8c0e21542dca33",
+    "verdict": {
+      "non_blank": true,
+      "changed_from_baseline": true,
+      "stable": true,
+      "diff_baseline": 0.9774,
+      "diff_prev": 0.0
+    },
+    "session_sha256": "35ae4352a00abc8d0cbc92058e3884421b9bcd66f0ce11866ef421d6e1f687dd",
+    "demo_state": "App-created session.json, one active unnamed draft, exact bundled demo text, no grant metadata"
+  },
+  "dimensions": [
+    2064,
+    2752
+  ],
+  "display_type": "APP_IPAD_PRO_3GEN_129",
+  "store_validation_errors": [],
+  "store_dimension_abi_sha256": "419173c33d066193190aa1b2738e26a5298373271bdcb6251d258f1c994b9c73",
+  "scope": "one ordinary Release synthetic production-demo Markdown first screen, original returned PNG; no scaling/UI events/Files/WC/resource/upload claim"
+}

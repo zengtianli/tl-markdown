@@ -70,7 +70,17 @@
       "evidence": "perf/acceptance/store-iphone-20261003.json",
       "evidence_sha256": "a3ca76a36da6e7fa17022067e8bcbffca79cce74044dd5a15eba9477d7cb4588",
       "detail": "One ordinary Release iPhone17ProMax production-demo Markdown Store PNG passed: raw1320x2868 APP_IPHONE_67, actual ready3.583s, source62/SDK/current ABI stable; actual dedicated creation, own Shutdown/group/gates and fresh Root readback. It is one image, not a complete Store set/upload, five-start median, resources, Files/OS Scene or iPad/Vision acceptance."
+    },
+    "release_store_ipad_single_image": {
+      "result": "passed",
+      "method": "real_product",
+      "scope": "code",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "checked_at": "2026-10-03T10:05:51.452953+08:00",
+      "evidence": "perf/acceptance/store-ipad-20261003.json",
+      "evidence_sha256": "1315d38f477d50bc533bf5e7b457d5affac47a0734fab79fa5b65f7654d0374a",
+      "detail": "One actual ordinary Release synthetic Markdown Store PNG2064x2752, original ready12.136s, source/SDK stable and own terminal cleanup; no Files/OS Scene/resources/full asset-set claim"
     }
   },
-  "updated_at": "2026-10-03T09:46:29.034193+08:00"
+  "updated_at": "2026-10-03T10:10:54.945635+08:00"
 }

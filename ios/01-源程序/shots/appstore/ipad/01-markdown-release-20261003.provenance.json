@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "artifact": "01-markdown-release-20261003.png",
+  "sha256": "712282be2ebdc191778c0b62ad42bf7e97f3626b50c82778df8c0e21542dca33",
+  "scope": "one raw unscaled synthetic production-demo Store first screen",
+  "actual_result": "../../../perf/acceptance/store-ipad-20261003.json",
+  "actual_result_sha256": "1315d38f477d50bc533bf5e7b457d5affac47a0734fab79fa5b65f7654d0374a",
+  "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/launch-0.png",
+  "actual_device": {
+    "udid": "FF227F5B-7D8C-4C26-8831-9897C3ABA235",
+    "name": "Folio Resource iPad 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPad-Pro-13-inch-M5-12GB",
+    "state": "Shutdown",
+    "available": true
+  },
+  "dimensions": [
+    2064,
+    2752
+  ],
+  "display_type": "APP_IPAD_PRO_3GEN_129",
+  "production_source_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+  "registered_by": "existing sop.platforms.ipad.store_shots glob",
+  "project_yaml_sha256": "7dce7a872e0ce5ad221abc2a96307a53973ba34e808604740e1426467d0d0ba9",
+  "project_yaml_modified": false,
+  "not_claimed": [
+    "complete Store set",
+    "upload",
+    "Files/OS Scenes",
+    "resource budgets"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "result": "passed",
+  "method": "real_product",
+  "scope": "one ordinary Release iPad Pro13 production-demo Store image",
+  "checked_at": "2026-10-03T10:05:51.452953+08:00",
+  "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+  "production_lane_input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+  "production_input_count": 62,
+  "evidence_manifest": "perf/acceptance/store-ipad-runtime-20261003/manifest.json",
+  "evidence_manifest_sha256": "9303d234b073f78b39f3241a67c371f62fa5c973430332b5caaa8c52ea22270b",
+  "original_result_sha256": "608f49ab7c2f11853b63f45737a7dc6d4a54e03616d80570121c91d44c32b2ad",
+  "raw_png_sha256": "712282be2ebdc191778c0b62ad42bf7e97f3626b50c82778df8c0e21542dca33",
+  "registered_artifact": "shots/appstore/ipad/01-markdown-release-20261003.png",
+  "store_dimensions": [
+    2064,
+    2752
+  ],
+  "display_type": "APP_IPAD_PRO_3GEN_129",
+  "canonical_store_validation_errors": [],
+  "actual_source_stable": true,
+  "observed": {
+    "started_at": "2026-10-03T10:04:29.392007+08:00",
+    "finished_at": "2026-10-03T10:05:51.452953+08:00",
+    "total_seconds": 82.7559636659571,
+    "total_budget_seconds": 600,
+    "device": {
+      "udid": "FF227F5B-7D8C-4C26-8831-9897C3ABA235",
+      "name": "Folio Resource iPad 20261003",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+      "device_type": "iPad-Pro-13-inch-M5-12GB",
+      "state": "Shutdown",
+      "available": true
+    },
+    "ordinary_release": true,
+    "sdk": "iphonesimulator27.0",
+    "executable_sha256": "8e05f0689102c080f7ec2187a686b09c93fa10f1ff1bf85d578b1dc236a909ed",
+    "launch_args": [
+      "-folio-demo"
+    ],
+    "single_ready_seconds": 12.136,
+    "ready_signal": "actual os_log lane-ready markdown",
+    "demo_state": "App-created session.json, one active unnamed draft, exact bundled demo text, no grant metadata",
+    "own_final_guard_clear": true,
+    "fresh_root_terminal_readback": "root-terminal-readback.json",
+    "natural_exec_session_id": null,
+    "natural_exit_code": 0
+  },
+  "visual_review": {
+    "original_png_viewed": true,
+    "visible": "Root viewed original synthetic Markdown title, body, table, checklist and code; no scaling",
+    "dimensions": [
+      2064,
+      2752
+    ],
+    "not_covered": [
+      "Files permission",
+      "OS Scene input",
+      "full asset set",
+      "resource metrics",
+      "upload"
+    ]
+  },
+  "verified_scope": [
+    "actual before-absent original ensure creates dedicated iPadPro13 and source-bound owner receipt",
+    "one original returned2064x2752 PNG; canonical APP_IPAD_PRO_3GEN_129 size/alpha",
+    "ordinary production -folio-demo persists isolated unnamed Markdown draft; actual real Editor/ready",
+    "source/SDK/tool/QA stable; own original final Shutdown/group/gate cleanup plus fresh Root readback"
+  ],
+  "unverified_scope": [
+    "complete Store asset set or upload",
+    "five-start median/startup budget",
+    "CPU/memory/WebKit responsible helpers",
+    "Vision Store/runtime",
+    "system Files/FileProvider grants and OS Scenes/input"
+  ]
+}

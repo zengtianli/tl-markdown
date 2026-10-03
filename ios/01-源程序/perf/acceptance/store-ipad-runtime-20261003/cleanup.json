@@ -1,0 +1,51 @@
+{
+  "scope": "own worker/device only",
+  "clear": true,
+  "actions": [],
+  "errors": [],
+  "worker": {
+    "pid": 64952,
+    "pid_started": "Sat Oct  3 10:04:29 2026",
+    "exit_code": 0,
+    "remaining_group": {}
+  },
+  "journal_sha256": "dc8af51392adeb6723d09189f753793dedc2eeb454b02e7dcc7b2c04abfbbfa5",
+  "directory_lock": "absent: original Session released its gate",
+  "controller_cleanup_lock": {
+    "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+    "dev": 16777234,
+    "ino": 492978123,
+    "record": {
+      "pid": 64938,
+      "pid_started": "Sat Oct  3 10:04:28 2026",
+      "label": "Folio controller own-device terminal check",
+      "at": "2026-10-03T10:05:49+08:00",
+      "udid": null,
+      "keep_booted": false
+    },
+    "record_sha256": "fe2a6967a78c13c935737f96e7659b9fdff6e79ebfbb8b58bd3c49384b5b5954"
+  },
+  "device_before_cleanup": {
+    "udid": "FF227F5B-7D8C-4C26-8831-9897C3ABA235",
+    "name": "Folio Resource iPad 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPad-Pro-13-inch-M5-12GB",
+    "state": "Shutdown",
+    "available": true
+  },
+  "device_after_cleanup": {
+    "udid": "FF227F5B-7D8C-4C26-8831-9897C3ABA235",
+    "name": "Folio Resource iPad 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPad-Pro-13-inch-M5-12GB",
+    "state": "Shutdown",
+    "available": true
+  },
+  "original_session_work_final": {
+    "path": "/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/sim-lane-shots.fwj7t44l",
+    "exists": false
+  },
+  "directory_lock_final": "absent",
+  "controller_cleanup_lock_final": "released by original Lock.release",
+  "chapter_global_held_during_observation": true
+}

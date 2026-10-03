@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "scope": "immutable actual one ordinary Release iPad Store frame and originals",
+  "files": {
+    "admission.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/admission.json",
+      "sha256": "dc8af51392adeb6723d09189f753793dedc2eeb454b02e7dcc7b2c04abfbbfa5",
+      "bytes": 1181
+    },
+    "capture.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/capture.json",
+      "sha256": "45d1397b466d95f9c0bf4a01f2766b662e39fb5b9af0506cd7d10968ce977e29",
+      "bytes": 4547
+    },
+    "cleanup.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/cleanup.json",
+      "sha256": "552ca94ef1e696d9d669143c38ab4e60b8ab51d23515f4c722d20a72a0603796",
+      "bytes": 1725
+    },
+    "creation-gate.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/creation-gate.json",
+      "sha256": "5fe55ca982a0b2cee0ba7e6650bdd859381e4fd972f02ee2aa2bc1364653d97c",
+      "bytes": 1072
+    },
+    "creation-returned.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/creation-returned.json",
+      "sha256": "041961c4087edf4b69fb629800bdb82f4a20586b2216fde93d9fbf50c44395a5",
+      "bytes": 1465
+    },
+    "launch-0.png": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/launch-0.png",
+      "sha256": "712282be2ebdc191778c0b62ad42bf7e97f3626b50c82778df8c0e21542dca33",
+      "bytes": 314558
+    },
+    "observations.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/observations.json",
+      "sha256": "73ca29a18c2bdbaad4a5f8e34daf0eb47e36b29e72a94f9f48c6f676e6a1fd6e",
+      "bytes": 3855
+    },
+    "operation.log": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/operation.log",
+      "sha256": "2632fc780fa77ef72f301a03bd1f3986641009216ad7caeb08c0dadca6090185",
+      "bytes": 179
+    },
+    "owner.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/owner.json",
+      "sha256": "01414be6d81d3707bd407c75b8b055bab1b186ab97ac06026e164620babdff62",
+      "bytes": 8884
+    },
+    "result.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/result.json",
+      "sha256": "608f49ab7c2f11853b63f45737a7dc6d4a54e03616d80570121c91d44c32b2ad",
+      "bytes": 23600
+    },
+    "root-terminal-readback.json": {
+      "original": "/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938/root-terminal-readback.json",
+      "sha256": "773ae78cc2f06808b901dc288cbd58434f61c07cbb695221e8ee072a48c7dd51",
+      "bytes": 773
+    },
+    "readonly-consumer.stdout.json": {
+      "original": "new read-only consumer of original result; no device/runtime rerun",
+      "sha256": "faf3c1ef2d25647050a13f173ef53a6eb07a2257abc62bc5f1628ceb8b0b4f98",
+      "bytes": 927
+    },
+    "readonly-consumer.stderr.log": {
+      "original": "new read-only consumer of original result; no device/runtime rerun",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "qa_prepared_manifest": "../../../Tests/HostedHarness/ReleaseQA/Store/evidence/ipad-vision-ready-20261003/manifest.json",
+  "qa_prepared_manifest_sha256": "2511252d28c032239615fc94f2dc26e9cea16086f34327cf023c25a5ed032bfb",
+  "consumer_sha256": "53b0be3f7dbe45865456294ed8d2fd59f07fb169ae795a87692a3ee8a5f8cde5",
+  "consumer_scope": "new read-back of original recorded terminal; not a device query or runtime rerun"
+}

@@ -1,0 +1,38 @@
+{
+  "controller": {
+    "pid": 64938,
+    "pid_started": "Sat Oct  3 10:04:28 2026"
+  },
+  "worker": {
+    "pid": 64952,
+    "pid_started": "Sat Oct  3 10:04:29 2026"
+  },
+  "platform": "ipad",
+  "destination": "/private/tmp/folio-store-ipad-vision-ready-20261003/owned-runs/20261003-100429-store-ipad-64938",
+  "phase": "boot-admitted",
+  "device": {
+    "udid": "FF227F5B-7D8C-4C26-8831-9897C3ABA235",
+    "name": "Folio Resource iPad 20261003",
+    "device_type": "iPad-Pro-13-inch-M5-12GB",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "available": true
+  },
+  "state_before": "Shutdown",
+  "locks": [
+    {
+      "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+      "dev": 16777234,
+      "ino": 492958503,
+      "record": {
+        "pid": 64952,
+        "pid_started": "Sat Oct  3 10:04:29 2026",
+        "label": "Folio owned store ipad",
+        "at": "2026-10-03T10:04:31+08:00",
+        "udid": null,
+        "keep_booted": false
+      },
+      "record_sha256": "7d4302aa7b65393424d91b4545bac1b3600eca240492bdcfec728c3e1adebacb"
+    }
+  ],
+  "session_work": "/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/sim-lane-shots.fwj7t44l"
+}

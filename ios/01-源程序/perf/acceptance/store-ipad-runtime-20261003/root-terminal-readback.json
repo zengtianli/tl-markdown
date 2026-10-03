@@ -1,0 +1,19 @@
+{
+  "read_at": "2026-10-03T10:07:07.442040+08:00",
+  "result_sha256": "608f49ab7c2f11853b63f45737a7dc6d4a54e03616d80570121c91d44c32b2ad",
+  "device": {
+    "udid": "FF227F5B-7D8C-4C26-8831-9897C3ABA235",
+    "name": "Folio Resource iPad 20261003",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPad-Pro-13-inch-M5-12GB",
+    "state": "Shutdown",
+    "available": true
+  },
+  "kernel_ps_current_exact_worker_group_and_controller_candidates": [],
+  "canonical_directory_lock_exists": false,
+  "original_session_work_exists": false,
+  "input_stable": true,
+  "complete_slot_elapsed_seconds": 82.7559636659571,
+  "original_png_root_viewed": true,
+  "scope": "only this actual platform Store launch/frame terminal; no Scene/Files/resource"
+}

@@ -1,0 +1,37 @@
+{
+  "controller": {
+    "pid": 64938,
+    "pid_started": "Sat Oct  3 10:04:28 2026"
+  },
+  "worker": {
+    "pid": 64952,
+    "pid_started": "Sat Oct  3 10:04:29 2026"
+  },
+  "phase": "creation-admitted-no-boot",
+  "platform": "ipad",
+  "purpose": "store",
+  "request": {
+    "name": "Folio Resource iPad 20261003",
+    "device_type": "iPad-Pro-13-inch-M5-12GB",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0"
+  },
+  "locks": [
+    {
+      "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+      "dev": 16777234,
+      "ino": 492958390,
+      "record": {
+        "pid": 64952,
+        "pid_started": "Sat Oct  3 10:04:29 2026",
+        "label": "Folio owned creation store ipad",
+        "at": "2026-10-03T10:04:30+08:00",
+        "udid": null,
+        "keep_booted": false
+      },
+      "record_sha256": "984107119b4db8ad436578554828bef0f5e510243094e89ad8d1d596edeb02fa"
+    }
+  ],
+  "at": "2026-10-03T10:04:30.553752+08:00",
+  "before_inventory_sha256": "a0ede8e2441e19870678ba0ed4dfcc9a0f451c0175a000624c24e7b7006483ff",
+  "before_name_matches": []
+}
