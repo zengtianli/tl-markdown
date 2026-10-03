@@ -1,0 +1,203 @@
+{
+ "schema_version": 1,
+ "platform": "ipad",
+ "app_id": "folio",
+ "input_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+ "measured_at": "2026-10-03T14:54:19+08:00",
+ "completed_at": "2026-10-03T15:04:09+08:00",
+ "build": {
+  "configuration": "Release",
+  "scheme": "FolioMobile",
+  "bundle_id": "cyou.tianli.TLMarkdown.mobile",
+  "version": "1.2.0",
+  "build": "1",
+  "sdk": "iphonesimulator27.0",
+  "executable_sha256": "a38959ca567315cc793d3655e86c6f53cfd750e8d5f4a905685f480df691dfb4",
+  "signing": "unsigned simulator build (CODE_SIGNING_ALLOWED=NO)",
+  "seconds": 44.0,
+  "xcode": {
+   "name": "Xcode.app",
+   "version": "27.0",
+   "build": "27A266a",
+   "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+  },
+  "reuse": {
+   "receipt": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.vxwheq2o/build.json",
+   "receipt_sha256": "98453b688fbd5406ba1548db9b8deff4de47c227051ed1213efeb312eb28615c",
+   "source_copy": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.vxwheq2o/src/ios/01-源程序",
+   "input_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+   "source_file_count": 62
+  }
+ },
+ "measurement": {
+  "environment": "simulator",
+  "device": "iPad Pro 13-inch (M5) (iPad-Pro-13-inch-M5-12GB)",
+  "os": "iPadOS 27.0",
+  "udid": "A19C635F-A987-4E08-931A-A5874216E34D",
+  "install_seconds": 17.0,
+  "samples": [
+   {
+    "run": 0,
+    "pid": 8026,
+    "ready_seconds": 6.063,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 1,
+    "pid": 8501,
+    "ready_seconds": 2.805,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 2,
+    "pid": 8755,
+    "ready_seconds": 2.993,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 3,
+    "pid": 9023,
+    "ready_seconds": 2.833,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 4,
+    "pid": 9276,
+    "ready_seconds": 2.817,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 5,
+    "pid": 9519,
+    "ready_seconds": 2.95,
+    "ready_signal": "os_log",
+    "errors": []
+   }
+  ],
+  "idle": {
+   "process": "9784",
+   "footprint_mb": 28.0,
+   "cpu_pct": 0.02,
+   "window_s": 60
+  },
+  "loads": {
+   "before_launches": [
+    12.06982421875,
+    46.806640625,
+    48.4794921875
+   ],
+   "counted_launches": [
+    {
+     "run": 1,
+     "before": [
+      11.09423828125,
+      44.888671875,
+      47.765625
+     ],
+     "after": [
+      9.9228515625,
+      43.52490234375,
+      47.24755859375
+     ]
+    },
+    {
+     "run": 2,
+     "before": [
+      9.9287109375,
+      42.96826171875,
+      47.029296875
+     ],
+     "after": [
+      9.69384765625,
+      42.37109375,
+      46.79443359375
+     ]
+    },
+    {
+     "run": 3,
+     "before": [
+      9.39794921875,
+      41.76708984375,
+      46.55517578125
+     ],
+     "after": [
+      8.4873046875,
+      40.50634765625,
+      46.0517578125
+     ]
+    },
+    {
+     "run": 4,
+     "before": [
+      8.4873046875,
+      40.50634765625,
+      46.0517578125
+     ],
+     "after": [
+      8.25830078125,
+      39.40234375,
+      45.59521484375
+     ]
+    },
+    {
+     "run": 5,
+     "before": [
+      7.8369140625,
+      38.7978515625,
+      45.34521484375
+     ],
+     "after": [
+      7.689453125,
+      38.2529296875,
+      45.1142578125
+     ]
+    }
+   ],
+   "after_launches": [
+    7.689453125,
+    38.2529296875,
+    45.1142578125
+   ],
+   "before_idle": [
+    5.38232421875,
+    32.50830078125,
+    42.54736328125
+   ]
+  },
+  "orientation": null,
+  "rotation": null,
+  "device_selection": {
+   "mode": "configured/default",
+   "udid": "A19C635F-A987-4E08-931A-A5874216E34D",
+   "name": "iPad Pro 13-inch (M5)",
+   "state_before": "Shutdown",
+   "shutdown_verified": false
+  },
+  "with_helpers": false,
+  "scope": "Simulator App host process only; excludes CoreSimulator, system services and inactive extensions",
+  "settle_s": 45
+ },
+ "size": {
+  "download_bytes": 2891883,
+  "installed_bytes": 7650326,
+  "download_mb": 2.89,
+  "installed_mb": 7.65
+ },
+ "speed": {
+  "cold_launch_ms": 2833.0,
+  "runs": 5,
+  "discarded_runs": 1,
+  "ready_signal": "os_log",
+  "method": "launch command issued -> App os_log \"lane-ready\" (first data-bearing screen), App terminated 3 s before each run, first run after install discarded, median"
+ },
+ "tool_sha256": {
+  "platform_measure.py": "8b477d9572258fad9afd2d42393b1d68453ed984fdccc640581049f8253e048c",
+  "measure.py": "9b4f3cb22190a295fade42759bdb19f27da7c5dbd13449e78cb14743472ed94c",
+  "sim_lane.py": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34"
+ }
+}

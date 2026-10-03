@@ -1,0 +1,197 @@
+{
+ "schema_version": 1,
+ "platform": "vision",
+ "app_id": "folio",
+ "input_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+ "measured_at": "2026-10-03T15:04:10+08:00",
+ "completed_at": "2026-10-03T15:14:56+08:00",
+ "build": {
+  "configuration": "Release",
+  "scheme": "FolioMobile",
+  "bundle_id": "cyou.tianli.TLMarkdown.mobile",
+  "version": "1.2.0",
+  "build": "1",
+  "sdk": "xrsimulator27.0",
+  "executable_sha256": "5198a3ee4c3727369db021393870dc814a2b9f6555e5f7f63f0e1fed5318778a",
+  "signing": "unsigned simulator build (CODE_SIGNING_ALLOWED=NO)",
+  "seconds": 53.1,
+  "xcode": {
+   "name": "Xcode.app",
+   "version": "27.0",
+   "build": "27A266a",
+   "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+  },
+  "reuse": null
+ },
+ "measurement": {
+  "environment": "simulator",
+  "device": "Apple Vision Pro (Apple-Vision-Pro-4K)",
+  "os": "visionOS 27.0",
+  "udid": "4EA6A65D-4301-4527-B125-152AC0076CAF",
+  "install_seconds": 28.8,
+  "samples": [
+   {
+    "run": 0,
+    "pid": 18245,
+    "ready_seconds": 21.607,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 1,
+    "pid": 18784,
+    "ready_seconds": 12.479,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 2,
+    "pid": 19237,
+    "ready_seconds": 12.127,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 3,
+    "pid": 19675,
+    "ready_seconds": 11.667,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 4,
+    "pid": 20105,
+    "ready_seconds": 12.08,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 5,
+    "pid": 20523,
+    "ready_seconds": 12.202,
+    "ready_signal": "os_log",
+    "errors": []
+   }
+  ],
+  "idle": {
+   "process": "20960",
+   "footprint_mb": 41.0,
+   "cpu_pct": 0.05,
+   "window_s": 60
+  },
+  "loads": {
+   "before_launches": [
+    12.2451171875,
+    37.4150390625,
+    43.3310546875
+   ],
+   "counted_launches": [
+    {
+     "run": 1,
+     "before": [
+      10.66064453125,
+      33.8896484375,
+      41.76904296875
+     ],
+     "after": [
+      9.45458984375,
+      32.11328125,
+      40.94873046875
+     ]
+    },
+    {
+     "run": 2,
+     "before": [
+      9.177734375,
+      31.6796875,
+      40.74365234375
+     ],
+     "after": [
+      9.8466796875,
+      30.39794921875,
+      40.07421875
+     ]
+    },
+    {
+     "run": 3,
+     "before": [
+      9.8466796875,
+      30.39794921875,
+      40.07421875
+     ],
+     "after": [
+      8.65625,
+      28.79931640625,
+      39.27587890625
+     ]
+    },
+    {
+     "run": 4,
+     "before": [
+      8.283203125,
+      28.38720703125,
+      39.06884765625
+     ],
+     "after": [
+      8.04931640625,
+      27.0322265625,
+      38.33447265625
+     ]
+    },
+    {
+     "run": 5,
+     "before": [
+      8.044921875,
+      26.7158203125,
+      38.15625
+     ],
+     "after": [
+      7.9228515625,
+      25.484375,
+      37.44921875
+     ]
+    }
+   ],
+   "after_launches": [
+    7.9228515625,
+    25.484375,
+    37.44921875
+   ],
+   "before_idle": [
+    7.97509765625,
+    22.03955078125,
+    35.27001953125
+   ]
+  },
+  "orientation": null,
+  "rotation": null,
+  "device_selection": {
+   "mode": "configured/default",
+   "udid": "4EA6A65D-4301-4527-B125-152AC0076CAF",
+   "name": "Apple Vision Pro",
+   "state_before": "Shutdown",
+   "shutdown_verified": false
+  },
+  "with_helpers": false,
+  "scope": "Simulator App host process only; excludes CoreSimulator, system services and inactive extensions",
+  "settle_s": 45
+ },
+ "size": {
+  "download_bytes": 2722006,
+  "installed_bytes": 7499848,
+  "download_mb": 2.72,
+  "installed_mb": 7.5
+ },
+ "speed": {
+  "cold_launch_ms": 12127.0,
+  "runs": 5,
+  "discarded_runs": 1,
+  "ready_signal": "os_log",
+  "method": "launch command issued -> App os_log \"lane-ready\" (first data-bearing screen), App terminated 3 s before each run, first run after install discarded, median"
+ },
+ "tool_sha256": {
+  "platform_measure.py": "8b477d9572258fad9afd2d42393b1d68453ed984fdccc640581049f8253e048c",
+  "measure.py": "9b4f3cb22190a295fade42759bdb19f27da7c5dbd13449e78cb14743472ed94c",
+  "sim_lane.py": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34"
+ }
+}

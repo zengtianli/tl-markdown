@@ -1,0 +1,197 @@
+{
+ "schema_version": 1,
+ "platform": "iphone",
+ "app_id": "folio",
+ "input_sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+ "measured_at": "2026-10-03T14:44:36+08:00",
+ "completed_at": "2026-10-03T14:54:17+08:00",
+ "build": {
+  "configuration": "Release",
+  "scheme": "FolioMobile",
+  "bundle_id": "cyou.tianli.TLMarkdown.mobile",
+  "version": "1.2.0",
+  "build": "1",
+  "sdk": "iphonesimulator27.0",
+  "executable_sha256": "a38959ca567315cc793d3655e86c6f53cfd750e8d5f4a905685f480df691dfb4",
+  "signing": "unsigned simulator build (CODE_SIGNING_ALLOWED=NO)",
+  "seconds": 44.0,
+  "xcode": {
+   "name": "Xcode.app",
+   "version": "27.0",
+   "build": "27A266a",
+   "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+  },
+  "reuse": null
+ },
+ "measurement": {
+  "environment": "simulator",
+  "device": "iPhone 17 Pro (iPhone-17-Pro)",
+  "os": "iOS 27.0",
+  "udid": "280663C5-C40F-4F3E-8E88-2EB031CA689D",
+  "install_seconds": 5.4,
+  "samples": [
+   {
+    "run": 0,
+    "pid": 97993,
+    "ready_seconds": 3.797,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 1,
+    "pid": 98237,
+    "ready_seconds": 1.653,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 2,
+    "pid": 98414,
+    "ready_seconds": 1.618,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 3,
+    "pid": 98628,
+    "ready_seconds": 1.56,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 4,
+    "pid": 98728,
+    "ready_seconds": 1.595,
+    "ready_signal": "os_log",
+    "errors": []
+   },
+   {
+    "run": 5,
+    "pid": 98979,
+    "ready_seconds": 2.84,
+    "ready_signal": "os_log",
+    "errors": []
+   }
+  ],
+  "idle": {
+   "process": "99206",
+   "footprint_mb": 28.0,
+   "cpu_pct": 0.03,
+   "window_s": 60
+  },
+  "loads": {
+   "before_launches": [
+    14.283203125,
+    57.806640625,
+    45.96337890625
+   ],
+   "counted_launches": [
+    {
+     "run": 1,
+     "before": [
+      12.453125,
+      55.2685546875,
+      45.26416015625
+     ],
+     "after": [
+      11.77587890625,
+      54.4169921875,
+      45.02197265625
+     ]
+    },
+    {
+     "run": 2,
+     "before": [
+      10.99267578125,
+      53.54638671875,
+      44.76953125
+     ],
+     "after": [
+      9.99755859375,
+      51.93115234375,
+      44.29833984375
+     ]
+    },
+    {
+     "run": 3,
+     "before": [
+      9.99755859375,
+      51.93115234375,
+      44.29833984375
+     ],
+     "after": [
+      9.83740234375,
+      51.20166015625,
+      44.08544921875
+     ]
+    },
+    {
+     "run": 4,
+     "before": [
+      12.09228515625,
+      50.982421875,
+      44.04931640625
+     ],
+     "after": [
+      11.08154296875,
+      49.484375,
+      43.5986328125
+     ]
+    },
+    {
+     "run": 5,
+     "before": [
+      10.83447265625,
+      48.79541015625,
+      43.3896484375
+     ],
+     "after": [
+      11.0078125,
+      48.20068359375,
+      43.21142578125
+     ]
+    }
+   ],
+   "after_launches": [
+    11.0078125,
+    48.20068359375,
+    43.21142578125
+   ],
+   "before_idle": [
+    8.98193359375,
+    41.1142578125,
+    40.91552734375
+   ]
+  },
+  "orientation": null,
+  "rotation": null,
+  "device_selection": {
+   "mode": "configured/default",
+   "udid": "280663C5-C40F-4F3E-8E88-2EB031CA689D",
+   "name": "iPhone 17 Pro",
+   "state_before": "Shutdown",
+   "shutdown_verified": false
+  },
+  "with_helpers": false,
+  "scope": "Simulator App host process only; excludes CoreSimulator, system services and inactive extensions",
+  "settle_s": 45
+ },
+ "size": {
+  "download_bytes": 2891883,
+  "installed_bytes": 7650326,
+  "download_mb": 2.89,
+  "installed_mb": 7.65
+ },
+ "speed": {
+  "cold_launch_ms": 1618.0,
+  "runs": 5,
+  "discarded_runs": 1,
+  "ready_signal": "os_log",
+  "method": "launch command issued -> App os_log \"lane-ready\" (first data-bearing screen), App terminated 3 s before each run, first run after install discarded, median"
+ },
+ "tool_sha256": {
+  "platform_measure.py": "8b477d9572258fad9afd2d42393b1d68453ed984fdccc640581049f8253e048c",
+  "measure.py": "9b4f3cb22190a295fade42759bdb19f27da7c5dbd13449e78cb14743472ed94c",
+  "sim_lane.py": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34"
+ }
+}
