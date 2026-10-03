@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "scope": "existing GUI prepare and one iPad default dry only; no Files/Scene/runtime/performance PASS",
+  "workdir": "/private/tmp/folio-gui-scene-current-20261003-b6d",
+  "producer": "Tests/HostedHarness/ReleaseQA/GUI/prepare.py; run.py without --execute",
+  "files": {
+    "FolioGUIFixture.zip": {
+      "sha256": "082b734e4a2b28375f2bb6be49ebc15e90d7fa3a24c51949edb4d2c941825934",
+      "bytes": 907
+    },
+    "dry-ipad.json": {
+      "sha256": "7b7710dcdf9591e3192923e42a7d1a0c94d175450236222c1063ffed4f02446f",
+      "bytes": 9449
+    },
+    "gui-binding.json": {
+      "sha256": "3dcfe75ef8edca054496611963d6f198e145c5c893890399acad9f4f10a96d29",
+      "bytes": 27224
+    },
+    "old-abi-guard.json": {
+      "sha256": "5d31548206a05d7af63f28711e5a7fa821aede200c434d2c87b0bd40dbd2b1ed",
+      "bytes": 188
+    },
+    "owned-config.json": {
+      "sha256": "0afa85a6410885d8a10a97b26e3cfaa9e5e30e484a367c2ec758885701767dba",
+      "bytes": 255
+    },
+    "receipts.json": {
+      "sha256": "049e80e003eb37fc88219828698bebf8f4b3440b6c39ca10694c092b2ecad2fd",
+      "bytes": 239
+    }
+  },
+  "source": {
+    "sha256": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+    "file_count": 62
+  },
+  "gui_binding_sha256": "3dcfe75ef8edca054496611963d6f198e145c5c893890399acad9f4f10a96d29",
+  "guard": {
+    "scope": "mock old-ABI rejection only; no SDK/runtime/device/UI operations",
+    "old_abi_rejected": true,
+    "error": "final ABI changed: /Users/tianli/Apps/chapter/engine/app_sop.py"
+  },
+  "pinned_tools": {
+    "/Users/tianli/Apps/.claude/skills/app-lightweight/scripts/measure.py": "9b4f3cb22190a295fade42759bdb19f27da7c5dbd13449e78cb14743472ed94c",
+    "/Users/tianli/Apps/.claude/skills/app-lightweight/scripts/platform_measure.py": "8b477d9572258fad9afd2d42393b1d68453ed984fdccc640581049f8253e048c",
+    "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py": "ba7cbd20ded10311bdc948675314205e5be797537da2eb9ae33ac2844e1d3d34",
+    "/Users/tianli/Apps/chapter/engine/app_sop.py": "b6d60b6dfeb81659a22d008f19f8e60443a8dcb216ea8b026ee3f22b5f3a61c0",
+    "/Users/tianli/Apps/folio/ios/01-源程序/Tests/HostedHarness/run.py": "6f1af3fa63fd4c224e0a027da30cc7ba4fb4e4f6ad46e6394759d41d767135d8"
+  }
+}

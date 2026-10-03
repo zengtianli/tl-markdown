@@ -1,0 +1,5 @@
+{
+  "scope": "mock old-ABI rejection only; no SDK/runtime/device/UI operations",
+  "old_abi_rejected": true,
+  "error": "final ABI changed: /Users/tianli/Apps/chapter/engine/app_sop.py"
+}

@@ -1,0 +1,37 @@
+{
+  "scope": "syntax/help and deterministic fictional ZIP; one old normal SDK rejection only. No fresh SDK/candidate/runtime/Sim/device/GUI/real gate",
+  "sources": {
+    "run.py": "65f694908221afabc16f4100f861faa272b72d8178669790fcae63fd6148b6fe",
+    "prepare.py": "03afc1f6412cf6a79f376be2b99a3e05797d112c95283b13032b6216268c5bd1",
+    "fixtures.py": "14075b6ba0f2292d7129731c567583521185b40ce9d58ee7739868c7ccb663b2"
+  },
+  "fixture": {
+    "files": {
+      "FolioGUIFixture/folio-gui.md": {
+        "sha256": "e0a322b050fa6a9ee76097a1b6299e209722a810b7d68922891115358beb95c3",
+        "bytes": 228
+      },
+      "FolioGUIFixture/assets/pixel.png": {
+        "sha256": "668172c6fe9c474d37ca991608df8a3b09ab1182b7686dbfc6fb1cc9d4098fb6",
+        "bytes": 123
+      },
+      "FolioGUIFixture/README.txt": {
+        "sha256": "ff5bda3bf9826284bd762a632237010fefa01166a3ef96dce6f68a2d28ef2dc9",
+        "bytes": 134
+      }
+    },
+    "zip_sha256": "082b734e4a2b28375f2bb6be49ebc15e90d7fa3a24c51949edb4d2c941825934",
+    "encoding": "UTF-8 BOM; CRLF Markdown",
+    "scope": "fictional document and generated RGB image only; zero permission/session metadata"
+  },
+  "old_sdk_rejection": {
+    "exit": 1,
+    "log": "/tmp/folio-gui-preparation-20261003/old-sdk-rejection.log",
+    "log_sha256": "f2d00a9f164263e1ae9e1a6a9932ad9f8afca1b263727551cb1a35f20e134b88",
+    "reason_tail": [
+      "sim_lane.LaneError: 缓存源码布局与当前绑定输入不同"
+    ]
+  },
+  "new_source": "8309e99023c5314768151efa4498d8f0b249dc35d86d6e303eff794ca71275e0",
+  "future": "Root must prepare explicit new iOS/Vision ordinaryRelease real receipts and take a new600 GUI sole native grant; no GUI recipe binding exists yet"
+}
