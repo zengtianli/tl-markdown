@@ -1,0 +1,38 @@
+{
+  "controller": {
+    "pid": 2178,
+    "pid_started": "Sat Oct  3 08:34:31 2026"
+  },
+  "worker": {
+    "pid": 2192,
+    "pid_started": "Sat Oct  3 08:34:32 2026"
+  },
+  "platform": "iphone",
+  "destination": "/private/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178",
+  "phase": "boot-admitted",
+  "device": {
+    "udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+    "name": "Folio Integration",
+    "device_type": "iPhone-17-Pro",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "available": true
+  },
+  "state_before": "Shutdown",
+  "locks": [
+    {
+      "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+      "dev": 16777234,
+      "ino": 492846554,
+      "record": {
+        "pid": 2192,
+        "pid_started": "Sat Oct  3 08:34:32 2026",
+        "label": "Folio thin launch iphone",
+        "at": "2026-10-03T08:34:33+08:00",
+        "udid": null,
+        "keep_booted": false
+      },
+      "record_sha256": "f71d00d0123aca8ce472da0ce0727205e4297198183c2fc1980997c7b3915e8e"
+    }
+  ],
+  "session_work": "/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/sim-lane-shots.bbonptnh"
+}

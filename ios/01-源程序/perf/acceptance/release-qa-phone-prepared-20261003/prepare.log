@@ -1,0 +1,20 @@
+{
+  "status": "prepared-only-no-device",
+  "workdir": "/private/tmp/folio-release-qa-phone-final-20261003",
+  "platforms": [
+    "iphone",
+    "ipad"
+  ],
+  "independent_qa_files": {
+    "budget.py": "cc7c9f280c97426051a0463f92947bb8e1fb2f87413bf4d847b99c51b439e2e7",
+    "guard.py": "14a2dbbcf3d17903b09461a757655d755f42dacf9deaec81fc3d39beb3439ec3",
+    "prepare.py": "1b40f896843837f51e708f4d48a8aa1d231af352545e34b9732e54d94b889622",
+    "resource.py": "e048e72007f3f2119f48ba1c3f11b473621253064aef1480c7712c5f8bc1f1b4",
+    "test_budget.py": "766b07f82a1d2a0794beffa572eabd7e5f911e32ac31b09702e4f53dc3fabf48",
+    "thin.py": "0a1267b138ab392765ad572e2478760f08b8fccaa2759d4d336c8279cf646a16"
+  },
+  "source": {
+    "sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+    "file_count": 62
+  }
+}

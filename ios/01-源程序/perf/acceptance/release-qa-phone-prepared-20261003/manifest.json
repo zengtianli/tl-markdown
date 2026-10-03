@@ -1,0 +1,30 @@
+{
+  "status": "prepared-static-pure-dry-only-not-runtime",
+  "scope": "Root reviewed phone-only candidate; two pure total-budget counterexamples plus phone thin/resource default dry, unchanged actual ordinary SDK/source binding",
+  "files": {
+    "phone-proof.json": "c8ed1a1459e0b491f3cf6b0609c2912d6f90746f959edab9b55450a44e3c4cbd",
+    "thin-binding.json": "ea911f1710f6c2fa59dfedc2ea545955333c482a4547ae1bc532c42585e0daf8",
+    "resource-binding.json": "3a68d661ea186879336bb03aed45fe6a5620f59c686c020470f2f39e31edf254",
+    "receipts.json": "a7578eec684e26dbcc9af15cf17e3dd3c9e6be46c44268583519b4c4c4696594",
+    "prepare.log": "475b23393e3dd76ec7527d05d41dca1e5f21552d87c352b472fbe8f2253b1f1f",
+    "budget-pure.log": "ebc082b6987aa11a0a91902710905701778682c7b818bcb609334ada7ff769df",
+    "thin.py.dry.log": "21b403b4ec0fe615240a9e97cd5c71f4ff83f022d8b1d363475cb4d189d23096",
+    "resource.py.dry.log": "0f83e975c05a697c60bf5166a06a0588b0c8a7e97cc8edef508d83b5c96df34d"
+  },
+  "qa_files": {
+    "budget.py": "cc7c9f280c97426051a0463f92947bb8e1fb2f87413bf4d847b99c51b439e2e7",
+    "resource.py": "e048e72007f3f2119f48ba1c3f11b473621253064aef1480c7712c5f8bc1f1b4",
+    "thin.py": "0a1267b138ab392765ad572e2478760f08b8fccaa2759d4d336c8279cf646a16",
+    "guard.py": "14a2dbbcf3d17903b09461a757655d755f42dacf9deaec81fc3d39beb3439ec3",
+    "test_budget.py": "766b07f82a1d2a0794beffa572eabd7e5f911e32ac31b09702e4f53dc3fabf48",
+    "prepare.py": "1b40f896843837f51e708f4d48a8aa1d231af352545e34b9732e54d94b889622"
+  },
+  "source62": {
+    "sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+    "file_count": 62
+  },
+  "origin": "/tmp/folio-release-qa-phone-final-20261003",
+  "original_phone_proof_sha256": "c8ed1a1459e0b491f3cf6b0609c2912d6f90746f959edab9b55450a44e3c4cbd",
+  "no_actual_device_or_gate_or_app": true,
+  "pending": "NEW Root sole native grant for owned12 single ordinary Release Markdown launch/capture; no Store/WK resource/OS Files/Scene result"
+}

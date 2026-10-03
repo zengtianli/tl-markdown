@@ -1,0 +1,51 @@
+{
+  "scope": "own worker/device only",
+  "clear": true,
+  "actions": [],
+  "errors": [],
+  "worker": {
+    "pid": 2192,
+    "pid_started": "Sat Oct  3 08:34:32 2026",
+    "exit_code": 0,
+    "remaining_group": {}
+  },
+  "journal_sha256": "a76f1a14eef437fe28208ec5933db2ddeb6d4b5487c229345ae82d5e836c5a7a",
+  "directory_lock": "absent: original Session released its gate",
+  "controller_cleanup_lock": {
+    "path": "/Users/tianli/Library/Caches/sim-lane/lock",
+    "dev": 16777234,
+    "ino": 492849006,
+    "record": {
+      "pid": 2178,
+      "pid_started": "Sat Oct  3 08:34:31 2026",
+      "label": "Folio controller own-device terminal check",
+      "at": "2026-10-03T08:35:12+08:00",
+      "udid": null,
+      "keep_booted": false
+    },
+    "record_sha256": "040d3e09f02c9990a93778a8fb4496feaab534623c323d589bab57b4148c17d0"
+  },
+  "device_before_cleanup": {
+    "udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+    "name": "Folio Integration",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro",
+    "state": "Shutdown",
+    "available": true
+  },
+  "device_after_cleanup": {
+    "udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+    "name": "Folio Integration",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro",
+    "state": "Shutdown",
+    "available": true
+  },
+  "original_session_work_final": {
+    "path": "/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/sim-lane-shots.bbonptnh",
+    "exists": false
+  },
+  "directory_lock_final": "absent",
+  "controller_cleanup_lock_final": "released by original Lock.release",
+  "chapter_global_held_during_observation": true
+}

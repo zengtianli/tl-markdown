@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "scope": "immutable original single ordinary Release phone launch/capture artifacts",
+  "files": {
+    "admission.json": {
+      "original": "/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/admission.json",
+      "sha256": "a76f1a14eef437fe28208ec5933db2ddeb6d4b5487c229345ae82d5e836c5a7a",
+      "bytes": 1148
+    },
+    "capture.json": {
+      "original": "/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/capture.json",
+      "sha256": "f8b0267fabb4aa0cb187c9089957a09ae44bd17c10dff20945885137d1ef627e",
+      "bytes": 4976
+    },
+    "cleanup.json": {
+      "original": "/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/cleanup.json",
+      "sha256": "72f7bdb350d47a255b3d05b589f8c5be621f17ca78bc356f85bf1e6492df94d2",
+      "bytes": 1679
+    },
+    "launch-0.png": {
+      "original": "/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/launch-0.png",
+      "sha256": "25b0a2c72edcfe4b056fa42ce00fa00573825979443f555f7b0ec9b63ab665c8",
+      "bytes": 323258
+    },
+    "launch.log": {
+      "original": "/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "observations.json": {
+      "original": "/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/observations.json",
+      "sha256": "9d4b55dd21fbce2a4d7041c1b42f0a7f061d4a1af76eb76989d650f7d04944d5",
+      "bytes": 3839
+    },
+    "result.json": {
+      "original": "/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/result.json",
+      "sha256": "33cbeb8ef0b94573d0b2837fc9b2b34c3e06594322e81724d8011828e076dbcf",
+      "bytes": 23062
+    }
+  },
+  "prepared_qa_manifest": "../release-qa-phone-prepared-20261003/manifest.json",
+  "prepared_qa_manifest_sha256": "649129965daec8d720f5bf704b467fbcab975a1681204b092ddf11f33ad7b583"
+}

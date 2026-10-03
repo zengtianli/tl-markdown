@@ -1,0 +1,49 @@
+{
+  "scope": "pure total budget only, no real timing/perf/gates/device",
+  "cases": [
+    {
+      "case": "late exit0 natural boundary",
+      "next_operation_blocked_at_boundary": true,
+      "errors": [
+        "total attempt budget exceeded after cleanup/final inputs"
+      ],
+      "result": {
+        "status": "failed-or-deferred",
+        "exit_code": 0,
+        "child_finish_seconds": 600.1,
+        "own_cleanup_complete": true,
+        "file_nb_released": true,
+        "final_inputs_stable": true,
+        "total_budget": {
+          "seconds": 600.0,
+          "elapsed_seconds": 600.2,
+          "includes": "initial input freeze, admission, child natural finish, own cleanup, file NB release, final inputs",
+          "over_budget": true,
+          "deadline_does_not_kill_existing_child": true
+        }
+      }
+    },
+    {
+      "case": "exit0 in time, final cleanup/input crosses budget",
+      "next_operation_blocked_at_boundary": false,
+      "errors": [
+        "total attempt budget exceeded after cleanup/final inputs"
+      ],
+      "result": {
+        "status": "failed-or-deferred",
+        "exit_code": 0,
+        "child_finish_seconds": 599.9,
+        "own_cleanup_complete": true,
+        "file_nb_released": true,
+        "final_inputs_stable": true,
+        "total_budget": {
+          "seconds": 600.0,
+          "elapsed_seconds": 600.1,
+          "includes": "initial input freeze, admission, child natural finish, own cleanup, file NB release, final inputs",
+          "over_budget": true,
+          "deadline_does_not_kill_existing_child": true
+        }
+      }
+    }
+  ]
+}

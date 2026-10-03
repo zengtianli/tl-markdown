@@ -50,7 +50,17 @@
       "evidence": "perf/acceptance/hosted-sdk-20261003.json",
       "evidence_sha256": "81ce3bdabd6df4a4f4b548f21c0eac2392088975f6cc4a7f049b02386621ec9d",
       "detail": "Actual iPhone SDK hosted XCTest 3 passed/0 failed/0 skipped with source62=4aa and test42dd. Real bundled reading DOM/Editor JS/WebKit safe save preserving BOM/CRLF and conflict; two WK stale/concurrent-draft behavior; mdasset PNG and damaged-authority recovery/export. Does not cover system Files grants/picker, OS Scenes, process relaunch, iPad/Vision runtime or resource budgets."
+    },
+    "release_phone_markdown_launch_capture": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T08:35:13.086293+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/release-phone-20261003.json",
+      "evidence_sha256": "a3248a0773edba4f40389d60c5500c53fcd28180bfd4e7f99bd57421306eeae9",
+      "detail": "One ordinary Release iPhone17Pro production-demo Markdown launch and unscaled 1206x2622 first screen passed; real os_log ready 4.372s. Source62/SDK/QA stable; own device Shutdown/group empty/gates released. Not five-start median, helper resources, 6.9 Store image, Files/OS Scene, iPad/Vision or upload acceptance."
     }
   },
-  "updated_at": "2026-10-03T04:49:15.907155+08:00"
+  "updated_at": "2026-10-03T08:44:02.117043+08:00"
 }

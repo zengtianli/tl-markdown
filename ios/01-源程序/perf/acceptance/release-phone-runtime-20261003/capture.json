@@ -1,0 +1,95 @@
+{
+  "actual_device": {
+    "udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+    "name": "Folio Integration",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro",
+    "state": "Shutdown",
+    "available": true,
+    "runtime_version": "27.0"
+  },
+  "install_seconds": 17.1,
+  "baseline_stable": true,
+  "launch": {
+    "index": 0,
+    "udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+    "pid": 2966,
+    "pid_started": "Sat Oct  3 08:35:01 2026",
+    "actual_args": [
+      "-folio-demo"
+    ],
+    "ready_seconds": 4.372,
+    "ready_signal": "os_log",
+    "actual_ready": {
+      "raw": "{\"timezoneName\":\"\",\"messageType\":\"Default\",\"eventType\":\"logEvent\",\"source\":null,\"launchPersonaName\":\"\",\"formatString\":\"lane-ready %{public}s\",\"userID\":502,\"activityIdentifier\":0,\"subsystem\":\"cyou.tianli.TLMarkdown.mobile\",\"category\":\"lane\",\"personaType\":0,\"threadID\":41096503,\"launchPersonaType\":0,\"senderImageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\",\"launchPersonaID\":4294967295,\"backtrace\":{\"frames\":[{\"imageOffset\":114776,\"imageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\"}]},\"bootUUID\":\"\",\"processImagePath\":\"\\/Users\\/tianli\\/Library\\/Developer\\/CoreSimulator\\/Devices\\/12B97992-764F-4AAE-9C54-C41E5BEADA0B\\/data\\/Containers\\/Bundle\\/Application\\/3570E427-A330-4C98-8DDC-706AEF43EEF5\\/Folio.app\\/Folio\",\"senderImagePath\":\"\\/Users\\/tianli\\/Library\\/Developer\\/CoreSimulator\\/Devices\\/12B97992-764F-4AAE-9C54-C41E5BEADA0B\\/data\\/Containers\\/Bundle\\/Application\\/3570E427-A330-4C98-8DDC-706AEF43EEF5\\/Folio.app\\/Folio\",\"personaID\":4294967295,\"timestamp\":\"2026-10-03 08:35:05.903190+0800\",\"machTimestamp\":14244656369852,\"personaName\":\"\",\"eventMessage\":\"lane-ready markdown\",\"processImageUUID\":\"2236BC52-C6F4-3C05-B3B9-221AC4DF8980\",\"traceID\":953826370781188,\"processID\":2966,\"senderProgramCounter\":114776,\"parentActivityIdentifier\":0}",
+      "event": {
+        "timezoneName": "",
+        "messageType": "Default",
+        "eventType": "logEvent",
+        "source": null,
+        "launchPersonaName": "",
+        "formatString": "lane-ready %{public}s",
+        "userID": 502,
+        "activityIdentifier": 0,
+        "subsystem": "cyou.tianli.TLMarkdown.mobile",
+        "category": "lane",
+        "personaType": 0,
+        "threadID": 41096503,
+        "launchPersonaType": 0,
+        "senderImageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980",
+        "launchPersonaID": 4294967295,
+        "backtrace": {
+          "frames": [
+            {
+              "imageOffset": 114776,
+              "imageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980"
+            }
+          ]
+        },
+        "bootUUID": "",
+        "processImagePath": "/Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Containers/Bundle/Application/3570E427-A330-4C98-8DDC-706AEF43EEF5/Folio.app/Folio",
+        "senderImagePath": "/Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Containers/Bundle/Application/3570E427-A330-4C98-8DDC-706AEF43EEF5/Folio.app/Folio",
+        "personaID": 4294967295,
+        "timestamp": "2026-10-03 08:35:05.903190+0800",
+        "machTimestamp": 14244656369852,
+        "personaName": "",
+        "eventMessage": "lane-ready markdown",
+        "processImageUUID": "2236BC52-C6F4-3C05-B3B9-221AC4DF8980",
+        "traceID": 953826370781188,
+        "processID": 2966,
+        "senderProgramCounter": 114776,
+        "parentActivityIdentifier": 0
+      }
+    },
+    "frame": "/private/tmp/folio-release-qa-phone-final-20261003/runs/20261003-083432-iphone-2178/launch-0.png",
+    "frame_sha256": "25b0a2c72edcfe4b056fa42ce00fa00573825979443f555f7b0ec9b63ab665c8",
+    "verdict": {
+      "non_blank": true,
+      "changed_from_baseline": true,
+      "stable": true,
+      "diff_baseline": 0.8729,
+      "diff_prev": 0.0
+    },
+    "session_sha256": "875e69d222be68d3c7fc2f277f0541e1addffbf81a25b4308c4e635ecfa5506c",
+    "demo_state": "App-created session.json, one active unnamed draft, exact bundled demo text, no grant metadata"
+  },
+  "dimensions": [
+    1206,
+    2622
+  ],
+  "display_type": null,
+  "store_validation_errors": [
+    "launch-0.png: 尺寸 1206×2622 不是 iphone 允许的 1320×2868/2868×1320"
+  ],
+  "store_shots_sha256": "419173c33d066193190aa1b2738e26a5298373271bdcb6251d258f1c994b9c73",
+  "scope": "one ordinary Release production-demo Markdown launch and original frame; no Files/OS Scene/user edits/WC/resources/upload claim",
+  "no_rotation": "no helper build, no orientation manipulation; actual image dimensions only",
+  "state_after_original_session": {
+    "udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+    "name": "Folio Integration",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+    "device_type": "iPhone-17-Pro",
+    "state": "Shutdown",
+    "available": true
+  }
+}

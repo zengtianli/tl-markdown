@@ -1,0 +1,6 @@
+{
+  "from_manifest_sha256": "1bb55279bcd14d2a8bbb2a7cf92fa72db474a9b513229a3b113809be23c30f9e",
+  "frozen_guard_sha256": "14a2dbbcf3d17903b09461a757655d755f42dacf9deaec81fc3d39beb3439ec3",
+  "scope": "repository QA only outside 62 production inputs; paths/explicit workdir/canonical repo process helper and total-budget adapter",
+  "history": "/tmp/folio-release-resource-finalabi-20261003/frozen-1bb"
+}

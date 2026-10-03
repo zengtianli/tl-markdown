@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "result": "passed",
+  "method": "real_product",
+  "scope": "single ordinary Release iPhone Markdown launch and original frame",
+  "checked_at": "2026-10-03T08:35:13.086293+08:00",
+  "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+  "production_lane_input_sha256": "4aa36541a84d29210c411184eaae6a7312bc37d13691be75521f7d9190b3b79d",
+  "production_input_count": 62,
+  "evidence_manifest": "perf/acceptance/release-phone-runtime-20261003/manifest.json",
+  "evidence_manifest_sha256": "126f55d4c17ec7d55310b91bbd0c50c28c093f8e1b7ae4b875d0dc4eec05228b",
+  "original_result_sha256": "33cbeb8ef0b94573d0b2837fc9b2b34c3e06594322e81724d8011828e076dbcf",
+  "capture_sha256": "f8b0267fabb4aa0cb187c9089957a09ae44bd17c10dff20945885137d1ef627e",
+  "cleanup_sha256": "72f7bdb350d47a255b3d05b589f8c5be621f17ca78bc356f85bf1e6492df94d2",
+  "raw_png_sha256": "25b0a2c72edcfe4b056fa42ce00fa00573825979443f555f7b0ec9b63ab665c8",
+  "source_stable": true,
+  "observed": {
+    "started_at": "2026-10-03T08:34:32.376014+08:00",
+    "finished_at": "2026-10-03T08:35:13.086293+08:00",
+    "total_seconds": 41.40085650002584,
+    "total_budget_seconds": 600,
+    "device": {
+      "udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+      "name": "Folio Integration",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+      "device_type": "iPhone-17-Pro",
+      "state": "Shutdown",
+      "available": true,
+      "runtime_version": "27.0"
+    },
+    "ordinary_release": true,
+    "launch_args": [
+      "-folio-demo"
+    ],
+    "single_ready_seconds": 4.372,
+    "ready_signal": "actual os_log lane-ready markdown",
+    "app_created_demo_state": "App-created session.json, one active unnamed draft, exact bundled demo text, no grant metadata",
+    "dimensions": [
+      1206,
+      2622
+    ],
+    "raw_frame_verdict": {
+      "non_blank": true,
+      "changed_from_baseline": true,
+      "stable": true,
+      "diff_baseline": 0.8729,
+      "diff_prev": 0.0
+    },
+    "actual_shutdown": "Shutdown",
+    "own_process_group_empty": true,
+    "own_directory_lock_final": "absent",
+    "chapter_gate_held_through_cleanup": true
+  },
+  "visual_review": {
+    "reviewer": "Root",
+    "basis": "original unscaled PNG inspected by Root; title/body/table/checklist clear"
+  },
+  "verified_scope": [
+    "ordinary Release production -folio-demo creates isolated unnamed draft and real Editor",
+    "single actual Markdown ready and original nonblank stable screenshot",
+    "source/SDK/package/QA before-after stable; own device Shutdown and own gates released"
+  ],
+  "unverified_scope": [
+    "five-launch median or startup budget",
+    "60s idle CPU/memory and WebKit helper ownership",
+    "17ProMax 6.9-inch Store image (this 17Pro frame is 1206x2622)",
+    "iPad/Vision runtime or images",
+    "system Files/FileProvider grants and OS Scene/user interaction",
+    "shipping/upload"
+  ],
+  "store_validation_errors": [
+    "launch-0.png: 尺寸 1206×2622 不是 iphone 允许的 1320×2868/2868×1320"
+  ],
+  "original_launch_log_note": "Original launch.log is empty and preserved byte-for-byte; genuine raw ready NDJSON is in capture.json/observations.json, not synthesized."
+}
