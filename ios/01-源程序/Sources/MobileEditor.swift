@@ -44,7 +44,10 @@ struct MobileEditor: UIViewRepresentable {
         // WebKit persists compiled rules. The exact rule bytes name this cache;
         // a privacy-policy change can never reuse the previous compiled policy.
         let identifier = "FolioMobileLocalImages." + SHA256.hash(data: Data(rules.utf8)).map { String(format: "%02x", $0) }.joined()
-        let ruleStore = WKContentRuleListStore.default()
+        guard let ruleStore = WKContentRuleListStore.default() else {
+            store.notice = "本地编辑器或隐私过滤资源无法载入；原文未改动。"
+            return view
+        }
         func load(_ list: WKContentRuleList?, _ error: Error?, source: PrivacyRuleSource) {
             guard error == nil, let list, list.identifier == identifier,
                   let resource = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Editor") else {
