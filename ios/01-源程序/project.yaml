@@ -36,8 +36,8 @@ sop:
     functionality: /Users/tianli/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept --single-editor
     recovery: bash scripts/test-core.sh
     privacy: bash scripts/test-core.sh
-    launch_iphone: bash scripts/launch.sh iphone
-    launch_ipad: bash scripts/launch.sh ipad
+    launch_iphone: SOP_FUNCTIONAL_THIN=1 bash scripts/launch.sh iphone
+    launch_ipad: SOP_FUNCTIONAL_THIN=1 bash scripts/launch.sh ipad
     launch_vision: bash scripts/launch.sh vision
   platforms:
     iphone:
