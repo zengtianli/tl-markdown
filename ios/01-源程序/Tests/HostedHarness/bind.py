@@ -14,6 +14,22 @@ import sim_lane
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
+def products(entries, test_root, package):
+    host = Path(entries[0]['TestHostPath'].replace('__TESTROOT__', str(test_root))).resolve()
+    test = Path(entries[0]['TestBundlePath'].replace('__TESTROOT__', str(test_root))
+                .replace('__TESTHOST__', str(host))).resolve()
+    if (not host.is_relative_to(package.resolve()) or not host.is_dir()
+            or not test.is_relative_to(package.resolve()) or not test.is_dir() or test.suffix != '.xctest'):
+        raise ValueError('actual host/test products must belong to this workdir')
+    roots = [host, test]
+    paths = [path for root in roots for path in sorted(root.rglob('*')) if path.is_file() or path.is_symlink()]
+    if any(not path.resolve().is_relative_to(package.resolve()) for path in paths):
+        raise ValueError('hosted product symlink leaves the owned workdir')
+    files = {str(path.absolute()): sha(path) for path in paths if path.is_file()}
+    if not any(path.is_file() for path in test.rglob('*')):
+        raise ValueError('actual hosted test bundle is empty')
+    return roots, files
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workdir",required=True,type=Path)
@@ -45,17 +61,15 @@ def main(argv=None):
     entries = [v for k,v in plist.items() if not k.startswith("__")]
     if len(entries)!=1 or not entries[0].get("IsAppHostedTestBundle") or entries[0].get("IsUITestBundle"):
         raise ValueError("only a non-UI hosted test bundle is accepted")
-    host = Path(entries[0]["TestHostPath"].replace("__TESTROOT__",str(runs[0].parent))).resolve()
-    if not host.is_relative_to(package.resolve()) or not host.is_dir():
-        raise ValueError("host App is not an actual product inside this workdir")
+    roots, product_files = products(entries, runs[0].parent, package)
     prepare_script = Path(prepared.get("prepare_script") or root/"prepare.py")
     if sha(prepare_script)!=prepared["prepare_script_sha256"]:
         raise ValueError("actual preparation script binding changed")
     files = [package/"prepared.json",package/"hosted-build-observation.json",Path(observation["log"]),
              package/"project.hosted.yml",package/"FolioMobile.xcodeproj/project.pbxproj",test,live_test,prepare_script,runs[0]]
-    files += sorted(path for path in host.rglob("*") if path.is_file())
     binding = {"input_sha256":built["reuse"]["input_sha256"],"test_sha256":sha(test),
-               "files":{str(path.resolve()):sha(path) for path in files}}
+               "files":{**{str(path.resolve()):sha(path) for path in files}, **product_files},
+               "product_roots": [str(root) for root in roots], "product_files": product_files}
     output = root/"run-expected.json"
     if args.write:
         if output.exists():

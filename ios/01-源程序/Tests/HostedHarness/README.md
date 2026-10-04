@@ -17,6 +17,9 @@ chapter enqueue --app folio --action accept --check functionality --tmpdir /priv
 PID/start、canonical普通文件dev/inode，独立open必须已NB锁忙，再核继承同description排他锁；
 子只close duplicate不LOCK_UN。没有继承字段的原手工run仍自己拿真实NB，固定队列模式则
 拒缺失/残缺/foreign字段。原native SDK链/专有Folio Integration/Session的lock/load wait=0保留。
+原bind按真实xctestrun解析Host与TestBundle（包括Host外的.xctest），逐文件绑定两个完整
+产物目录的名字与SHA；缺/空/foreign目录、symlink逃逸或新增/删除/改变文件均拒绝。旧缺完整
+test产物绑定的manual manifest仍保留历史，不能作为当前runtime复用来源。
 阶段核真实AC、load、no-other-builder、lowpower，不用OWNER_NOW覆盖；全过程没有UI事件、
 Simulator.app、焦点或Dock动作，检测GUI进程出现即失败。
 

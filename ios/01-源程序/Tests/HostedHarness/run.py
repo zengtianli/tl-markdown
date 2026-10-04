@@ -273,6 +273,10 @@ def validate():
         raise RuntimeError("xctestrun must contain only the non-UI hosted test bundle")
     if tests[0].get("TestHostBundleIdentifier") != "cyou.tianli.TLMarkdown.mobile":
         raise RuntimeError("wrong test host")
+    import bind
+    roots, products = bind.products(tests, runs[0].parent, PACKAGE)
+    if [str(root) for root in roots] != expected.get('product_roots') or products != expected.get('product_files'):
+        raise RuntimeError('complete actual hosted host/test binary or resource file set changed')
     app = app_sop.load_apps("folio")[0]
     return {"harness_binding_sha256":sha(HARNESS_ROOT/"binding.json"),"files": actual, "input_sha256": expected["input_sha256"], "test_sha256": expected["test_sha256"],
             "monitor_code": app_sop.monitor_inputs(app,{})["bindings"]["code"], "xctestrun": str(runs[0].resolve()),
