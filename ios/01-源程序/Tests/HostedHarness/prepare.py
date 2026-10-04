@@ -21,6 +21,8 @@ def overlay(component, family, destination, test_source):
     component, family = component.resolve(), family.resolve()
     document = yaml.safe_load((component / "project.yml").read_text())
     assert document["targets"]["FolioMobile"]["supportedDestinations"] == ["iOS", "visionOS"]
+    # Frozen sources live outside this overlay; flat groups avoid cross-root parent cycles.
+    document.setdefault("options", {})["createIntermediateGroups"] = False
     # Every compile/resource path is pinned to the verified frozen tree, not
     # FOLIO_FAMILY_ROOT from a live shell or the out-of-repository overlay folder.
     for template in document["targetTemplates"].values():
