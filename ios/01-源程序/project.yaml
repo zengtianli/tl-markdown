@@ -65,7 +65,8 @@ sop:
     watch:
       not_applicable: 文稿的阅读、光标定位和正文编辑需要足够屏幕与输入；手表没有独立有用的文稿流程。
   measure:
-    command: bash scripts/measure-platforms.sh
+    command: bash scripts/measure-platforms.sh --platform "${SOP_PERF_PLATFORM:-all}"
+    platform_env: SOP_PERF_PLATFORM
     outputs: [perf/platforms]
     in_use: true
   budget:
