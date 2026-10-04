@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "functionality",
+  "app_id": "folio",
+  "command": "~/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept --single-editor",
+  "exit_code": 1,
+  "status": "failed",
+  "started_at": "2026-10-04T18:21:43.958847+08:00",
+  "finished_at": "2026-10-04T18:23:23.411563+08:00",
+  "input_sha256": "8702ac9fb10b364d977bbe29794feae6aed093f9bd55a29bacf45cb034aad8e6",
+  "log": "perf/acceptance/functionality.log",
+  "log_sha256": "91657dcbdde0e76adb6481188d69e6e60cf03071df963ca43fd31d0512659fc4",
+  "summary": "NotADirectoryError: [Errno 20] Not a directory: '/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/run-expected.json'",
+  "detail": null,
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/functionality/20261004T182143957665+0800-8ppqqorg",
+    "manifest_sha256": "1cb13e58d8c0bffe67e9e777cbf4a8046051792dac39e311117ef93d7c1c7f8b"
+  }
+}

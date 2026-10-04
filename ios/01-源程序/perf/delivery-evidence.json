@@ -5,41 +5,41 @@
       "result": "passed",
       "scope": "cli_entry",
       "method": "real_product",
-      "checked_at": "2026-10-03T03:15:10.712092+08:00",
-      "input_sha256": "b8be91c7a4e59b00e1d2e4169c30794c054d0c0d581f3a2a4c4c3f4892c6516c",
+      "checked_at": "2026-10-04T15:49:38.456617+08:00",
+      "input_sha256": "566d6482ba687e3faa94982b7c6e1745fafaf2b404f6534e92768a65d8f3a74b",
       "evidence": "perf/acceptance/cli_entry.json",
-      "evidence_sha256": "5e546d27028d5567339268e7fd2334ac5a0256565ed7d10e8c0276ee53fa5a89",
+      "evidence_sha256": "e72de71465f8c817e257e0e722a1b21043e80b37f6a37dafedec896ac89c7b77",
       "detail": "builtin:cli_entry：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/cli_entry.py → 命令行在 App 里：folio — Folio — Markdown 索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。"
     },
     "functionality": {
-      "result": "passed",
+      "result": "failed",
       "scope": "code",
       "method": "real_product",
-      "checked_at": "2026-10-03T04:07:23.183356+08:00",
-      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
-      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
-      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
-      "detail": "Actual shared DocumentIO/DocumentWorkspace: encoding, explicit save/export, two-editor generation/revision and per-scene flush; compiled development CLI help passed."
+      "checked_at": "2026-10-04T18:23:23.411563+08:00",
+      "input_sha256": "8702ac9fb10b364d977bbe29794feae6aed093f9bd55a29bacf45cb034aad8e6",
+      "evidence": "perf/acceptance/functionality.json",
+      "evidence_sha256": "3117b243d2c8678c70af4fb7e3ed7e296446c32b85dda680b4a1d6174e1a6021",
+      "detail": "sop.accept：~/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept --single-editor → NotADirectoryError: [Errno 20] Not a directory: '/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/run-expected.json'"
     },
     "recovery": {
       "result": "passed",
       "scope": "code",
       "method": "real_product",
-      "checked_at": "2026-10-03T04:07:23.183356+08:00",
-      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
-      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
-      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
-      "detail": "Actual crash/local draft restoration, external conflict/reload protection, corrupt session/bookmark draft preservation and safe save-as passed."
+      "checked_at": "2026-10-04T18:10:59.983371+08:00",
+      "input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a",
+      "evidence": "perf/acceptance/recovery.json",
+      "evidence_sha256": "2938d0c29d23444d67f894883afc2050974deff755c5c2fc238ae66394c0970b",
+      "detail": "sop.accept：bash scripts/test-core.sh → Exit: 0 success, 1 operation failed, 2 invalid usage. Output: JSON."
     },
     "privacy": {
       "result": "passed",
       "scope": "code",
       "method": "real_product",
-      "checked_at": "2026-10-03T04:07:23.183356+08:00",
-      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
-      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
-      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
-      "detail": "Actual directory authorization and FD reads/writes: parent/leaf/root replacement, user symlink, FIFO, size/growth rejection; only exact root-owned OS aliases accepted. Shared canonical IndexEngine only adds the MachO import required by the real iOS SDK; its behavior is unchanged."
+      "checked_at": "2026-10-04T18:12:11.180913+08:00",
+      "input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a",
+      "evidence": "perf/acceptance/privacy.json",
+      "evidence_sha256": "18eb97d6a80da9828104ba02c3287bbbe5dbd53e3d66b07eeb66b389288f3a28",
+      "detail": "sop.accept：bash scripts/test-core.sh → Exit: 0 success, 1 operation failed, 2 invalid usage. Output: JSON."
     },
     "hosted_sdk_editor": {
       "result": "passed",
@@ -80,7 +80,37 @@
       "evidence": "perf/acceptance/store-ipad-20261003.json",
       "evidence_sha256": "1315d38f477d50bc533bf5e7b457d5affac47a0734fab79fa5b65f7654d0374a",
       "detail": "One actual ordinary Release synthetic Markdown Store PNG2064x2752, original ready12.136s, source/SDK stable and own terminal cleanup; no Files/OS Scene/resources/full asset-set claim"
+    },
+    "launch_iphone": {
+      "result": "passed",
+      "scope": "platform_iphone",
+      "method": "ui_automation",
+      "checked_at": "2026-10-04T18:28:45.483647+08:00",
+      "input_sha256": "904f9ed275b7ba9ed1f54c76ecb9aaf53814faa39ce94d94ee8fe22154551315",
+      "evidence": "perf/acceptance/launch_iphone.json",
+      "evidence_sha256": "d68867f94b9ba9c72fbe588228a649178506f8ba58f7648fd9f6f6712377607d",
+      "detail": "sop.accept：SOP_FUNCTIONAL_THIN=1 bash scripts/launch.sh iphone → iPhone 模拟器 iPhone 17 Pro 启动冒烟通过：os_log 9.231 s，截图 1206×2622"
+    },
+    "launch_ipad": {
+      "result": "passed",
+      "scope": "platform_ipad",
+      "method": "ui_automation",
+      "checked_at": "2026-10-04T18:33:04.653198+08:00",
+      "input_sha256": "c74d59b6b273d11c6efe97906fef38ae1722f19ed574228fee872a45648e2a0c",
+      "evidence": "perf/acceptance/launch_ipad.json",
+      "evidence_sha256": "3ca4f9e0ca8b8f38c913348bf10da85e622a79ed08412e62d24db4090496f14b",
+      "detail": "sop.accept：SOP_FUNCTIONAL_THIN=1 bash scripts/launch.sh ipad → iPad 模拟器 iPad Pro 13-inch (M5) 启动冒烟通过：os_log 8.39 s，截图 2064×2752"
+    },
+    "launch_vision": {
+      "result": "passed",
+      "scope": "platform_vision",
+      "method": "ui_automation",
+      "checked_at": "2026-10-04T18:40:17.005357+08:00",
+      "input_sha256": "87bb61035f1b04ad1c675ddffdb085fdc2dff8119a8017be5de7afdfc8b571d8",
+      "evidence": "perf/acceptance/launch_vision.json",
+      "evidence_sha256": "c70add27e1def962a28cc2821eae6e7279c4a8e8930f0012720eb14b8c4c575b",
+      "detail": "sop.accept：bash scripts/launch.sh vision → Apple Vision Pro 模拟器 Apple Vision Pro 启动冒烟通过：os_log 28.276 s，截图 3840×2160"
     }
   },
-  "updated_at": "2026-10-03T10:10:54.945635+08:00"
+  "updated_at": "2026-10-04T18:40:18.211348+08:00"
 }

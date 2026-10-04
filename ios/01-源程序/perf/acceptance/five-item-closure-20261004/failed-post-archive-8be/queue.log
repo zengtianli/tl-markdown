@@ -1,0 +1,12 @@
+{
+ "ok": false,
+ "app_id": "folio",
+ "results": {
+  "functionality": {
+   "status": "failed",
+   "method": "real_product",
+   "evidence": "perf/acceptance/functionality.json",
+   "detail": "NotADirectoryError: [Errno 20] Not a directory: '/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/run-expected.json'"
+  }
+ }
+}

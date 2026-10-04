@@ -1,0 +1,15 @@
+{
+  "id": "aef010eef74f483091f14d75c0f56226",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "status": "failed",
+  "created_at": "2026-10-04T18:14:11+08:00",
+  "started_at": "2026-10-04T18:14:12+08:00",
+  "finished_at": "2026-10-04T18:14:22+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/aef010eef74f483091f14d75c0f56226.log",
+  "message": "xcodebuild rc=65：/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.6lmi879r/src/ios/01-源程序/Sources/MobileEditor.swift:57:9: error: value of optional type 'WKContentRuleListStore?' must be unwrapped to refer to member 'lookUpContentRuleList' of wrapped base type 'WKContentRuleListStore' | |         |- error: value of optional type 'WKContentRuleListStore?' must be unwrapped to refer to member 'look",
+  "check": "functionality",
+  "retry": false,
+  "tmpdir": "/private/tmp"
+}

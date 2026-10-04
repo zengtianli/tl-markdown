@@ -1,0 +1,12 @@
+{
+ "ok": false,
+ "app_id": "folio",
+ "results": {
+  "launch_vision": {
+   "status": "failed",
+   "method": "ui_automation",
+   "evidence": "perf/acceptance/launch_vision.json",
+   "detail": "Apple Vision Pro 构建失败（sim_lane build 退出码 1）：构建环境 SOP_OUT_DIR 引用了未复制的源码路径"
+  }
+ }
+}

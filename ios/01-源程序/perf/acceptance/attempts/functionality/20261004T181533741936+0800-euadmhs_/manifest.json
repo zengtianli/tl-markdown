@@ -1,0 +1,23 @@
+{
+  "app_id": "folio",
+  "check": "functionality",
+  "saved_at": "2026-10-04T18:15:33.742190+08:00",
+  "files": {
+    "functionality.log": {
+      "sha256": "70de93f2cc19279ff556ebb0a351a6e16eee3f53325672460b1af0129e0b2475",
+      "bytes": 3936,
+      "mode": 420
+    },
+    "functionality.detail.json": {
+      "sha256": "6a785e412f1fc19d4868bfa9daf8f35645fe99a7047f84affd70ad103bffd902",
+      "bytes": 3788,
+      "mode": 420
+    },
+    "functionality.json": {
+      "sha256": "4b3c570d49f37af5d0516439106348cf0eca221e378fa5899db31482257e59e5",
+      "bytes": 5018,
+      "mode": 420
+    }
+  },
+  "missing": []
+}

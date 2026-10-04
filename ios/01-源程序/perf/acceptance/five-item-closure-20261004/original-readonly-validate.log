@@ -1,0 +1,9 @@
+{
+  "status": "readonly-validation-only",
+  "input_sha256": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+  "test_sha256": "108b44b60dd355693fd180475786073d7e2ea3b3dc1978887a363c3b9917bd44",
+  "bound_file_count": 49,
+  "harness_binding_sha256": "4b287e179dbfc8b09bbd6694440f11154988d0088982bb0596e975218a77caaa",
+  "no_boot": true,
+  "no_test": true
+}

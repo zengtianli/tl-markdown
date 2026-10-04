@@ -1,0 +1,16 @@
+{
+  "id": "79d77cf6b4b54e89aac67a056dfbfc41",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "status": "failed",
+  "created_at": "2026-10-04T11:06:14+08:00",
+  "started_at": "2026-10-04T18:12:14+08:00",
+  "finished_at": "2026-10-04T18:12:24+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/79d77cf6b4b54e89aac67a056dfbfc41.log",
+  "message": "xcodegen 失败：FOLIO_FAMILY_ROOT}/Sources/IndexEngine.swift\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.dqf27vvj/src/ios/01-源程序/${FOLIO_FAMILY_ROOT}/Resources/Editor\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e",
+  "check": "functionality",
+  "retry": false,
+  "tmpdir": "/private/tmp",
+  "next_attempt_at": "2026-10-04T15:21:33.945353+08:00"
+}

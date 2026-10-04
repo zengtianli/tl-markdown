@@ -1,0 +1,15 @@
+{
+  "id": "8be219ef943c4511acb5c9d5bae6ae11",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "status": "failed",
+  "created_at": "2026-10-04T18:21:42+08:00",
+  "started_at": "2026-10-04T18:21:43+08:00",
+  "finished_at": "2026-10-04T18:23:24+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/8be219ef943c4511acb5c9d5bae6ae11.log",
+  "message": "NotADirectoryError: [Errno 20] Not a directory: '/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/run-expected.json'",
+  "check": "functionality",
+  "retry": false,
+  "tmpdir": "/private/tmp"
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "retained_actual_XcodeGen_precompile_failure",
+  "sdk_compile": false,
+  "boot": false,
+  "case_executed": false,
+  "files": {
+    "functionality.json": {
+      "sha256": "c53542416b2a70d237d60c445186f3f1d2725839d1fdd6d50f1e2ccd0172f01a",
+      "bytes": 3656
+    },
+    "functionality.detail.json": {
+      "sha256": "49015e26273044592d0878c9df36f4a25e243d28a5632ecb7201a356670e6797",
+      "bytes": 2404
+    },
+    "original-job.json": {
+      "sha256": "a507a80753747c0d997fd0877673f34d4106d92455406430cced059e3f08cd84",
+      "bytes": 1056
+    },
+    "functionality.log": {
+      "sha256": "dd62d271da6bcbb66e050b41d47e7014db3ae7dc404b63ea8aaf3ada880b1e06",
+      "bytes": 2552
+    }
+  }
+}

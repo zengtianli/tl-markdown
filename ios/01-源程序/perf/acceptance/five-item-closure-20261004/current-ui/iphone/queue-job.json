@@ -1,0 +1,17 @@
+{
+  "id": "62727995e70d4774b50ba2402708b4a0",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "status": "succeeded",
+  "created_at": "2026-10-04T18:26:36+08:00",
+  "started_at": "2026-10-04T18:26:40+08:00",
+  "finished_at": "2026-10-04T18:28:46+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/62727995e70d4774b50ba2402708b4a0.log",
+  "message": "验收通过",
+  "check": "launch_iphone",
+  "retry": false,
+  "reuse_build_receipt": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.ixvqzr98/build.json",
+  "reuse_build_receipt_sha256": "5d6e801503c029c57f8aeaeb691d3f38da392df7f56936ca2bf89a2b946a47df",
+  "tmpdir": "/private/tmp"
+}

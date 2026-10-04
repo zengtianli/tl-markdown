@@ -1,0 +1,60 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/iphone/dd/Build/Products/FolioMobile_iphonesimulator27.0-arm64-x86_64.xctestrun -destination "platform=iOS Simulator,id=12B97992-764F-4AAE-9C54-C41E5BEADA0B" -destination-timeout 10 -resultBundlePath /private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/run-20261004-182159-81698/tests.xcresult -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 "-only-testing:FolioHostedIntegration/HostedIntegrationTests/testSDKOpenEditSafeSaveAndRecovery" -collect-test-diagnostics never
+
+Writing result bundle at path:
+	/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/run-20261004-182159-81698/tests.xcresult
+
+2026-10-04 18:23:02.540269+0800 Folio[83033:51220920] [lane] lane-ready welcome
+2026-10-04 18:23:03.026066+0800 Folio[83033:51220920] [XPCErrors] non-launching port is incompatible with service identifier "com.apple.PointerUI.pointeruid.default-service"
+2026-10-04 18:23:03.031482+0800 Folio[83033:51220920] [API] cannot add handler to 0 from 0 - dropping
+2026-10-04 18:23:03.032918+0800 Folio[83033:51220920] [API] cannot add handler to 0 from 0 - dropping
+Test Suite 'Selected tests' started at 2026-10-04 18:23:03.609.
+Test Suite 'FolioHostedIntegration.xctest' started at 2026-10-04 18:23:03.610.
+Test Suite 'HostedIntegrationTests' started at 2026-10-04 18:23:03.610.
+Test Case '-[FolioHostedIntegration.HostedIntegrationTests testSDKOpenEditSafeSaveAndRecovery]' started.
+2026-10-04 18:23:04.397866+0800 Folio[83033:51220920] [lane] lane-settled welcome
+2026-10-04 18:23:05.222840+0800 Folio[83033:51220920] [Process] WebContent process (0x1250b40c0) took 1.106902 seconds to launch
+2026-10-04 18:23:05.368504+0800 Folio[83033:51220920] [Process] GPU process (0x125108200) took 1.067853 seconds to launch
+2026-10-04 18:23:06.289445+0800 Folio[83033:51220920] [Process] Networking process (0x125190180) took 1.064838 seconds to launch
+2026-10-04 18:23:06.392526+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/mobile/com.apple.Accessibility.plist due to No such file or directory
+2026-10-04 18:23:06.392911+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/com.apple.Accessibility.plist due to No such file or directory
+2026-10-04 18:23:06.393870+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/mobile/.GlobalPreferences.plist due to No such file or directory
+2026-10-04 18:23:06.394403+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/ByHost/com.apple.Accessibility..plist due to No such file or directory
+2026-10-04 18:23:06.394618+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/ByHost/.GlobalPreferences..plist due to No such file or directory
+2026-10-04 18:23:06.396751+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/mobile/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:06.397009+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:06.397203+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:06.397352+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:06.397481+0800 Folio[83033:51220920] [cfprefsd] WebContent[83107] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/ByHost/com.apple.WebKit.WebContent..plist due to No such file or directory
+2026-10-04 18:23:07.215051+0800 Folio[83033:51221288] [User Defaults] Could not resolve UID for user "mobile".
+2026-10-04 18:23:08.124574+0800 Folio[83033:51221737] [ResourceLoadStatistics] WebContent[83107] Unable to hide query parameters from script (missing data)
+2026-10-04 18:23:08.875595+0800 Folio[83033:51221737] [cfprefsd] WebContent[83107] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/ByHost/.GlobalPreferences..plist due to No such file or directory
+2026-10-04 18:23:10.151070+0800 Folio[83033:51220920] [Process] WebContent process (0x1250b4680) took 1.238876 seconds to launch
+2026-10-04 18:23:10.186373+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/mobile/com.apple.Accessibility.plist due to No such file or directory
+2026-10-04 18:23:10.186657+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/com.apple.Accessibility.plist due to No such file or directory
+2026-10-04 18:23:10.187258+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/mobile/.GlobalPreferences.plist due to No such file or directory
+2026-10-04 18:23:10.187810+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/ByHost/com.apple.Accessibility..plist due to No such file or directory
+2026-10-04 18:23:10.187994+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/ByHost/.GlobalPreferences..plist due to No such file or directory
+2026-10-04 18:23:10.190061+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/mobile/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:10.190298+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.UNDqRH/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/ExtensionKit/Extensions/WebContentExtension.appex/Library/Managed Preferences/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:10.190481+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:10.190624+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/com.apple.WebKit.WebContent.plist due to No such file or directory
+2026-10-04 18:23:10.190759+0800 Folio[83033:51220920] [cfprefsd] WebContent[83166] Couldn't open /Users/tianli/Library/Developer/CoreSimulator/Devices/12B97992-764F-4AAE-9C54-C41E5BEADA0B/data/Library/Preferences/ByHost/com.apple.WebKit.WebContent..plist due to No such file or directory
+Test Case '-[FolioHostedIntegration.HostedIntegrationTests testSDKOpenEditSafeSaveAndRecovery]' passed (8.628 seconds).
+Test Suite 'HostedIntegrationTests' passed at 2026-10-04 18:23:12.247.
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.628 (8.638) seconds
+Test Suite 'FolioHostedIntegration.xctest' passed at 2026-10-04 18:23:12.248.
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.628 (8.639) seconds
+Test Suite 'Selected tests' passed at 2026-10-04 18:23:12.249.
+	 Executed 1 test, with 0 failures (0 unexpected) in 8.628 (8.640) seconds
+2026-10-04 18:23:12.248852+0800 Folio[83033:51221737] [ProcessSuspension] WebContent[83166] 0x112054150 - [sessionID=9223372036854775811] WebProcess::updateFreezerStatus: isFreezable=1, error=-1
+2026-10-04 18:23:12.832 xcodebuild[82790:51218817] [MT] IDETestOperationsObserverDebug: 31.933 elapsed -- Testing started completed.
+2026-10-04 18:23:12.832 xcodebuild[82790:51218817] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-04 18:23:12.833 xcodebuild[82790:51218817] [MT] IDETestOperationsObserverDebug: 31.933 sec, +31.933 sec -- end
+
+Test session results, code coverage, and logs:
+	/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/run-20261004-182159-81698/tests.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started

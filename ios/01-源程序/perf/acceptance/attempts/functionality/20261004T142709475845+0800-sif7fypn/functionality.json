@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "name": "functionality",
+  "app_id": "folio",
+  "command": "~/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept",
+  "exit_code": 1,
+  "status": "failed",
+  "started_at": "2026-10-04T11:01:46.063203+08:00",
+  "finished_at": "2026-10-04T11:01:50.940655+08:00",
+  "input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a",
+  "log": "perf/acceptance/functionality.log",
+  "log_sha256": "5f139160fb93c244e412317593ff94fe9715f517231c6d73e7e2144fc9b7561b",
+  "summary": "构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+  "detail": {
+    "ok": false,
+    "status": "failed",
+    "exit_code": 1,
+    "error": "构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+    "attempt": "7bea680111c640608b0482a7d7c1999e",
+    "records": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/hosted-fileflow-20261004/7bea680111c640608b0482a7d7c1999e",
+    "ordinary_sdk_configuration": null,
+    "hosted_configuration": "Debug",
+    "cleanup": {
+      "workdir": "/private/tmp/folio-hosted-queue-7bea680111c640608b0482a7d7c1999e",
+      "cache_retained": false,
+      "shutdown_verified": false
+    },
+    "gates": [
+      {
+        "stage": "ordinary-sdk",
+        "at": "2026-10-04T03:01:46.716989+00:00",
+        "steady": true,
+        "reason": "空闲 1785 秒、负载 5.0（采样门：不要求离开电脑）",
+        "ac": true,
+        "load": 4.982421875
+      }
+    ],
+    "elapsed_seconds": 4.303141333046369,
+    "summary": "构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+    "uncovered": [
+      "Files picker/OS grant UI",
+      "OS Scene/multiwindow",
+      "full WebKit auxiliary accounting"
+    ]
+  }
+}

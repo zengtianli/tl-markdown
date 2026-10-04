@@ -1,0 +1,17 @@
+{
+  "kind": "preserved_original_native_tool_stdout_before_archive_only_fix",
+  "original_tool_chunk_id": "da37f8",
+  "actual_exit_code": 0,
+  "original_driver_sha256": "3f0bf7d0442a5bbaaaf4942ba258f267748a536c2360e6b6bc94c846462ad8b7",
+  "command": [
+    "/Users/tianli/Dev/.venv/bin/python",
+    "-B",
+    "Tests/HostedHarness/run.py",
+    "--workdir",
+    "/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1",
+    "--receipt",
+    "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.ixvqzr98/build.json"
+  ],
+  "stdout_file": "original-readonly-validate.log",
+  "is_new_validation_or_runtime": false
+}

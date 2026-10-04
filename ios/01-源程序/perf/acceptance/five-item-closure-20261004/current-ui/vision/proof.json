@@ -1,0 +1,405 @@
+{
+  "kind": "actual_current_Vision_UI_and_genuine_Debug_SDK",
+  "observed_at": "2026-10-04T18:41:30.134552+08:00",
+  "queue_job": "3ba921939ce24de3b5432f5ef90e4d40",
+  "original_finished_at": "2026-10-04T18:40:19+08:00",
+  "files": {
+    "launch_vision.json": {
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_vision.json",
+      "sha256": "c70add27e1def962a28cc2821eae6e7279c4a8e8930f0012720eb14b8c4c575b",
+      "size": 3138
+    },
+    "launch_vision.detail.json": {
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_vision.detail.json",
+      "sha256": "60570ff935df630870a5480e50522646b0b198d88fe9ba877e5b7b2e4e77e683",
+      "size": 2190
+    },
+    "launch_vision.log": {
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_vision.log",
+      "sha256": "06f7262cf62e850c9f36a316d8f31c3404974a0e6a7f70444bac0dd289220851",
+      "size": 101
+    },
+    "launch.png": {
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/platforms/vision/launch.png",
+      "sha256": "f85c4bef2c97f2deac90279648eb26e6dffddc588cd5237ebce62b28b02144ad",
+      "size": 5288464
+    },
+    "launch-capture.json": {
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/platforms/vision/launch-capture.json",
+      "sha256": "1ff9fde6b49f664a0e999457ff2a7b2c41cafab5350f2809894efbe6d6997a9f",
+      "size": 1051
+    },
+    "queue.log": {
+      "original": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/3ba921939ce24de3b5432f5ef90e4d40.log",
+      "sha256": "6e665bebce8cde2e87421d71bed5c64c367e2f7b15d1b7416e4f7e275166af78",
+      "size": 301
+    },
+    "sdk-build.log": {
+      "original": "/private/tmp/sim-lane-build.es5bzqeq/build-vision-Debug.log",
+      "sha256": "4c75e497863f43259ee404979c1d38dd13bf06755eed6828279b800c3140bd47",
+      "size": 119431
+    },
+    "Info.plist": {
+      "original": "/private/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Info.plist",
+      "sha256": "aa2b172e52d0c1d2c9a851c5c7494f5b35760208276528af2766a8014179a441",
+      "size": 1714
+    }
+  },
+  "configuration": "Debug",
+  "sdk": "xrsimulator27.0",
+  "actual_swift_defines_in_build_log": [],
+  "production_source_sha256": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+  "source_file_count": 66,
+  "source_comparison_after_actual_run": {
+    "ios/01-源程序/Sources/MobileProductLifecycle.swift": {
+      "live_sha256": "48d2b562c57587995ba615052b2c6c5f10d9aab5ce0a6922d10d645fa09730e6",
+      "frozen_sha256": "48d2b562c57587995ba615052b2c6c5f10d9aab5ce0a6922d10d645fa09730e6",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Sources/MobileEditor.swift": {
+      "live_sha256": "7bbf06611fcb5f6254db66b98c713d0a60cff6ec66d1ac4338cbe40fbac356b3",
+      "frozen_sha256": "7bbf06611fcb5f6254db66b98c713d0a60cff6ec66d1ac4338cbe40fbac356b3",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Sources/FolioMobileApp.swift": {
+      "live_sha256": "e8912d7b2bd673ccdc0472806d774e15c522d4f24f1618fca1edb9946a51e640",
+      "frozen_sha256": "e8912d7b2bd673ccdc0472806d774e15c522d4f24f1618fca1edb9946a51e640",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Sources/MobileStore.swift": {
+      "live_sha256": "f134454196489f87b5ea695c955f0720ff9fdd1eb5bdbace67fdcc58fb1530bb",
+      "frozen_sha256": "f134454196489f87b5ea695c955f0720ff9fdd1eb5bdbace67fdcc58fb1530bb",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Sources/DocumentWorkspace.swift": {
+      "live_sha256": "c5ebd8bbcf7f82d5ff0233c7e21aa851262035bc22690f54d32431fd08f5a047",
+      "frozen_sha256": "c5ebd8bbcf7f82d5ff0233c7e21aa851262035bc22690f54d32431fd08f5a047",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Sources/ContentView.swift": {
+      "live_sha256": "556b35802c841f382f032a4367eb66c7557a71b88ff4db9ed3ba4f29e945435e",
+      "frozen_sha256": "556b35802c841f382f032a4367eb66c7557a71b88ff4db9ed3ba4f29e945435e",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Sources/MarkdownExport.swift": {
+      "live_sha256": "e52eb1cded93e7f82112a3989946fba03818705c1a907b972782f8ddb62b3844",
+      "frozen_sha256": "e52eb1cded93e7f82112a3989946fba03818705c1a907b972782f8ddb62b3844",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Shared/PlatformCompat.swift": {
+      "live_sha256": "e70a1876bb795eaa5ee1b928fc816fc6ecfd87bfea7170a324247544e3a35e7a",
+      "frozen_sha256": "e70a1876bb795eaa5ee1b928fc816fc6ecfd87bfea7170a324247544e3a35e7a",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Shared/LaneSignal.swift": {
+      "live_sha256": "e7e68ac41417ddd06e7049a7bd4e01a92d52305bc999cd6ddd323178c64a2ce8",
+      "frozen_sha256": "e7e68ac41417ddd06e7049a7bd4e01a92d52305bc999cd6ddd323178c64a2ce8",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Shared/AppConfiguration.swift": {
+      "live_sha256": "66d1b04072dbcbcbbc556afb79be1181396fc8bd1a6940d5960adea742219edc",
+      "frozen_sha256": "66d1b04072dbcbcbbc556afb79be1181396fc8bd1a6940d5960adea742219edc",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Shared/AppLifecycle.swift": {
+      "live_sha256": "07adaba8327f855b9a497346384ece9f8a526089c1c2f987b8873ab95a4fec3c",
+      "frozen_sha256": "07adaba8327f855b9a497346384ece9f8a526089c1c2f987b8873ab95a4fec3c",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Shared/AppLifecycleMobile.swift": {
+      "live_sha256": "7db84e3a2aeb6e4d4b58bca8792aa6135eb9a3a2a6914911fa10f439cc301122",
+      "frozen_sha256": "7db84e3a2aeb6e4d4b58bca8792aa6135eb9a3a2a6914911fa10f439cc301122",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Front.solidimagestacklayer/Content.imageset/Contents.json": {
+      "live_sha256": "951bfa32a0a4f7c7dc7ff27165d74a1830892e911582ea4ea60e3a1e6a1c7afe",
+      "frozen_sha256": "951bfa32a0a4f7c7dc7ff27165d74a1830892e911582ea4ea60e3a1e6a1c7afe",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Front.solidimagestacklayer/Content.imageset/front.png": {
+      "live_sha256": "265149d454822c2c808720c61f5a4317c0bfda56fc96598ea7b19b6ea52c5dd1",
+      "frozen_sha256": "265149d454822c2c808720c61f5a4317c0bfda56fc96598ea7b19b6ea52c5dd1",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Front.solidimagestacklayer/Contents.json": {
+      "live_sha256": "f5fb0e1f3a8142892ed092efb5955c1c2cc537003a89ad7bbdb9dade7fe8985f",
+      "frozen_sha256": "f5fb0e1f3a8142892ed092efb5955c1c2cc537003a89ad7bbdb9dade7fe8985f",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Back.solidimagestacklayer/Content.imageset/Contents.json": {
+      "live_sha256": "be4825f0a347ae4ebb483201e88961c9695b550b3b793a87a85b5fccad5bd0af",
+      "frozen_sha256": "be4825f0a347ae4ebb483201e88961c9695b550b3b793a87a85b5fccad5bd0af",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Back.solidimagestacklayer/Content.imageset/back.png": {
+      "live_sha256": "04ac8f26b1fd803bf1e012624d1ef2aa261a3cb6ca7fb3e1777f1fc57debde60",
+      "frozen_sha256": "04ac8f26b1fd803bf1e012624d1ef2aa261a3cb6ca7fb3e1777f1fc57debde60",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Back.solidimagestacklayer/Contents.json": {
+      "live_sha256": "f5fb0e1f3a8142892ed092efb5955c1c2cc537003a89ad7bbdb9dade7fe8985f",
+      "frozen_sha256": "f5fb0e1f3a8142892ed092efb5955c1c2cc537003a89ad7bbdb9dade7fe8985f",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Middle.solidimagestacklayer/Content.imageset/Contents.json": {
+      "live_sha256": "3996ac89ef039944ca786a64bfc5b6b1aacc367f8ff1732384da7a125bcbdc61",
+      "frozen_sha256": "3996ac89ef039944ca786a64bfc5b6b1aacc367f8ff1732384da7a125bcbdc61",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Middle.solidimagestacklayer/Content.imageset/middle.png": {
+      "live_sha256": "265149d454822c2c808720c61f5a4317c0bfda56fc96598ea7b19b6ea52c5dd1",
+      "frozen_sha256": "265149d454822c2c808720c61f5a4317c0bfda56fc96598ea7b19b6ea52c5dd1",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Middle.solidimagestacklayer/Contents.json": {
+      "live_sha256": "f5fb0e1f3a8142892ed092efb5955c1c2cc537003a89ad7bbdb9dade7fe8985f",
+      "frozen_sha256": "f5fb0e1f3a8142892ed092efb5955c1c2cc537003a89ad7bbdb9dade7fe8985f",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.solidimagestack/Contents.json": {
+      "live_sha256": "de2c28d91cfa6311521f32d804ee3d8433641b775a8818605896073fa31c07fa",
+      "frozen_sha256": "de2c28d91cfa6311521f32d804ee3d8433641b775a8818605896073fa31c07fa",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+      "live_sha256": "fd402a2cca04267721b48554d48d6a0bc8d512fb6e8ecad9abde61ea2b12e690",
+      "frozen_sha256": "fd402a2cca04267721b48554d48d6a0bc8d512fb6e8ecad9abde61ea2b12e690",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/AppIcon.appiconset/folio.png": {
+      "live_sha256": "d7060edf382b2dbd94b536b043df44c6ae2c70fdb85fbd34d0b9f2fdba79ec34",
+      "frozen_sha256": "d7060edf382b2dbd94b536b043df44c6ae2c70fdb85fbd34d0b9f2fdba79ec34",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/Assets.xcassets/Contents.json": {
+      "live_sha256": "e5bedcae70b84e6cbdf077f5c2ba2fdd1d6221ffce88c2bca132da00e8cd8840",
+      "frozen_sha256": "e5bedcae70b84e6cbdf077f5c2ba2fdd1d6221ffce88c2bca132da00e8cd8840",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Resources/PrivacyInfo.xcprivacy": {
+      "live_sha256": "f844676ec96000eb90a6333c73869cfae7c55c884a2362ab7b91db84d64383ab",
+      "frozen_sha256": "f844676ec96000eb90a6333c73869cfae7c55c884a2362ab7b91db84d64383ab",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/Fixtures/demo.md": {
+      "live_sha256": "64e12c6c84e5c5c89a8d31928b989d59a708740cf803d663b311623aad9f0672",
+      "frozen_sha256": "64e12c6c84e5c5c89a8d31928b989d59a708740cf803d663b311623aad9f0672",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/project.yml": {
+      "live_sha256": "cc42a80593c19785cf4002f700189a139d50321670a1742615318441319df701",
+      "frozen_sha256": "cc42a80593c19785cf4002f700189a139d50321670a1742615318441319df701",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/scripts/launch.sh": {
+      "live_sha256": "9bb44abbe5115bab03f499330e417f05403ae2db0d1982bf51d03706c3953063",
+      "frozen_sha256": "9bb44abbe5115bab03f499330e417f05403ae2db0d1982bf51d03706c3953063",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/scripts/build.sh": {
+      "live_sha256": "b320b890358eace7cfb473b892b8d93707460a0b1231906a72a27fd2797937a4",
+      "frozen_sha256": "b320b890358eace7cfb473b892b8d93707460a0b1231906a72a27fd2797937a4",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/scripts/test-core.sh": {
+      "live_sha256": "ae83dc486a1f702304d7688406920f38ef1d841444e534a2500922bf76e1635b",
+      "frozen_sha256": "ae83dc486a1f702304d7688406920f38ef1d841444e534a2500922bf76e1635b",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/scripts/env.sh": {
+      "live_sha256": "0605747785ac8c862f8babee894e297208180741bce843937abd3be580791547",
+      "frozen_sha256": "0605747785ac8c862f8babee894e297208180741bce843937abd3be580791547",
+      "bytes_equal": true
+    },
+    "ios/01-源程序/scripts/measure-platforms.sh": {
+      "live_sha256": "4cc2d1f4966318238aa4e6e37ee69f69e768f98a0c11e34b5de93312fc4fb6bd",
+      "frozen_sha256": "4cc2d1f4966318238aa4e6e37ee69f69e768f98a0c11e34b5de93312fc4fb6bd",
+      "bytes_equal": true
+    },
+    "Sources/Models.swift": {
+      "live_sha256": "66e6f8235c01fc1ab92457b8bea577cb6cc0969c39a0144bb6e08d31ba653aab",
+      "frozen_sha256": "66e6f8235c01fc1ab92457b8bea577cb6cc0969c39a0144bb6e08d31ba653aab",
+      "bytes_equal": true
+    },
+    "Sources/IndexEngine.swift": {
+      "live_sha256": "4ac41b667c9b15368ca5766a1c1271941e0fb5115b64a796400208707ca9c691",
+      "frozen_sha256": "4ac41b667c9b15368ca5766a1c1271941e0fb5115b64a796400208707ca9c691",
+      "bytes_equal": true
+    },
+    "Resources/Editor/mermaid.js": {
+      "live_sha256": "91e61dba59569878e7e27ea8644eb051f429cb677c79e8976c9689bc40e0a2d6",
+      "frozen_sha256": "91e61dba59569878e7e27ea8644eb051f429cb677c79e8976c9689bc40e0a2d6",
+      "bytes_equal": true
+    },
+    "Resources/Editor/index.html": {
+      "live_sha256": "dabc0c0795f5e8f31fa935c0321db088afc6a17d094508b17ed2090b13e33c1f",
+      "frozen_sha256": "dabc0c0795f5e8f31fa935c0321db088afc6a17d094508b17ed2090b13e33c1f",
+      "bytes_equal": true
+    },
+    "Resources/Editor/katex.css": {
+      "live_sha256": "15192c32d1d372e9932111255f824596f539b7dfdd04b2f5395c8be8cf63205c",
+      "frozen_sha256": "15192c32d1d372e9932111255f824596f539b7dfdd04b2f5395c8be8cf63205c",
+      "bytes_equal": true
+    },
+    "Resources/Editor/editor.css": {
+      "live_sha256": "7091f6515705a9596bca24a98e8874cad0f61186dd064eb4183642925700dd86",
+      "frozen_sha256": "7091f6515705a9596bca24a98e8874cad0f61186dd064eb4183642925700dd86",
+      "bytes_equal": true
+    },
+    "Resources/Editor/katex.js": {
+      "live_sha256": "8f9037222c5ec47d1cfde23bb860e939d8a2a1cc9e5f80008fd9bb70a5269930",
+      "frozen_sha256": "8f9037222c5ec47d1cfde23bb860e939d8a2a1cc9e5f80008fd9bb70a5269930",
+      "bytes_equal": true
+    },
+    "Resources/Editor/editor.js": {
+      "live_sha256": "287aefd6f6f7cd4a8408c4a72c2e20e427cfeed8e7a302dd8e59e585f05fac2f",
+      "frozen_sha256": "287aefd6f6f7cd4a8408c4a72c2e20e427cfeed8e7a302dd8e59e585f05fac2f",
+      "bytes_equal": true
+    },
+    "Resources/Editor/highlight.js": {
+      "live_sha256": "2bd08bd632c920db462dc9245c27867fcc6d2811948af543dfa9f4bb440d647c",
+      "frozen_sha256": "2bd08bd632c920db462dc9245c27867fcc6d2811948af543dfa9f4bb440d647c",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Size2-Regular-LELKET5D.woff2": {
+      "live_sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+      "frozen_sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Math-BoldItalic-K4WTGH3J.woff2": {
+      "live_sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+      "frozen_sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Size4-Regular-CDMV7U5C.woff2": {
+      "live_sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+      "frozen_sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Fraktur-Regular-2PEIFJSJ.woff2": {
+      "live_sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+      "frozen_sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Typewriter-Regular-VBYJ4NRC.woff2": {
+      "live_sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+      "frozen_sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Main-BoldItalic-N4V3DX7S.woff2": {
+      "live_sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+      "frozen_sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Math-Italic-6KGCHLFN.woff2": {
+      "live_sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+      "frozen_sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_SansSerif-Italic-HMPFTM52.woff2": {
+      "live_sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+      "frozen_sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_SansSerif-Bold-RRNVJFFW.woff2": {
+      "live_sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+      "frozen_sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Main-Bold-YP5VVQRP.woff2": {
+      "live_sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+      "frozen_sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Size1-Regular-5LRUTBFT.woff2": {
+      "live_sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+      "frozen_sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Fraktur-Bold-2QVFK6NQ.woff2": {
+      "live_sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+      "frozen_sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Main-Italic-RELBIK7M.woff2": {
+      "live_sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+      "frozen_sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Caligraphic-Regular-KX5MEWCF.woff2": {
+      "live_sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+      "frozen_sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Main-Regular-ARRPAO67.woff2": {
+      "live_sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+      "frozen_sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_AMS-Regular-U6PRYMIZ.woff2": {
+      "live_sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+      "frozen_sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_SansSerif-Regular-XIQ62X4E.woff2": {
+      "live_sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+      "frozen_sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Caligraphic-Bold-5QL5CMTE.woff2": {
+      "live_sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+      "frozen_sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Size3-Regular-WQRQ47UD.woff2": {
+      "live_sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+      "frozen_sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+      "bytes_equal": true
+    },
+    "Resources/Editor/fonts/KaTeX_Script-Regular-APUWIHLP.woff2": {
+      "live_sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+      "frozen_sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+      "bytes_equal": true
+    },
+    "Resources/THIRD-PARTY-NOTICES.txt": {
+      "live_sha256": "5be51b4f04c7df6e076f98dd757008926d978193a45cc3953190c9c6a5db8d37",
+      "frozen_sha256": "5be51b4f04c7df6e076f98dd757008926d978193a45cc3953190c9c6a5db8d37",
+      "bytes_equal": true
+    },
+    "AppIcon.icns": {
+      "live_sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693",
+      "frozen_sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693",
+      "bytes_equal": true
+    },
+    "icon/provenance.json": {
+      "live_sha256": "6eb93585bc2aad40e72c219efd336c502b261f3dcbbe61fef3cf441c2791bf6f",
+      "frozen_sha256": "6eb93585bc2aad40e72c219efd336c502b261f3dcbbe61fef3cf441c2791bf6f",
+      "bytes_equal": true
+    },
+    "Info.plist": {
+      "live_sha256": "bb998848c83de7d9f4b76c64d95804eb72fb94dfb7357936ef85f33d5de9c185",
+      "frozen_sha256": "bb998848c83de7d9f4b76c64d95804eb72fb94dfb7357936ef85f33d5de9c185",
+      "bytes_equal": true
+    }
+  },
+  "original_post_run_capture_export_reuse_build_validated": true,
+  "executable_sha256_verified": "e1a33db9fc478f6202b2910a61ae62d5fac3c7ca6c779340f0d5e5d83d3997d3",
+  "actual_Info": {
+    "CFBundleIdentifier": "cyou.tianli.TLMarkdown.mobile",
+    "CFBundleShortVersionString": "1.2.1",
+    "CFBundleVersion": "2",
+    "DTSDKName": "xrsimulator27.0",
+    "DTXcodeBuild": "27A266a"
+  },
+  "visual_review": {
+    "performed": true,
+    "description": "真实Vision房间内Folio文稿窗口，未命名标题、合成正文/格式/表格/勾选和配置入口可读。无空房间/系统主页或壳占位；未要求额外窗口/方向。"
+  },
+  "cleanup": {
+    "owned_udid": "4EA6A65D-4301-4527-B125-152AC0076CAF",
+    "device_plist_state": 1,
+    "app_pid": 93768,
+    "app_pid_alive": false
+  },
+  "not_a_Release_or_performance_claim": true
+}

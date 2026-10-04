@@ -1,0 +1,45 @@
+{
+  "kind": "actual_current_UI_with_original_queue_source_bindings",
+  "observed_at": "2026-10-04T18:32:36.642300+08:00",
+  "queue_job": "62727995e70d4774b50ba2402708b4a0",
+  "queue_status": "succeeded",
+  "original_finished_at": "2026-10-04T18:28:46+08:00",
+  "files": {
+    "launch_iphone.json": {
+      "sha256": "d68867f94b9ba9c72fbe588228a649178506f8ba58f7648fd9f6f6712377607d",
+      "size": 3907,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_iphone.json"
+    },
+    "launch_iphone.detail.json": {
+      "sha256": "4728b459fcdbaf9fb0eae0aefc8fb5ac5ea534ba0edb2278788ddf4d95440f48",
+      "size": 3132,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_iphone.detail.json"
+    },
+    "launch_iphone.log": {
+      "sha256": "207f75338047df05f05c60bb1f5e71d89800449298239b1038b2a55024d27d70",
+      "size": 87,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_iphone.log"
+    },
+    "launch.png": {
+      "sha256": "57cfed5e07f2cf4e3c7bcd16cdebb5782e39579f41a9daa450d61492dacf61f0",
+      "size": 316709,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/platforms/iphone/launch.png"
+    },
+    "queue.log": {
+      "sha256": "19c716279194fde2fd26731f0a8faabcd10edaecea7c5ffc8fc741b37775c0e0",
+      "size": 287,
+      "original": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/62727995e70d4774b50ba2402708b4a0.log"
+    }
+  },
+  "visual_review": {
+    "performed": true,
+    "description": "实际未命名文稿，山间书房合成 Markdown 正文、格式、表格及编辑/配置入口；非空，无系统主屏或壳窗口。"
+  },
+  "cleanup": {
+    "owned_udid": "280663C5-C40F-4F3E-8E88-2EB031CA689D",
+    "device_plist_state": 1,
+    "app_pid": 86744,
+    "app_pid_alive": false
+  },
+  "new_capture_or_job_created_by_archival": false
+}

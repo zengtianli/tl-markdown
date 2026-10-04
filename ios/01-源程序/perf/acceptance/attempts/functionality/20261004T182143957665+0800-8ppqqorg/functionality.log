@@ -1,0 +1,25 @@
+SDK 构建缓存不适用：缓存源码布局与当前绑定输入不同（/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/build.json）；仅补当前 SDK
+＝ iphone: 已保存 SDK 构建回执（/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.ixvqzr98/build.json）
+{
+  "status": "prepared-not-built",
+  "platform": "iphone",
+  "receipt": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.ixvqzr98/build.json",
+  "receipt_sha256": "5d6e801503c029c57f8aeaeb691d3f38da392df7f56936ca2bf89a2b946a47df",
+  "input_sha256": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+  "source_copy": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.ixvqzr98/src/ios/01-源程序",
+  "family_copy": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.ixvqzr98/src",
+  "test_src": "/private/tmp/folio-hosted-queue-7a09655c1cd542e494af95417642fae3/iphone/test_src/HostedIntegrationTests.swift",
+  "test_live_source": "/Users/tianli/Apps/folio/ios/01-源程序/Tests/HostedIntegrationTests.swift",
+  "hosted_test_sha256": "108b44b60dd355693fd180475786073d7e2ea3b3dc1978887a363c3b9917bd44",
+  "overlay_sha256": "9e9bacd8d39f0973a9445b33c97b414d0efb9a87b8d58be9301facb884f4a926",
+  "prepare_script_sha256": "4f11ff6b017e87e81bb2df6f957842578ae340806c83bcfbf94c247addfc45bc",
+  "prepare_script": "/Users/tianli/Apps/folio/ios/01-源程序/Tests/HostedHarness/prepare.py",
+  "xcode": {
+    "name": "Xcode.app",
+    "version": "27.0",
+    "build": "27A266a",
+    "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+  },
+  "boundary": "SDK integration only; no Files provider grants, picker UI, OS scene or crash claim"
+}
+{"ok": false, "status": "failed", "exit_code": 1, "error": "Actual overlay XcodeGen failed: -15", "attempt": "7a09655c1cd542e494af95417642fae3", "records": "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/perf/acceptance/hosted-fileflow-20261004/7a09655c1cd542e494af95417642fae3", "ordinary_sdk_configuration": "Release", "hosted_configuration": "Debug", "selected_tests": ["testSDKOpenEditSafeSaveAndRecovery"], "cleanup": {"workdir": "/private/tmp/folio-hosted-queue-7a09655c1cd542e494af95417642fae3", "cache_retained": false, "shutdown_verified": false}, "gates": [{"stage": "ordinary-sdk", "at": "2026-10-04T10:15:34.448305+00:00", "steady": true, "reason": "\u7a7a\u95f2 46 \u79d2\u3001\u8d1f\u8f7d 8.8\uff08\u91c7\u6837\u95e8\uff1a\u4e0d\u8981\u6c42\u79bb\u5f00\u7535\u8111\uff09", "ac": true, "load": 8.82080078125}, {"stage": "hosted-build", "at": "2026-10-04T10:16:23.728171+00:00", "steady": true, "reason": "\u7a7a\u95f2 95 \u79d2\u3001\u8d1f\u8f7d 8.3\uff08\u91c7\u6837\u95e8\uff1a\u4e0d\u8981\u6c42\u79bb\u5f00\u7535\u8111\uff09", "ac": true, "load": 8.34375}], "elapsed_seconds": 265.10006683308166, "summary": "Actual overlay XcodeGen failed: -15", "uncovered": ["Files picker/OS grant UI", "OS Scene/multiwindow", "full WebKit auxiliary accounting"]}

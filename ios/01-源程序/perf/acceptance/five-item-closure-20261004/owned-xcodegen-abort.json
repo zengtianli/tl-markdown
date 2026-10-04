@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-04T18:19:58.953918+08:00",
+  "job": "c5c6cb16b1d84a9daa3c436378135edc",
+  "pid": 77794,
+  "group": 77794,
+  "real_identity": "76924 Sun Oct  4 18:16:25 2026     /opt/homebrew/bin/xcodegen generate --spec project.hosted.yml",
+  "action": "SIGTERM only original owned XcodeGen group; original producer records failure and finally cleanup",
+  "reason": "sample460/460 makePathRelative memmove loop, actual project-generation stage stalled; no Hosted compile/boot/case"
+}

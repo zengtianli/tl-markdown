@@ -1,0 +1,14 @@
+{
+  "summary": "Apple Vision Pro 构建失败（sim_lane build 退出码 1）：构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+  "passed": false,
+  "platform": "vision",
+  "environment": "simulator",
+  "scheme": "FolioMobile",
+  "sim_lane": "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py",
+  "method": "sim_lane 在仓外临时副本构建，在无窗口模拟器启动并截图；Mac 线静默启动（open -g -j + App -lane_quiet，不上屏不进 Dock，App 进程内离屏渲染截图）；不合成输入、不抢焦点",
+  "build": {
+    "ok": false,
+    "error": "构建环境 SOP_OUT_DIR 引用了未复制的源码路径"
+  },
+  "build_tail": "{\"ok\": false, \"error\": \"构建环境 SOP_OUT_DIR 引用了未复制的源码路径\"}\n"
+}

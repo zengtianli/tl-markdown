@@ -1,0 +1,15 @@
+{
+  "id": "c5c6cb16b1d84a9daa3c436378135edc",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "status": "failed",
+  "created_at": "2026-10-04T18:15:24+08:00",
+  "started_at": "2026-10-04T18:15:29+08:00",
+  "finished_at": "2026-10-04T18:20:02+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/c5c6cb16b1d84a9daa3c436378135edc.log",
+  "message": "Actual overlay XcodeGen failed: -15",
+  "check": "functionality",
+  "retry": false,
+  "tmpdir": "/private/tmp"
+}

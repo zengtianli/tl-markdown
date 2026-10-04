@@ -1,0 +1,43 @@
+{
+  "kind": "actual_current_UI_with_original_queue_source_bindings",
+  "observed_at": "2026-10-04T18:35:10.298587+08:00",
+  "queue_job": "74085e786bd44dd6bf00ecc36c5909b0",
+  "original_finished_at": "2026-10-04T18:33:06+08:00",
+  "files": {
+    "launch_ipad.json": {
+      "sha256": "3ca4f9e0ca8b8f38c913348bf10da85e622a79ed08412e62d24db4090496f14b",
+      "size": 3933,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_ipad.json"
+    },
+    "launch_ipad.detail.json": {
+      "sha256": "412bba17de205291b20052911f6a66beb811c673075461dfbf8983de8cd29fcb",
+      "size": 3159,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_ipad.detail.json"
+    },
+    "launch_ipad.log": {
+      "sha256": "0c9914e7a73362fbd9368485b00d51e6278dc7ea50ed219058921140997f0aa6",
+      "size": 92,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/launch_ipad.log"
+    },
+    "launch.png": {
+      "sha256": "d1822764d365f34aef776c26733b949dd114e4b08b490c27d392a19b34986536",
+      "size": 321004,
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/platforms/ipad/launch.png"
+    },
+    "queue.log": {
+      "sha256": "bbdc880f20adc7dbefdf44e0fd4020676953a2d10ae989f97ee51bda35a749ce",
+      "size": 288,
+      "original": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/74085e786bd44dd6bf00ecc36c5909b0.log"
+    }
+  },
+  "visual_review": {
+    "performed": true,
+    "description": "当前正常iPad文稿，合成Markdown正文/表格/代码/公式及编辑和配置入口完整，无核心裁切，无系统主屏或空壳。"
+  },
+  "cleanup": {
+    "owned_udid": "A19C635F-A987-4E08-931A-A5874216E34D",
+    "device_plist_state": 1,
+    "app_pid": 89697,
+    "app_pid_alive": false
+  }
+}

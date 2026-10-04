@@ -1,0 +1,16 @@
+PASS injected bridge: queued messages retain their actual load generation
+PASS static: shared sources, Editor binding, universal target, registration, script syntax, brand assets, privacy declaration
+Shared source SHA256:
+Sources/Models.swift 66e6f8235c01fc1ab92457b8bea577cb6cc0969c39a0144bb6e08d31ba653aab
+Sources/IndexEngine.swift 4ac41b667c9b15368ca5766a1c1271941e0fb5115b64a796400208707ca9c691
+Info.plist bb998848c83de7d9f4b76c64d95804eb72fb94dfb7357936ef85f33d5de9c185
+AppIcon.icns a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693
+[xcode_env] Xcode.app (Xcode 27.0, macosx SDK 27.0)
+PASS: shared production encoding, explicit save, crash recovery, conflict, reload draft preservation, invalid input, corrupt state
+PASS: two-editor ownership/generation/revision, per-scene flush, folder grant boundaries, damaged-bookmark draft recovery and safe save-as
+PASS: FD image read parent replacement, leaf/root symlink rejection, FIFO rejection, in-flight growth and strict size cap
+PASS: legitimate root-owned OS aliases with user-symlink refusal intact
+folio-mobile --state <isolated-directory> inspect|import <file>|new <text>|write <text>|save|export <new-file>|reload
+Development CLI: same DocumentWorkspace and original Folio DocumentIO/SessionDisk.
+Never point --state at a running app's state. inspect is read-only; mutations are explicit.
+Exit: 0 success, 1 operation failed, 2 invalid usage. Output: JSON.

@@ -1,0 +1,914 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project FolioMobile.xcodeproj -scheme FolioMobile -configuration Debug -destination "generic/platform=visionOS Simulator" -derivedDataPath /private/tmp/sim-lane-build.es5bzqeq/dd CODE_SIGNING_ALLOWED=NO build
+
+Build settings from command line:
+    CODE_SIGNING_ALLOWED = NO
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'FolioMobile' in project 'FolioMobile' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: f2ef9cb257ed50a884604ed52f60fa83
+Build description path: /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/XCBuildData/f2ef9cb257ed50a884604ed52f60fa83.xcbuilddata
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/CompilationCache.noindex
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/CompilationCache.noindex
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/Build/Products
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/Build/Products
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -o /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/PrecompiledHeaders
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/PrecompiledHeaders
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-xrsimulator
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    builtin-create-build-directory /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-xrsimulator
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile-a00ff7f6f0435e63d009741a81bfe0b4-VFS-xrsimulator/all-product-headers.yaml
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/FolioMobile.xcodeproj
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile-a00ff7f6f0435e63d009741a81bfe0b4-VFS-xrsimulator/all-product-headers.yaml
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile-OutputFileMap.json (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile-OutputFileMap.json
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile-OutputFileMap.json (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile-OutputFileMap.json
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftConstValuesFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.LinkFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.LinkFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile_const_extract_protocols.json (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile_const_extract_protocols.json
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile_const_extract_protocols.json (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile_const_extract_protocols.json
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftConstValuesFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.LinkFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.LinkFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.hmap (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.hmap
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.DependencyStaticMetadataFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.DependencyMetadataFileList (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.DependencyMetadataFileList
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-non-framework-target-headers.hmap (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibPath-normal-x86_64.txt (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibPath-normal-x86_64.txt
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibPath-normal-arm64.txt (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibPath-normal-arm64.txt
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibInstallName-normal-x86_64.txt (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibInstallName-normal-x86_64.txt
+
+WriteAuxiliaryFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibInstallName-normal-arm64.txt (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    write-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibInstallName-normal-arm64.txt
+
+MkDir /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /bin/mkdir -p /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app
+
+Ld /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/__preview.dylib normal arm64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-xros26.0-simulator -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -install_name @rpath/Folio.debug.dylib -Xlinker -dead_strip -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio_dependency_info.dat -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/__preview.dylib
+
+Ld /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/__preview.dylib normal x86_64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-xros26.0-simulator -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -install_name @rpath/Folio.debug.dylib -Xlinker -dead_strip -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio_dependency_info.dat -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/__preview.dylib
+
+MkDir /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/unthinned (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /bin/mkdir -p /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/unthinned
+
+MkDir /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/thinned (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /bin/mkdir -p /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/thinned
+
+CpResource /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/demo.md /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Fixtures/demo.md (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Fixtures/demo.md /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app
+
+CpResource /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/THIRD-PARTY-NOTICES.txt /tmp/sim-lane-build.es5bzqeq/src/Resources/THIRD-PARTY-NOTICES.txt (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /tmp/sim-lane-build.es5bzqeq/src/Resources/THIRD-PARTY-NOTICES.txt /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app
+
+GenerateAssetSymbols /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/Assets.xcassets (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/Assets.xcassets --compile /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app --output-format human-readable-text --notices --warnings --export-dependency-info /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_dependencies --output-partial-info-plist /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_generated_info.plist --app-icon AppIcon --compress-pngs --enable-on-demand-resources YES --development-region en --target-device vision --minimum-deployment-target 26.0 --platform xros --bundle-identifier cyou.tianli.TLMarkdown.mobile --generate-swift-asset-symbol-extensions NO --generate-swift-asset-symbols /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.h
+/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+CpResource /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/PrivacyInfo.xcprivacy /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/PrivacyInfo.xcprivacy (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/PrivacyInfo.xcprivacy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app
+
+CpResource /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Editor /tmp/sim-lane-build.es5bzqeq/src/Resources/Editor (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /tmp/sim-lane-build.es5bzqeq/src/Resources/Editor /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app
+
+CompileAssetCatalogVariant thinned /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/Assets.xcassets (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/Assets.xcassets --compile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_dependencies_thinned --output-partial-info-plist /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --compress-pngs --enable-on-demand-resources YES --development-region en --target-device vision --minimum-deployment-target 26.0 --platform xros
+/* com.apple.actool.compilation-results */
+/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_generated_info.plist_thinned
+/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/thinned/Assets.car
+
+
+CreateUniversalBinary /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/__preview.dylib normal arm64\ x86_64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo -create /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/__preview.dylib /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/__preview.dylib -output /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/__preview.dylib
+
+SwiftDriver FolioMobile normal arm64 com.apple.xcode.tools.swift.compiler (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Folio -Onone @/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -target arm64-apple-xros26.0-simulator -g -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /tmp/sim-lane-build.es5bzqeq/dd/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache -output-file-map /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -sdk-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/include -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources-normal/arm64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/arm64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-Swift.h -working-directory /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序 -experimental-emit-module-separately -disable-cmo
+
+SwiftDriver FolioMobile normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Folio -Onone @/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -target x86_64-apple-xros26.0-simulator -g -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /tmp/sim-lane-build.es5bzqeq/dd/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache -output-file-map /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -sdk-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/include -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources-normal/x86_64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/x86_64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-Swift.h -working-directory /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序 -experimental-emit-module-separately -disable-cmo
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ptrauth-7ZBELS4Z8YB40FSRYBKO9NFLC.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/DeveloperToolsSupport-C17SAH1GILL3C6OPQ24U6FM9Q.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SwiftShims-91KP0P60KMP78IMA94OPX8DC6.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SwiftShims-EO8I33UTABY70M9JAY0L9Z6HR.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stddef-8B0N6MYDMMCUFF7XBO2XL36Y3.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_SwiftConcurrencyShims-BML1X208AQZ1EFOXJ5Y51OKF.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_float-486R51NEPXDZ73SA55VAM3F1C.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdarg-8BD0C866F1UUHT30QLDAZGVPA.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stddef-65NUXO9R5OXMVFK87VE647YO3.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_AvailabilityInternal-5HN1BR3WSGJPNYWGZC6G7NBUH.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ShaderGraph-QZ4VB7SDXTK3HZ83PS3QE1NR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ShaderGraph-A8XWBTAKFJINUAFUN6F0DA90D.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ptrauth-4TQAN1LTWDLDJF05XFKWLEGIQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ptrcheck-2YRVO0H15KQH8BLV9YFO14EC7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdbool-AU7YBVU0HM3RSB1HCO575D0CU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_SwiftConcurrencyShims-F0QHBR47BYKMB9D190TXJ2T5O.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdarg-AYQJCQY97B5QN7XRXNOJNQ3KR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_float-9HWMGUY54NNIVI7Z2KRND9AMN.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/DeveloperToolsSupport-3S8H0M9SGE5K6MCFI8FPDBGKX.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdbool-DW1BREBPO5CAB5VJWQ1IGMVGM.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_AvailabilityInternal-9R3QXNOW4JLNEQIQUJ7PWFRUJ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ptrcheck-BNHZNR4AGPLP0H5YB8ME4G4Z0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_DarwinFoundation1-68FZBJW9MIRTEWJEASEGONS9Y.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_DarwinFoundation1-9432OK6DU0275ER2SKCY7MWBI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SQLite3-RCINU7KK0VA2F091DMKLJV82.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_DarwinFoundation2-APODTRUIJXBWE1UCBQSDN9P91.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_limits-ETENRXB9A7H3PN4JGOLJVHDTP.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_limits-1I014ZKD9KFHVDH1ARGLQP0HU.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_DarwinFoundation2-8Q1BMRUZR093VZ91TX921F9FL.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SQLite3-1Q668IP2RW6YGX0SBH6HNKF4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/string_h-9SL9DN9ECMBVEALC6Y4ZDV90J.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdint-CAIENS1Y61PVMHNV66CKM0K1Q.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/sys_types-EOGU3X9E6MR20VZ2DUX8AWAC6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_tgmath-CBNA1WSO6C38V1L1VSURA31QO.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdint-47GWUJD1N7ET8ZFJXGSA1WCJ1.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_tgmath-1VT3MEC4TUGSJESTQZ7NGUDM0.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/sys_types-5Z5UO6TKS5J03FC73TD2M1IS.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/string_h-1FP9AYDXZQ5P0D6FN2MHJCJHW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_DarwinFoundation3-C8Y2QXX3SU9AWFSEDFGH0AM9I.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdatomic-A22A59CWGOCNTUYJL2LASPE8I.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_intrinsics-EZ645AG5HSY0YWD3XSGXCR0UK.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_DarwinFoundation3-4MTTIQXDRIHQ3ERK2ISU4T750.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_stdatomic-4GB1QR51BPKX5CGET4GDUGACV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_inttypes-60TT48KS18ZRF2OZN95JWYWDX.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_inttypes-BCAJS0JZAN056AU1APPCDOIKH.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_Builtin_intrinsics-85F0U4MYCY0Y3WJ9SH87DMY4K.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Darwin-70WAMT823NXLTRZI3UON5Z3PS.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Darwin-8ZPHF50UQEN0R27EEDH2KJLMI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/simd-2K1JF1XQ1ICQKU2H9MUVH00CA.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ObjectiveC-1ML7IQNL3OS46PY5BA651PFOI.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/MachO-AEB8HGCRB3CM8RLF9MXS2THDO.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ObjectiveC-A9FOCLDY12AGC8U3JW3RDNNWV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/MachO-5S5ESEAOQ0A90S3CE05IEPKP3.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/simd-BEW0UYLTRP8G1847I1QD1BY5S.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/os_object-B09BXY4PM1N5N1BRUEVGCEDTZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/os_object-6683J0OQC5U40VQJXFIXA04HX.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/os_workgroup-5WW0UAM9AEDK1BAS0F0JZUC0C.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/os_workgroup-6K1JO86X96WVSEF5VMEQB3PYX.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Dispatch-E6RFLNYFO4OJQPZHE6LUPOH53.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Dispatch-7DHIV3COIUPKQ9P99EN8QZPYB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Spatial-1O5QJDI23MBGTALZW2A1ZL952.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreFoundation-580NINEJ4IJ6JY7J3KPBFR5CG.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/dnssd-23R1PDQYST9VYOB3ECS5YAVLX.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/XPC-DBZ4PN6C9B8WC5MIT3B7KC3LM.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/dnssd-DAQRO7GLVPFNB2R5DTXFQ3NW4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/XPC-4ZZ6RP37CA7SM5LRXI4S6M8VO.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreFoundation-74G0BIALCAGUWKJXDVH5H5M02.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/os-BNSBE1L114UMG604TH0F7402Z.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/os-C4AQSJ31GH5USVK8156UVT3KF.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CFNetwork-4AFG1BPE28FLLK0UYBDA829AL.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreGraphics-5FBP136BYNDBS4AAAD2OPBKN8.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Security-CVHVDYP421R3LGQ1UJYHMKIXC.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreAudioTypes-4A4ELNUO4183JN2POR3UCMO5S.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreAudioTypes-C3ELTV4461QULPYGMBJ1Y0V72.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Security-CFOGMW5L45ZS25NPGRLNGIXKV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CFNetwork-66JD16S4AMUODJFU078K6WNYB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreGraphics-10MBGD4QDV31OP0R24NMEAXFM.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreAudio-BIDODQQM64P380OXU5QTN5YZN.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreAudio-2R37LB0OGNSJSCYSM1SGHMZT6.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Foundation-CZYEYAE61PGFWZTOKEUMHKG0C.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Foundation-ARQU8Q8UPBCWVPEY34DKCP5QK.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreText-7EH35N2FU9Q1XEO34DMXGA2VL.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ImageIO-AZ8UIDSVVAERLQFE6UIE7RA5C.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Spatial-5B6UNWZPZ9LLE1BQMZ9DHKRMB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreText-BOCTNBGE4OINVHZG8NWRMBHJI.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ImageIO-6XCHOGU3VDCMMTMONW3UOUV6M.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UIUtilities-9CMEUP9AJ5WF263O6ZKUEOEJH.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Accessibility-70A6IGEMOK6OOFDZFZCQHXNOY.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/FileProvider-2VOG9SDU9VPXHWVMF694XW32L.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreTransferable-7TIZMMCRYA7CCUGOGOKQ0DLO0.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/OpenGLES-6OZT63QPQLH782L274IKPQZHO.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreData-3YDJVJEBK9CUGMV0M3DBR83WJ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/OSLog-741VZCSWRSXZTLGT7HCQ3PFV2.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/IOSurface-5BNTAAO4QAL7SNAY44WRT7PI2.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UserNotifications-C2DWLVSXHZL9RLNB3D398EH2B.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreData-76DD3SA5WQ34K877JM5C3N0NE.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/OpenGLES-AABITVPDNDD7519ZTSH1BK3KR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/IOSurface-83A5WI69XJ86OMU3VDTMVWXJG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/DataDetection-Z1F1VDT5X2OV2VSXJKNRYN7D.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Symbols-6JLSF3XVZJCL988CHF72LCBS7.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Metal-74J4YYVDBUOLUTD2Q9MTXFNYG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UniformTypeIdentifiers-5QZ0N7PVDSSG90QVVOFL2UFA8.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Network-7D8A6SI6ROL7YQWWE9S9EJJ1F.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/FileProvider-5JCJQTX7IITSIPE1Z0RWN5C2N.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Accessibility-C4EP0NU9KE4F31B61X6ZK2N7J.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_LocationEssentials-58ZEW3GHPVJ2HPZIAX1KE9LR7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UserNotifications-5MSY4GWKS6U43E9YGFKB6NIC7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UIUtilities-AD5OK57C4RA86C0OLWAOSA64S.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Metal-5JM5FLWM5U9ZZ3GFGCXUKEL8S.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UniformTypeIdentifiers-6IE3LM4UDD93SU56A8XBVJMM3.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/_LocationEssentials-6XZW2BIYF83EWTV3S2IOZ68D4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreLocation-1NYHOGQJMAUS9Y4N145DP2ULY.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/LocalAuthentication-1YDS1PHWG0U0RBCNV0N7TQNOU.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AVRouting-4M0RGIF9NIFB4ZVLVJ2HN60KB.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Symbols-CT70OEJXNW81ASIWINM3AV42F.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/Network-GUSDHA43S5LTJJZ0DI48M94P.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/LocalAuthentication-9WY6XZIEP14XEVBN4F36FPHGM.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/OSLog-BGJF6UEAFUYUCNI0WXQ83TGFH.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreTransferable-3IFP0JMVH9MZM7TOIA88K1A9J.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreMIDI-CSSY5Z48QHIN85U0SHQ50P8IA.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreLocation-1F5U3431X69DJJQ1HWSQ0GD4E.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/DataDetection-D72H49KL8J7K8O951HRPCIW2H.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreMIDI-10O8L1QA61LRV4376Q6VWEC8L.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreMotion-CLZDF21WMW9VCQAQHLHSNQYON.pcm
+
+LinkAssetCatalog /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Resources/Assets.xcassets (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-linkAssetCatalog --thinned /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/thinned --thinned-dependencies /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_generated_info.plist_thinned --unthinned /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_output/unthinned --unthinned-dependencies /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_generated_info.plist_unthinned --output /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app --plist-output /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_generated_info.plist
+note: Emplaced /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Assets.car (in target 'FolioMobile' from project 'FolioMobile')
+
+ProcessInfoPlistFile /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Info.plist /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Generated/FolioMobile-Info.plist (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-infoPlistUtility /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Generated/FolioMobile-Info.plist -producttype com.apple.product-type.application -genpkginfo /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/PkgInfo -expandbuildsettings -format binary -platform xrsimulator -additionalcontentfile /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/assetcatalog_generated_info.plist -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Info.plist
+
+SwiftExplicitDependencyCompileModuleFromInterface x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ShaderGraph-2X4YA8JLXITD8.swiftmodule
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreVideo-CKY4K67ZX48WTKRSKALCP6INC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AVRouting-DHW0FJH185CGY6R3YRSJ76PN3.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreMotion-2EEES90TPAQX3FEKN0F4NWID3.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AudioToolbox-4NK85NSD9RV95KDRYWTPZXP1Y.pcm
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ShaderGraph-D82H9RP75DTP.swiftmodule
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreVideo-41J8FXS48PE6S4BJUACMEBK6C.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AudioToolbox-524ZA5YN2RF6FJVV96MECZG7P.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreImage-65UJ44NXFQ5TEP005JM742XT.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreMedia-8JJMV37FH5GGWGQN06P7BMQKJ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/QuartzCore-5DMZRX20PMKBV0PEWHFLIK414.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ARKit-80WY6K8HWAFHBJLOPCLP1N4S2.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/ARKit-1AQFO9VYTFO91NQWDI8M8UQLG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreMedia-AWWG6Y39W0ZDGXVEW7VHFESWC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/QuartzCore-1N3WWGRCC6ZO38R8PMSXSTMTD.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/CoreImage-3DDPH2XSQXYSZMXLSQLR91QZE.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SwiftUICore-1I4MIDM013GVDBZ00QJ9GZQUA.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UIKit-7GO56QQR2QIUOLCEXKK90BXTQ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/MediaToolbox-5GU1Z6AIAWVETRM918FTPECZR.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/VideoToolbox-A1DWOOWA0C1H3DT8DJRX8QFV7.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AVFAudio-CNXVC2MGDU5A89KNYWWHENLSC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/MediaToolbox-BYP9ZR72ZC7IVANBZ6QN99CPR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AVFAudio-3U8G5GTGER1S11124202I9K3E.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/VideoToolbox-6LRHCD1FLDMO2I1NU4XO4MZWU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/UIKit-9SS5HN1TBIEDWSXQPUUVJYUXK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SwiftUICore-A91QP55VPED0T7S6MSDOUI2X9.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AVFoundation-4P8HPX7VKF2MY0XJ6NC0TLPH6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/AVFoundation-6H9X3LOMRMVWR7AI182KFC645.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SwiftUI-6MM72T1GPIR2N1YJALM58DXW1.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/WebKit-68CEIS1G6RSYNBQ1NE6O8XV0V.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/GameController-7NTW71WL472A9S817VFPKS97E.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/SwiftUI-4BWSJL7F41Y0N0JYUFM07GUNJ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/GameController-33OS6RTBZHEAMAXVJ46KIOGHY.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules/WebKit-9F0HXCF51207PGLLJWLXS901C.pcm
+
+SwiftEmitModule normal x86_64 Emitting\ module\ for\ Folio (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    
+
+SwiftCompile normal x86_64 Compiling\ MobileProductLifecycle.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileProductLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileProductLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MobileProductLifecycle.swift
+
+SwiftCompile normal x86_64 Compiling\ PlatformCompat.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/PlatformCompat.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/PlatformCompat.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile PlatformCompat.swift
+
+SwiftCompile normal x86_64 Compiling\ Models.swift /tmp/sim-lane-build.es5bzqeq/src/Sources/Models.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/Sources/Models.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile Models.swift
+
+SwiftCompile normal x86_64 Compiling\ MarkdownExport.swift,\ MobileEditor.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MarkdownExport.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileEditor.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MarkdownExport.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MarkdownExport.swift
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileEditor.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MobileEditor.swift
+
+SwiftCompile normal x86_64 Compiling\ AppConfiguration.swift,\ AppLifecycle.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppConfiguration.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppConfiguration.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile AppConfiguration.swift
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile AppLifecycle.swift
+
+SwiftCompile normal x86_64 Compiling\ DocumentWorkspace.swift,\ FolioMobileApp.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/DocumentWorkspace.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/FolioMobileApp.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/DocumentWorkspace.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile DocumentWorkspace.swift
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/FolioMobileApp.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile FolioMobileApp.swift
+
+SwiftCompile normal x86_64 Compiling\ GeneratedAssetSymbols.swift /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile GeneratedAssetSymbols.swift
+
+SwiftCompile normal x86_64 Compiling\ MobileStore.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileStore.swift (in target 'FolioMobile' from project 'FolioMobile')
+/tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileStore.swift:35:13: warning: result of 'try?' is unused [#NoUsage]
+33 |            let fixture = Bundle.main.url(forResource: "demo", withExtension: "md"),
+34 |            let text = try? String(contentsOf: fixture, encoding: .utf8) {
+35 |             try? workspace.newDocument(text: text)
+   |             `- warning: result of 'try?' is unused [#NoUsage]
+36 |         }
+37 |         refresh()
+
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileStore.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MobileStore.swift
+
+SwiftCompile normal x86_64 Compiling\ IndexEngine.swift,\ LaneSignal.swift /tmp/sim-lane-build.es5bzqeq/src/Sources/IndexEngine.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/LaneSignal.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/Sources/IndexEngine.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile IndexEngine.swift
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/LaneSignal.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile LaneSignal.swift
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ Folio (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    
+
+SwiftDriverJobDiscovery normal x86_64 Emitting module for Folio (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriver\ Compilation\ Requirements FolioMobile normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Folio -Onone @/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -target x86_64-apple-xros26.0-simulator -g -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /tmp/sim-lane-build.es5bzqeq/dd/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache -output-file-map /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -sdk-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/include -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources-normal/x86_64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/x86_64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-Swift.h -working-directory /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序 -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal x86_64 Compiling MobileProductLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 Compiling\ GeneratedAssetSymbols.swift /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile GeneratedAssetSymbols.swift
+
+SwiftDriverJobDiscovery normal x86_64 Compiling GeneratedAssetSymbols.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/x86_64-apple-xros-simulator.swiftmodule /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftmodule (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftmodule /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/x86_64-apple-xros-simulator.swiftmodule
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/x86_64-apple-xros-simulator.swiftdoc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftdoc (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftdoc /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/x86_64-apple-xros-simulator.swiftdoc
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/x86_64-apple-xros-simulator.abi.json /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.abi.json (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.abi.json /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/x86_64-apple-xros-simulator.abi.json
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/Project/x86_64-apple-xros-simulator.swiftsourceinfo /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftsourceinfo (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftsourceinfo /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/Project/x86_64-apple-xros-simulator.swiftsourceinfo
+
+SwiftCompile normal arm64 Compiling\ AppConfiguration.swift,\ AppLifecycle.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppConfiguration.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppConfiguration.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile AppConfiguration.swift
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile AppLifecycle.swift
+
+SwiftCompile normal arm64 Compiling\ IndexEngine.swift,\ LaneSignal.swift /tmp/sim-lane-build.es5bzqeq/src/Sources/IndexEngine.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/LaneSignal.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/Sources/IndexEngine.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile IndexEngine.swift
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/LaneSignal.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile LaneSignal.swift
+
+SwiftDriverJobDiscovery normal x86_64 Compiling Models.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 Compiling\ MobileProductLifecycle.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileProductLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileProductLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MobileProductLifecycle.swift
+
+SwiftDriverJobDiscovery normal x86_64 Compiling AppConfiguration.swift, AppLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 Compiling\ PlatformCompat.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/PlatformCompat.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/PlatformCompat.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile PlatformCompat.swift
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for Folio (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriver\ Compilation\ Requirements FolioMobile normal arm64 com.apple.xcode.tools.swift.compiler (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Folio -Onone @/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -target arm64-apple-xros26.0-simulator -g -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /tmp/sim-lane-build.es5bzqeq/dd/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache -output-file-map /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -sdk-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/include -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources-normal/arm64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/arm64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-Swift.h -working-directory /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序 -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal x86_64 Compiling IndexEngine.swift, LaneSignal.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 Compiling\ DocumentWorkspace.swift,\ FolioMobileApp.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/DocumentWorkspace.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/FolioMobileApp.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/DocumentWorkspace.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile DocumentWorkspace.swift
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/FolioMobileApp.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile FolioMobileApp.swift
+
+SwiftMergeGeneratedHeaders /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/Folio-Swift.h /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-Swift.h /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-Swift.h (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-swiftHeaderTool -arch arm64 /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-Swift.h -arch x86_64 /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-Swift.h -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/Folio-Swift.h
+
+SwiftDriverJobDiscovery normal arm64 Compiling MobileProductLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/arm64-apple-xros-simulator.swiftmodule /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftmodule (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftmodule /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/arm64-apple-xros-simulator.swiftmodule
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/arm64-apple-xros-simulator.swiftdoc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftdoc (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftdoc /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/arm64-apple-xros-simulator.swiftdoc
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/arm64-apple-xros-simulator.abi.json /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.abi.json (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.abi.json /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/arm64-apple-xros-simulator.abi.json
+
+Copy /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/Project/arm64-apple-xros-simulator.swiftsourceinfo /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftsourceinfo (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftsourceinfo /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.swiftmodule/Project/arm64-apple-xros-simulator.swiftsourceinfo
+
+SwiftCompile normal arm64 Compiling\ MobileStore.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileStore.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileStore.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MobileStore.swift
+
+/tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileStore.swift:35:13: warning: result of 'try?' is unused [#NoUsage]
+33 |            let fixture = Bundle.main.url(forResource: "demo", withExtension: "md"),
+34 |            let text = try? String(contentsOf: fixture, encoding: .utf8) {
+35 |             try? workspace.newDocument(text: text)
+   |             `- warning: result of 'try?' is unused [#NoUsage]
+36 |         }
+37 |         refresh()
+
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>
+SwiftDriverJobDiscovery normal arm64 Compiling AppConfiguration.swift, AppLifecycle.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 Compiling\ MarkdownExport.swift,\ MobileEditor.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MarkdownExport.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileEditor.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MarkdownExport.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MarkdownExport.swift
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/MobileEditor.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile MobileEditor.swift
+
+SwiftCompile normal arm64 Compiling\ Models.swift /tmp/sim-lane-build.es5bzqeq/src/Sources/Models.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/Sources/Models.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile Models.swift
+
+SwiftDriverJobDiscovery normal arm64 Compiling GeneratedAssetSymbols.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 Compiling\ AppLifecycleMobile.swift,\ ContentView.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycleMobile.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/ContentView.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycleMobile.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile AppLifecycleMobile.swift
+
+SwiftCompile normal x86_64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/ContentView.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile ContentView.swift
+
+SwiftDriverJobDiscovery normal x86_64 Compiling PlatformCompat.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 Compiling\ AppLifecycleMobile.swift,\ ContentView.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycleMobile.swift /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/ContentView.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Shared/AppLifecycleMobile.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile AppLifecycleMobile.swift
+
+SwiftCompile normal arm64 /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序/Sources/ContentView.swift (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-SwiftPerFileCompile ContentView.swift
+
+SwiftDriverJobDiscovery normal x86_64 Compiling MobileStore.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal x86_64 Compiling MarkdownExport.swift, MobileEditor.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal arm64 Compiling IndexEngine.swift, LaneSignal.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal x86_64 Compiling DocumentWorkspace.swift, FolioMobileApp.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal arm64 Compiling Models.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal arm64 Compiling DocumentWorkspace.swift, FolioMobileApp.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal arm64 Compiling PlatformCompat.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal arm64 Compiling MobileStore.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal arm64 Compiling MarkdownExport.swift, MobileEditor.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriverJobDiscovery normal arm64 Compiling AppLifecycleMobile.swift, ContentView.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriver\ Compilation FolioMobile normal arm64 com.apple.xcode.tools.swift.compiler (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Folio -Onone @/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -target arm64-apple-xros26.0-simulator -g -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /tmp/sim-lane-build.es5bzqeq/dd/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache -output-file-map /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -sdk-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/FolioMobile_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/include -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources-normal/arm64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/arm64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio-Swift.h -working-directory /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序 -experimental-emit-module-separately -disable-cmo
+
+Ld /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio.debug.dylib normal arm64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-xros26.0-simulator -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-xrsimulator -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -filelist /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.LinkFileList -install_name @rpath/Folio.debug.dylib -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/xrsimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.swiftmodule -Xlinker -alias -Xlinker _main -Xlinker ___debug_main_executable_dylib_entry_point -lsqlite3 -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio.debug.dylib
+
+SwiftDriverJobDiscovery normal x86_64 Compiling AppLifecycleMobile.swift, ContentView.swift (in target 'FolioMobile' from project 'FolioMobile')
+
+SwiftDriver\ Compilation FolioMobile normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Folio -Onone @/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -target x86_64-apple-xros26.0-simulator -g -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /tmp/sim-lane-build.es5bzqeq/dd/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/sim-lane-build.es5bzqeq/dd/SDKStatCaches.noindex/xrsimulator27.0-24M361-ddeb6230c2d320a853818128273d881a.sdkstatcache -output-file-map /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex -sdk-module-cache-path /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/sim-lane-build.es5bzqeq/dd/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/FolioMobile_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-generated-files.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-own-target-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-all-target-headers.hmap -Xcc -iquote -Xcc /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-project-headers.hmap -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/include -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources-normal/x86_64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources/x86_64 -Xcc -I/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio-Swift.h -working-directory /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序 -experimental-emit-module-separately -disable-cmo
+
+Ld /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio.debug.dylib normal x86_64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-xros26.0-simulator -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-xrsimulator -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -filelist /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.LinkFileList -install_name @rpath/Folio.debug.dylib -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/xrsimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.swiftmodule -Xlinker -alias -Xlinker _main -Xlinker ___debug_main_executable_dylib_entry_point -lsqlite3 -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio.debug.dylib
+
+CreateUniversalBinary /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Folio.debug.dylib normal arm64\ x86_64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo -create /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio.debug.dylib /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio.debug.dylib -output /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Folio.debug.dylib
+
+ConstructStubExecutorLinkFileList /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-ExecutorLinkFileList-normal-arm64.txt (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    construct-stub-executor-link-file-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio.debug.dylib /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-ExecutorLinkFileList-normal-arm64.txt
+note: Using stub executor library with Swift entry point. (in target 'FolioMobile' from project 'FolioMobile')
+
+ConstructStubExecutorLinkFileList /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-ExecutorLinkFileList-normal-x86_64.txt (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    construct-stub-executor-link-file-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio.debug.dylib /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-ExecutorLinkFileList-normal-x86_64.txt
+note: Using stub executor library with Swift entry point. (in target 'FolioMobile' from project 'FolioMobile')
+
+Ld /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio normal x86_64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-xros26.0-simulator -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/Frameworks -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibPath-normal-x86_64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibInstallName-normal-x86_64.txt -Xlinker -filelist -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-ExecutorLinkFileList-normal-x86_64.txt /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio.debug.dylib -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio
+
+Ld /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio normal arm64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-xros26.0-simulator -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -F/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/Frameworks -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibPath-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-DebugDylibInstallName-normal-arm64.txt -Xlinker -filelist -Xlinker /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio-ExecutorLinkFileList-normal-arm64.txt /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio.debug.dylib -o /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio
+
+CreateUniversalBinary /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Folio normal arm64\ x86_64 (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo -create /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Binary/Folio /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Binary/Folio -output /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Folio
+
+CopySwiftLibs /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Folio.debug.dylib --scan-folder /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Frameworks --scan-folder /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/PlugIns --scan-folder /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/SystemExtensions --scan-folder /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Extensions --platform xrsimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+Ignoring --strip-bitcode because --sign was not passed
+
+ExtractAppIntentsMetadata (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Folio --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator27.0.sdk --xcode-version 27A266a --platform-family xrOS --deployment-target 26.0 --bundle-identifier cyou.tianli.TLMarkdown.mobile --output /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app --target-triple arm64-apple-xros26.0-simulator --target-triple x86_64-apple-xros26.0-simulator --binary-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app/Folio --dependency-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio_dependency_info.dat --dependency-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio_dependency_info.dat --stringsdata-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --stringsdata-file /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftFileList --source-file-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftFileList --metadata-file-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.DependencyMetadataFileList --static-metadata-file-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Folio.DependencyStaticMetadataFileList --swift-const-vals-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/arm64/Folio.SwiftConstValuesFileList --swift-const-vals-list /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/FolioMobile.build/Debug-xrsimulator/FolioMobile.build/Objects-normal/x86_64/Folio.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --no-app-shortcuts-localization
+2026-10-04 18:36:43.215 appintentsmetadataprocessor[92085:51277120] Starting appintentsmetadataprocessor export
+2026-10-04 18:36:43.238 appintentsmetadataprocessor[92085:51277120] warning: Metadata extraction skipped, no AppIntents.framework dependency found
+
+RegisterExecutionPolicyException /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-RegisterExecutionPolicyException /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app
+
+Validate /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    builtin-validationUtility /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app -shallow-bundle -infoplist-subpath Info.plist
+
+Touch /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app (in target 'FolioMobile' from project 'FolioMobile')
+    cd /tmp/sim-lane-build.es5bzqeq/src/ios/01-源程序
+    /usr/bin/touch -c /tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app
+
+PruneExplicitPrecompiledModules /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /tmp/sim-lane-build.es5bzqeq/dd/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /tmp/sim-lane-build.es5bzqeq/dd/SDKExplicitPrecompiledModules
+
+** BUILD SUCCEEDED **
+

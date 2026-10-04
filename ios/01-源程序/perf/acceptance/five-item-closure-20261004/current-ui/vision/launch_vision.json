@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "name": "launch_vision",
+  "app_id": "folio",
+  "command": "bash scripts/launch.sh vision",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-04T18:35:26.624197+08:00",
+  "finished_at": "2026-10-04T18:40:17.005357+08:00",
+  "input_sha256": "87bb61035f1b04ad1c675ddffdb085fdc2dff8119a8017be5de7afdfc8b571d8",
+  "log": "perf/acceptance/launch_vision.log",
+  "log_sha256": "06f7262cf62e850c9f36a316d8f31c3404974a0e6a7f70444bac0dd289220851",
+  "summary": "Apple Vision Pro 模拟器 Apple Vision Pro 启动冒烟通过：os_log 28.276 s，截图 3840×2160",
+  "detail": {
+    "summary": "Apple Vision Pro 模拟器 Apple Vision Pro 启动冒烟通过：os_log 28.276 s，截图 3840×2160",
+    "passed": true,
+    "platform": "vision",
+    "environment": "simulator",
+    "scheme": "FolioMobile",
+    "sim_lane": "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py",
+    "method": "sim_lane 在仓外临时副本构建，在无窗口模拟器启动并截图；Mac 线静默启动（open -g -j + App -lane_quiet，不上屏不进 Dock，App 进程内离屏渲染截图）；不合成输入、不抢焦点",
+    "build": {
+      "app_path": "/private/tmp/sim-lane-build.es5bzqeq/dd/Build/Products/Debug-xrsimulator/Folio.app",
+      "bundle_id": "cyou.tianli.TLMarkdown.mobile",
+      "version": "1.2.1",
+      "build": "2",
+      "configuration": "Debug",
+      "executable_sha256": "e1a33db9fc478f6202b2910a61ae62d5fac3c7ca6c779340f0d5e5d83d3997d3",
+      "sdk": "xrsimulator27.0",
+      "xcode": {
+        "name": "Xcode.app",
+        "version": "27.0",
+        "build": "27A266a",
+        "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+      },
+      "log": "/private/tmp/sim-lane-build.es5bzqeq/build-vision-Debug.log",
+      "reuse": null
+    },
+    "device": {
+      "udid": "4EA6A65D-4301-4527-B125-152AC0076CAF",
+      "name": "Apple Vision Pro",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.xrOS-27-0",
+      "device_type": "Apple-Vision-Pro-4K"
+    },
+    "launch_args": [
+      "-folio-demo"
+    ],
+    "waits": {
+      "lock_seconds": 300,
+      "load_seconds": 300
+    },
+    "run": {
+      "udid": "4EA6A65D-4301-4527-B125-152AC0076CAF",
+      "pid": 93768,
+      "ready_seconds": 28.276,
+      "ready_signal": "os_log",
+      "size": [
+        3840,
+        2160
+      ],
+      "runtime": "xrOS-27-0",
+      "device": "Apple Vision Pro"
+    },
+    "verdict": {
+      "non_blank": true,
+      "changed_from_baseline": true,
+      "stable": true,
+      "diff_baseline": 0.1531,
+      "diff_prev": 0.0
+    },
+    "screenshot": "perf/platforms/vision/launch.png",
+    "screenshot_sha256": "f85c4bef2c97f2deac90279648eb26e6dffddc588cd5237ebce62b28b02144ad",
+    "capture_reusable": true,
+    "capture": "perf/platforms/vision/launch-capture.json",
+    "capture_sha256": "1ff9fde6b49f664a0e999457ff2a7b2c41cafab5350f2809894efbe6d6997a9f"
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/launch_vision/20261004T183526621344+0800-skde8zux",
+    "manifest_sha256": "d9f1e144924c15e0e6177eb68b331b326dac53fe9febd34d37e51436978052f5"
+  }
+}

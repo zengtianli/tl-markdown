@@ -1,0 +1,15 @@
+{
+  "id": "3ba921939ce24de3b5432f5ef90e4d40",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "status": "succeeded",
+  "created_at": "2026-10-04T18:35:16+08:00",
+  "started_at": "2026-10-04T18:35:22+08:00",
+  "finished_at": "2026-10-04T18:40:19+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/3ba921939ce24de3b5432f5ef90e4d40.log",
+  "message": "验收通过",
+  "check": "launch_vision",
+  "retry": false,
+  "tmpdir": "/private/tmp"
+}

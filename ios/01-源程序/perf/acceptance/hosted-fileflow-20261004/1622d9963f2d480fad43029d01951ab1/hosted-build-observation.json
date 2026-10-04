@@ -1,0 +1,33 @@
+{
+  "exit_code": 0,
+  "input_stable": true,
+  "preparation_sha256": "ded4066e2b44b8f7d98dc92f2f059b9d981f943d1a1c2f6304d3bdc5067686b5",
+  "log": "/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/iphone/hosted-build.log",
+  "log_sha256": "0e30b5895ed3726431f1635a8223068a509d691e97dd1c7ab4120d1b8ab6729a",
+  "command": [
+    "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild",
+    "-project",
+    "/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/iphone/FolioMobile.xcodeproj",
+    "-scheme",
+    "FolioMobile",
+    "-configuration",
+    "Debug",
+    "-destination",
+    "generic/platform=iOS Simulator",
+    "-derivedDataPath",
+    "/private/tmp/folio-hosted-queue-1622d9963f2d480fad43029d01951ab1/iphone/dd",
+    "CODE_SIGNING_ALLOWED=NO",
+    "build-for-testing"
+  ],
+  "started_at": "2026-10-04T10:21:46.218890+00:00",
+  "finished_at": "2026-10-04T10:21:58.331469+00:00",
+  "configuration": "Debug",
+  "chapter_lock": {
+    "path": "/Users/tianli/Library/Application Support/app-sop/lock",
+    "inherited": true,
+    "pid": 81691,
+    "pid_started": 1791109303.0,
+    "device": 16777234,
+    "inode": 480799797
+  }
+}

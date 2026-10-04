@@ -1,0 +1,23 @@
+{
+  "app_id": "folio",
+  "check": "launch_vision",
+  "saved_at": "2026-10-04T18:35:26.621594+08:00",
+  "files": {
+    "launch_vision.log": {
+      "sha256": "cfa88fb5bfb7def85f618fcd6df972c8054fc9119d62a9aa7062b48620e3632a",
+      "bytes": 123,
+      "mode": 420
+    },
+    "launch_vision.detail.json": {
+      "sha256": "a0a65bb6aa41af57399bfb7041e9456e312abb32cd64f7aaa7e9ac696d88b788",
+      "bytes": 778,
+      "mode": 420
+    },
+    "launch_vision.json": {
+      "sha256": "d8d046eedc9286f52da4c2a3f9c7b2aeccb6184c4eb66bc9a0974f46cf2a7575",
+      "bytes": 1437,
+      "mode": 420
+    }
+  },
+  "missing": []
+}

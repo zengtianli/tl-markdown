@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "name": "launch_vision",
+  "app_id": "folio",
+  "command": "bash scripts/launch.sh vision",
+  "exit_code": 1,
+  "status": "failed",
+  "started_at": "2026-10-04T18:33:12.103738+08:00",
+  "finished_at": "2026-10-04T18:33:14.071468+08:00",
+  "input_sha256": "87bb61035f1b04ad1c675ddffdb085fdc2dff8119a8017be5de7afdfc8b571d8",
+  "log": "perf/acceptance/launch_vision.log",
+  "log_sha256": "cfa88fb5bfb7def85f618fcd6df972c8054fc9119d62a9aa7062b48620e3632a",
+  "summary": "Apple Vision Pro 构建失败（sim_lane build 退出码 1）：构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+  "detail": {
+    "summary": "Apple Vision Pro 构建失败（sim_lane build 退出码 1）：构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+    "passed": false,
+    "platform": "vision",
+    "environment": "simulator",
+    "scheme": "FolioMobile",
+    "sim_lane": "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios/sim_lane.py",
+    "method": "sim_lane 在仓外临时副本构建，在无窗口模拟器启动并截图；Mac 线静默启动（open -g -j + App -lane_quiet，不上屏不进 Dock，App 进程内离屏渲染截图）；不合成输入、不抢焦点",
+    "build": {
+      "ok": false,
+      "error": "构建环境 SOP_OUT_DIR 引用了未复制的源码路径"
+    },
+    "build_tail": "{\"ok\": false, \"error\": \"构建环境 SOP_OUT_DIR 引用了未复制的源码路径\"}\n"
+  }
+}

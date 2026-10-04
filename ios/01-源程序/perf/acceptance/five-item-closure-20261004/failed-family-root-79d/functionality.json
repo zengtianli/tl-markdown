@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "name": "functionality",
+  "app_id": "folio",
+  "command": "~/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept --single-editor",
+  "exit_code": 1,
+  "status": "failed",
+  "started_at": "2026-10-04T18:12:18.748592+08:00",
+  "finished_at": "2026-10-04T18:12:24.118414+08:00",
+  "input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a",
+  "log": "perf/acceptance/functionality.log",
+  "log_sha256": "dd62d271da6bcbb66e050b41d47e7014db3ae7dc404b63ea8aaf3ada880b1e06",
+  "summary": "xcodegen 失败：FOLIO_FAMILY_ROOT}/Sources/IndexEngine.swift\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.dqf27vvj/src/ios/01-源程序/${FOLIO_FAMILY_ROOT}/Resources/Editor\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e",
+  "detail": {
+    "ok": false,
+    "status": "failed",
+    "exit_code": 1,
+    "error": "xcodegen 失败：FOLIO_FAMILY_ROOT}/Sources/IndexEngine.swift\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.dqf27vvj/src/ios/01-源程序/${FOLIO_FAMILY_ROOT}/Resources/Editor\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.dqf27vvj/src/ios/01-源程序/${FOLIO_FAMILY_ROOT}/Resources/THIRD-PARTY-NOTICES.txt\"",
+    "attempt": "cae0e5109fd243cea55a1a1b6bd9e355",
+    "records": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/hosted-fileflow-20261004/cae0e5109fd243cea55a1a1b6bd9e355",
+    "ordinary_sdk_configuration": null,
+    "hosted_configuration": "Debug",
+    "selected_tests": [
+      "testSDKOpenEditSafeSaveAndRecovery"
+    ],
+    "cleanup": {
+      "workdir": "/private/tmp/folio-hosted-queue-cae0e5109fd243cea55a1a1b6bd9e355",
+      "cache_retained": false,
+      "shutdown_verified": false
+    },
+    "gates": [
+      {
+        "stage": "ordinary-sdk",
+        "at": "2026-10-04T10:12:19.405591+00:00",
+        "steady": true,
+        "reason": "空闲 777 秒、负载 9.4（采样门：不要求离开电脑）",
+        "ac": true,
+        "load": 8.87353515625
+      }
+    ],
+    "elapsed_seconds": 4.85731766698882,
+    "summary": "xcodegen 失败：FOLIO_FAMILY_ROOT}/Sources/IndexEngine.swift\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.dqf27vvj/src/ios/01-源程序/${FOLIO_FAMILY_ROOT}/Resources/Editor\"\n\t- Target \"FolioMobile\" has a missing source directory \"/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.dqf27vvj/src/ios/01-源程序/${FOLIO_FAMILY_ROOT}/Resources/THIRD-PARTY-NOTICES.txt\"",
+    "uncovered": [
+      "Files picker/OS grant UI",
+      "OS Scene/multiwindow",
+      "full WebKit auxiliary accounting"
+    ]
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/functionality/20261004T181218744781+0800-souiyere",
+    "manifest_sha256": "f517773aa179a36a5bb4f8d132fd630e17b9467a23a4cc513ed5a38d5070e32a"
+  }
+}

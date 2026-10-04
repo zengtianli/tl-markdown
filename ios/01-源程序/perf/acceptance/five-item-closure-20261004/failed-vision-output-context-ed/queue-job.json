@@ -1,0 +1,15 @@
+{
+  "id": "ed66348d9fb94de88a5529c0eeced080",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "status": "failed",
+  "created_at": "2026-10-04T18:26:38+08:00",
+  "started_at": "2026-10-04T18:33:08+08:00",
+  "finished_at": "2026-10-04T18:33:15+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/ed66348d9fb94de88a5529c0eeced080.log",
+  "message": "Apple Vision Pro 构建失败（sim_lane build 退出码 1）：构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+  "check": "launch_vision",
+  "retry": false,
+  "tmpdir": "/private/tmp"
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "name": "functionality",
+  "app_id": "folio",
+  "command": "~/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept --single-editor",
+  "exit_code": 1,
+  "status": "failed",
+  "started_at": "2026-10-04T18:15:33.743538+08:00",
+  "finished_at": "2026-10-04T18:19:59.218044+08:00",
+  "input_sha256": "8702ac9fb10b364d977bbe29794feae6aed093f9bd55a29bacf45cb034aad8e6",
+  "log": "perf/acceptance/functionality.log",
+  "log_sha256": "f953ee78bac3b1e967a8de30c0283700a970c377c1106c70374b513793b4d826",
+  "summary": "Actual overlay XcodeGen failed: -15",
+  "detail": {
+    "ok": false,
+    "status": "failed",
+    "exit_code": 1,
+    "error": "Actual overlay XcodeGen failed: -15",
+    "attempt": "7a09655c1cd542e494af95417642fae3",
+    "records": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/hosted-fileflow-20261004/7a09655c1cd542e494af95417642fae3",
+    "ordinary_sdk_configuration": "Release",
+    "hosted_configuration": "Debug",
+    "selected_tests": [
+      "testSDKOpenEditSafeSaveAndRecovery"
+    ],
+    "cleanup": {
+      "workdir": "/private/tmp/folio-hosted-queue-7a09655c1cd542e494af95417642fae3",
+      "cache_retained": false,
+      "shutdown_verified": false
+    },
+    "gates": [
+      {
+        "stage": "ordinary-sdk",
+        "at": "2026-10-04T10:15:34.448305+00:00",
+        "steady": true,
+        "reason": "空闲 46 秒、负载 8.8（采样门：不要求离开电脑）",
+        "ac": true,
+        "load": 8.82080078125
+      },
+      {
+        "stage": "hosted-build",
+        "at": "2026-10-04T10:16:23.728171+00:00",
+        "steady": true,
+        "reason": "空闲 95 秒、负载 8.3（采样门：不要求离开电脑）",
+        "ac": true,
+        "load": 8.34375
+      }
+    ],
+    "elapsed_seconds": 265.10006683308166,
+    "summary": "Actual overlay XcodeGen failed: -15",
+    "uncovered": [
+      "Files picker/OS grant UI",
+      "OS Scene/multiwindow",
+      "full WebKit auxiliary accounting"
+    ]
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/functionality/20261004T181533741936+0800-euadmhs_",
+    "manifest_sha256": "da5e2efef124c0771bbd7d2d78d58f20d701a86ea0c4329249a26d28bbad6634"
+  }
+}

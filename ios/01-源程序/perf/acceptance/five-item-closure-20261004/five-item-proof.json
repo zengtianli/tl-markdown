@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "product": "Folio",
+  "chapter_app_id": "folio",
+  "kind": "five_required_items_actual_closure_with_bounded_source_scope_reuse",
+  "recorded_at": "2026-10-04T18:42:46.036469+08:00",
+  "standard": {
+    "path": "/Users/tianli/Dev/tools/cc-home/skills/app/references/apple-platform-acceptance.md",
+    "sha256": "e23aa00fa005a8930f3cc09d86ed1ef04d72cf1b93c74c6dc65aed88f2e0e79b",
+    "size": 12979
+  },
+  "production_input_sha256": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+  "production_source_file_count": 66,
+  "current_source": {
+    "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/current-source-final.json",
+    "sha256": "9bd21d20de13ab9b7b4f59baf5f1bf24c056bd88ef3852f6fae4e490f6188628",
+    "size": 9284
+  },
+  "checks": {
+    "build": {
+      "result": "passed",
+      "iphone_ipad": "One genuine current ordinary Release SDK ixvq; both launches strict reused same receipt, conditions empty.",
+      "ordinary_sdk_receipt": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/current-release-sdk/build.json",
+        "sha256": "5d6e801503c029c57f8aeaeb691d3f38da392df7f56936ca2bf89a2b946a47df",
+        "size": 1454
+      },
+      "vision": "One genuine ordinary Debug SDK es5bzqeq with current66 source copy/actual EXE/Info/xrsimulator27; no claim of Release/performance.",
+      "vision_sdk_source_artifact_proof": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/current-ui/vision/proof.json",
+        "sha256": "add3aad33f88226cfef13a9fdaaeafe5a9cc6ba8f9b3e5e457bf9dc9c4bdf89a",
+        "size": 21603
+      },
+      "mac": "Unchanged independent Mac source/build domain, existing actual native UI remains current."
+    },
+    "startup_and_core_ui": {
+      "result": "passed",
+      "mobile": {
+        "iphone": {
+          "queue_job": "62727995e70d4774b50ba2402708b4a0",
+          "original_finished_at": "2026-10-04T18:28:46+08:00",
+          "actual_delivery_entry_valid": true,
+          "configuration": "Release",
+          "sdk": "iphonesimulator27.0",
+          "executable_sha256": "ee09b6d0e2f0535e6e0583cb2d3653acc49378ee80565730f7da9cc5cfda7bdd",
+          "ready_signal": "os_log",
+          "ready_seconds": 9.231,
+          "actual_size": [
+            1206,
+            2622
+          ],
+          "screenshot": {
+            "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/platforms/iphone/launch.png",
+            "sha256": "57cfed5e07f2cf4e3c7bcd16cdebb5782e39579f41a9daa450d61492dacf61f0",
+            "size": 316709
+          },
+          "visual_review": {
+            "performed": true,
+            "description": "实际未命名文稿，山间书房合成 Markdown 正文、格式、表格及编辑/配置入口；非空，无系统主屏或壳窗口。"
+          },
+          "proof": {
+            "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/current-ui/iphone/proof.json",
+            "sha256": "2fef9b7f914e8c25e9c74458d48afb3c5925d1a80d05e66e1fd3f21c7ecc4e6b",
+            "size": 1892
+          }
+        },
+        "ipad": {
+          "queue_job": "74085e786bd44dd6bf00ecc36c5909b0",
+          "original_finished_at": "2026-10-04T18:33:06+08:00",
+          "actual_delivery_entry_valid": true,
+          "configuration": "Release",
+          "sdk": "iphonesimulator27.0",
+          "executable_sha256": "ee09b6d0e2f0535e6e0583cb2d3653acc49378ee80565730f7da9cc5cfda7bdd",
+          "ready_signal": "os_log",
+          "ready_seconds": 8.39,
+          "actual_size": [
+            2064,
+            2752
+          ],
+          "screenshot": {
+            "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/platforms/ipad/launch.png",
+            "sha256": "d1822764d365f34aef776c26733b949dd114e4b08b490c27d392a19b34986536",
+            "size": 321004
+          },
+          "visual_review": {
+            "performed": true,
+            "description": "当前正常iPad文稿，合成Markdown正文/表格/代码/公式及编辑和配置入口完整，无核心裁切，无系统主屏或空壳。"
+          },
+          "proof": {
+            "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/current-ui/ipad/proof.json",
+            "sha256": "396023b699686e176f4100878ac02753b8898ef2fe1a327e1e01410c253b6bdb",
+            "size": 1800
+          }
+        },
+        "vision": {
+          "queue_job": "3ba921939ce24de3b5432f5ef90e4d40",
+          "original_finished_at": "2026-10-04T18:40:19+08:00",
+          "actual_delivery_entry_valid": true,
+          "configuration": "Debug",
+          "sdk": "xrsimulator27.0",
+          "executable_sha256": "e1a33db9fc478f6202b2910a61ae62d5fac3c7ca6c779340f0d5e5d83d3997d3",
+          "ready_signal": "os_log",
+          "ready_seconds": 28.276,
+          "actual_size": [
+            3840,
+            2160
+          ],
+          "screenshot": {
+            "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/platforms/vision/launch.png",
+            "sha256": "f85c4bef2c97f2deac90279648eb26e6dffddc588cd5237ebce62b28b02144ad",
+            "size": 5288464
+          },
+          "visual_review": {
+            "performed": true,
+            "description": "真实Vision房间内Folio文稿窗口，未命名标题、合成正文/格式/表格/勾选和配置入口可读。无空房间/系统主页或壳占位；未要求额外窗口/方向。"
+          },
+          "proof": {
+            "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/current-ui/vision/proof.json",
+            "sha256": "add3aad33f88226cfef13a9fdaaeafe5a9cc6ba8f9b3e5e457bf9dc9c4bdf89a",
+            "size": 21603
+          }
+        }
+      },
+      "mac_existing_scope_proof": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/mac-existing-scope/proof.json",
+        "sha256": "12638e709dff1757e967d19eb2d87ec67d3b6e3e5efc576046227a8d1f863590",
+        "size": 1837
+      }
+    },
+    "core_operation": {
+      "result": "passed",
+      "selected_actual_case": "FolioHostedIntegration/HostedIntegrationTests/testSDKOpenEditSafeSaveAndRecovery",
+      "actual_result": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/hosted-fileflow-20261004/1622d9963f2d480fad43029d01951ab1/run-20261004-182159-81698/result.json",
+        "sha256": "9e27ed8dd836ba54e8ce01c389dcad979344ccb3529904fabcac0e4a00bcd58c",
+        "size": 26804
+      },
+      "actual_test_log": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/hosted-fileflow-20261004/1622d9963f2d480fad43029d01951ab1/run-20261004-182159-81698/test.log",
+        "sha256": "39c3c901a14b425807d90ec99d6b58c38012943c15e5ee6e3ee9c8bfdeb6a6c6",
+        "size": 11445
+      },
+      "case_seconds": 8.628,
+      "actual_case_counts": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "actual_xcode_exit_code": 0,
+      "input_stable": true,
+      "operation": "Production MobileStore opens BOM/CRLF document; real WebKit renders and edits through original JS API; original remains intact until production safe save.",
+      "original_readonly_validate_observation": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/original-readonly-validate-observation.json",
+        "sha256": "8b046730d798e85b377e4443a49654314567c157a3d3727330bd7831a19fdd92",
+        "size": 717
+      },
+      "hosted_proof": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/hosted-normal-actual-proof.json",
+        "sha256": "e27a1c48d191d3ec29172589b5aec2374271377b9631a2e1556d383636f5a30a",
+        "size": 1124
+      }
+    },
+    "save_and_recovery": {
+      "result": "passed",
+      "actual_hosted_result": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/hosted-fileflow-20261004/1622d9963f2d480fad43029d01951ab1/run-20261004-182159-81698/result.json",
+        "sha256": "9e27ed8dd836ba54e8ce01c389dcad979344ccb3529904fabcac0e4a00bcd58c",
+        "size": 26804
+      },
+      "operation": "Draft restores dirty before save; safe save preserves BOM/newlines; fresh MobileStore reopens saved file; external replacement survives conflict; reloadPreservingDraft keeps unsaved copy; fresh reopen restores both.",
+      "original_Core_exact_compile_scope_proof": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/core-source-scope-proof.json",
+        "sha256": "0d313b1a83383c4a4c0daed48d05a33752ceef7ac892284eed263b53e4d79876",
+        "size": 4124
+      },
+      "original_Core_times_and_input_keys_preserved": true
+    },
+    "privacy": {
+      "result": "passed_with_stated_scope",
+      "original_Core_exact_compile_scope_proof": {
+        "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/core-source-scope-proof.json",
+        "sha256": "0d313b1a83383c4a4c0daed48d05a33752ceef7ac892284eed263b53e4d79876",
+        "size": 4124
+      },
+      "scope": "Unchanged actual Core grant/path, parent/leaf/root symlink, FIFO, size/growth and bridge-generation protections; current Hosted/3 App UIs exercise normal WK filtered load. Optional rule-store nil branch independently read-only verified to refuse load/ready, no injected nil runtime claimed.",
+      "system_picker_or_OS_grant_UI_exercised": false,
+      "nil_rule_store_fault_injected": false
+    }
+  },
+  "retained_original_failures_and_consumers": {
+    "actual_current_delivery_entry_valid": {
+      "launch_iphone": true,
+      "launch_ipad": true,
+      "launch_vision": true,
+      "functionality": false,
+      "recovery": false,
+      "privacy": false
+    },
+    "functionality_outer_job": "8be219ef943c4511acb5c9d5bae6ae11",
+    "functionality_outer_job_status": "failed",
+    "cause": "Actual selected case and xcode transaction passed; later copytree selected regular run-expected.json and failed. Original failed job/ledger retained; only packaging selector fixed, runtime main unchanged, no retest.",
+    "Core_wide_consumer_stale_reason": "Only MobileEditor production guard changed after original Core run. Seven actual compiled/test/helper files equal pre-Core saved commit, so bounded coverage reused without retagging wide input/checked_at.",
+    "prior_environment_and_compile_failures": "Original family-root, optional rule-store compile, XcodeGen group-cycle, Vision output-context and outer archive failures preserved in artifact inventory.",
+    "prior_perf_results_or_budgets_changed": false
+  },
+  "cleanup": {
+    "iphone": {
+      "owned_udid": "280663C5-C40F-4F3E-8E88-2EB031CA689D",
+      "device_plist_state": 1,
+      "app_pid": 86744,
+      "app_pid_alive": false
+    },
+    "ipad": {
+      "owned_udid": "A19C635F-A987-4E08-931A-A5874216E34D",
+      "device_plist_state": 1,
+      "app_pid": 89697,
+      "app_pid_alive": false
+    },
+    "vision": {
+      "owned_udid": "4EA6A65D-4301-4527-B125-152AC0076CAF",
+      "device_plist_state": 1,
+      "app_pid": 93768,
+      "app_pid_alive": false
+    },
+    "hosted": {
+      "owned_udid": "12B97992-764F-4AAE-9C54-C41E5BEADA0B",
+      "device_plist_state": 1,
+      "app_pid": 83033,
+      "webkit_pid": 83166,
+      "xcode_test_pid": 82790,
+      "runtime_controller_pid": 81698,
+      "known_processes_alive": false
+    }
+  },
+  "heavy_scope_handed_back_to_Points": true,
+  "no_further_job_or_SDK_requested": true,
+  "excluded_from_this_user_selected_closure": [
+    "full performance/cold5 sampling and optimization",
+    "full WK auxiliary-process resource accounting",
+    "extra OS multiwindow",
+    "system Files picker/grant UI专项",
+    "extra orientation/demo phases",
+    "duplicate Store or promotion素材"
+  ],
+  "artifact_inventory": {
+    "path": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/five-item-closure-20261004/artifact-manifest.json",
+    "sha256": "d138f309b718cd507665b9a0a082921e71c9373af23d7c671f35d3c6992d31f6",
+    "size": 26206
+  }
+}

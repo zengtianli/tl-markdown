@@ -1,0 +1,35 @@
+{
+  "kind": "existing_actual_Mac_UI_current_consumer_readback",
+  "observed_at": "2026-10-04T18:36:08.529448+08:00",
+  "original_ledger_record": {
+    "result": "passed",
+    "scope": "ui",
+    "method": "ui_automation",
+    "checked_at": "2026-10-04T09:41:44.864268+08:00",
+    "input_sha256": "1f59f418fa7f2c5dd2a377f64e6792f97726a81ac093d0b2a1463e7518ccd220",
+    "evidence": "perf/acceptance/native_ui.json",
+    "evidence_sha256": "3924b708bb7cc66fb3969cabb6b6d4c22a85ad48a4f790719cff6f96adc10eba",
+    "detail": "sop.accept：bash scripts/accept/native_ui.sh → 进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。"
+  },
+  "actual_delivery_entry_valid": true,
+  "files": {
+    "native_ui.json": {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.json",
+      "sha256": "3924b708bb7cc66fb3969cabb6b6d4c22a85ad48a4f790719cff6f96adc10eba",
+      "size": 1419
+    },
+    "native_ui.detail.json": {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.detail.json",
+      "sha256": "a050c1a2e848f535b72d7e9493c547e95e290fc8eba1886819a658895bd07566",
+      "size": 389
+    },
+    "manifest.json": {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native-ui-current-20261004/manifest.json",
+      "sha256": "e1b505a9681f60850d88ae00f916b9084fe01880a9436a58077318331784433e",
+      "size": 5476
+    }
+  },
+  "original_checked_at_preserved": true,
+  "new_Mac_launch_build_or_capture": false,
+  "mobile_guard_scope": "MobileEditor.swift is not a Mac build source; Mac production UI/code unchanged and current original consumer valid."
+}

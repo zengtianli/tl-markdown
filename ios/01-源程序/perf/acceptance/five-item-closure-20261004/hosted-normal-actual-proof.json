@@ -1,0 +1,24 @@
+{
+  "kind": "actual_single_editor_fileflow_pass_and_retained_post_archive_failure",
+  "queue_job": "8be219ef943c4511acb5c9d5bae6ae11",
+  "queue_job_status": "failed",
+  "post_archive_error": "copytree selected regular run-expected.json; original failure retained",
+  "actual_runtime_record": "perf/acceptance/hosted-fileflow-20261004/1622d9963f2d480fad43029d01951ab1/run-20261004-182159-81698/result.json",
+  "actual_runtime_record_sha256": "9e27ed8dd836ba54e8ce01c389dcad979344ccb3529904fabcac0e4a00bcd58c",
+  "actual_case_passed": true,
+  "actual_xcode_exit_code": 0,
+  "input_stable": true,
+  "runtime_main_AST_unchanged_by_archive_fix": true,
+  "new_runtime_or_build": false,
+  "original_readonly_validation_before_archive_fix": {
+    "exit_code": 0,
+    "input_sha256": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+    "test_sha256": "108b44b60dd355693fd180475786073d7e2ea3b3dc1978887a363c3b9917bd44",
+    "bound_file_count": 49
+  },
+  "archive_selector_check": {
+    "directory_count": 1,
+    "expected_regular_file_excluded_from_copytree": true,
+    "expected_separately_preserved": true
+  }
+}

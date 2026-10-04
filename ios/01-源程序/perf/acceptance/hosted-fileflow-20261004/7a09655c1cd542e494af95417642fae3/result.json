@@ -1,0 +1,43 @@
+{
+  "ok": false,
+  "status": "failed",
+  "exit_code": 1,
+  "error": "Actual overlay XcodeGen failed: -15",
+  "attempt": "7a09655c1cd542e494af95417642fae3",
+  "records": "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/perf/acceptance/hosted-fileflow-20261004/7a09655c1cd542e494af95417642fae3",
+  "ordinary_sdk_configuration": "Release",
+  "hosted_configuration": "Debug",
+  "selected_tests": [
+    "testSDKOpenEditSafeSaveAndRecovery"
+  ],
+  "cleanup": {
+    "workdir": "/private/tmp/folio-hosted-queue-7a09655c1cd542e494af95417642fae3",
+    "cache_retained": false,
+    "shutdown_verified": false
+  },
+  "gates": [
+    {
+      "stage": "ordinary-sdk",
+      "at": "2026-10-04T10:15:34.448305+00:00",
+      "steady": true,
+      "reason": "\u7a7a\u95f2 46 \u79d2\u3001\u8d1f\u8f7d 8.8\uff08\u91c7\u6837\u95e8\uff1a\u4e0d\u8981\u6c42\u79bb\u5f00\u7535\u8111\uff09",
+      "ac": true,
+      "load": 8.82080078125
+    },
+    {
+      "stage": "hosted-build",
+      "at": "2026-10-04T10:16:23.728171+00:00",
+      "steady": true,
+      "reason": "\u7a7a\u95f2 95 \u79d2\u3001\u8d1f\u8f7d 8.3\uff08\u91c7\u6837\u95e8\uff1a\u4e0d\u8981\u6c42\u79bb\u5f00\u7535\u8111\uff09",
+      "ac": true,
+      "load": 8.34375
+    }
+  ],
+  "elapsed_seconds": 265.10006683308166,
+  "summary": "Actual overlay XcodeGen failed: -15",
+  "uncovered": [
+    "Files picker/OS grant UI",
+    "OS Scene/multiwindow",
+    "full WebKit auxiliary accounting"
+  ]
+}

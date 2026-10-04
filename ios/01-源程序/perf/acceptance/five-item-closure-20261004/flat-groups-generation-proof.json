@@ -1,0 +1,12 @@
+{
+  "actual_exit_code": 0,
+  "elapsed_seconds": 0.03434308397118002,
+  "same_sdk_compile_resource_paths": true,
+  "single_test_source_unchanged": true,
+  "only_project_navigation_groups_flattened": true,
+  "original_production_spec_sha256": "cc42a80593c19785cf4002f700189a139d50321670a1742615318441319df701",
+  "sdk_build": false,
+  "boot": false,
+  "case": false,
+  "official_source": "https://raw.githubusercontent.com/yonaskolb/XcodeGen/2.46.0/Sources/XcodeGenKit/SourceGenerator.swift"
+}

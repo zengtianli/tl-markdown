@@ -1,0 +1,78 @@
+{
+  "kind": "bounded_actual_Core_source_scope_reuse",
+  "pre_Core_saved_commit": "1f164e800cfdc06577bac5165a44cf4b9754b0d2",
+  "actual_compile_graph_unchanged": {
+    "Sources/Models.swift": {
+      "current_sha256": "66e6f8235c01fc1ab92457b8bea577cb6cc0969c39a0144bb6e08d31ba653aab",
+      "pre_Core_commit_sha256": "66e6f8235c01fc1ab92457b8bea577cb6cc0969c39a0144bb6e08d31ba653aab",
+      "bytes_equal": true
+    },
+    "Sources/IndexEngine.swift": {
+      "current_sha256": "4ac41b667c9b15368ca5766a1c1271941e0fb5115b64a796400208707ca9c691",
+      "pre_Core_commit_sha256": "4ac41b667c9b15368ca5766a1c1271941e0fb5115b64a796400208707ca9c691",
+      "bytes_equal": true
+    },
+    "ios/01-\u6e90\u7a0b\u5e8f/Sources/DocumentWorkspace.swift": {
+      "current_sha256": "c5ebd8bbcf7f82d5ff0233c7e21aa851262035bc22690f54d32431fd08f5a047",
+      "pre_Core_commit_sha256": "c5ebd8bbcf7f82d5ff0233c7e21aa851262035bc22690f54d32431fd08f5a047",
+      "bytes_equal": true
+    },
+    "ios/01-\u6e90\u7a0b\u5e8f/Tests/CoreTests.swift": {
+      "current_sha256": "3957a2c0091dfaadb9776fcde92ec6c5b34fdb0c28668749e2525fb3960690a2",
+      "pre_Core_commit_sha256": "3957a2c0091dfaadb9776fcde92ec6c5b34fdb0c28668749e2525fb3960690a2",
+      "bytes_equal": true
+    },
+    "ios/01-\u6e90\u7a0b\u5e8f/scripts/test-core.sh": {
+      "current_sha256": "ae83dc486a1f702304d7688406920f38ef1d841444e534a2500922bf76e1635b",
+      "pre_Core_commit_sha256": "ae83dc486a1f702304d7688406920f38ef1d841444e534a2500922bf76e1635b",
+      "bytes_equal": true
+    },
+    "ios/01-\u6e90\u7a0b\u5e8f/Tests/static_check.py": {
+      "current_sha256": "b3c270a90aea3783cf682faadce9114ee8acc59e1a992929d67e40d5d0ae76d3",
+      "pre_Core_commit_sha256": "b3c270a90aea3783cf682faadce9114ee8acc59e1a992929d67e40d5d0ae76d3",
+      "bytes_equal": true
+    },
+    "ios/01-\u6e90\u7a0b\u5e8f/scripts/env.sh": {
+      "current_sha256": "0605747785ac8c862f8babee894e297208180741bce843937abd3be580791547",
+      "pre_Core_commit_sha256": "0605747785ac8c862f8babee894e297208180741bce843937abd3be580791547",
+      "bytes_equal": true
+    }
+  },
+  "sole_changed_production_input": [
+    "ios/01-\u6e90\u7a0b\u5e8f/Sources/MobileEditor.swift"
+  ],
+  "source_before": "26afdae298f46c1cafe35d34a91074b5f6e09b82da7aefde34de31762fb06177",
+  "source_after": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+  "original_actual_records": {
+    "recovery": {
+      "record": "perf/acceptance/recovery.json",
+      "record_sha256": "2938d0c29d23444d67f894883afc2050974deff755c5c2fc238ae66394c0970b",
+      "log_sha256": "83b135bb8162ec0d27f0e8da1fcf47c0e70d7b5b40a9900640917a1b8d634dae",
+      "actual_started_at": "2026-10-04T18:10:41.978487+08:00",
+      "actual_finished_at": "2026-10-04T18:10:59.983371+08:00",
+      "actual_exit_code": 0,
+      "record_input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a"
+    },
+    "privacy": {
+      "record": "perf/acceptance/privacy.json",
+      "record_sha256": "18eb97d6a80da9828104ba02c3287bbbe5dbd53e3d66b07eeb66b389288f3a28",
+      "log_sha256": "83b135bb8162ec0d27f0e8da1fcf47c0e70d7b5b40a9900640917a1b8d634dae",
+      "actual_started_at": "2026-10-04T18:11:10.957638+08:00",
+      "actual_finished_at": "2026-10-04T18:12:11.180913+08:00",
+      "actual_exit_code": 0,
+      "record_input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a"
+    }
+  },
+  "actual_wide_consumer_valid": {
+    "recovery": false,
+    "privacy": false
+  },
+  "checked_at_or_input_key_changed": false,
+  "new_execution": false,
+  "applicable_scope": "Original Core encoding/save/crash recovery/conflict/draft/grant boundary and symlink/FIFO/size safety; original bridge adapter/static declarations unchanged. Current MobileEditor normal path separately exercised by actual new Hosted; nil guard independently read-only reviewed, no injected nil runtime claimed.",
+  "uncovered": [
+    "OS Files grant/picker UI",
+    "injected nil WKContentRuleListStore execution"
+  ],
+  "independent_review": "daily_review_takeover read-only same file/commit/log comparison; no duplicate compilation"
+}

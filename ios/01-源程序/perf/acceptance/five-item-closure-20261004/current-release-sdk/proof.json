@@ -1,0 +1,12 @@
+{
+  "kind": "actual_original_ordinary_Release_SDK_and_readonly_strict_verification",
+  "receipt": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.ixvqzr98/build.json",
+  "receipt_sha256": "5d6e801503c029c57f8aeaeb691d3f38da392df7f56936ca2bf89a2b946a47df",
+  "executable_sha256": "ee09b6d0e2f0535e6e0583cb2d3653acc49378ee80565730f7da9cc5cfda7bdd",
+  "input": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+  "configuration": "Release",
+  "source_count": 66,
+  "iphone_strict": true,
+  "ipad_strict": true,
+  "runtime_or_UI_pass": false
+}

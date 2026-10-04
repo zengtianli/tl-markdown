@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "platform": "vision",
+  "udid": "4EA6A65D-4301-4527-B125-152AC0076CAF",
+  "device": "Apple Vision Pro",
+  "device_type": "Apple-Vision-Pro-4K",
+  "runtime": "xrOS-27-0",
+  "bundle_id": "cyou.tianli.TLMarkdown.mobile",
+  "version": "1.2.1",
+  "build": "2",
+  "launch_args": [
+    "-folio-demo"
+  ],
+  "environment": "simulator",
+  "errors": [],
+  "boot_seconds": 45.2,
+  "install_seconds": 109.1,
+  "baseline_stable": true,
+  "size": [
+    3840,
+    2160
+  ],
+  "pid": 93768,
+  "ready_seconds": 28.276,
+  "ready_signal": "os_log",
+  "screenshot": "perf/platforms/vision/launch.png",
+  "verdict": {
+    "non_blank": true,
+    "changed_from_baseline": true,
+    "stable": true,
+    "diff_baseline": 0.1531,
+    "diff_prev": 0.0
+  },
+  "notes": [],
+  "shutdown": true,
+  "input_sha256": "2f20655669b84ae91c2fa988ed4f94b5215a2eb5f4abe3c033d0174ac53c8b6b",
+  "executable_sha256": "e1a33db9fc478f6202b2910a61ae62d5fac3c7ca6c779340f0d5e5d83d3997d3",
+  "screenshot_sha256": "f85c4bef2c97f2deac90279648eb26e6dffddc588cd5237ebce62b28b02144ad"
+}

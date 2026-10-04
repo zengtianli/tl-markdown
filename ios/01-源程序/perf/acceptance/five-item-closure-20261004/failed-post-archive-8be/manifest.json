@@ -1,0 +1,21 @@
+{
+  "kind": "original_failed_outer_packaging_after_actual_case_PASS",
+  "queue_job_status_unchanged": "failed",
+  "files": {
+    "functionality.json": {
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/functionality.json",
+      "sha256": "3117b243d2c8678c70af4fb7e3ed7e296446c32b85dda680b4a1d6174e1a6021",
+      "size": 917
+    },
+    "functionality.log": {
+      "original": "/Users/tianli/Apps/folio/ios/01-源程序/perf/acceptance/functionality.log",
+      "sha256": "91657dcbdde0e76adb6481188d69e6e60cf03071df963ca43fd31d0512659fc4",
+      "size": 29836
+    },
+    "queue.log": {
+      "original": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/8be219ef943c4511acb5c9d5bae6ae11.log",
+      "sha256": "aa30b9da7c39269f87aa2afc40f4c0169f71e21f4c26254871bc718d11f73653",
+      "size": 333
+    }
+  }
+}

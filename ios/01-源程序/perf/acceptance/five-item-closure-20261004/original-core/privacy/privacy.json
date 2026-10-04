@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "privacy",
+  "app_id": "folio",
+  "command": "bash scripts/test-core.sh",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-04T18:11:10.957638+08:00",
+  "finished_at": "2026-10-04T18:12:11.180913+08:00",
+  "input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a",
+  "log": "perf/acceptance/privacy.log",
+  "log_sha256": "83b135bb8162ec0d27f0e8da1fcf47c0e70d7b5b40a9900640917a1b8d634dae",
+  "summary": "Exit: 0 success, 1 operation failed, 2 invalid usage. Output: JSON.",
+  "detail": null
+}

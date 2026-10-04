@@ -1,0 +1,32 @@
+{
+  "ok": false,
+  "status": "deferred",
+  "exit_code": 75,
+  "error": "\u8d1f\u8f7d 51.0 \u2265 10",
+  "attempt": "2f45a2c564274dd990ce0874db04ac03",
+  "records": "/Users/tianli/Apps/folio/ios/01-\u6e90\u7a0b\u5e8f/perf/acceptance/hosted-fileflow-20261004/2f45a2c564274dd990ce0874db04ac03",
+  "ordinary_sdk_configuration": null,
+  "hosted_configuration": "Debug",
+  "cleanup": {
+    "workdir": "/private/tmp/folio-hosted-queue-2f45a2c564274dd990ce0874db04ac03",
+    "cache_retained": false,
+    "shutdown_verified": false
+  },
+  "gates": [
+    {
+      "stage": "ordinary-sdk",
+      "at": "2026-10-04T07:10:47.027137+00:00",
+      "steady": false,
+      "reason": "\u8d1f\u8f7d 51.0 \u2265 10",
+      "ac": true,
+      "load": 51.03369140625
+    }
+  ],
+  "elapsed_seconds": 0.38393945794086903,
+  "summary": "\u8d1f\u8f7d 51.0 \u2265 10",
+  "uncovered": [
+    "Files picker/OS grant UI",
+    "OS Scene/multiwindow",
+    "full WebKit auxiliary accounting"
+  ]
+}
