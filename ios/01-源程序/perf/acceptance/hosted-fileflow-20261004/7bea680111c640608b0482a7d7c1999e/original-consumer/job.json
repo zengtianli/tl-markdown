@@ -1,0 +1,20 @@
+{
+  "id": "59875d24fd5741d4b2a1743149c18e7e",
+  "app_id": "folio",
+  "action": "accept",
+  "stage": null,
+  "check": "functionality",
+  "retry": false,
+  "reuse_builds_manifest": null,
+  "reuse_builds_manifest_sha256": null,
+  "reuse_build_receipt": null,
+  "reuse_build_receipt_sha256": null,
+  "tmpdir": "/private/tmp",
+  "status": "failed",
+  "created_at": "2026-10-04T10:28:06+08:00",
+  "started_at": "2026-10-04T11:01:42+08:00",
+  "finished_at": "2026-10-04T11:01:51+08:00",
+  "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/59875d24fd5741d4b2a1743149c18e7e.log",
+  "message": "构建环境 SOP_OUT_DIR 引用了未复制的源码路径",
+  "next_attempt_at": null
+}

@@ -1,0 +1,39 @@
+{
+  "original_job": "59875d24fd5741d4b2a1743149c18e7e",
+  "actual_attempt": "7bea680111c640608b0482a7d7c1999e",
+  "files": {
+    "original-consumer/consumer-source-proof.json": {
+      "sha256": "1df92827abd3cf88572f6f641670a27dbfa877802ac52eeb83c61cdb7d54df87",
+      "bytes": 9139
+    },
+    "original-consumer/delivery-evidence.json": {
+      "sha256": "bd6fa2082a66da316e388dabc65191b2bd91842d03c97be8aa90301605b5a301",
+      "bytes": 5680
+    },
+    "original-consumer/functionality.detail.json": {
+      "sha256": "96cd25aac8bec5c3752f2a86da19f480fcbc2a33f17464e1c48debe4bb6aeb78",
+      "bytes": 1202
+    },
+    "original-consumer/functionality.json": {
+      "sha256": "4c19a9998f4bc1286665b01976232c278949ec7ed00d9593caf3dd4e947094f9",
+      "bytes": 1717
+    },
+    "original-consumer/functionality.log": {
+      "sha256": "5f139160fb93c244e412317593ff94fe9715f517231c6d73e7e2144fc9b7561b",
+      "bytes": 1360
+    },
+    "original-consumer/job.json": {
+      "sha256": "b2d366d1690a51f9adfbdfaa3f0b4ab46c89d5111fdf8baec6158fdfbc05f417",
+      "bytes": 702
+    },
+    "original-consumer/workbench.log": {
+      "sha256": "f9ad4b953a812f41e96773782a7c33980e9b2581b9a4e8c1236cc829968017d6",
+      "bytes": 259
+    },
+    "result.json": {
+      "sha256": "96cd25aac8bec5c3752f2a86da19f480fcbc2a33f17464e1c48debe4bb6aeb78",
+      "bytes": 1202
+    }
+  },
+  "scope": "Original failed actual observations, immutable raw copies; planned phases are not executed tests"
+}

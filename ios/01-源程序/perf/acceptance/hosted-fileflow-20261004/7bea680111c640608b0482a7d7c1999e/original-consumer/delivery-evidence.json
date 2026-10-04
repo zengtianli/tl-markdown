@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "checks": {
+    "cli_entry": {
+      "result": "passed",
+      "scope": "cli_entry",
+      "method": "real_product",
+      "checked_at": "2026-10-03T03:15:10.712092+08:00",
+      "input_sha256": "b8be91c7a4e59b00e1d2e4169c30794c054d0c0d581f3a2a4c4c3f4892c6516c",
+      "evidence": "perf/acceptance/cli_entry.json",
+      "evidence_sha256": "5e546d27028d5567339268e7fd2334ac5a0256565ed7d10e8c0276ee53fa5a89",
+      "detail": "builtin:cli_entry：~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/cli_entry.py → 命令行在 App 里：folio — Folio — Markdown 索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。"
+    },
+    "functionality": {
+      "result": "failed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-04T11:01:50.940655+08:00",
+      "input_sha256": "6f62b2ea44a4b219791c56bc3124e65f68f5bdf936a98820e37ffe0082f3ea9a",
+      "evidence": "perf/acceptance/functionality.json",
+      "evidence_sha256": "4c19a9998f4bc1286665b01976232c278949ec7ed00d9593caf3dd4e947094f9",
+      "detail": "sop.accept：~/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept → 构建环境 SOP_OUT_DIR 引用了未复制的源码路径"
+    },
+    "recovery": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T04:07:23.183356+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
+      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
+      "detail": "Actual crash/local draft restoration, external conflict/reload protection, corrupt session/bookmark draft preservation and safe save-as passed."
+    },
+    "privacy": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T04:07:23.183356+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/core-sweep-20261003-sdk-fix1.json",
+      "evidence_sha256": "ec74003bf4011c3703ee73b8e2611c586609df52d20840310b60fa52c4240d7f",
+      "detail": "Actual directory authorization and FD reads/writes: parent/leaf/root replacement, user symlink, FIFO, size/growth rejection; only exact root-owned OS aliases accepted. Shared canonical IndexEngine only adds the MachO import required by the real iOS SDK; its behavior is unchanged."
+    },
+    "hosted_sdk_editor": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-02T20:44:07.461607+00:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/hosted-sdk-20261003.json",
+      "evidence_sha256": "81ce3bdabd6df4a4f4b548f21c0eac2392088975f6cc4a7f049b02386621ec9d",
+      "detail": "Actual iPhone SDK hosted XCTest 3 passed/0 failed/0 skipped with source62=4aa and test42dd. Real bundled reading DOM/Editor JS/WebKit safe save preserving BOM/CRLF and conflict; two WK stale/concurrent-draft behavior; mdasset PNG and damaged-authority recovery/export. Does not cover system Files grants/picker, OS Scenes, process relaunch, iPad/Vision runtime or resource budgets."
+    },
+    "release_phone_markdown_launch_capture": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T08:35:13.086293+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/release-phone-20261003.json",
+      "evidence_sha256": "a3248a0773edba4f40389d60c5500c53fcd28180bfd4e7f99bd57421306eeae9",
+      "detail": "One ordinary Release iPhone17Pro production-demo Markdown launch and unscaled 1206x2622 first screen passed; real os_log ready 4.372s. Source62/SDK/QA stable; own device Shutdown/group empty/gates released. Not five-start median, helper resources, 6.9 Store image, Files/OS Scene, iPad/Vision or upload acceptance."
+    },
+    "release_store_iphone_single_image": {
+      "result": "passed",
+      "scope": "code",
+      "method": "real_product",
+      "checked_at": "2026-10-03T09:35:40.069564+08:00",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "evidence": "perf/acceptance/store-iphone-20261003.json",
+      "evidence_sha256": "a3ca76a36da6e7fa17022067e8bcbffca79cce74044dd5a15eba9477d7cb4588",
+      "detail": "One ordinary Release iPhone17ProMax production-demo Markdown Store PNG passed: raw1320x2868 APP_IPHONE_67, actual ready3.583s, source62/SDK/current ABI stable; actual dedicated creation, own Shutdown/group/gates and fresh Root readback. It is one image, not a complete Store set/upload, five-start median, resources, Files/OS Scene or iPad/Vision acceptance."
+    },
+    "release_store_ipad_single_image": {
+      "result": "passed",
+      "method": "real_product",
+      "scope": "code",
+      "input_sha256": "2f9ebac1befc3affd07e4937ca8dc02e59f09441ec4b6bcf416a64a9d3d5adfb",
+      "checked_at": "2026-10-03T10:05:51.452953+08:00",
+      "evidence": "perf/acceptance/store-ipad-20261003.json",
+      "evidence_sha256": "1315d38f477d50bc533bf5e7b457d5affac47a0734fab79fa5b65f7654d0374a",
+      "detail": "One actual ordinary Release synthetic Markdown Store PNG2064x2752, original ready12.136s, source/SDK stable and own terminal cleanup; no Files/OS Scene/resources/full asset-set claim"
+    }
+  },
+  "updated_at": "2026-10-04T11:01:51.033656+08:00"
+}

@@ -1,0 +1,12 @@
+{
+ "ok": false,
+ "app_id": "folio",
+ "results": {
+  "functionality": {
+   "status": "failed",
+   "method": "real_product",
+   "evidence": "perf/acceptance/functionality.json",
+   "detail": "构建环境 SOP_OUT_DIR 引用了未复制的源码路径"
+  }
+ }
+}

@@ -1,0 +1,7 @@
+test_absent_context_remains_absent_and_binding_matches (__main__.SDKContext.test_absent_context_remains_absent_and_binding_matches) ... ok
+test_acceptor_context_is_absent_only_during_sdk_and_restored_after_failure (__main__.SDKContext.test_acceptor_context_is_absent_only_during_sdk_and_restored_after_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+OK

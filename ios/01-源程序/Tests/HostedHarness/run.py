@@ -102,6 +102,16 @@ def sdk_gate(label):
                     and owner.get('label') == label):
                 lock.release()
 
+@contextmanager
+def sdk_environment():
+    # Acceptor output paths are not SDK source dependencies; original stager still checks every retained path.
+    fields = ['SOP_REPO', 'SOP_OUT_DIR', 'SOP_CONFIG']
+    saved = {key: os.environ.pop(key) for key in fields if key in os.environ}
+    try:
+        yield
+    finally:
+        os.environ.update(saved)
+
 def build_command(command, log, cwd, developer_dir=None):
     child, identity, observed = None, '', {}
     try:
@@ -153,8 +163,9 @@ def chapter_accept():
         with ExitStack() as leases:
             queue_gate('ordinary-sdk', observations)
             with sdk_gate('folio-hosted-sdk:' + attempt):
-                built = platform_measure.cached_build('folio', REPO, 'iphone', 'FolioMobile', False,
-                                                       leases, build_timeout=remaining(420))
+                with sdk_environment():
+                    built = platform_measure.cached_build('folio', REPO, 'iphone', 'FolioMobile', False,
+                                                           leases, build_timeout=remaining(420))
                 receipt = Path((built.get('reuse') or {}).get('receipt') or Path(built['work_dir']) / 'build.json')
                 verified = sim_lane.reuse_build(receipt, 'folio', REPO, 'iphone', 'FolioMobile', 'Release', False)
                 before_input = verified['reuse']['input_sha256']
