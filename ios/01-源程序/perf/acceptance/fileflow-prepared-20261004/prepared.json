@@ -1,0 +1,22 @@
+{
+  "status": "prepared-not-built",
+  "platform": "iphone",
+  "receipt": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/build.json",
+  "receipt_sha256": "329c767b398076b35ee92d9f21b0bfef2b7b4e6641dc575f44d6c4ad5635d5ad",
+  "input_sha256": "750d36751372b4662a2fe3f75b5bda2503c0c8c957002f8215a6291d449b78e7",
+  "source_copy": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/ios/01-源程序",
+  "family_copy": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src",
+  "test_src": "/private/tmp/folio-fileflow-66-20261004/iphone/test_src/HostedIntegrationTests.swift",
+  "test_live_source": "/Users/tianli/Apps/folio/ios/01-源程序/Tests/HostedIntegrationTests.swift",
+  "hosted_test_sha256": "f521dc97ad1536db9c822cc6578fb70c09eed9f86276faf3bfb4bee65e0db1b6",
+  "overlay_sha256": "560d49353633893d204b7650f4b8ad46b7bba78a3bc492dc500f97056e254c97",
+  "prepare_script_sha256": "6fd420a2050d063ae4acaed6d263e347d19eed4a1b418d781842be4b05df816b",
+  "prepare_script": "/Users/tianli/Apps/folio/ios/01-源程序/Tests/HostedHarness/prepare.py",
+  "xcode": {
+    "name": "Xcode.app",
+    "version": "27.0",
+    "build": "27A266a",
+    "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+  },
+  "boundary": "SDK integration only; no Files provider grants, picker UI, OS scene or crash claim"
+}

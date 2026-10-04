@@ -1,0 +1,39 @@
+{
+  "scope": "original prepare frozen source/test/overlay only; not build-for-testing or runtime/Files/Scene PASS",
+  "recorded_at": "2026-10-04T09:31:12.860474+08:00",
+  "production_input_sha256": "750d36751372b4662a2fe3f75b5bda2503c0c8c957002f8215a6291d449b78e7",
+  "ordinary_sdk_reuse": "strict original prepare verifier succeeded; no SDK compile/boot/install/launch",
+  "workdir": "/private/tmp/folio-fileflow-66-20261004",
+  "actual_operations": {
+    "xcodegen": 0,
+    "compile": 0,
+    "device": 0,
+    "app_launch": 0
+  },
+  "files": [
+    {
+      "original": "/private/tmp/folio-fileflow-66-20261004/iphone/prepared.json",
+      "copy": "prepared.json",
+      "sha256": "5ab856b64349381711fe7af05e82291c257a2676b84e141ab06a2bf870986c2d",
+      "bytes": 1635
+    },
+    {
+      "original": "/private/tmp/folio-fileflow-66-20261004/iphone/project.hosted.yml",
+      "copy": "project.hosted.yml",
+      "sha256": "560d49353633893d204b7650f4b8ad46b7bba78a3bc492dc500f97056e254c97",
+      "bytes": 4774
+    },
+    {
+      "original": "/private/tmp/folio-fileflow-66-20261004/iphone/test_src/HostedIntegrationTests.swift",
+      "copy": "HostedIntegrationTests.swift",
+      "sha256": "f521dc97ad1536db9c822cc6578fb70c09eed9f86276faf3bfb4bee65e0db1b6",
+      "bytes": 14132
+    },
+    {
+      "original": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/build.json",
+      "copy": "ordinary-sdk-build.json",
+      "sha256": "329c767b398076b35ee92d9f21b0bfef2b7b4e6641dc575f44d6c4ad5635d5ad",
+      "bytes": 1454
+    }
+  ]
+}

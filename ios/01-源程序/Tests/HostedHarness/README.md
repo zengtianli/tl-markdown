@@ -39,3 +39,7 @@ run 只使用 test-without-building。NB 取得 Chapter 原全局锁，sim_lane.
 仓库 harness 另由 binding.json 绑定；不在 62 个生产源输入中，不借历史运行宣称新入口已实跑。改 harness 后更新它自己的绑定并真实复验。
 
 2026-10-03 原实际运行证据在 `perf/acceptance/hosted-sdk-20261003.json`：生产 4aa、测试 42dd、日志 240477a4，3/0/0。该历史证据不因迁移入口而重写。它只覆盖 SDK/WebKit 内的生产 URL、渲染/编辑/安全保存、两个编辑器、附件与恢复；不证明系统 Files 授权/选择器、OS Scenes、整 App 重启、资源预算或新 harness 已运行。
+
+2026-10-04 按固定五平台标准补齐第一项的文件闭环断言：在真实 hosted App 进程中，以生产 `MobileStore.open` 打开合成 BOM/CRLF 文稿，经原 WK Editor API 编辑、生产保存后，用新的 `DocumentWorkspace`/`MobileStore` 重开并核正文与非 dirty 状态；外部冲突后走生产 `reloadPreservingDraft`，核外部文件不变、未保存草稿保留且新 store 能恢复两份内容。这是新增测试准备，须重新冻结当前测试、真实 build-for-testing 和 run 后才有运行结果；不复写历史3/0/0，不称系统 picker 授权、Scene URL 派发或整进程重启已验。
+
+当前生产66输入 `750d36751372b4662a2fe3f75b5bda2503c0c8c957002f8215a6291d449b78e7` 的已有普通 iPhone/iPad Release receipt 位于 `/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/build.json`。2026-10-04 原 prepare 默认只读严格复用已成功，未 build/boot；新增断言仍未实跑。下一沿上文原入口使用该 receipt 和新工作目录，不采用旧62源 GUI 准备或旧 hosted 产物。测试变更不改变这66个生产输入，也不要求重新普通 SDK 构建。

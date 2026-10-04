@@ -1,0 +1,32 @@
+{
+ "ok": true,
+ "platform": "iphone",
+ "configuration": "Release",
+ "scheme": "FolioMobile",
+ "compilation_conditions": [],
+ "app_path": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/dd/Build/Products/Release-iphonesimulator/Folio.app",
+ "bundle_id": "cyou.tianli.TLMarkdown.mobile",
+ "version": "1.2.1",
+ "build": "2",
+ "executable_sha256": "88c85810076acd859fc001f962706933837710319cff4853c23bae05787de8d3",
+ "sdk": "iphonesimulator27.0",
+ "xcode": {
+  "name": "Xcode.app",
+  "version": "27.0",
+  "build": "27A266a",
+  "developer_dir": "/Applications/Xcode.app/Contents/Developer"
+ },
+ "destination": "generic/platform=iOS Simulator",
+ "signing": "unsigned simulator build (CODE_SIGNING_ALLOWED=NO)",
+ "log": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/build-iphone-Release.log",
+ "work_dir": "/Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95",
+ "seconds": 54.2,
+ "generated_info_plists": [],
+ "source_layout": {
+  "schema_version": 1,
+  "source_base": "src",
+  "component": "src/ios/01-源程序",
+  "input_sha256": "750d36751372b4662a2fe3f75b5bda2503c0c8c957002f8215a6291d449b78e7",
+  "external_files": {}
+ }
+}

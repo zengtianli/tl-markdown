@@ -1,0 +1,104 @@
+name: FolioMobile
+options:
+  bundleIdPrefix: cyou.tianli
+  deploymentTarget:
+    iOS: '18.0'
+    visionOS: '26.0'
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: '5.0'
+    MARKETING_VERSION: 1.2.1
+    CURRENT_PROJECT_VERSION: '2'
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: B9LJH93LA4
+    ENABLE_USER_SCRIPT_SANDBOXING: false
+targetTemplates:
+  FolioDocumentApp:
+    type: application
+    sources:
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/ios/01-源程序/Sources
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/ios/01-源程序/Shared
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/Sources/Models.swift
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/Sources/IndexEngine.swift
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/Resources/Editor
+      type: folder
+      buildPhase: resources
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/Resources/THIRD-PARTY-NOTICES.txt
+      buildPhase: resources
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/ios/01-源程序/Resources/Assets.xcassets
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/ios/01-源程序/Resources/PrivacyInfo.xcprivacy
+      buildPhase: resources
+    - path: /Users/tianli/Library/Caches/sim-lane/platform-measure/sim-lane-build.e6982c0791732bfce73b18268bda234214598f596023b7e4fb5e4d72f08f88e6/sim-lane-build.5zz7oo95/src/ios/01-源程序/Fixtures/demo.md
+      buildPhase: resources
+    dependencies:
+    - sdk: libsqlite3.tbd
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cyou.tianli.TLMarkdown.mobile
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        PRODUCT_NAME: Folio
+        GENERATE_INFOPLIST_FILE: false
+    info:
+      path: /private/tmp/folio-fileflow-66-20261004/iphone/Generated/FolioMobile-Info.plist
+      properties:
+        CFBundleDisplayName: Folio · 文页
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UIFileSharingEnabled: false
+        ITSAppUsesNonExemptEncryption: false
+        UISupportedInterfaceOrientations:
+        - UIInterfaceOrientationPortrait
+        - UIInterfaceOrientationPortraitUpsideDown
+        - UIInterfaceOrientationLandscapeLeft
+        - UIInterfaceOrientationLandscapeRight
+        CFBundleDocumentTypes:
+        - CFBundleTypeName: Markdown document
+          CFBundleTypeRole: Editor
+          LSHandlerRank: Alternate
+          LSItemContentTypes:
+          - net.daringfireball.markdown
+          - public.plain-text
+        UTImportedTypeDeclarations:
+        - UTTypeIdentifier: net.daringfireball.markdown
+          UTTypeDescription: Markdown document
+          UTTypeConformsTo:
+          - public.plain-text
+          UTTypeTagSpecification:
+            public.filename-extension:
+            - md
+            - markdown
+            public.mime-type: text/markdown
+targets:
+  FolioMobile:
+    templates:
+    - FolioDocumentApp
+    supportedDestinations:
+    - iOS
+    - visionOS
+    scheme:
+      testTargets:
+      - FolioHostedIntegration
+    settings:
+      base:
+        PRODUCT_MODULE_NAME: Folio
+        ENABLE_TESTABILITY: 'YES'
+  FolioHostedIntegration:
+    type: bundle.unit-test
+    supportedDestinations:
+    - iOS
+    - visionOS
+    sources:
+    - path: /private/tmp/folio-fileflow-66-20261004/iphone/test_src/HostedIntegrationTests.swift
+    dependencies:
+    - target: FolioMobile
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cyou.tianli.TLMarkdown.mobile.hosted-tests
+        GENERATE_INFOPLIST_FILE: 'YES'
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Folio.app/Folio
+        BUNDLE_LOADER: $(TEST_HOST)
