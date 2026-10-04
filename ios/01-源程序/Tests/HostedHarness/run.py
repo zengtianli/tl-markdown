@@ -105,11 +105,13 @@ def sdk_gate(label):
 @contextmanager
 def sdk_environment():
     # Acceptor output paths are not SDK source dependencies; original stager still checks every retained path.
-    fields = ['SOP_REPO', 'SOP_OUT_DIR', 'SOP_CONFIG']
+    fields = ['SOP_REPO', 'SOP_OUT_DIR', 'SOP_CONFIG', 'FOLIO_FAMILY_ROOT']
     saved = {key: os.environ.pop(key) for key in fields if key in os.environ}
+    os.environ['FOLIO_FAMILY_ROOT'] = str(REPO.parents[1])
     try:
         yield
     finally:
+        os.environ.pop('FOLIO_FAMILY_ROOT', None)
         os.environ.update(saved)
 
 def build_command(command, log, cwd, developer_dir=None):
