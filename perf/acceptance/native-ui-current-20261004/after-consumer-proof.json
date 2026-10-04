@@ -1,0 +1,258 @@
+{
+  "recorded_at": "2026-10-04T09:49:08.298464+08:00",
+  "job_id": "56db7fec9de143b296051b2d653baf96",
+  "original_job": {
+    "id": "56db7fec9de143b296051b2d653baf96",
+    "app_id": "folio-mac",
+    "action": "accept",
+    "stage": null,
+    "status": "succeeded",
+    "created_at": "2026-10-04T09:38:53+08:00",
+    "started_at": "2026-10-04T09:38:55+08:00",
+    "finished_at": "2026-10-04T09:41:52+08:00",
+    "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/56db7fec9de143b296051b2d653baf96.log",
+    "message": "验收通过",
+    "check": "native_ui",
+    "retry": false,
+    "tmpdir": "/private/tmp"
+  },
+  "original_entry": {
+    "result": "passed",
+    "scope": "ui",
+    "method": "ui_automation",
+    "checked_at": "2026-10-04T09:41:44.864268+08:00",
+    "input_sha256": "1f59f418fa7f2c5dd2a377f64e6792f97726a81ac093d0b2a1463e7518ccd220",
+    "evidence": "perf/acceptance/native_ui.json",
+    "evidence_sha256": "3924b708bb7cc66fb3969cabb6b6d4c22a85ad48a4f790719cff6f96adc10eba",
+    "detail": "sop.accept：bash scripts/accept/native_ui.sh → 进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。"
+  },
+  "native_ui_current": true,
+  "current_inputs": {
+    "stages": {
+      "test": "71bcb75f611643d1ca1ffe714c91dae3d1e4f70885abc740b8dc0063f2556f2b",
+      "perf": "21a0a1b228df1dce35cbabd241f23c05e77d0b384da2380e092dde4b3c7248dd",
+      "media": "bc0f2468932267489f6a1e339921ffc419b5dedaf7489741c4512eeaa9981833",
+      "promo": "ec2105ea58a1802a7bb02646c35d106e137645359425e44fd6d5e0cfea4b3631",
+      "ship": "dc63a0705fb2cd4a531e25ec06f1d01ab0147361912a7f67f8fc8a6422c2b4e3"
+    },
+    "bindings": {
+      "business": "085a72bc556de074fcbf15c73c9f5e146924df2d1e9fe67a19528def8322024f",
+      "code": "1962e28cb265e771c296b69ed924620efc07849d056e27709fd7a138f94715e3",
+      "ui": "1f59f418fa7f2c5dd2a377f64e6792f97726a81ac093d0b2a1463e7518ccd220",
+      "promo_ui": "12bcce3b5c35f9082774c588e8fea5ecbe4b85d36892a1198db8cfc39dc8c8af",
+      "media": "c3deb3a79ce3872a2b438f91e93114f9d64328f05058fd777ae022e83ebdb1b6",
+      "icon": "ec3f9d6a0691205c9f621fc8162a6879ee9ec1b3d3abe1449dc6e3b85a25d7ea",
+      "installed_icon": "2919a93427bf3115771fb4f864d75dc6347f117ee2305f1b5bd1a05331eaba3e",
+      "cli_entry": "95b7c75441359bca2a5397b04fa3b1d947a9507f68b83fd10a8a5bcf15f3d019"
+    },
+    "icon_inputs": {
+      "png": {
+        "path": "/Users/tianli/Apps/folio/icon/AppIcon.png",
+        "sha256": "52bb539a1eeee31fff2112bf68923c4ef02c29050b203465de35b73e3826d2fc"
+      },
+      "icns": {
+        "path": "/Users/tianli/Apps/folio/icon/AppIcon.icns",
+        "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+      },
+      "provenance": {
+        "path": "/Users/tianli/Apps/folio/icon/provenance.json",
+        "sha256": "6eb93585bc2aad40e72c219efd336c502b261f3dcbbe61fef3cf441c2791bf6f"
+      }
+    },
+    "installed_icon_inputs": {
+      "/Applications/Folio.app/Contents/Resources/AppIcon-a51366356ae2baca.icns": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+    },
+    "product_policy_sha256": "cef4cf1c0eab8b4132b7b0fb8ab4c6c50f4817cb21f347292bebbe46ecf2dd81",
+    "product_naming_sha256": "368600b0624a28516554f4dab5f25a67fe6b87c10b7305e3d98f956f6f463152",
+    "icon_complete": true,
+    "installed_icon_matches": true,
+    "components": {
+      "business": "085a72bc556de074fcbf15c73c9f5e146924df2d1e9fe67a19528def8322024f",
+      "code": "1962e28cb265e771c296b69ed924620efc07849d056e27709fd7a138f94715e3",
+      "perf": "674316a5b6d56fb69314a5042e599f54a01007f0ffdb56f34aa3b46a08bd8907",
+      "ui": "e2d7ae2ae44cf3f89ed5044c06d1f97fad19b3a30d509cccf58c56e5ba0c91c7",
+      "media": "6ca13de230c1a5fd0f0cb3c04b3ed1b3f1f1b5a24c02f39c50f4a341842c3223"
+    }
+  },
+  "current_source": {
+    "input_globs": [
+      "Sources/**",
+      "CLI/**",
+      "Tests/**",
+      "TLMarkdown.xcodeproj/**",
+      "Info.plist",
+      "project.yaml",
+      "build.sh",
+      "scripts/build-cli.sh",
+      "scripts/test.sh",
+      "scripts/package-release.py",
+      "scripts/test_file_open.py",
+      "scripts/install-cli.py",
+      "Editor/src/**",
+      "Editor/*.mjs",
+      "Editor/package*.json",
+      "Resources/*.txt",
+      "Resources/*.md",
+      "Resources/graph-view.html",
+      "icon/*.png",
+      "icon/*.icns"
+    ],
+    "sha256": "842252248657e83a6f9c5f93bcd17537426306ef8cb35b6178d228f61cf674c5",
+    "file_count": 51,
+    "files": {
+      "Sources/BackendClient.swift": "327e9610be34a5cd6f8fc9d4341b2ba3ed97042fb673cf9bf7898858bedb91b0",
+      "Sources/ViewModel.swift": "a1e64a40f68af8e396d195976643d32b7635e494daa99967ed592a01059139c1",
+      "Sources/Shared/AppConfiguration.swift": "66d1b04072dbcbcbbc556afb79be1181396fc8bd1a6940d5960adea742219edc",
+      "Sources/Shared/AppLifecycleUI.swift": "c5bfb42bb97555125d3822a98ab0bab71adf368f0de1439f170f0dddb7456974",
+      "Sources/Shared/AppLifecycle.swift": "07adaba8327f855b9a497346384ece9f8a526089c1c2f987b8873ab95a4fec3c",
+      "Sources/GraphEngine.swift": "b7fac6b3be051956b102e34795b9ff35a3ff4f23c65e0d1c5bda842a486b6a0e",
+      "Sources/Models.swift": "66e6f8235c01fc1ab92457b8bea577cb6cc0969c39a0144bb6e08d31ba653aab",
+      "Sources/IndexEngine.swift": "4ac41b667c9b15368ca5766a1c1271941e0fb5115b64a796400208707ca9c691",
+      "Sources/ContentView.swift": "99e2f4d78df33df8b7dcdb4338e7817e0ee8e21369348d318b4225faf19e620d",
+      "Sources/TLMarkdownApp.swift": "91edc37e88c1d8d59ea343d13557e0f3854bdaa4cf4d38c199d9ec7fd6b5ea8d",
+      "CLI/main.swift": "859bfccd6c09f724437a251b048bf874e1fbfd22b79ca502de98200fa361dcbf",
+      "Tests/WatcherTests.swift": "ff6df3f043624b147057cec77d76fb43a3bcc01399bee960fe84f07a1523a949",
+      "Tests/GraphEngineTests.swift": "9841d1186f04e16574dba94cc965ca3b5421ab8ce771c67a4e9d95e2b8ff01f3",
+      "Tests/NoteSearchTests.swift": "3a9d529c0d90a14aa55dd7e0aeb3367b140c2339688002555718e6c5947780d5",
+      "Tests/MainEditorTests.swift": "0a0232ac4c550fcbb121e332f7725bd52f3f426cc162b853bde142a3fe9a2ec9",
+      "Tests/NativeEditorTests.swift": "500b169269b409735db0b4acbcb3436055469171a9f15c5c411f82688d7ec131",
+      "Tests/PrivacyAcceptance.swift": "0f32aa0bb96110b40b4b48467201ab4e57551a8a41c11393324376540163128f",
+      "Tests/FunctionalityAcceptance.swift": "17b2bc2bb94e5bb30b8d0f283bd8c425d287cc74e9b529cd11b5d8c2f83e16e5",
+      "Tests/StoreTests.swift": "ee46270984dfabfc23c5ee3c21ada2003aebe83ba5d9354f8720b2625b58026d",
+      "Tests/DocumentIOTests.swift": "d506d98f2bdb33b67ae7bd92872a10ee7ca29f8eaef1c7db26b008776289219a",
+      "Tests/IndexEngineTests.swift": "91d949066d83c92219e0a0250580853b542bfc9914aeeda3aa335c2f3ba7374c",
+      "Tests/RecoveryAcceptance.swift": "1021f472d49ddd8c49dbe0d03583c9bdf245b4a501bfce3e4220503dbb5badb7",
+      "TLMarkdown.xcodeproj/project.pbxproj": "f2b30b37d394234df7c0e926f9896df0973d4f6a2ad21b1ccaf541e221e8c228",
+      "Info.plist": "bb998848c83de7d9f4b76c64d95804eb72fb94dfb7357936ef85f33d5de9c185",
+      "project.yaml": "d1132768c9963c6957ba3d3043be6183210fa39647079c7e04b8df2958791f0b",
+      "build.sh": "5185048677bee3c4da44293af61aaddc9f70967e6063b23b52bc26573e065c21",
+      "scripts/build-cli.sh": "a7bb8ee0558cda19c3a89d79d5722ec8d3bc9e5b54298ff3ec48d69c1b48b398",
+      "scripts/test.sh": "3a45ad2a7eb495b385387b6be72576913c2a6d4d9b3d494901793813fb1dab1b",
+      "scripts/package-release.py": "4eb0070927fab0a47bbb1835e60a26c1fad9588cd929dc4c4c1e2f907be5095e",
+      "scripts/test_file_open.py": "75027d2e7a6ac0712991d6d421c3b97954fbe45d48999734895231bdd759a77b",
+      "scripts/install-cli.py": "c5dad846dea17c5c6f73a4f50963548b76130972548e93782a29b242ffca6cc5",
+      "Editor/src/mermaid.js": "0f4a9816235fecedc5aa5fb37d87563af1d86448c5d439b486432ac194671587",
+      "Editor/src/index.html": "dabc0c0795f5e8f31fa935c0321db088afc6a17d094508b17ed2090b13e33c1f",
+      "Editor/src/katex.js": "80d0905931237b3fac93bfe40b133a7c8fa9ddd019662b8501f2d3bd11f87b69",
+      "Editor/src/diagram.js": "b6954f2fdca1537cfb879d22001c8708c6feb3963ba94642e6d039e95b2bbdb2",
+      "Editor/src/editor.js": "848c42831cbf67c7bfab16d260b8cde88381fb21c867bbd808d4cb1763407caa",
+      "Editor/src/highlight.js": "63347152a0b93df3871802b8036a0b2435092f49e8a842346b8b76605c20e8d2",
+      "Editor/src/style.css": "8bb3b8699c28ca08fc7a4fc1734a42fb92b0ba9d7a33a9912529e8d218b4f220",
+      "Editor/src/structure.js": "cdb94991875f5cf744a8a587206de80e96f26fd9b14c3ad45c001236880f5d44",
+      "Editor/structure-tests.mjs": "1d83630fb18598700ff8d09300f480690e4aeb2007e16bf35562f94d01ac1b64",
+      "Editor/build.mjs": "2033e8e9a7dabceb67c13838ff3d6244caa66635692d39e43d75d0824f44a4a7",
+      "Editor/diagram-tests.mjs": "35743b05fca2adf186d9f72d5574400fcb8ab10ac08233dda822cd8330437a1f",
+      "Editor/tests.mjs": "a1e77de553c732dbec61ea037ab415334b6f12a26a882080c45210c42bf4d7a9",
+      "Editor/package-lock.json": "478ea8b2d6f4b75b94127bea61f0cc15cb5de935da6870c7f287123ea440e0b2",
+      "Editor/package.json": "ccd79c92b030a9aafc08c910ad56d116e076b5b5d403ceb7a29bf01aa4d69e1c",
+      "Resources/THIRD-PARTY-NOTICES.txt": "5be51b4f04c7df6e076f98dd757008926d978193a45cc3953190c9c6a5db8d37",
+      "Resources/欢迎使用.md": "c04483e66be6a2bbfa0f1fe90a62b79893d3bae7fbedcf1d46fa7ad30901e8a2",
+      "Resources/graph-view.html": "81747055d5ab9de47d75a8869de39a654aa09ec96d5292f2e4d27858e2c63017",
+      "icon/SeedreamSource.png": "b768a0b406808ca2bac405bb39ff792b5e04fa28932a90cad7d3dc5a36cd3604",
+      "icon/AppIcon.png": "52bb539a1eeee31fff2112bf68923c4ef02c29050b203465de35b73e3826d2fc",
+      "icon/AppIcon.icns": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+    },
+    "commit": "e7250b846d3877d1bfccf9d5cf3bcfddd8eeae93",
+    "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
+    "dirty": false
+  },
+  "actual_artifact": {
+    "bundle_id": "cyou.tianli.TLMarkdown",
+    "version": "1.2.1",
+    "build": "92",
+    "executable": "Contents/MacOS/TLMarkdown",
+    "sha256": "1bc7bac63ed916b6030fe931a3b1a1a9cf06c3d83f7b905636bee8d315bf6aa2",
+    "icon": {
+      "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
+      "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+    }
+  },
+  "original_receipt_verification": [
+    false,
+    "装机可执行文件/版本/图标与构建 receipt 不符"
+  ],
+  "actual_outputs": [
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.json",
+      "saved": "current/native_ui.json",
+      "bytes": 1419,
+      "sha256": "3924b708bb7cc66fb3969cabb6b6d4c22a85ad48a4f790719cff6f96adc10eba"
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.log",
+      "saved": "current/native_ui.log",
+      "bytes": 1048,
+      "sha256": "80fc849efd36beb871ee741a38550fc6f544ead8a02ba46ee3670352286b863c"
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.detail.json",
+      "saved": "current/native_ui.detail.json",
+      "bytes": 389,
+      "sha256": "a050c1a2e848f535b72d7e9493c547e95e290fc8eba1886819a658895bd07566"
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.result.json",
+      "saved": "current/native_ui.result.json",
+      "bytes": 1094,
+      "sha256": "ac6b2dbbda549d014b5849d30f99bd1b1e25c6abcf19237965eecbea78ba976f"
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-editor.png",
+      "saved": "current/native_ui-editor.png",
+      "bytes": 46756,
+      "sha256": "596616bcb5503bc47c581dee3811d0b3c44351f6a3274de26a1037beda297deb",
+      "width": 1120,
+      "height": 780
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-editor.web.png",
+      "saved": "current/native_ui-editor.web.png",
+      "bytes": 26341,
+      "sha256": "c4a61898c642ff4ab3ac2fe71a55b24a6983bb77e054b8ceb0d894ed23084481",
+      "width": 881,
+      "height": 712
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-index-empty.png",
+      "saved": "current/native_ui-index-empty.png",
+      "bytes": 58602,
+      "sha256": "8fa313b69fb8e6fdc513d4614816b1bd68d74602d2f0fc5d246b0994e5e8fd52",
+      "width": 1120,
+      "height": 780
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-settings.png",
+      "saved": "current/native_ui-settings.png",
+      "bytes": 50952,
+      "sha256": "5a6685a24fc4ec96ba56d60876c2fdaee152d49af103fb0561ef176d3a10489a",
+      "width": 580,
+      "height": 561
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-source.png",
+      "saved": "current/native_ui-source.png",
+      "bytes": 43772,
+      "sha256": "a123ca2c59b9b466331c4d55c63bfe645142a2b885074b80b76de45ee8f9dbe0",
+      "width": 1120,
+      "height": 780
+    },
+    {
+      "source": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-source.web.png",
+      "saved": "current/native_ui-source.web.png",
+      "bytes": 26667,
+      "sha256": "02dca668139928862a7097f70d99d882632a1fd853641132111f0015a0e65069",
+      "width": 881,
+      "height": 712
+    }
+  ],
+  "runtime_scope": "production App offscreen views/model actions with marked synthetic fixtures; not mobile Files/Scene, not Store capture, not performance",
+  "own_runtime_processes_remaining": [],
+  "actual_build_performed": true,
+  "reuse_environment_received": false,
+  "reuse_auxiliary_is_old": true,
+  "known_job_descendants_remaining": [],
+  "observed_build_scope": "Post-build observation, backed by before source51/current source51 and original job build log; not a receipt frozen before this build",
+  "owned_temp": "/Users/tianli/Apps/folio/build/accept/native_ui/run.NUFLxx",
+  "owned_temp_removed": true,
+  "old_runs_preserved": true
+}

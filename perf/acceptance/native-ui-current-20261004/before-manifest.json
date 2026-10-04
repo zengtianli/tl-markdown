@@ -1,0 +1,76 @@
+{
+  "status": "preserved-before-original-native-ui-job-not-started",
+  "recorded_at": "2026-10-04T09:36:43.212296+08:00",
+  "previous_originals": [
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.json",
+      "copy": "previous/native_ui.json",
+      "sha256": "d55333f253cce2ccf7f7dbe460142855209f29f5153cfa74c6c8d86b9efa2655",
+      "bytes": 1210
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.log",
+      "copy": "previous/native_ui.log",
+      "sha256": "7b315adce5d06739d2822c9fb8a420ae40ab3f84b31368e38a19daa1b5e8c5ed",
+      "bytes": 3705
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.detail.json",
+      "copy": "previous/native_ui.detail.json",
+      "sha256": "a050c1a2e848f535b72d7e9493c547e95e290fc8eba1886819a658895bd07566",
+      "bytes": 389
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.result.json",
+      "copy": "previous/native_ui.result.json",
+      "sha256": "ffec0901b1f8aea848612b4c050cf95c50edaf7d19fcf9a33aee2d3eef6770c1",
+      "bytes": 4315
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui.reuse.json",
+      "copy": "previous/native_ui.reuse.json",
+      "sha256": "67127da5c023167a45a3f0ba20787b87b29a5bab614dc84dc73465345429b158",
+      "bytes": 3064
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-editor.png",
+      "copy": "previous/native_ui-editor.png",
+      "sha256": "952aa3411b0d5369f255e15a15025c5ab9b15beb850e93a2d90129723d3c9656",
+      "bytes": 46902
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-editor.web.png",
+      "copy": "previous/native_ui-editor.web.png",
+      "sha256": "c4a61898c642ff4ab3ac2fe71a55b24a6983bb77e054b8ceb0d894ed23084481",
+      "bytes": 26341
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-index-empty.png",
+      "copy": "previous/native_ui-index-empty.png",
+      "sha256": "8fa313b69fb8e6fdc513d4614816b1bd68d74602d2f0fc5d246b0994e5e8fd52",
+      "bytes": 58602
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-settings.png",
+      "copy": "previous/native_ui-settings.png",
+      "sha256": "7ea216765578c2c6e322f46680b4cb1f80a5ffca349785c515bbff3530c083de",
+      "bytes": 50846
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-source.png",
+      "copy": "previous/native_ui-source.png",
+      "sha256": "a123ca2c59b9b466331c4d55c63bfe645142a2b885074b80b76de45ee8f9dbe0",
+      "bytes": 43772
+    },
+    {
+      "original": "/Users/tianli/Apps/folio/perf/acceptance/native_ui-source.web.png",
+      "copy": "previous/native_ui-source.web.png",
+      "sha256": "02dca668139928862a7097f70d99d882632a1fd853641132111f0015a0e65069",
+      "bytes": 26667
+    }
+  ],
+  "current_build_receipt_sha256": "3bcd711e52e892eaf7a5a26a9dc4789a1f92c93bd2104aa549c4ec3ae5a41ccc",
+  "actual_app_starts": 0,
+  "sdk_builds": 0,
+  "note": "Old bytes and old captured times are retained; no new PASS."
+}

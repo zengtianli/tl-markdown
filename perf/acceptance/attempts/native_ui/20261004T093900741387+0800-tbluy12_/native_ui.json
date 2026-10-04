@@ -5,18 +5,14 @@
   "command": "bash scripts/accept/native_ui.sh",
   "exit_code": 0,
   "status": "passed",
-  "started_at": "2026-10-04T09:39:00.743864+08:00",
-  "finished_at": "2026-10-04T09:41:44.864268+08:00",
-  "input_sha256": "1f59f418fa7f2c5dd2a377f64e6792f97726a81ac093d0b2a1463e7518ccd220",
+  "started_at": "2026-10-03T06:08:10.553495+08:00",
+  "finished_at": "2026-10-03T06:08:13.787645+08:00",
+  "input_sha256": "9fcd2a4d61c8e73ac770ee43fdc3200cd83e67a56ccd136084218362057d4a24",
   "log": "perf/acceptance/native_ui.log",
-  "log_sha256": "80fc849efd36beb871ee741a38550fc6f544ead8a02ba46ee3670352286b863c",
+  "log_sha256": "7b315adce5d06739d2822c9fb8a420ae40ab3f84b31368e38a19daa1b5e8c5ed",
   "summary": "进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。",
   "detail": {
     "summary": "进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。",
     "environment": "isolated synthetic data; no input synthesis"
-  },
-  "previous_observation": {
-    "path": "perf/acceptance/attempts/native_ui/20261004T093900741387+0800-tbluy12_",
-    "manifest_sha256": "dba4ed8cefc80808a1091ef63325348970353a9491f5abebe1ac50c804cc1530"
   }
 }

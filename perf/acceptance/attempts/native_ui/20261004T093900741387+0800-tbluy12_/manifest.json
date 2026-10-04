@@ -1,0 +1,23 @@
+{
+  "app_id": "folio-mac",
+  "check": "native_ui",
+  "saved_at": "2026-10-04T09:39:00.741579+08:00",
+  "files": {
+    "native_ui.log": {
+      "sha256": "7b315adce5d06739d2822c9fb8a420ae40ab3f84b31368e38a19daa1b5e8c5ed",
+      "bytes": 3705,
+      "mode": 420
+    },
+    "native_ui.detail.json": {
+      "sha256": "a050c1a2e848f535b72d7e9493c547e95e290fc8eba1886819a658895bd07566",
+      "bytes": 389,
+      "mode": 420
+    },
+    "native_ui.json": {
+      "sha256": "d55333f253cce2ccf7f7dbe460142855209f29f5153cfa74c6c8d86b9efa2655",
+      "bytes": 1210,
+      "mode": 420
+    }
+  },
+  "missing": []
+}

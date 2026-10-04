@@ -1,0 +1,81 @@
+{
+  "recorded_at": "2026-10-04T09:38:53.510124+08:00",
+  "app_id": "folio-mac",
+  "inputs": {
+    "stages": {
+      "test": "71bcb75f611643d1ca1ffe714c91dae3d1e4f70885abc740b8dc0063f2556f2b",
+      "perf": "21a0a1b228df1dce35cbabd241f23c05e77d0b384da2380e092dde4b3c7248dd",
+      "media": "bc0f2468932267489f6a1e339921ffc419b5dedaf7489741c4512eeaa9981833",
+      "promo": "ec2105ea58a1802a7bb02646c35d106e137645359425e44fd6d5e0cfea4b3631",
+      "ship": "dc63a0705fb2cd4a531e25ec06f1d01ab0147361912a7f67f8fc8a6422c2b4e3"
+    },
+    "bindings": {
+      "business": "085a72bc556de074fcbf15c73c9f5e146924df2d1e9fe67a19528def8322024f",
+      "code": "1962e28cb265e771c296b69ed924620efc07849d056e27709fd7a138f94715e3",
+      "ui": "1f59f418fa7f2c5dd2a377f64e6792f97726a81ac093d0b2a1463e7518ccd220",
+      "promo_ui": "12bcce3b5c35f9082774c588e8fea5ecbe4b85d36892a1198db8cfc39dc8c8af",
+      "media": "c3deb3a79ce3872a2b438f91e93114f9d64328f05058fd777ae022e83ebdb1b6",
+      "icon": "ec3f9d6a0691205c9f621fc8162a6879ee9ec1b3d3abe1449dc6e3b85a25d7ea",
+      "installed_icon": "2919a93427bf3115771fb4f864d75dc6347f117ee2305f1b5bd1a05331eaba3e",
+      "cli_entry": "95b7c75441359bca2a5397b04fa3b1d947a9507f68b83fd10a8a5bcf15f3d019"
+    },
+    "icon_inputs": {
+      "png": {
+        "path": "/Users/tianli/Apps/folio/icon/AppIcon.png",
+        "sha256": "52bb539a1eeee31fff2112bf68923c4ef02c29050b203465de35b73e3826d2fc"
+      },
+      "icns": {
+        "path": "/Users/tianli/Apps/folio/icon/AppIcon.icns",
+        "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+      },
+      "provenance": {
+        "path": "/Users/tianli/Apps/folio/icon/provenance.json",
+        "sha256": "6eb93585bc2aad40e72c219efd336c502b261f3dcbbe61fef3cf441c2791bf6f"
+      }
+    },
+    "installed_icon_inputs": {
+      "/Applications/Folio.app/Contents/Resources/AppIcon-a51366356ae2baca.icns": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+    },
+    "product_policy_sha256": "cef4cf1c0eab8b4132b7b0fb8ab4c6c50f4817cb21f347292bebbe46ecf2dd81",
+    "product_naming_sha256": "368600b0624a28516554f4dab5f25a67fe6b87c10b7305e3d98f956f6f463152",
+    "icon_complete": true,
+    "installed_icon_matches": true,
+    "components": {
+      "business": "085a72bc556de074fcbf15c73c9f5e146924df2d1e9fe67a19528def8322024f",
+      "code": "1962e28cb265e771c296b69ed924620efc07849d056e27709fd7a138f94715e3",
+      "perf": "674316a5b6d56fb69314a5042e599f54a01007f0ffdb56f34aa3b46a08bd8907",
+      "ui": "e2d7ae2ae44cf3f89ed5044c06d1f97fad19b3a30d509cccf58c56e5ba0c91c7",
+      "media": "6ca13de230c1a5fd0f0cb3c04b3ed1b3f1f1b5a24c02f39c50f4a341842c3223"
+    }
+  },
+  "coverage": [
+    "functionality",
+    "recovery",
+    "privacy",
+    "native_ui",
+    "homepage_desktop",
+    "homepage_mobile",
+    "media_playback",
+    "cli_entry"
+  ],
+  "original_native_ui_requirement": "ui",
+  "original_build_verification": [
+    true,
+    "装机可执行文件、图标与当前构建输入均匹配 receipt"
+  ],
+  "before_runs": [
+    "run.6Yxvtc",
+    "run.DWDAGC",
+    "run.Gt8Ljf",
+    "run.KYKg7n",
+    "run.UfAt1M",
+    "run.XK8Lul",
+    "run.XpNSdE",
+    "run.YzkPoe",
+    "run.bBrICc",
+    "run.iE0TXB",
+    "run.lDa77d",
+    "run.ph1MVc",
+    "run.uHZfFv"
+  ]
+}

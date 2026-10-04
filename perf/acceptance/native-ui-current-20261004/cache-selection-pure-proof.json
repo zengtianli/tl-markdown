@@ -1,0 +1,50 @@
+{
+  "recorded_at": "2026-10-04T09:52:45.202539+08:00",
+  "script_sha256": "3641e39458e61a423cb2bf6fa29b7c6fba61a8183e93ff7143a822f40426670f",
+  "checks": [
+    "missing receipt refuses reuse without verifier",
+    "missing icon refuses reuse",
+    "valid canonical receipt selects reuse after shared verifier",
+    "independent receipt path reaches the same shared verifier",
+    "canonical drift declines reuse",
+    "malformed receipt refuses reuse"
+  ],
+  "actual_read_only_cache_check": {
+    "valid": false,
+    "reason": "装机可执行文件/版本/图标与构建 receipt 不符",
+    "receipt": "/Users/tianli/Apps/folio/perf/build-receipt.json",
+    "receipt_sha256": "3bcd711e52e892eaf7a5a26a9dc4789a1f92c93bd2104aa549c4ec3ae5a41ccc"
+  },
+  "source_sha256": "842252248657e83a6f9c5f93bcd17537426306ef8cb35b6178d228f61cf674c5",
+  "receipt_artifact": {
+    "bundle_id": "cyou.tianli.TLMarkdown",
+    "version": "1.2.1",
+    "build": "89",
+    "executable": "Contents/MacOS/TLMarkdown",
+    "sha256": "e628b43d6a464aefb55ff96571223dc033bef0bd6a1d0cf44205a45bb3bdfcde",
+    "icon": {
+      "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
+      "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+    }
+  },
+  "actual_artifact": {
+    "bundle_id": "cyou.tianli.TLMarkdown",
+    "version": "1.2.1",
+    "build": "92",
+    "executable": "Contents/MacOS/TLMarkdown",
+    "sha256": "1bc7bac63ed916b6030fe931a3b1a1a9cf06c3d83f7b905636bee8d315bf6aa2",
+    "icon": {
+      "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
+      "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
+    }
+  },
+  "ui_binding_before": "1f59f418fa7f2c5dd2a377f64e6792f97726a81ac093d0b2a1463e7518ccd220",
+  "ui_binding_after": "1f59f418fa7f2c5dd2a377f64e6792f97726a81ac093d0b2a1463e7518ccd220",
+  "native_ui_current": true,
+  "original_checked_at": "2026-10-04T09:41:44.864268+08:00",
+  "runtime_invocations": 0,
+  "sdk_invocations": 0,
+  "scope": "pure cache selection checks and read-only artifact/source validation; actual prior build92 has no new receipt and is correctly rejected; no UI rerun",
+  "shared_receipt_commit": "30c079f8ebbf25c57b0c66a6afad837c705a5351",
+  "shared_risk_cases": "3 mock cases plus existing default receipt regression passed; no SDK/UI"
+}

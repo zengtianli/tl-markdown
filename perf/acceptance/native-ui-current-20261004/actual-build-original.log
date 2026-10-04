@@ -1,0 +1,10 @@
+[xcode_env] Xcode.app (Xcode 27.0, macosx SDK 27.0)
+—  folio: 未用 .convertFromSnakeCase,本门不适用
+
+> build
+> node build.mjs
+
+Editor resources bundled locally.
+/Users/tianli/Apps/folio/build/DerivedData/Build/Products/Release/TLMarkdown.app: replacing existing signature
+Built without launching an app: /Users/tianli/Apps/folio/build/DerivedData/Build/Products/Release/TLMarkdown.app
+Production editor/file-open verification is pending; run --verify for isolated checks.

@@ -1,0 +1,59 @@
+{
+  "recorded_at": "2026-10-04T09:40:21.474071+08:00",
+  "job": {
+    "id": "56db7fec9de143b296051b2d653baf96",
+    "app_id": "folio-mac",
+    "action": "accept",
+    "stage": null,
+    "status": "running",
+    "created_at": "2026-10-04T09:38:53+08:00",
+    "started_at": "2026-10-04T09:38:55+08:00",
+    "finished_at": null,
+    "log_path": "/Users/tianli/Library/Application Support/app-sop/workbench/logs/56db7fec9de143b296051b2d653baf96.log",
+    "message": "正在执行",
+    "check": "native_ui",
+    "retry": false,
+    "tmpdir": "/private/tmp",
+    "child_pid": 19148,
+    "child_identity": "Sun Oct  4 09:38:56 2026"
+  },
+  "actual_job_children": [
+    {
+      "pid": 19148,
+      "ppid": 19146,
+      "started": "Sun Oct 4 09:38:56 2026",
+      "command": "/Users/tianli/Dev/.venv/bin/python /Users/tianli/Apps/chapter/engine/app_sop.py accept --app folio-mac --check native_ui --queue-lock --json"
+    },
+    {
+      "pid": 19180,
+      "ppid": 19148,
+      "started": "Sun Oct 4 09:39:00 2026",
+      "command": "bash scripts/accept/native_ui.sh"
+    },
+    {
+      "pid": 19247,
+      "ppid": 19180,
+      "started": "Sun Oct 4 09:39:05 2026",
+      "command": "bash /Users/tianli/Apps/folio/build.sh --build-only"
+    },
+    {
+      "pid": 19316,
+      "ppid": 19247,
+      "started": "Sun Oct 4 09:39:09 2026",
+      "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project TLMarkdown.xcodeproj -scheme TLMarkdown -configuration Release -destination platform=macOS,arch=arm64 -derivedDataPath /Users/tianli/Apps/folio/build/DerivedData CODE_SIGNING_ALLOWED=NO DEPLOYMENT_POSTPROCESSING=YES STRIP_INSTALLED_PRODUCT=YES STRIP_STYLE=non-global STRIP_SWIFT_SYMBOLS=NO build"
+    },
+    {
+      "pid": 19369,
+      "ppid": 19316,
+      "started": "Sun Oct 4 09:39:13 2026",
+      "command": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/MacOS/SWBBuildService"
+    },
+    {
+      "pid": 19777,
+      "ppid": 19369,
+      "started": "Sun Oct 4 09:39:34 2026",
+      "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/tianli/Apps/folio/Sources/Shared/AppLifecycle.swift /Users/tianli/Apps/folio/Sources/Shared/AppConfiguration.swift /Users/tianli/Apps/folio/Sources/Shared/AppLifecycleUI.swift /Users/tianli/Apps/folio/Sources/TLMarkdownApp.swift /Users/tianli/Apps/folio/Sources/ContentView.swift /Users/tianli/Apps/folio/Sources/ViewModel.swift /Users/tianli/Apps/folio/Sources/BackendClient.swift /Users/tianli/Apps/folio/Sources/Models.swift /Users/tianli/Apps/folio/Sources/IndexEngine.swift /Users/tianli/Apps/folio/Sources/GraphEngine.swift -supplementary-output-file-map /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/supplementaryOutputs-1 -emit-localized-strings -emit-localized-strings-path /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64 -target arm64-apple-macos15.0 -disable-cross-import-overlay-search -swift-module-cross-import Darwin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/Darwin.swiftcrossimport/xlocale.swiftoverlay -swift-module-cross-import WebKit /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Modules/WebKit.swiftcrossimport/SwiftUI.swiftoverlay -swift-module-cross-import WebKit /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/System/Library/Frameworks/WebKit.framework/Modules/WebKit.swiftcrossimport/SwiftUI.swiftoverlay -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libFoundationMacros.dylib#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server#FoundationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libObservationMacros.dylib#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server#ObservationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libPreviewsMacros.dylib#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server#PreviewsMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libSwiftMacros.dylib#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server#SwiftMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libSwiftUIMacros.dylib#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server#SwiftUIMacros -disable-implicit-swift-modules -Xcc -fno-implicit-modules -Xcc -fno-implicit-module-maps -explicit-swift-module-map-file /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/TLMarkdown-dependencies-1.json -Xllvm -aarch64-use-tbi -enable-objc-interop -stack-check -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -I /Users/tianli/Apps/folio/build/DerivedData/Build/Products/Release -F /Users/tianli/Apps/folio/build/DerivedData/Build/Products/Release -module-cache-path /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -no-color-diagnostics -Xcc -fno-color-diagnostics -g -debug-info-format=dwarf -dwarf-version=5 -swift-version 5 -O -serialize-debugging-options -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/tianli/Apps/folio/build/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/tianli/Apps/folio -file-compilation-dir /Users/tianli/Apps/folio -Xcc -ivfsstatcache -Xcc /Users/tianli/Apps/folio/build/DerivedData/SDKStatCaches.noindex/macosx27.0-26A425-7231f6df4def33e022ae2eb8f782df1a.sdkstatcache -Xcc -fmodules-prune-interval=86400 -Xcc -fmodules-prune-after=345600 -Xcc -iquote -Xcc /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/TLMarkdown-generated-files.hmap -Xcc -I/Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/TLMarkdown-own-target-headers.hmap -Xcc -I/Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/TLMarkdown-all-target-headers.hmap -Xcc -iquote -Xcc /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/TLMarkdown-project-headers.hmap -Xcc -I/Users/tianli/Apps/folio/build/DerivedData/Build/Products/Release/include -Xcc -I/Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/DerivedSources-normal/arm64 -Xcc -I/Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/DerivedSources/arm64 -Xcc -I/Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/DerivedSources -no-auto-bridging-header-chaining -module-name TLMarkdown -const-gather-protocols-file /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/TLMarkdown_const_extract_protocols.json -disable-clang-spi -clang-target arm64-apple-macos27.0 -target-sdk-version 27.0 -target-sdk-name macosx27.0 -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -enable-default-cmo -num-threads 10 -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/AppLifecycle.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/AppConfiguration.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/AppLifecycleUI.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/TLMarkdownApp.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/ContentView.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/ViewModel.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/BackendClient.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/Models.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/IndexEngine.o -o /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/GraphEngine.o -debug-module-path /Users/tianli/Apps/folio/build/DerivedData/Build/Intermediates.noindex/TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/TLMarkdown.swiftmodule -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/AppLifecycle.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/AppConfiguration.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/AppLifecycleUI.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/TLMarkdownApp.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/ContentView.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/ViewModel.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/BackendClient.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/Models.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/IndexEngine.o -index-unit-output-path /TLMarkdown.build/Release/TLMarkdown.build/Objects-normal/arm64/GraphEngine.o"
+    }
+  ],
+  "note": "Queued original job was taken by natural automatic worker; own work returned75 runs0. No original result relabelled strict reuse."
+}

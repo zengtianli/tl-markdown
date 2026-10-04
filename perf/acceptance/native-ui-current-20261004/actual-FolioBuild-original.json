@@ -1,0 +1,8 @@
+{
+  "source_commit": "e7250b846d3877d1bfccf9d5cf3bcfddd8eeae93",
+  "source_sha256": "de93fc11c8349cb89bc2899aaff92988675ebd1f9903573a6ff57ad039e3bf7c",
+  "built_at": "2026-10-04T01:41:40.279415+00:00",
+  "version": "1.2.1",
+  "build": "92",
+  "cli_sha256": "0149855369bf4da96db5fd6a38ce2501447f8920fb8ea14aadb08bc719624f65"
+}
