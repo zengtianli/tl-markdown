@@ -220,7 +220,8 @@ def chapter_accept(single_editor=False):
             for path in (work / 'iphone').glob('*.log'):
                 shutil.copy2(path, evidence / path.name)
             for run_directory in work.glob('run-*'):
-                shutil.copytree(run_directory, evidence / run_directory.name)
+                if run_directory.is_dir():
+                    shutil.copytree(run_directory, evidence / run_directory.name)
             if (work / 'run-expected.json').is_file():
                 shutil.copy2(work / 'run-expected.json', evidence / 'run-expected.json')
             cleanup['cache_retained'] = (work / 'run-expected.json').is_file()
