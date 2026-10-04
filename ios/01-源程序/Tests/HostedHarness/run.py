@@ -398,6 +398,7 @@ def main(argv=None):
                    "-parallel-testing-enabled", "NO", "-maximum-concurrent-test-simulator-destinations", "1"]
         if args.single_editor:
             command += ['-only-testing:FolioHostedIntegration/HostedIntegrationTests/testSDKOpenEditSafeSaveAndRecovery']
+            command += ['-collect-test-diagnostics', 'never']
         record["command"] = command
         environment = {**os.environ, "DEVELOPER_DIR": before["xcode"]["developer_dir"]}
         for key in ("DYLD_LIBRARY_PATH", "DYLD_FRAMEWORK_PATH", "DYLD_INSERT_LIBRARIES", "SDKROOT", "TOOLCHAINS"):
