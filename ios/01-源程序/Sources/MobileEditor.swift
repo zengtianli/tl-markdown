@@ -2,9 +2,11 @@ import SwiftUI
 import WebKit
 import UniformTypeIdentifiers
 import UIKit
+import CryptoKit
 
 /// UIKit/Vision adapter for the exact bundled Mac Editor. No Markdown renderer here.
 struct MobileEditor: UIViewRepresentable {
+    enum PrivacyRuleSource: Equatable { case stored, compiled }
     @ObservedObject var store: MobileStore
     let document: OpenDocument
     let reading: Bool
@@ -39,12 +41,27 @@ struct MobileEditor: UIViewRepresentable {
         // User documents must not trigger remote tracking images. Local assets and
         // bundled lazy-load renderer modules still use the original Editor unchanged.
         let rules = "[{\"trigger\":{\"url-filter\":\"^https?://\",\"resource-type\":[\"image\"]},\"action\":{\"type\":\"block\"}}]"
-        WKContentRuleListStore.default().compileContentRuleList(forIdentifier: "FolioMobileLocalImages", encodedContentRuleList: rules) { list, error in
-            if let list { configuration.userContentController.add(list) }
-            guard error == nil, let resource = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Editor") else {
+        // WebKit persists compiled rules. The exact rule bytes name this cache;
+        // a privacy-policy change can never reuse the previous compiled policy.
+        let identifier = "FolioMobileLocalImages." + SHA256.hash(data: Data(rules.utf8)).map { String(format: "%02x", $0) }.joined()
+        let ruleStore = WKContentRuleListStore.default()
+        func load(_ list: WKContentRuleList?, _ error: Error?, source: PrivacyRuleSource) {
+            guard error == nil, let list, list.identifier == identifier,
+                  let resource = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Editor") else {
                 store.notice = "本地编辑器或隐私过滤资源无法载入；原文未改动。"; return
             }
+            coordinator.privacyRuleSource = source
+            configuration.userContentController.add(list)
             view.loadFileURL(resource, allowingReadAccessTo: resource.deletingLastPathComponent())
+        }
+        ruleStore.lookUpContentRuleList(forIdentifier: identifier) { list, error in
+            if error == nil, let list {
+                load(list, nil, source: .stored)
+            } else {
+                ruleStore.compileContentRuleList(forIdentifier: identifier, encodedContentRuleList: rules) { list, error in
+                    load(list, error, source: .compiled)
+                }
+            }
         }
         return view
     }
@@ -68,6 +85,7 @@ struct MobileEditor: UIViewRepresentable {
         let owner = UUID().uuidString
         weak var view: WKWebView?
         var ready = false
+        fileprivate(set) var privacyRuleSource: PrivacyRuleSource?
         private var loadedID: String?
         private var loadedRevision: Int?
         private var sourceMode = false

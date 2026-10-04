@@ -129,6 +129,8 @@ import UIKit
         let id = try XCTUnwrap(store.active?.id)
         let a = try await self.editor(store, scene: "A"); defer { close(a) }
         let b = try await self.editor(store, scene: "B"); defer { close(b) }
+        XCTAssertEqual(b.coordinator.privacyRuleSource, .stored,
+                       "second real editor must reuse WebKit's exact compiled privacy rule list")
         try await insert("A_LATEST", into: a, id: id)
         let acceptedA = try XCTUnwrap(store.active?.text)
         // B still contains the old document. Saving A must flush only A.
