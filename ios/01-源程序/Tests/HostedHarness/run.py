@@ -136,7 +136,7 @@ def build_command(command, log, cwd, developer_dir=None):
     finally:
         stop_group(child, identity, observed)
 
-def chapter_accept():
+def chapter_accept(single_editor=False):
     global DEADLINE
     import prepare
     import bind
@@ -202,8 +202,11 @@ def chapter_accept():
             queue_gate('hosted-runtime', observations)
             # This single dedicated stock device is selected by the original native API, no UI/bootstrap runner.
             device = sim_lane.ensure_device('iphone', device_type='iPhone-17-Pro', runtime='27.0', name='Folio Integration')
-            code = main(['--workdir', str(work), '--receipt', str(receipt), '--udid', device['udid'],
-                         '--execute', '--timeout', str(max(1, int(remaining(300))))])
+            arguments = ['--workdir', str(work), '--receipt', str(receipt), '--udid', device['udid'],
+                         '--execute', '--timeout', str(max(1, int(remaining(300))))]
+            if single_editor:
+                arguments += ['--single-editor']
+            code = main(arguments)
     except Exception as failure:
         error = str(failure)
         code = 75 if isinstance(failure, (sim_lane.Busy, BlockingIOError)) else 1
@@ -235,6 +238,7 @@ def chapter_accept():
                  'exit_code': code, 'error': error, 'attempt': attempt, 'records': str(evidence),
                  'ordinary_sdk_configuration': 'Release' if (evidence / 'ordinary-sdk-build.json').is_file() else None,
                  'hosted_configuration': 'Debug',
+                 'selected_tests': ['testSDKOpenEditSafeSaveAndRecovery'] if single_editor else 'all three original hosted tests',
                  'cleanup': cleanup, 'gates': observations, 'elapsed_seconds': time.monotonic() - started,
                  'summary': 'Actual WK/App open → edit → save → fresh reopen and draft recovery' if code == 0 else error or 'Hosted failed',
                  'uncovered': ['Files picker/OS grant UI', 'OS Scene/multiwindow', 'full WebKit auxiliary accounting']}
@@ -332,6 +336,7 @@ def main(argv=None):
     global ROOT, PACKAGE, SDK_RECEIPT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--chapter-accept', action='store_true')
+    parser.add_argument('--single-editor', action='store_true', help='one actual editor open/edit/save/reopen and draft recovery')
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--udid")
     parser.add_argument("--workdir", type=Path)
@@ -341,7 +346,7 @@ def main(argv=None):
     if args.chapter_accept:
         if any([args.execute, args.udid, args.workdir, args.receipt]) or args.timeout != 300:
             parser.error('fixed Chapter transaction does not accept manual overrides')
-        return chapter_accept()
+        return chapter_accept(single_editor=args.single_editor)
     if not args.workdir or not args.receipt:
         parser.error('--workdir and --receipt are required for original manual mode')
     ROOT = args.workdir.resolve()
@@ -391,6 +396,8 @@ def main(argv=None):
         command = [str(Path(before["xcode"]["developer_dir"])/"usr/bin/xcodebuild"), "test-without-building", "-xctestrun", before["xctestrun"],
                    "-destination", "platform=iOS Simulator,id="+args.udid, "-destination-timeout", "10", "-resultBundlePath", str(result),
                    "-parallel-testing-enabled", "NO", "-maximum-concurrent-test-simulator-destinations", "1"]
+        if args.single_editor:
+            command += ['-only-testing:FolioHostedIntegration/HostedIntegrationTests/testSDKOpenEditSafeSaveAndRecovery']
         record["command"] = command
         environment = {**os.environ, "DEVELOPER_DIR": before["xcode"]["developer_dir"]}
         for key in ("DYLD_LIBRARY_PATH", "DYLD_FRAMEWORK_PATH", "DYLD_INSERT_LIBRARIES", "SDKROOT", "TOOLCHAINS"):
@@ -420,8 +427,9 @@ def main(argv=None):
         summary_process = subprocess.run(summary_command, capture_output=True, text=True, timeout=30, check=True, env=environment)
         summary = json.loads(summary_process.stdout)
         record["xcresult_summary"] = summary
-        if summary.get("passedTests") != 3 or summary.get("failedTests") != 0 or summary.get("skippedTests", 0) != 0:
-            raise RuntimeError("xcresult must show all three hosted tests passed without skips")
+        expected_tests = 1 if args.single_editor else 3
+        if summary.get("passedTests") != expected_tests or summary.get("failedTests") != 0 or summary.get("skippedTests", 0) != 0:
+            raise RuntimeError(f"xcresult must show the selected {expected_tests} hosted tests passed without skips")
         record["status"] = "candidate-pass-cleanup-pending"
     except BaseException as exc:
         errors.append(type(exc).__name__ + ": " + str(exc))
