@@ -1,0 +1,9 @@
+test_budget_and_default (__main__.Contract.test_budget_and_default) ... ok
+test_fixed_context_fail_closed_before_producer (__main__.Contract.test_fixed_context_fail_closed_before_producer) ... ok
+test_prepare_bind_default_and_passed_sdk_same_target (__main__.Contract.test_prepare_bind_default_and_passed_sdk_same_target) ... ok
+test_real_inherited_fd_and_invalid_descriptor (__main__.Contract.test_real_inherited_fd_and_invalid_descriptor) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.722s
+
+OK
