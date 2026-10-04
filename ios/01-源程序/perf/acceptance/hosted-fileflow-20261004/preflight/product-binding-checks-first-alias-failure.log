@@ -1,0 +1,15 @@
+test_foreign_symlink_refused (__main__.ProductBinding.test_foreign_symlink_refused) ... ok
+test_missing_empty_or_foreign_test_product_refused (__main__.ProductBinding.test_missing_empty_or_foreign_test_product_refused) ... ok
+test_outside_host_test_binary_and_additional_resource_change (__main__.ProductBinding.test_outside_host_test_binary_and_additional_resource_change) ... FAIL
+
+======================================================================
+FAIL: test_outside_host_test_binary_and_additional_resource_change (__main__.ProductBinding.test_outside_host_test_binary_and_additional_resource_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<stdin>", line 8, in test_outside_host_test_binary_and_additional_resource_change
+AssertionError: '/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/tmpc4gl5din/iphone/dd/Build/Products/Debug-iphonesimulator/FolioHostedIntegration.xctest/FolioHostedIntegration' not found in {'/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/tmpc4gl5din/iphone/dd/Build/Products/Debug-iphonesimulator/Folio.app/Folio': '470b4d58759e3aaad484e16b3ef3c7934fd00d95c4607f39fcb443afb11d2826', '/private/var/folders/x7/qptxw08j00v__67yzr3gcd000000gp/T/tmpc4gl5din/iphone/dd/Build/Products/Debug-iphonesimulator/FolioHostedIntegration.xctest/FolioHostedIntegration': 'ffea9d0796c0619962166dc19829f5cf3adec0183e5fa28328423250d372dca6'}
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.005s
+
+FAILED (failures=1)
