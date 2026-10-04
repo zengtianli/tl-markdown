@@ -1,5 +1,37 @@
 # Folio 非 UI hosted XCTest 入口
 
+## 原 persistent queue 的真实 functionality
+
+`sop.accept.functionality` 调用本目录 `run.py --chapter-accept`，原 Core test 不再代判文件闭环。
+固定模式先在真实 Chapter inherited canonical FD 内沿原 cached_build 选当前普通 Release SDK，
+缺失才必要编；随后原 prepare 生成冻结overlay，真实XcodeGen/Debug build-for-testing完成后
+保存实际命令、exit、当前源/测试不变、prepare/log SHA 的独立 observation，交给原 bind 核产物，
+最后原 run 做一次真实 non-UI Hosted。ordinary Release与Hosted Debug分列，不当perf/Store。
+
+```sh
+cd /Users/tianli/Apps/folio/ios/01-源程序
+chapter enqueue --app folio --action accept --check functionality --tmpdir /private/tmp --json
+```
+
+只入队一次，由既有worker串行消费；不要额外 SDK/boot/worker。父文件FD必须属于真实祖先
+PID/start、canonical普通文件dev/inode，独立open必须已NB锁忙，再核继承同description排他锁；
+子只close duplicate不LOCK_UN。没有继承字段的原手工run仍自己拿真实NB，固定队列模式则
+拒缺失/残缺/foreign字段。原native SDK链/专有Folio Integration/Session的lock/load wait=0保留。
+阶段核真实AC、load、no-other-builder、lowpower，不用OWNER_NOW覆盖；全过程没有UI事件、
+Simulator.app、焦点或Dock动作，检测GUI进程出现即失败。
+
+沿原总600秒，操作截止400秒，200秒留原180秒shutdown/ownedPID-start进程组、锁链与证据。
+必须真实3passed/0failed/0skipped、输入稳定及cleanup成功才由原消费者写通过。新断言要求生产
+URL→WK编辑→生产保存→fresh store重开，以及reloadPreservingDraft/权限失败恢复，不称系统
+picker/grant或OS Scene覆盖。各attempt receipt/log/prepare/bind/test/xcresult/cleanup在
+`perf/acceptance/hosted-fileflow-20261004/`；真正编成且完整bound的外部overlay可保留作原严格复用
+来源，没有active PID/native锁/Booted设备。75保原job等待，不重复入队或偷改证据。
+
+当前66生产输入为 `26afdae298f46c1cafe35d34a91074b5f6e09b82da7aefde34de31762fb06177`，
+新增WK规则真实缓存优化后旧750d SDK只属历史，不能冒当前。当前Hosted Swift测试SHA
+`108b44b60dd355693fd180475786073d7e2ea3b3dc1978887a363c3b9917bd44`；普通 SDK不含Tests，
+本次驱动接线不再改变66生产源码。接线/纯检查不代表该源码已编译、Hosted运行或启动预算通过。
+
 这是已运行过的 prepare/run 流程的仓库入口。没有 Markdown/业务算法副本，没有 XCUIApplication、点击、按键或其他合成输入。只支持已验过的 iPhone hosted SDK 路线；iPad/Vision 运行尚未声明通过。
 
 `prepare.py`、`bind.py` 和 `run.py` 默认只读校验。工作目录、普通 SDK receipt 必须显式传入；执行还必须显式指定专用 UDID。所有重操作由 Root 取得唯一串行槽后执行。不要在重队列外直接运行 XcodeGen/编译/模拟器。

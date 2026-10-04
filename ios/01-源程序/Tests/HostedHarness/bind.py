@@ -14,12 +14,12 @@ import sim_lane
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workdir",required=True,type=Path)
     parser.add_argument("--receipt",required=True,type=Path)
     parser.add_argument("--write",action="store_true",help="explicitly write a new artifact binding; default readonly")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     root = args.workdir.resolve()
     if root.is_relative_to(REPO.parents[1]):
         parser.error("workdir must be outside live source trees")

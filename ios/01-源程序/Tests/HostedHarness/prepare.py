@@ -55,13 +55,13 @@ def overlay(component, family, destination, test_source):
     }
     return document
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--receipt", required=True, type=Path)
     parser.add_argument("--platform", required=True, choices=["iphone", "ipad", "vision"])
     parser.add_argument("--workdir", required=True, type=Path)
     parser.add_argument("--write", action="store_true", help="explicitly freeze tests and write overlay; default is readonly")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     # Existing official-local verifier rejects old hashes, live paths, foreign
     # SDKs, changed binary/source copies, and wrong Xcode. It performs no build.
     sys.path.insert(0, str(SIM_MODULE))

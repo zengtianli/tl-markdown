@@ -33,7 +33,7 @@ sop:
     commands: [folio]
     app: cyou.tianli.TLMarkdown
   accept:
-    functionality: bash scripts/test-core.sh
+    functionality: /Users/tianli/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept
     recovery: bash scripts/test-core.sh
     privacy: bash scripts/test-core.sh
     launch_iphone: bash scripts/launch.sh iphone
