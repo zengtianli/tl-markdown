@@ -23,6 +23,7 @@ REPO = Path(__file__).resolve().parents[2]
 HARNESS_ROOT = Path(__file__).resolve().parent
 SDK_RECEIPT = None
 DEADLINE = None
+OWN_LOCK = None  # canonical Chapter lock this process took itself (no ancestor descriptor was offered)
 sys.path.insert(0, "/Users/tianli/Dev/tools/dev/lib/tools/macapp/ios")
 import sim_lane
 sys.path.insert(0, "/Users/tianli/Apps/chapter/engine")
@@ -35,16 +36,28 @@ def remaining(maximum):
     return seconds
 
 def chapter_lock():
+    global OWN_LOCK
     path = app_sop.STATE_DIR / 'lock'
     fields = ['SOP_GLOBAL_LOCK_FD', 'SOP_GLOBAL_LOCK_PID', 'SOP_GLOBAL_LOCK_PID_STARTED']
     if not any(os.environ.get(name) for name in fields):
+        if OWN_LOCK is not None and not OWN_LOCK.closed:
+            # chapter_accept already took the canonical lock in this process and now calls main():
+            # a second open would be refused by our own lock, so borrow the description we hold.
+            borrowed = os.fdopen(os.dup(OWN_LOCK.fileno()), 'a')
+            try:
+                fcntl.flock(borrowed, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BaseException:
+                borrowed.close()
+                raise
+            return borrowed, {'path': str(path), 'inherited': False, 'pid': os.getpid(), 'borrowed_own': True}
         handle = path.open('a')
         try:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return handle, {'path': str(path), 'inherited': False, 'pid': os.getpid()}
         except BaseException:
             handle.close()
             raise
+        OWN_LOCK = handle
+        return handle, {'path': str(path), 'inherited': False, 'pid': os.getpid()}
     if not all(os.environ.get(name) for name in fields):
         raise ValueError('Incomplete actual Chapter ancestor descriptor identity')
     descriptor, parent = int(os.environ[fields[0]]), int(os.environ[fields[1]])
@@ -145,11 +158,17 @@ def chapter_accept(single_editor=False):
     sys.path.insert(0, '/Users/tianli/Apps/.claude/skills/app-lightweight/scripts')
     import platform_measure
     if (os.environ.get('SOP_APP_ID') != 'folio' or os.environ.get('SOP_CHECK') != 'functionality'
-            or Path(os.environ.get('SOP_REPO', '')).resolve() != REPO
-            or not all(os.environ.get(name) for name in ['SOP_GLOBAL_LOCK_FD', 'SOP_GLOBAL_LOCK_PID',
-                                                        'SOP_GLOBAL_LOCK_PID_STARTED'])
+            or not os.environ.get('SOP_REPO') or Path(os.environ['SOP_REPO']).resolve() != REPO
             or any(os.environ.get(name) for name in ['SIM_LANE_EXTRA_LOCK', 'SIM_LANE_LOCK'])):
-        raise ValueError('Folio fixed queue identity/actual parent descriptor is required; overrides refused')
+        raise ValueError('Folio fixed queue identity is required; overrides refused')
+    # Chapter a57bca9 (2026-10-04) releases its global lock while an acceptance runs and no longer hands the
+    # descriptor down. Accepted: the complete inherited descriptor, or none of the three fields, in which case
+    # chapter_lock() takes the canonical lock itself. That drops the proof that a real Chapter ancestor holds
+    # the lock; restore it once the engine offers a queue identity that does not occupy the global lock.
+    offered = [bool(os.environ.get(name)) for name in ['SOP_GLOBAL_LOCK_FD', 'SOP_GLOBAL_LOCK_PID',
+                                                       'SOP_GLOBAL_LOCK_PID_STARTED']]
+    if any(offered) and not all(offered):
+        raise ValueError('Incomplete actual Chapter ancestor descriptor identity; overrides refused')
     output = REPO / 'perf/acceptance'
     if Path(os.environ.get('SOP_OUT_DIR', '')).resolve() != output.resolve():
         raise ValueError('Original Folio acceptance output identity required')
@@ -157,7 +176,7 @@ def chapter_accept(single_editor=False):
     work = Path('/private/tmp') / ('folio-hosted-queue-' + attempt)
     evidence = output / 'hosted-fileflow-20261004' / attempt
     evidence.mkdir(parents=True)
-    observations, code, error, held, device = [], 1, None, None, None
+    observations, code, error, held, device, identity = [], 1, None, None, None, None
     started = time.monotonic()
     DEADLINE = started + 400
     try:
@@ -242,7 +261,8 @@ def chapter_accept(single_editor=False):
                  'ordinary_sdk_configuration': 'Release' if (evidence / 'ordinary-sdk-build.json').is_file() else None,
                  'hosted_configuration': 'Debug',
                  'selected_tests': ['testSDKOpenEditSafeSaveAndRecovery'] if single_editor else 'all three original hosted tests',
-                 'cleanup': cleanup, 'gates': observations, 'elapsed_seconds': time.monotonic() - started,
+                 'cleanup': cleanup, 'gates': observations, 'chapter_lock': identity,
+                 'elapsed_seconds': time.monotonic() - started,
                  'summary': 'Actual WK/App open → edit → save → fresh reopen and draft recovery' if code == 0 else error or 'Hosted failed',
                  'uncovered': ['Files picker/OS grant UI', 'OS Scene/multiwindow', 'full WebKit auxiliary accounting']}
         (evidence / 'result.json').write_text(json.dumps(value, indent=2) + '\n')

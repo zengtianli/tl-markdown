@@ -15,8 +15,12 @@ chapter enqueue --app folio --action accept --check functionality --tmpdir /priv
 
 只入队一次，由既有worker串行消费；不要额外 SDK/boot/worker。父文件FD必须属于真实祖先
 PID/start、canonical普通文件dev/inode，独立open必须已NB锁忙，再核继承同description排他锁；
-子只close duplicate不LOCK_UN。没有继承字段的原手工run仍自己拿真实NB，固定队列模式则
-拒缺失/残缺/foreign字段。原native SDK链/专有Folio Integration/Session的lock/load wait=0保留。
+子只close duplicate不LOCK_UN。没有继承字段的原手工run仍自己拿真实NB。固定队列模式
+（2026-10-05起）接受两种：三个继承字段齐全，按上述核验；或三个都没有，由本进程自己NB取
+canonical锁，内层run借同一description的duplicate。残缺或foreign字段仍拒，SOP_APP_ID/
+SOP_CHECK/SOP_REPO与拒SIM_LANE覆盖不变。原因：Chapter a57bca9起验收期间放开全局锁、不再
+下传FD。自取锁时没有“真实祖先持锁”这层身份证明，证据里记inherited:false；引擎提供不占
+全局锁的队列身份凭证后恢复。原native SDK链/专有Folio Integration/Session的lock/load wait=0保留。
 原bind按真实xctestrun解析Host与TestBundle（包括Host外的.xctest），逐文件绑定两个完整
 产物目录的名字与SHA；缺/空/foreign目录、symlink逃逸或新增/删除/改变文件均拒绝。旧缺完整
 test产物绑定的manual manifest仍保留历史，不能作为当前runtime复用来源。
