@@ -33,6 +33,7 @@
   - `binding.json` 钉着 `run.py` 与 README 的 sha256，已随改动更新，四个文件核对一致。
   - 不会与队列父进程互等：引擎取全局锁的三处（`app_sop.py:5315`、`5336`、`5528`）都是非阻塞或限时，父进程在子进程运行期间只读日志大小；子进程输出写文件，不等父进程。别的 `app_sop` 在这 400 秒内会得到 busy（75）。
   - 无构建实验（沙盒副本，门替换为立即 Busy）：残缺三种组合均被拒且不写任何文件；三个都没有时取到锁、内层借用成功、结束后锁已放开；完整继承（用引擎 `accept_global_lock_context` 造环境）仍被接受。真实托管运行尚未执行，结果见队列任务。
+  - 提交 `4e2cb49`（已推送）。因 `Tests/**` 变了，folio 的登记测试重新排了一次：`430b9abae6ae4b84aa48da558870ad22`；functionality 按 README 的固定入口（带 `--tmpdir /private/tmp`）排了一次：`6b36608f7f27478bb5e16b757d980725`。19:59 入队时前面还有 43 个任务。被负载门推迟（75）就留在队列里，不重排、不 `--retry`，由安静那一轮接续。
 - **md-index 常驻服务**：`com.tianli.md-index-graph` 在 launchd 里是 disabled 且未加载，没有进程，8791 不监听，错误日志最后写于 10-04 18:00。`scripts/runtime_readback.py:18` 在服务未加载时直接抛 `CalledProcessError`。没有 enable，没有重启，等本人决定这个服务是否继续常驻。
 - **待测性能（本轮未测）**：Mac 线装机已是 1.2.1 (89) 且 build-receipt 匹配，`perf/lightweight.json` 仍是 1.2.0 (68)；iPhone/iPad/Vision 三条线实测输入旧于当前 `2f206556…`。10-04 20:38 的自动测量日志以 `KeyboardInterrupt` 结束（`app_registry.py:182` 目录枚举中被中断），不是产品断言失败。
 - **Mac 测量前置修了一处**：`scripts/release/measure-sop.py` 原来只找 `build/release-1.2.1/Folio-1.2.1-89-arm64.zip`，而 (89) 的包在 `build/release-1.2.1-89/`（sha256 与 `release.json`、`SHA256SUMS.txt` 一致），空闲门一开就会以「没有发行包」退出 1。现在两个目录都找。只做了编译和路径解析核对，没有运行测量。
