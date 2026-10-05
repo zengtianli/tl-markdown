@@ -32,6 +32,9 @@ sop:
   cli:
     commands: [folio]
     app: cyou.tianli.TLMarkdown
+  account:
+    mode: none
+    rationale: 本地文稿阅读与编辑入口，没有产品账号、注册或登录；文稿经系统“文件”授权读写，iCloud 云盘等位置由系统 Apple ID 管理，不作为本产品账号。
   accept:
     functionality: /Users/tianli/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept --single-editor
     recovery: bash scripts/test-core.sh
