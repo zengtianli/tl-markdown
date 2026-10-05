@@ -18,3 +18,15 @@
 ## 未提交
 
 - `perf/acceptance/homepage_*`、`media_playback*` 含本机绝对路径（Playwright 浏览器位置），公开仓不提交，留本地。
+
+## 2026-10-05 晚 · Chapter 三项标准收尾（folio-mac / folio / md-index）
+
+本轮不测性能、不重录、不改 Chapter 引擎。提交 `22ef79d`，已推送（`468f213..22ef79d`）。
+
+- **登记测试**：folio-mac（任务 7cbf3f6b）与 folio（2be656ed）19:36–19:37 在当前代码通过。
+- **账号形态**：`ios/01-源程序/project.yaml` 加 `sop.account.mode: none`。依据：`Sources/`、`Shared/` 里没有注册/登录/账号代码，`Shared/AppLifecycle.swift:129-135` 的 URLSession 只是更新检查。
+- **Vision 商店截图**：`shots/appstore/vision/01-markdown-simulator-20261004.png` 是 10-04 18:40 `launch_vision` 无窗口模拟器截图的逐字节副本（3840×2160，lane 输入 `2f206556…` 与当前源码一致，共享规格 `store_shots.py vision` 通过）。它是 Debug 验收构建，不是 Release 商店构建，来源文件里写明了。本机 `.git/info/exclude` 有 `*.png`，与 iPhone/iPad 截图一样用 `git add -f` 入库。
+- **推送**：20 个提交。仓库无 workflows、Pages、webhook，推送不触发构建或部署。新增行扫描：无凭据、无 ip-legal/Personal/Work/investment 引用；有 1592 行本机绝对路径（`/Users/tianli/Library/Caches`、`Apps/folio` 等，来自 10-04 已提交的 iOS 验收日志），与远端已有的 88 个 iOS 证据文件同类。第一次推送报 `unable to rewind rpc post data` 挂在已关闭的连接上，回读远端未变后改用 `-c http.version=HTTP/1.1 -c http.postBuffer=67108864` 重推一次成功。
+- **folio functionality 未解（停在这里）**：`Tests/HostedHarness/run.py:147-152` 要求继承 `SOP_GLOBAL_LOCK_FD/PID/PID_STARTED`。Chapter `engine/app_sop.py:5310-5325` 的 `queue_accept` 自 a57bca9（10-04 23:47）起不再把全局锁传给验收，`_run_acceptor_locked`（4978-4996）会把这三个变量剔掉，所以经队列必然报 `Folio fixed queue identity/actual parent descriptor is required`（任务 cbc6793f）。引擎的行为是有意的（`test_app_sop.py:3333`）。与 10-04 的 copytree 旧失败无关。修哪一边待 Chapter 侧决定；没有改脚本，没有重跑。
+- **md-index 常驻服务**：`com.tianli.md-index-graph` 在 launchd 里是 disabled 且未加载，没有进程，8791 不监听，错误日志最后写于 10-04 18:00。`scripts/runtime_readback.py:18` 在服务未加载时直接抛 `CalledProcessError`。没有 enable，没有重启，等本人决定这个服务是否继续常驻。
+- **待测性能（本轮未测）**：Mac 线装机已是 1.2.1 (89) 且 build-receipt 匹配，`perf/lightweight.json` 仍是 1.2.0 (68)；iPhone/iPad/Vision 三条线实测输入旧于当前 `2f206556…`。10-04 20:38 的自动测量日志以 `KeyboardInterrupt` 结束（`app_registry.py:182` 目录枚举中被中断），不是产品断言失败。
