@@ -435,6 +435,18 @@
       "tests": "1.2.0 (68) 装机构建 build.sh --install（scripts/verify-install.py）：主编辑区 WKWebView 与 LaunchServices 文件打开测试通过，Chapter receipt 回读匹配；app_sop 固定验收 native_ui（离屏 --ui-self-test：源码切换、标签、刷新与关闭、设置页文件夹增删与更新索引）、functionality、recovery、privacy、cli_entry、installed_icon、icon_review 均 passed，2026-10-01。「全部替换」所用系统查找条无自动测试，相关代码自 1.0.1 未改。",
       "review": "对照 1.2.0 (57)→(68) 的 Sources 差异逐项核对与三段录像的关系（2026-10-01）；画面仍为 1.0 录制，见 1.2.0 (51) 的逐帧审阅。",
       "checked": "2026-10-01"
+    },
+    "1.2.1 (89)": {
+      "reason": "1.2.0 (68) 之后界面源码只有三次提交：d168c8d 只给 Sources/IndexEngine.swift 加一行（手机端编辑器与托管集成在别处），8ead9b6、9d33af3 是共享的「配置与更新」（应用菜单两项、独立窗口及按钮标题）。Editor/ 未改，三段所示的打开渲染与大纲、全部替换、保存后重开在 1.2.1 上按原样成立。画面仍录于 1.0：侧栏为旧版「侧栏 最近文件｜大纲」，1.2 起为「最近｜大纲｜搜索」（5c8251b），这处差异自 1.2.0 起已写明并在页面标注，本次没有新增画面差异。",
+      "hero_note": "1.2 起侧栏另有「搜索」标签",
+      "known_difference": "open 段第 3 镜与 folio-editor.png 拍到的是旧侧栏分段控件；要消除须重录该镜头与这张截图。",
+      "review": "对照 1.2.0 (68)→1.2.1 (89) 的 Sources/Editor/Resources 提交逐项核对与三段录像的关系（2026-10-05，Mac mini 独立只读复核 + 本机核对提交清单）；没有抽视频帧。",
+      "reviewed_commits": [
+        "d168c8dce1f1717aec53562fff27b9b494703493",
+        "8ead9b639af39a8aaae2451ec73c05073116cd23",
+        "9d33af3fdbb97cebea40f46b0390c8eab53f789a"
+      ],
+      "checked": "2026-10-05"
     }
   }
 }
