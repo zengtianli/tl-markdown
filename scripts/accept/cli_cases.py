@@ -149,6 +149,7 @@ def agent_surface():
     assert status['ok'] and status['version'] and status['index']['count'] == 3 and status['roots'][0]['exists'], status
     assert status['session'] == {**status['session'], 'documents': 2, 'unsaved': 2, 'conflicts': 1, 'recent': 1, 'closed_drafts': 1}
     assert status['settings']['image_folder'] == 'pics' and same(status['state_directory'], state)
+    assert 'app' not in status    # a binary outside Folio.app names no app bundle
     assert '会话记录' in run('status', '--config', cfg, '--db', agent_db).stdout
     run('status', 'extra', code=2)
 
@@ -169,6 +170,7 @@ def agent_surface():
     fresh = agent / 'fresh.md'
     made = json.loads(run('write', fresh, '--from', source, '--json').stdout)
     assert made['created'] and fresh.read_text() == '# New\nfrom a file\n' and made['characters'] == 18
+    assert made['path'] == json.loads(run('read', fresh, '--json').stdout)['path']
     piped = subprocess.run([str(binary), 'write', str(fresh), '--json'], env=env, input='piped\n', text=True, capture_output=True, timeout=30)
     assert piped.returncode == 0 and fresh.read_text() == 'piped\n', piped
     # outline: the sidebar's heading parser; fenced examples are not headings (same fixture as the editor test)
@@ -198,6 +200,7 @@ def agent_surface():
     # open: validated like the editor, then handed to the window; tests never launch the app (-n only)
     checked = json.loads(run('open', fresh, crlf, '-n', '--json').stdout)
     assert checked['ok'] and checked['opened'] is False and [Path(f).name for f in checked['files']] == ['fresh.md', 'crlf.md'], checked
+    assert checked['app'] == 'cyou.tianli.TLMarkdown', checked
     run('open', agent / 'absent.md', '-n', code=1)
     run('open', agent / 'latin.md', '-n', code=1)
     run('open', png_early, '-n', code=1)

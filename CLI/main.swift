@@ -76,7 +76,7 @@ private let commandUsage: [String: String] = [
     只读，读回当前状态：命令与 App 版本、状态目录、index.json 与索引库（位置、来源、篇数、最后更新）、
     索引文件夹及是否存在、窗口会话摘要（打开/未保存/冲突的文档数、最近文件数、关闭的草稿数）和阅读设置。
     Folio 不需要系统权限。配置、索引或会话记录不可读时照常输出其余内容，ok 为 false 并退出 1。
-    --json：{ok, version, build, app, state_directory, config: {path, exists, error?}, database: {path, source, exists},
+    --json：{ok, version, build, app?, state_directory, config: {path, exists, error?}, database: {path, source, exists},
              index?: {count, updated_at, error?}, roots: [{path, exists}],
              session: {path, exists, modified, error?, documents, unsaved, conflicts, recent, closed_drafts},
              settings?: {font_family, font_size, content_width, restore_session, image_folder, note_index_path?}}
@@ -107,7 +107,7 @@ private let commandUsage: [String: String] = [
     把文件交给 Folio 窗口打开，等同「打开…」、拖入或点最近文件：先按编辑器的规则校验（存在、
     .md/.markdown/.txt、UTF-8），全部通过才交给系统在后台打开（不抢焦点；Folio 未运行时会启动它）。
     -n（--no-open）只校验不打开。打开后可用 folio session --file <文件> 读回标签状态。
-    --json：{ok, files: [路径], app, opened}
+    --json：{ok, files: [路径], app, opened}（app 为所在的 Folio.app；开发版二进制为 bundle id）
     """,
     "index": """
     用法：folio index [--full] [--config 文件] [--db 文件] [--json]
@@ -173,12 +173,15 @@ private let allowedOptions: [String: Set<String>] = [
 ]
 
 /// The app bundle this binary ships in (Resources/bin/folio shares the app's version; no second counter).
-private func bundled() -> (app: URL, release: String, build: String)? {
+private func bundled() -> (app: URL?, release: String, build: String)? {
     let contents = FolioExecutable.url.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     guard let data = try? Data(contentsOf: contents.appendingPathComponent("Info.plist")),
           let info = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
           let release = info["CFBundleShortVersionString"] as? String else { return nil }
-    return (contents.deletingLastPathComponent(), release, info["CFBundleVersion"] as? String ?? "0")
+    // Only a real bundle (…/Folio.app/Contents) is an app to hand files to. A development binary in
+    // the repository still reads its version from the source Info.plist, but names no app.
+    let app = contents.deletingLastPathComponent()
+    return (contents.lastPathComponent == "Contents" && app.pathExtension == "app" ? app : nil, release, info["CFBundleVersion"] as? String ?? "0")
 }
 private func version() -> String {
     // A development binary outside the .app still has a meaningful explicit identity.
@@ -539,12 +542,12 @@ private func status(_ options: Options) throws {
                                restoreSession: s.settings.restoreSession, imageFolder: s.settings.imageFolder, noteIndexPath: s.settings.noteIndexPath)
     }
     let bundle = bundled(), failure = configFailure ?? sessionError
-    let report = StatusReport(ok: failure == nil, version: bundle?.release ?? "development", build: bundle?.build, app: bundle?.app.path,
+    let report = StatusReport(ok: failure == nil, version: bundle?.release ?? "development", build: bundle?.build, app: bundle?.app?.path,
                               stateDirectory: config.stateDirectory, config: config.config, database: config.database, index: config.index,
                               roots: config.roots, session: session, settings: settings)
     if options.json { try emit(report) }
     else {
-        print(version() + (bundle.map { "  \(displayPath($0.app.path))" } ?? ""))
+        print(version() + ((bundle?.app).map { "  \(displayPath($0.path))" } ?? ""))
         print("状态目录  \(displayPath(report.stateDirectory))")
         print("配置文件  \(displayPath(report.config.path))\(report.config.exists ? "" : "（尚未创建）")\(report.config.error.map { "  无法读取：\($0)" } ?? "")")
         print("索引库    \(displayPath(report.database.path))（\(report.database.source)）" + (report.index.map { $0.error.map { "  无法读取：\($0)" } ?? "  \($0.count) 篇，最后更新 \(localTime($0.updatedAt))" } ?? "  尚未建立"))
@@ -644,9 +647,10 @@ private func writeDocument(_ options: Options) throws {
         try DocumentIO.save(&doc, to: url)
     }
     if options.json {
-        try emit(WriteReport(path: url.path, created: !exists, changed: changed, characters: text.count, bytes: doc.diskData?.count ?? 0,
+        // Resolve again: a path that did not exist before the save may now resolve differently.
+        try emit(WriteReport(path: documentURL(options.operands[0]).path, created: !exists, changed: changed, characters: text.count, bytes: doc.diskData?.count ?? 0,
                              lineEnding: endingName(doc.lineEnding), bom: doc.bom, openInFolio: window.open))
-    } else { print(url.path); stderr(!exists ? "已新建。" : (changed ? "已保存。" : "内容相同，未写入。")) }
+    } else { print(documentURL(options.operands[0]).path); stderr(!exists ? "已新建。" : (changed ? "已保存。" : "内容相同，未写入。")) }
 }
 private struct OpenReport: Encodable { var ok = true; let files: [String], app: String, opened: Bool }
 private func openDocuments(_ options: Options) throws {
@@ -659,7 +663,7 @@ private func openDocuments(_ options: Options) throws {
         files.append(url.path)
     }
     // The bundle this command ships in; a development binary asks LaunchServices for the installed app.
-    let app = bundled()?.app.path, target = app.map { ["-a", $0] } ?? ["-b", "cyou.tianli.TLMarkdown"]
+    let app = bundled()?.app?.path, target = app.map { ["-a", $0] } ?? ["-b", "cyou.tianli.TLMarkdown"]
     if !options.noOpen {
         let process = Process(); process.executableURL = URL(fileURLWithPath: "/usr/bin/open"); process.arguments = ["-g"] + target + files
         try process.run(); process.waitUntilExit()

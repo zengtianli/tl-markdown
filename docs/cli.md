@@ -68,7 +68,7 @@ folio open notes/a.md && folio session --file notes/a.md --json   # 交给窗口
 
 主要结构（字段名为 snake_case，时间为 ISO 8601 UTC）：
 
-- `status`：`{ok, version, build, app, state_directory, config: {path, exists, error?}, database: {path, source, exists}, index?: {count, updated_at, error?}, roots: [{path, exists}], session: {path, exists, modified, error?, documents, unsaved, conflicts, recent, closed_drafts}, settings?: {font_family, font_size, content_width, restore_session, image_folder, note_index_path?}}`。配置、索引或会话记录不可读时其余内容照常输出，`ok` 为 false、退出 1。
+- `status`：`{ok, version, build, app?, state_directory, config: {path, exists, error?}, database: {path, source, exists}, index?: {count, updated_at, error?}, roots: [{path, exists}], session: {path, exists, modified, error?, documents, unsaved, conflicts, recent, closed_drafts}, settings?: {font_family, font_size, content_width, restore_session, image_folder, note_index_path?}}`。配置、索引或会话记录不可读时其余内容照常输出，`ok` 为 false、退出 1。
 - `read`：`{ok, path, title, characters, lines, bytes, line_ending: "lf"|"crlf"|"cr", bom, open_in_folio, dirty, conflict, text}`。
 - `outline`：`{ok, path, count, headings: [{line, level, title, offset}]}`（`offset` 为 UTF-16 位置）。
 - `write`：`{ok, path, created, changed, characters, bytes, line_ending, bom, open_in_folio}`。
