@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "built_at": "2026-10-04T02:33:30+08:00",
+  "built_at": "2026-10-07T00:41:59+08:00",
   "artifact": {
     "bundle_id": "cyou.tianli.TLMarkdown",
     "version": "1.2.1",
-    "build": "89",
+    "build": "121",
     "executable": "Contents/MacOS/TLMarkdown",
-    "sha256": "e628b43d6a464aefb55ff96571223dc033bef0bd6a1d0cf44205a45bb3bdfcde",
+    "sha256": "831d3311dc8a2d2041952692c8936e2c00109f72198f23d6f75afa975cea31a0",
     "icon": {
       "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
       "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
@@ -35,20 +35,20 @@
       "icon/*.png",
       "icon/*.icns"
     ],
-    "sha256": "842252248657e83a6f9c5f93bcd17537426306ef8cb35b6178d228f61cf674c5",
+    "sha256": "f3a9f1c2a2ed5c4bf22a2527527e768a06e161832bf9a09dd7bd8f3824c566c3",
     "file_count": 51,
     "files": {
-      "Sources/BackendClient.swift": "327e9610be34a5cd6f8fc9d4341b2ba3ed97042fb673cf9bf7898858bedb91b0",
-      "Sources/ViewModel.swift": "a1e64a40f68af8e396d195976643d32b7635e494daa99967ed592a01059139c1",
+      "Sources/BackendClient.swift": "b59366e2d30a58217d4f7e42176237c2583c2a251b3dea1d718ed4ed2410aa36",
+      "Sources/ViewModel.swift": "55898130f757196a56c3e6418d4e139571fd486b088e9786fef022a1cbadeada",
       "Sources/Shared/AppConfiguration.swift": "66d1b04072dbcbcbbc556afb79be1181396fc8bd1a6940d5960adea742219edc",
       "Sources/Shared/AppLifecycleUI.swift": "c5bfb42bb97555125d3822a98ab0bab71adf368f0de1439f170f0dddb7456974",
       "Sources/Shared/AppLifecycle.swift": "07adaba8327f855b9a497346384ece9f8a526089c1c2f987b8873ab95a4fec3c",
-      "Sources/GraphEngine.swift": "b7fac6b3be051956b102e34795b9ff35a3ff4f23c65e0d1c5bda842a486b6a0e",
+      "Sources/GraphEngine.swift": "732df6d8e2b34805cf113e8423fc882b815ffb5b4f85c69097610f3f9dd38bef",
       "Sources/Models.swift": "66e6f8235c01fc1ab92457b8bea577cb6cc0969c39a0144bb6e08d31ba653aab",
       "Sources/IndexEngine.swift": "4ac41b667c9b15368ca5766a1c1271941e0fb5115b64a796400208707ca9c691",
-      "Sources/ContentView.swift": "99e2f4d78df33df8b7dcdb4338e7817e0ee8e21369348d318b4225faf19e620d",
-      "Sources/TLMarkdownApp.swift": "91edc37e88c1d8d59ea343d13557e0f3854bdaa4cf4d38c199d9ec7fd6b5ea8d",
-      "CLI/main.swift": "859bfccd6c09f724437a251b048bf874e1fbfd22b79ca502de98200fa361dcbf",
+      "Sources/ContentView.swift": "ff17a308566e4fb100536e6300786cccd53c38a448489f5c8ee3e9586c1f0de8",
+      "Sources/TLMarkdownApp.swift": "a0b5a27130a244729bd0a7c837c8d5d8f84959c1ef35bbdf23ec1a9f2f5d9b5e",
+      "CLI/main.swift": "f2e75f040a18c4687d1dc52f347675f07e477d34354b5db88d3310bffce68c0f",
       "Tests/WatcherTests.swift": "ff6df3f043624b147057cec77d76fb43a3bcc01399bee960fe84f07a1523a949",
       "Tests/GraphEngineTests.swift": "9841d1186f04e16574dba94cc965ca3b5421ab8ce771c67a4e9d95e2b8ff01f3",
       "Tests/NoteSearchTests.swift": "3a9d529c0d90a14aa55dd7e0aeb3367b140c2339688002555718e6c5947780d5",
@@ -56,16 +56,16 @@
       "Tests/NativeEditorTests.swift": "500b169269b409735db0b4acbcb3436055469171a9f15c5c411f82688d7ec131",
       "Tests/PrivacyAcceptance.swift": "0f32aa0bb96110b40b4b48467201ab4e57551a8a41c11393324376540163128f",
       "Tests/FunctionalityAcceptance.swift": "17b2bc2bb94e5bb30b8d0f283bd8c425d287cc74e9b529cd11b5d8c2f83e16e5",
-      "Tests/StoreTests.swift": "ee46270984dfabfc23c5ee3c21ada2003aebe83ba5d9354f8720b2625b58026d",
+      "Tests/StoreTests.swift": "3f45e20f57cba686c21658e5ddb2fa06601cddb8c2baf4d8668a4b3b3e69bcd8",
       "Tests/DocumentIOTests.swift": "d506d98f2bdb33b67ae7bd92872a10ee7ca29f8eaef1c7db26b008776289219a",
       "Tests/IndexEngineTests.swift": "91d949066d83c92219e0a0250580853b542bfc9914aeeda3aa335c2f3ba7374c",
       "Tests/RecoveryAcceptance.swift": "1021f472d49ddd8c49dbe0d03583c9bdf245b4a501bfce3e4220503dbb5badb7",
       "TLMarkdown.xcodeproj/project.pbxproj": "f2b30b37d394234df7c0e926f9896df0973d4f6a2ad21b1ccaf541e221e8c228",
       "Info.plist": "bb998848c83de7d9f4b76c64d95804eb72fb94dfb7357936ef85f33d5de9c185",
-      "project.yaml": "d1132768c9963c6957ba3d3043be6183210fa39647079c7e04b8df2958791f0b",
+      "project.yaml": "0b08593909e6090b814e0e0b7750b5bf4eb4a2dfd641b019ca1d570ba003af9c",
       "build.sh": "5185048677bee3c4da44293af61aaddc9f70967e6063b23b52bc26573e065c21",
       "scripts/build-cli.sh": "a7bb8ee0558cda19c3a89d79d5722ec8d3bc9e5b54298ff3ec48d69c1b48b398",
-      "scripts/test.sh": "3a45ad2a7eb495b385387b6be72576913c2a6d4d9b3d494901793813fb1dab1b",
+      "scripts/test.sh": "4de1db967c8e5cba02a356e22aa4e32aba9b5f8f504f3cc34e3200e5b5e9c41c",
       "scripts/package-release.py": "4eb0070927fab0a47bbb1835e60a26c1fad9588cd929dc4c4c1e2f907be5095e",
       "scripts/test_file_open.py": "75027d2e7a6ac0712991d6d421c3b97954fbe45d48999734895231bdd759a77b",
       "scripts/install-cli.py": "c5dad846dea17c5c6f73a4f50963548b76130972548e93782a29b242ffca6cc5",
@@ -90,9 +90,9 @@
       "icon/AppIcon.png": "52bb539a1eeee31fff2112bf68923c4ef02c29050b203465de35b73e3826d2fc",
       "icon/AppIcon.icns": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
     },
-    "commit": "9d33af3fdbb97cebea40f46b0390c8eab53f789a",
+    "commit": "61bfa8314e85e47161af55c928099964c479154f",
     "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
     "dirty": false
   },
-  "build_command_sha256": "471982459ed20b19b89250404b73fb32add30051e12c7b147b1cca312fb4c5d7"
+  "build_command_sha256": "3f736bae245c01c36f33ad8b23ae5f1a55d53219a0efc6028212614359296fd1"
 }

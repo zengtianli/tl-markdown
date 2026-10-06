@@ -59,3 +59,34 @@
 - **第二次装机的原因**：隔离验收时发现开发版二进制（`build/cli-tests/folio`）把仓库根的 `Info.plist` 当成所在 App，`status.app` 显示成上级目录，`open` 不带 `-n` 时会把文件交给一个不是 App 的路径。装在 `Folio.app` 里的二进制不受影响；已改为只有 `…/X.app/Contents` 才算 App，并补了断言（提交 `d845727`）。
 - **提交**：`762efff`（命令、帮助、登记、文档、用例）、`d845727`（上述修正），加本节的交接提交；未推送。仓库里原有的五十多个未提交文件（`perf/acceptance/**` 等）没有动。
 - **留给后面的**：Chapter 的 `agent_cli` 检查本轮没有跑（在 `~/Apps/chapter/engine` 里没找到这项检查），登记只用本地脚本核过「三选一」和「命令在帮助里」；missing 14 + 1 项如上；PRD 验收里的「界面改设置、命令读到新值，命令改回去、界面跟着变」后半句要等设置写命令。
+
+## 2026-10-07 凌晨 · 命令入口第二轮：阅读设置与最近记录可读可改，按核验意见修正登记
+
+上一轮（上节）之后有独立核验，本节逐条处理它的意见，并把上一轮留下的阅读设置与最近记录补上命令。只动 Folio，不测性能、不发布、不推送。
+
+- **新增命令**（`CLI/main.swift`；规则写在 `Sources/GraphEngine.swift` 末尾的 `SessionEdits`，设置面板、⌘+ / ⌘- 与最近列表的菜单也用它）：
+  - `folio settings`（读）与 `folio settings set <键> <值>…`：`font_family`、`font_size`（13–26，`larger` / `smaller` 同 ⌘+ / ⌘-）、`content_width`（560–1300、20 的倍数）、`restore_session`、`image_folder`、`note_index_path`（`default` 回默认索引）。范围与面板一致，不在范围内退出 2、什么都不改。
+  - `folio recent`（读，带 `exists`）与 `folio recent pin|unpin|remove <文件>…`、`folio recent clear`。重新定位 = `recent remove` 旧路径 + `open` 新路径。
+  - `folio open --example`：欢迎页「打开示例文档」的同一段复制规则（`ExampleDocument.install`）。
+- **谁写 session.json**：同一时刻只有一个写入者。窗口启动时拿状态目录里的 `session.lock`（flock，进程结束即由内核释放）并一直持有；这时命令把修改放进 `requests/<id>.request.json`，窗口由目录事件唤醒（空闲时不轮询），用 `EditorStore.apply` 改自己的状态、立即存盘、写回 `<id>.reply.json`，编辑器和设置面板跟着已发布的值变（`applied_by: window`）。窗口没开时命令自己拿锁，经 `SessionDisk` 读出、修改、写回，标签、未保存正文、关闭的草稿原样保留（`applied_by: file`）。窗口 5 秒不应答，命令撤回请求并退出 1（`window_no_reply`）；超过 30 秒没人理的请求窗口直接丢弃，不会事后生效。锁空着但有 Folio 进程在跑（装新版之前启动的旧窗口，不持锁）时拒写（`window_outdated`），避免被旧窗口的下一次保存覆盖；这项检查只对默认状态目录做。
+- **失败输出**加了 `code` 字段（只增不改）：`usage`、`invalid_value`、`not_found`、`window_unsaved`、`window_no_reply`、`window_outdated`、`session_unreadable` 等，其余 `failed`。原有的 `{ok, command, error(文字), usage}` 不变。
+- **登记修正**（核验意见逐条）：
+  - 关闭标签（含保留草稿并关闭）、恢复关闭的草稿到标签页、提示条上的「重新载入」，手机端的「重新载入并保留当前草稿」：由 human 改为 missing。它们改的是会话里的标签，不是只能真人做；还没接到上面那条窗口通道。
+  - 「打开示例文档」由 human 改为 `folio open`（补了 `--example`）。
+  - 手机端补登「点正文里的链接」（human）；「配置与更新（版本）」由 `folio status` 改为 missing——`folio status` 读的是 Mac 包的版本，读不到手机上装的。
+  - 「配置与更新」窗口的五项（使用 iCloud 记住配置、导出配置、导入配置、检查更新、升级到新版）各占一行，原因统一写「共享生命周期模块暂无命令入口」；本产品不各自实现。
+  - `folio --help` 的「仅在窗口中」与登记对齐：去掉「拖入」「拷贝 路径:行号」（登记里对应 `folio open`、`folio search`），补上未命名草稿、打开设置面板、关闭提示横幅、点正文里的链接、光标跳到命中行和手机端的几项；登记里每个 human 项都能在这段找到。
+  - 帮助里「读取」一段改成准确说法：不改文档、配置、会话记录和索引内容；读索引库时 SQLite 会刷新库旁它自己的 `-shm` 文件（WAL 模式的只读连接都会，换成 immutable 打开会在界面正在更新索引时读到不一致的内容，所以没改）。
+  - 现在的数：Mac 59 项 = 命令 36、human 15、missing 8；手机端 17 项 = 命令 8、human 6、missing 3。
+- **验证**：
+  - `bash scripts/test.sh --core-only` 退出 0，176 条 PASS。`Tests/StoreTests.swift` 用真 `EditorStore` 验窗口一侧：持锁、命令拿不到锁、`SessionRequests.send`（命令调用的同一个函数）发来的修改被应用到窗口状态并立即存盘、越界值被拒且不改、⌘- 与清空经窗口生效、过期请求被丢弃、应答后目录不留文件。`scripts/accept/cli_cases.py` 用真二进制在隔离状态目录验文件一侧：改五项设置后标签、未保存正文、冲突标记、关闭的草稿都在，文件权限 0600；到头的 `larger` / `smaller` 不变；十一种坏值退出 2 且文件字节不变；pin / unpin / remove / clear 的顺序与 `not_found`；有人持锁而不应答时退出 1、文件不变、请求被撤回；记录损坏时读写都退出 1 且不重写；`open --example` 从假应用包复制一次、不覆盖已改过的副本。`cli_cases.py privacy` 通过（二进制 620 KB ≤ 2 MB）。
+  - 为让 `IndexEngine` / `GraphEngine` 两组测试能编过，`scripts/test.sh` 给它们加了 `Sources/Models.swift`（`SessionEdits` 用到其中的设置与最近文件类型）。
+- **装机**：`python3 scripts/verify-install.py` 装为 **1.2.1 (121)**，receipt 与当前构建输入匹配（装机门里的主编辑区检查与隔离副本的文件打开检查通过）。装前装后 `defaults export cyou.tianli.TLMarkdown` 逐字节相同，`~/Library/Application Support/TLMarkdown` 的文件清单、大小、修改时间相同，Folio 装前装后都没有在运行，也没有启动它。回读：`folio --version` = `folio 1.2.1 (121)`；`folio settings --json`、`folio recent --json`、`folio status --json` 均 `ok:true`；`folio settings set font_size 99 --json` 退出 2、`code: invalid_value`，`folio recent forget x --json` 退出 2。没有对本人的状态目录跑任何写命令；读回之后只有 `md_index.db-shm` 的修改时间变了（见上）。
+- **Chapter 自查**：`chapter sop accept --app folio-mac --check agent_cli` → 登记与帮助无问题，暂缺 8 项；`--app folio` → 暂缺 3 项。`chapter agent-cli --json` 两个组件都是 `status: missing`、`problems` 为空。
+- **没做的**：
+  - 关闭标签、恢复关闭的草稿、重新载入的命令。窗口里这三个动作带对话框、编辑器通知和文件监视，要先拆出不带界面的那一段，窗口和命令才能共用；通道已经有了（`SessionEdit` 加字段、`EditorStore.apply` 加分支），窗口没开时的文件一侧要与 `EditorStore.reload/close/restoreClosedDraft` 同一段代码。
+  - 真窗口进程加真命令的端到端（窗口开着时命令改字号、界面当场变）没有实跑：要有上屏的窗口。窗口一侧是在测试进程里用同一个 `EditorStore` 验的。本人可以开着 Folio 跑一次 `folio settings set font_size larger` 再 `smaller` 看一眼。
+  - 窗口没开时 `folio recent clear` 不清程序坞菜单里的系统最近文档（那是 AppKit 按应用记的，命令够不到）；帮助里写明了。
+  - 共享生命周期五项与手机端版本读取，等共享模块的命令入口。
+  - Mac mini 上的装机没有动。
+- **提交**：`61bfa83`（命令、窗口通道、测试、登记、文档）与本节加装机回执的提交；未推送。`perf/acceptance/**` 等其他会话留下的未提交文件没有动。
