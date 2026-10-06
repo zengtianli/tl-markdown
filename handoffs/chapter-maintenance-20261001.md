@@ -37,3 +37,25 @@
 - **md-index 常驻服务**：`com.tianli.md-index-graph` 在 launchd 里是 disabled 且未加载，没有进程，8791 不监听，错误日志最后写于 10-04 18:00。`scripts/runtime_readback.py:18` 在服务未加载时直接抛 `CalledProcessError`。没有 enable，没有重启，等本人决定这个服务是否继续常驻。
 - **待测性能（本轮未测）**：Mac 线装机已是 1.2.1 (89) 且 build-receipt 匹配，`perf/lightweight.json` 仍是 1.2.0 (68)；iPhone/iPad/Vision 三条线实测输入旧于当前 `2f206556…`。10-04 20:38 的自动测量日志以 `KeyboardInterrupt` 结束（`app_registry.py:182` 目录枚举中被中断），不是产品断言失败。
 - **Mac 测量前置修了一处**：`scripts/release/measure-sop.py` 原来只找 `build/release-1.2.1/Folio-1.2.1-89-arm64.zip`，而 (89) 的包在 `build/release-1.2.1-89/`（sha256 与 `release.json`、`SHA256SUMS.txt` 一致），空闲门一开就会以「没有发行包」退出 1。现在两个目录都找。只做了编译和路径解析核对，没有运行测量。
+
+## 2026-10-06 夜 · 每项功能都能不点界面完成（folio 命令补缺与 sop.agent_cli）
+
+需求见 `~/Apps/chapter/docs/PRD-agent-cli.md`，约定见 app 技能 `references/agent-cli.md`。本轮只动 Folio（Mac 与 ios 组件），不测性能、不发布、不推送。
+
+- **新增命令**（`CLI/main.swift`，与界面同一实现，没有第二套）：
+  - `folio status`：读回命令，一次给出版本、状态目录、index.json 与索引库、索引文件夹、窗口会话摘要（打开/未保存/冲突/最近/关闭的草稿）和阅读设置。
+  - `folio read <文档>`、`folio write <文档>`：走 `DocumentIO.open/save`，保留原换行符与 BOM、原子写入、只读拒绝；文件不存在时新建。目标在窗口里有未保存修改或冲突时 `write` 退出 1，`--force` 才写（窗口标记冲突，不覆盖窗口里的修改）。
+  - `folio outline <文档>`：侧栏大纲的标题解析从 `BackendClient.updateOutline` 原样挪成 `MarkdownOutline.headings`（放在 `Sources/GraphEngine.swift` 末尾：App、命令和测试都编它，而 ios 组件的受监测输入不含它，移动端证据不因此失效），界面与命令共用。
+  - `folio open <文件>…`：按编辑器规则校验后用 `open -g` 后台交给 Folio 窗口；`-n` 只校验。
+- **顶层帮助**补齐四样：读/写命令分列、`--json` 成功与失败的形状、退出码表、「仅在窗口中」与暂缺项。已有命令的 JSON 没改；失败仍是 `{ok:false, command, error(文字), usage}`，没有换成 `error:{code,message}`，因为 Chapter 与脚本在读现有形状。
+- **对照登记**：`project.yaml` 的 `sop.agent_cli`，Mac 57 项 = 命令 25、human 18、missing 14；`ios/01-源程序/project.yaml` 16 项 = 命令 9、human 6、missing 1（指到同族 `folio`，`sop.cli` 原样）。功能从 `TLMarkdownApp.swift`（菜单）、`ContentView.swift`、`ViewModel.swift`、`BackendClient.swift`、`Shared/AppLifecycleUI.swift` 与 ios 的 `ContentView.swift`、`Shared/AppLifecycleMobile.swift` 逐项列出。
+- **missing（Mac 14 项，同两个原因）**：
+  - 写在 `session.json` 里的：正文字体、字号、宽度、启动恢复、图片目录、自定义索引文件、放大/缩小字号，最近记录的固定、移除/重新定位、清空。`session.json` 只由运行中的 App 写（里面还有未保存草稿），命令从外面改会被窗口下一次保存覆盖。要补得先让 App 接收外部请求（例如状态目录里的请求文件加分布式通知，App 用设置面板同一段代码应用后自己落盘；App 未运行时在下次启动应用），再加 `folio settings set`、`folio recent pin|remove|clear`。本轮没做：这条通道碰草稿所在的文件，需要并发和恢复测试，不适合赶在限时里。
+  - 只在「配置与更新」窗口里的：iCloud 配置同步开关、配置导出/导入、检查更新、升级到新版。共享的 `AppConfiguration` 与更新检查只在 App 进程里调用。
+  - ios 的 1 项是检查更新（移动版尚无发行渠道）。
+- **验证**：`bash scripts/test.sh --core-only` 通过（含真二进制 `scripts/accept/cli_cases.py functionality`，新增 status/read/write/outline/open 的用例，全部在 `build/cli-tests/work` 的合成文件和隔离状态目录里，`open` 只跑 `-n`）；`cli_cases.py privacy` 通过（源码与二进制无本机路径，552 KB ≤ 2 MB）；`bash ios/01-源程序/scripts/test-core.sh` 通过。隔离目录里走了一遍 write → read → outline → roots add → index → search → status；错参数 `folio write --bogus --json` 退出 2 且输出 `ok:false`，不存在的文档退出 1。
+- **没验的**：`folio open` 不带 `-n` 的真实打开（会让窗口上屏，本轮不许）；它调用的是 `test_file_open.py` 已覆盖的同一条 LaunchServices 路径。带窗口的 `NativeEditorTests`（含大纲回归）没跑，大纲的同一组围栏用例改由命令行用例覆盖，装机门里的主编辑区与文件打开检查照常跑。
+- **装机与回读**：`python3 scripts/verify-install.py`（build.sh --install：主编辑区检查不上屏，文件打开检查用 `open -g -j` 隐藏启动的隔离副本）装了两次，现为 **1.2.1 (119)**，receipt 与当前构建输入匹配；上一版在 `~/.Trash/folio-previous-*`。装前装后 Folio 都没有运行，没有启动或重启它。回读：`folio --version` = `folio 1.2.1 (119)`，`folio --help` 退出 0 且含读/写、`--json`、退出码、仅在窗口中四段；`folio status --json` 解析出 `ok:true`、`app:/Applications/Folio.app`；`folio search --limit -1 --json` 退出 2 并输出 `ok:false` 与原因；两份登记里的每条命令都在装机版顶层帮助里找得到。
+- **第二次装机的原因**：隔离验收时发现开发版二进制（`build/cli-tests/folio`）把仓库根的 `Info.plist` 当成所在 App，`status.app` 显示成上级目录，`open` 不带 `-n` 时会把文件交给一个不是 App 的路径。装在 `Folio.app` 里的二进制不受影响；已改为只有 `…/X.app/Contents` 才算 App，并补了断言（提交 `d845727`）。
+- **提交**：`762efff`（命令、帮助、登记、文档、用例）、`d845727`（上述修正），加本节的交接提交；未推送。仓库里原有的五十多个未提交文件（`perf/acceptance/**` 等）没有动。
+- **留给后面的**：Chapter 的 `agent_cli` 检查本轮没有跑（在 `~/Apps/chapter/engine` 里没找到这项检查），登记只用本地脚本核过「三选一」和「命令在帮助里」；missing 14 + 1 项如上；PRD 验收里的「界面改设置、命令读到新值，命令改回去、界面跟着变」后半句要等设置写命令。
