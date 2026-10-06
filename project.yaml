@@ -14,8 +14,136 @@ sop:
     outputs:
     - perf/lightweight.json
   cli:
-    # folio index|search|files|stats|config|roots|session|graph|asset，说明见 docs/cli.md
+    # folio status|read|outline|write|open|index|search|files|stats|config|roots|session|graph|asset，说明见 docs/cli.md
     commands: [folio]
+  # 界面功能 → 命令的对照（写法见 app 技能 references/agent-cli.md）。从 Sources/TLMarkdownApp.swift（菜单）、
+  # ContentView.swift（工具栏、侧栏、标签、设置面板）、ViewModel.swift、BackendClient.swift（编辑器）与
+  # Shared/AppLifecycleUI.swift（配置与更新窗口）逐项列出；scripts/accept/cli_cases.py 用真二进制回归。
+  agent_cli:
+    readback: folio status
+    features:
+    # 文件菜单、工具栏、欢迎页
+    - name: 新建文档并存为文件（⌘N 后另存为）
+      command: folio write
+    - name: 未命名草稿标签（保存前只在窗口里）
+      human: 只在窗口里有意义；命令直接新建文件
+    - name: 打开…（⌘O、工具栏、欢迎页）
+      command: folio open
+    - name: 拖入或从 Finder 双击 Markdown 文件打开
+      command: folio open
+    - name: 打开示例文档
+      human: 欢迎页的引导，只在窗口里有意义
+    - name: 保存（⌘S）与自动保存
+      command: folio write
+    - name: 另存为…（⌘⇧S、冲突提示条上的「另存为」）
+      command: folio write
+    - name: 编辑正文
+      command: folio write
+    - name: 关闭标签 / 预览（⌘W、标签上的 ×）及关闭时的保存 / 取消 / 保留草稿
+      human: 窗口里的标签与对话框
+    - name: 关闭的草稿（数量与正文）
+      command: folio session
+    - name: 恢复关闭的草稿到标签页
+      human: 只在窗口里有意义；草稿正文用 folio session --text 读
+    - name: 生成目录图谱…
+      command: folio graph
+    # App 菜单与「配置与更新」窗口
+    - name: 设置…（⌘,、工具栏、搜索栏里的「选择索引文件夹…」）
+      human: 打开设置面板；各项见下面对应的命令
+    - name: 配置与更新…（当前版本）
+      command: folio status
+    - name: 使用 iCloud 记住配置
+      missing: 开关存在 App 的偏好里，没有读写它的命令
+    - name: 导出配置… / 导入配置…
+      missing: 共享的 AppConfiguration 只在 App 进程里调用；导入要运行中的 App 重读设置，没有命令
+    - name: 检查更新…
+      missing: 发行记录只由 App 内的共享更新代码读取，没有命令
+    - name: 升级到新版… / 下载新版…
+      missing: 没有升级命令；现由仓库 scripts/verify-install.py 装机
+    - name: 帮助：Folio 使用指南 / 产品主页
+      human: 打开网页，只在窗口里有意义
+    # 编辑菜单与「编辑文档」菜单
+    - name: 撤销 / 重做
+      human: 窗口里的编辑手势
+    - name: 搜索与替换（⌘F、工具栏）/ 查找下一个（⌘G）
+      human: 系统查找栏，作用于窗口里的光标与选区；命令侧用 folio read / write 改整篇
+    - name: 搜索全部笔记（⌘⇧F）
+      command: folio search
+    - name: 加粗 / 斜体 / 插入链接（⌘B / ⌘I / ⌘K）
+      human: 作用于窗口里的选区
+    - name: 插入图片…（菜单、拖入、粘贴）
+      command: folio asset
+    - name: 完整预览（⌘⇧P、工具栏）
+      human: 只在窗口里渲染（表格、公式、图表），不产出文件
+    - name: 切换源码 / 即时渲染（⌘⇧/、工具栏）
+      human: 窗口的显示方式
+    - name: 放大字号 / 缩小字号（⌘+ / ⌘-）
+      missing: 阅读设置在 session.json，只由运行中的 App 写；没有改设置的命令
+    # 窗口、标签栏、状态栏
+    - name: 显示或隐藏侧栏、切换最近 / 大纲 / 搜索
+      human: 窗口导航
+    - name: 标签栏（打开的文档、未保存圆点）与当前文档
+      command: folio session
+    - name: 切换标签
+      human: 窗口导航
+    - name: 状态栏（已保存 / 保存未完成 / 冲突、字符数）
+      command: folio session
+    - name: 文档提示条（冲突、已载入其他软件的修改、已恢复草稿）
+      command: folio session
+    - name: 提示条上的「重新载入」与关闭横幅
+      human: 窗口里的缓冲区与提示；磁盘上的正文用 folio read 读
+    - name: 渲染模式下勾选任务列表、代码块复制按钮、点正文里的链接
+      human: 窗口里的手势
+    # 侧栏 · 最近
+    - name: 最近文件列表（路径、是否固定）
+      command: folio session
+    - name: 点最近文件打开
+      command: folio open
+    - name: 固定到顶部 / 取消固定
+      missing: 最近记录在 session.json，只由运行中的 App 写；没有改它的命令
+    - name: 从最近记录移除 / 重新定位文件…
+      missing: 同上；新位置可用 folio open 打开，但旧记录移不掉
+    - name: 清空最近记录（侧栏、设置面板）
+      missing: 同上，没有清空命令
+    - name: 在 Finder 中显示（最近文件、搜索命中）
+      human: 只在窗口里有意义
+    # 侧栏 · 大纲
+    - name: 大纲（文档标题列表）
+      command: folio outline
+    - name: 点大纲跳转
+      human: 窗口里的滚动定位
+    # 侧栏 · 搜索
+    - name: 搜索结果（篇数、全文索引 / 逐字匹配、耗时、命中行与行号）
+      command: folio search
+    - name: 回车或点命中打开文件
+      command: folio open
+    - name: 打开命中后光标跳到该行
+      human: 窗口里的光标定位；行号在 folio search 的输出里
+    - name: 拷贝 路径:行号
+      command: folio search
+    # 设置面板
+    - name: 阅读设置的当前值（字体、字号、宽度、启动恢复、图片目录、自定义索引位置）
+      command: folio status
+    - name: 正文字体
+      missing: 设置在 session.json，只由运行中的 App 写；没有改设置的命令
+    - name: 正文字号
+      missing: 同上
+    - name: 正文宽度
+      missing: 同上
+    - name: 启动时恢复上次打开的文件
+      missing: 同上
+    - name: 图片目录
+      missing: 同上；单次可用 folio asset add --folder 指定
+    - name: 自定义索引文件
+      missing: 同上；单次可用 --db 或环境变量 MDINDEX_DB 指定
+    - name: 索引文件夹列表
+      command: folio roots
+    - name: 添加文件夹… / 移除索引文件夹
+      command: folio roots
+    - name: 更新索引 / 取消更新
+      command: folio index
+    - name: 索引篇数与上次更新时间
+      command: folio stats
   budget:
     cli_bytes: 2000000
     installed_growth_bytes: 3000000

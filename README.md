@@ -48,6 +48,11 @@ folio session --file ~/notes/a.md --json       # 该文件在 Folio 里是否打
 folio roots add ~/Documents/Notes && folio index
 folio graph ~/Documents/Notes --launcher --json
 folio asset add notes/a.md shot.png            # 复制图片到 assets/，输出要插入的 Markdown
+folio status --json                            # 读回版本、配置、索引、窗口会话摘要与阅读设置
+folio read notes/a.md --json                   # 正文、字符数、换行与 BOM、窗口里有无未保存修改
+folio outline notes/a.md                       # 与侧栏大纲同一解析：行号 + 各级标题
+folio write notes/a.md --from new.md           # 与「保存」同一实现；窗口里有未保存修改时拒绝
+folio open notes/a.md                          # 后台交给 Folio 窗口打开，不抢焦点
 ```
 
 | 命令 | 对应界面 |
@@ -59,7 +64,7 @@ folio asset add notes/a.md shot.png            # 复制图片到 assets/，输�
 | `graph`（写） | 菜单「文件 → 生成目录图谱…」 |
 | `asset add`（写） | 插入图片（菜单、拖入、粘贴）的保存规则 |
 
-每个命令都有 `--help` 和 `--json`；退出码 0 成功（含无命中）、1 失败、2 用法错误。检索默认最多 20 篇，`--limit 0` 不限；空白查询词（如空变量）和不是日期的 `--since` 都按用法错误处理，不会列出整个索引或静默返回空结果。设置里的「更新索引」每次按磁盘上的 index.json 重建，不会用窗口里的旧文件夹列表覆盖 `folio roots` 的修改。只读命令不写任何状态；`session.json` 只由 App 写入，所以标签、最近记录、固定与阅读设置的修改留在界面里。编辑、预览、撤销、打开窗口等纯界面手势没有命令；agent 直接改 Markdown 文件，Folio 会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。
+每个命令都有 `--help` 和 `--json`；退出码 0 成功（含无命中）、1 失败、2 用法错误。检索默认最多 20 篇，`--limit 0` 不限；空白查询词（如空变量）和不是日期的 `--since` 都按用法错误处理，不会列出整个索引或静默返回空结果。设置里的「更新索引」每次按磁盘上的 index.json 重建，不会用窗口里的旧文件夹列表覆盖 `folio roots` 的修改。只读命令不写任何状态；`session.json` 只由 App 写入，所以标签、最近记录、固定与阅读设置的修改留在界面里（`folio status`、`folio session` 可读）。撤销、搜索替换、预览、切换视图等作用于窗口的手势没有命令；agent 用 `folio write` 或直接改 Markdown 文件，Folio 会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。`folio --help` 列出读写命令、`--json` 形状、退出码和仅在窗口中的项。
 
 1.2.0 (57) 及更早版本的 `search`/`files --json` 输出带整篇正文的数组，且 `%`、`_` 当通配符、短词只查正文、命中行区分大小写；之后的构建输出对象，匹配规则与侧栏一致，文本输出格式不变。
 

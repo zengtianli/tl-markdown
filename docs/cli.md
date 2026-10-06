@@ -14,12 +14,17 @@ mkdir -p ~/.local/bin && ln -s /Applications/Folio.app/Contents/Resources/bin/fo
 
 | 命令 | 读/写 | 界面里的同一功能 |
 |---|---|---|
+| `folio status` | 读 | 读回当前状态：版本（「配置与更新」窗口）、配置与索引库、索引文件夹、窗口会话摘要、阅读设置 |
+| `folio read <文档>` | 读 | 编辑器打开文件的规则（UTF-8、去 BOM、换行统一）；状态栏的字符数；窗口里有无未保存修改 |
+| `folio outline <文档>` | 读 | 侧栏「大纲」：各级标题与所在行，跳过围栏代码块 |
 | `folio search [词]` | 读 | 侧栏「搜索」（⌘⇧F）：按文件分组的命中行与行号 |
 | `folio files [词]` | 读 | 同上，只列文件 |
 | `folio stats` | 读 | 设置「索引文件夹」里的篇数与最后更新时间，另加 workspace/仓库/月份分布 |
 | `folio config` | 读 | 设置里的索引文件夹列表、自定义索引位置；另列排除规则条数与实际使用的库 |
 | `folio roots [list]` | 读 | 设置里的索引文件夹列表 |
 | `folio session` | 读 | 标签页（未保存、冲突、提示）、侧栏「最近」、「恢复关闭的草稿」、阅读设置 |
+| `folio write <文档>` | 写文档 | 「保存」「另存为」与新建文档：保留原换行符与 BOM，原子写入；窗口里有未保存修改时拒绝 |
+| `folio open <文件>…` | 交给窗口 | 「打开…」、拖入、点最近文件或搜索命中：后台交给 Folio 打开，不抢焦点 |
 | `folio roots add/remove <目录>…` | 写 index.json | 设置「添加文件夹…」与移除 |
 | `folio index [--full]` | 写索引库 | 设置「更新索引」（Ctrl-C 等同「取消」） |
 | `folio graph <目录>` | 写 HTML | 菜单「文件 → 生成目录图谱…」 |
@@ -38,15 +43,22 @@ folio session --text --json                             # 需要找回未保存�
 folio roots add ~/Documents/Notes && folio index        # 扩大索引范围后更新
 folio graph ~/Documents/Notes --launcher --json         # 生成图谱，不打开浏览器
 folio asset add notes/a.md ~/Desktop/shot.png           # 输出 ![图片](<assets/image-….png>)，文档本身不改
+folio status --json                                     # 一次读回版本、配置、索引、会话摘要与阅读设置
+folio read notes/a.md --json | jq '{characters, dirty}' # 正文 + 字符数 + 窗口里有无未保存修改
+folio outline notes/a.md                                # 行号<Tab>按级别缩进的标题
+printf '# 标题\n正文\n' | folio write notes/new.md        # 新建；已有文件则按原换行符与 BOM 保存
+folio write notes/a.md --from /tmp/a-new.md --json      # 窗口里有未保存修改时退出 1，不覆盖
+folio open notes/a.md && folio session --file notes/a.md --json   # 交给窗口，再读回标签状态
 ```
 
 - **检索语义与侧栏一致**：查询词去掉首尾空白；3 个字及以上走全文索引（trigram），更短的逐字匹配；`%`、`_` 按字面；标题或正文命中都算；命中行不区分大小写，行号从 1 起。`--repo`、`--path` 按字面子串匹配，`--ws` 精确匹配，`--since` 比较最后修改时间（`YYYY-MM-DD` 或 `YYYY-MM-DDTHH:MM`，本地时间；其他写法是用法错误，退出 2）。不给查询词时只按条件列出文件；给了空白查询词（例如空变量）是用法错误，不会列出整个索引。`--limit` 默认 20，`0` 表示不限；`truncated: true` 表示达到上限、可能还有更多命中。
 - **只读命令从不写状态**：`search/files/stats/config/roots list/session` 只读索引库和配置；`session` 只读 `session.json`，该文件只由运行中的 App 写入，所以标签、最近记录、固定和阅读设置的修改仍在界面里做。快照最多比界面晚约 0.25 秒。
+- **文档读写与编辑器同一实现**：`read`、`write` 走 `DocumentIO.open/save`，`outline` 与侧栏大纲共用 `MarkdownOutline`。`write` 的正文来自 `--content`、`--from` 或标准输入，只写 `.md`、`.markdown`、`.txt`；文件不存在时新建（所在文件夹须已存在）。目标在 Folio 窗口里有未保存修改或冲突时拒绝写入，`--force` 才写磁盘，此时窗口把该标签标记为冲突、不覆盖窗口里的修改。`open` 先按同一规则校验全部文件，再让系统在后台交给 Folio（`-n` 只校验不打开）。
 - **写命令沿用界面的规则**：`roots add/remove` 先重读 index.json，展开 `~` 并规范化路径、去重，原子写入（0600），配置不可读时拒绝修改，add 只接受存在的文件夹，下次 `folio index` 生效；设置窗口的「更新索引」每次都按磁盘上的 index.json 重建，回到 Folio 时文件夹列表也会重读，所以窗口里的旧列表不会覆盖 `folio roots` 的修改；`index` 与设置「更新索引」共用同一写事务，另一方正在写时等 3 秒后失败，原索引保持不变；`graph` 遇到非本工具生成的同名文件拒绝覆盖；`asset add` 只接受小于 40 MB 的图片类型，目录必须是文档旁的相对目录。
 
 ## JSON 与退出码
 
-每个命令都支持 `--json`，输出一个对象，成功时 `"ok": true`。失败时同样输出 `{"ok": false, "command", "error", "usage"}`，并在 stderr 打印原因。
+每个命令都支持 `--json`，输出一个对象，成功时 `"ok": true`。失败时同样输出 `{"ok": false, "command", "error", "usage"}`（`error` 是原因文字，`usage` 为 true 表示用法错误），并在 stderr 打印原因。
 
 | 退出码 | 含义 |
 |---|---|
@@ -56,6 +68,11 @@ folio asset add notes/a.md ~/Desktop/shot.png           # 输出 ![图片](<asse
 
 主要结构（字段名为 snake_case，时间为 ISO 8601 UTC）：
 
+- `status`：`{ok, version, build, app, state_directory, config: {path, exists, error?}, database: {path, source, exists}, index?: {count, updated_at, error?}, roots: [{path, exists}], session: {path, exists, modified, error?, documents, unsaved, conflicts, recent, closed_drafts}, settings?: {font_family, font_size, content_width, restore_session, image_folder, note_index_path?}}`。配置、索引或会话记录不可读时其余内容照常输出，`ok` 为 false、退出 1。
+- `read`：`{ok, path, title, characters, lines, bytes, line_ending: "lf"|"crlf"|"cr", bom, open_in_folio, dirty, conflict, text}`。
+- `outline`：`{ok, path, count, headings: [{line, level, title, offset}]}`（`offset` 为 UTF-16 位置）。
+- `write`：`{ok, path, created, changed, characters, bytes, line_ending, bom, open_in_folio}`。
+- `open`：`{ok, files, app, opened}`。
 - `search` / `files`：`{ok, command, query, mode: "fts"|"like"|"filter", elapsed, truncated, limit, count, database, database_source, files: [{id, path, workspace, repository, title, mtime, lines: [{line, text}], body?}]}`。`files` 命令的 `lines` 为空数组；命中行按 `--width`（默认 120，0 不截断）截断；整篇正文只在 `--body` 时附带。
 - `stats`：`{ok, count, updated_at, characters, repositories, workspaces, top_repositories, months, database, database_source}`。
 - `index`：`stats` 的字段加本次运行的 `changed, unchanged, removed, skipped_binary, unreadable, symlinks, broken_links, elapsed, recovered_database?`。
@@ -97,4 +114,9 @@ folio asset add notes/a.md ~/Desktop/shot.png           # 输出 ![图片](<asse
 
 ## 只在界面里做的事
 
-以下是界面手势或只属于窗口的状态，没有对应命令：打开文件到窗口（交给人时用 `open -a Folio 文件.md`）、编辑与撤销、搜索替换、加粗/斜体/链接、源码与渲染切换、字号与版宽、完整预览（KaTeX、Mermaid、表格）、大纲点击跳转、渲染模式下勾选任务列表、代码块复制按钮；标签页的关闭/保留草稿/重新载入/恢复关闭的草稿，最近记录的固定、移除、重新定位与清空，以及阅读设置的修改——这些都写入只由 App 维护的 `session.json`，命令行只读它。agent 修改 Markdown 时直接写文件：Folio 的外部修改监视会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。
+逐项对照登记在 `project.yaml` 的 `sop.agent_cli`（手机端在 `ios/01-源程序/project.yaml`），`folio --help` 末尾有同一份摘要。
+
+- **只在窗口里有意义**：撤销/重做、搜索与替换、查找下一个、加粗/斜体/链接（都作用于窗口里的光标与选区）；源码与渲染切换、完整预览（KaTeX、Mermaid、表格，只渲染不产出文件）、侧栏显示与切换、大纲与搜索命中的点击跳转、渲染模式下勾选任务列表、代码块复制按钮；标签页的切换/关闭/保留草稿/重新载入/恢复关闭的草稿；文件选择面板、在 Finder 中显示、帮助网页。
+- **暂缺命令**（界面能改、命令只能读）：阅读设置（正文字体、字号、宽度、启动恢复、图片目录、自定义索引位置）与最近记录的固定/移除/清空——它们写在只由运行中的 App 维护的 `session.json` 里，命令从外面改会被窗口的下一次保存覆盖，需要 App 侧接收外部请求后才能补；配置导出/导入与 iCloud 同步开关、检查更新与升级也只在「配置与更新」窗口里。当前值用 `folio status`、`folio session` 读。
+
+agent 修改 Markdown 用 `folio write` 或直接写文件：Folio 的外部修改监视会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。

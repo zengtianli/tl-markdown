@@ -353,29 +353,10 @@ private struct NativeImageOverlay {
     }
     private func updateOutline() {
         guard let text = textView?.string else { store?.outline = []; return }
-        let ns = text as NSString
-        var items: [OutlineItem] = [], location = 0
-        var fence: (marker: Character, count: Int)?
-        while location < ns.length {
-            let line = ns.lineRange(for: NSRange(location: location, length: 0)), raw = ns.substring(with: line)
-            defer { location = NSMaxRange(line) }
-            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-            let marker = trimmed.first
-            let count = marker.map { character in trimmed.prefix(while: { $0 == character }).count } ?? 0
-            if let open = fence {
-                if marker == open.marker && count >= open.count && trimmed.dropFirst(count).trimmingCharacters(in: .whitespaces).isEmpty { fence = nil }
-                continue
-            }
-            if let marker, (marker == "`" || marker == "~"), count >= 3 {
-                if marker != "`" || !trimmed.dropFirst(count).contains("`") { fence = (marker, count); continue }
-            }
-            if let match = Self.heading.firstMatch(in: raw, range: NSRange(location: 0, length: (raw as NSString).length)) {
-                items.append(OutlineItem(id: location + match.range.location, title: (raw as NSString).substring(with: match.range(at: 2)), level: match.range(at: 1).length))
-            }
-        }
-        store?.outline = items
+        // Same parser as `folio outline`.
+        store?.outline = MarkdownOutline.headings(in: text).map { OutlineItem(id: $0.offset, title: $0.title, level: $0.level) }
     }
-    private static let heading = try! NSRegularExpression(pattern: "(?m)^(#{1,6})[ \\t]+(.+)$")
+    private static let heading = MarkdownOutline.heading
     private static let inlineRules: [(NSRegularExpression, Int)] = [
         (try! NSRegularExpression(pattern: "(\\*\\*|__)(?=\\S)(.+?)(?<=\\S)\\1"), 1),
         (try! NSRegularExpression(pattern: "(?<!\\*)(\\*)(?!\\*)(?=\\S)(.+?)(?<=\\S)\\1(?!\\*)"), 2),

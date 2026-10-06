@@ -557,3 +557,39 @@ enum FolioGraphEngine {
         }
     }
 }
+
+// MARK: - Document outline
+// The sidebar outline and `folio outline` share this. It lives in this engine file because the app,
+// the command line and the tests all compile it, while the mobile target does not show an outline.
+
+/// One heading: `offset` is the UTF-16 position of its `#` (the unit the editor uses to jump there).
+struct MarkdownHeading { let offset: Int, line: Int, level: Int, title: String }
+enum MarkdownOutline {
+    static let heading = try! NSRegularExpression(pattern: "(?m)^(#{1,6})[ \\t]+(.+)$")
+    /// ATX headings outside fenced code; a fence closes only on the same marker at least as long.
+    static func headings(in text: String) -> [MarkdownHeading] {
+        let ns = text as NSString
+        var items: [MarkdownHeading] = [], location = 0, number = 0
+        var fence: (marker: Character, count: Int)?
+        while location < ns.length {
+            let line = ns.lineRange(for: NSRange(location: location, length: 0)), raw = ns.substring(with: line)
+            number += 1
+            defer { location = NSMaxRange(line) }
+            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            let marker = trimmed.first
+            let count = marker.map { character in trimmed.prefix(while: { $0 == character }).count } ?? 0
+            if let open = fence {
+                if marker == open.marker && count >= open.count && trimmed.dropFirst(count).trimmingCharacters(in: .whitespaces).isEmpty { fence = nil }
+                continue
+            }
+            if let marker, (marker == "`" || marker == "~"), count >= 3 {
+                if marker != "`" || !trimmed.dropFirst(count).contains("`") { fence = (marker, count); continue }
+            }
+            if let match = heading.firstMatch(in: raw, range: NSRange(location: 0, length: (raw as NSString).length)) {
+                items.append(MarkdownHeading(offset: location + match.range.location, line: number, level: match.range(at: 1).length,
+                                             title: (raw as NSString).substring(with: match.range(at: 2))))
+            }
+        }
+        return items
+    }
+}

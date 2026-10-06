@@ -7,11 +7,11 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold），全 Swift，无外�
 
 界面给人用，`folio` 给程序和 agent 用，共用同一业务层：`Sources/IndexEngine.swift`（索引、检索 `FolioIndexEngine.find`、
 库位置 `resolveDatabase`、索引文件夹增删）、`Sources/GraphEngine.swift`（目录图谱）、`Sources/Models.swift`（会话记录
-`SessionDisk`、插图 `DocumentIO.storeImage`）。入口 `CLI/main.swift`，由 `scripts/build-cli.sh` 与上述三文件一起编进
+`SessionDisk`、文档读写 `DocumentIO.open/save`、插图 `DocumentIO.storeImage`；大纲 `MarkdownOutline` 在 GraphEngine.swift）。入口 `CLI/main.swift`，由 `scripts/build-cli.sh` 与上述三文件一起编进
 `Folio.app/Contents/Resources/bin/folio`（签名 `cyou.tianli.TLMarkdown.cli`，≤2 MB），`scripts/install-cli.py` 链接
 `~/.local/bin/folio`。新增界面能力时同步补命令：读命令只读、支持 `--json`（`{ok: …}`）；写命令复用界面的校验；
 退出码 0/1/2 = 成功/失败/用法错误。`session.json` 只由运行中的 App 写，命令行对它只读。命令清单、JSON 结构与
-仅界面的手势见 `docs/cli.md`；真二进制回归在 `scripts/accept/cli_cases.py`（`scripts/test.sh --core-only` 也会跑）。
+仅界面的手势见 `docs/cli.md`；界面功能逐项对照登记在 `project.yaml` 的 `sop.agent_cli`（手机端在 ios 组件），增删界面功能或命令时同步改；真二进制回归在 `scripts/accept/cli_cases.py`（`scripts/test.sh --core-only` 也会跑）。
 
 新需求先读 playbook：`~/Dev/tools/configs/playbooks/native-console-app.md`（决策树 + 全部坑单）。
 

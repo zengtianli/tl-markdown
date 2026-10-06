@@ -45,6 +45,11 @@ folio session --file ~/notes/a.md --json       # is this file open, unsaved or i
 folio roots add ~/Documents/Notes && folio index
 folio graph ~/Documents/Notes --launcher --json
 folio asset add notes/a.md shot.png            # copies the image into assets/ and prints the Markdown to insert
+folio status --json                            # read back version, configuration, index, window session summary and reading settings
+folio read notes/a.md --json                   # text, character count, line ending and BOM, unsaved changes in the window
+folio outline notes/a.md                       # same parser as the sidebar outline: line number + headings
+folio write notes/a.md --from new.md           # same implementation as Save; refused while the window has unsaved changes
+folio open notes/a.md                          # hands the file to the Folio window in the background, without taking focus
 ```
 
 | Command | Interface counterpart |
@@ -56,7 +61,7 @@ folio asset add notes/a.md shot.png            # copies the image into assets/ a
 | `graph` (write) | File → Generate Directory Graph |
 | `asset add` (write) | The save rule of Insert Image (menu, drag, paste) |
 
-Every command has `--help` and `--json`; exit status is 0 on success (including no matches), 1 on failure and 2 on a usage error. Search returns at most 20 files by default and `--limit 0` removes the cap; a blank query (for example an empty variable) and a `--since` value that is not a date are usage errors, so they never list the whole index or return a silent empty result. Settings → Update index always rebuilds from index.json as it is on disk, so a folder list the window read earlier never overwrites changes made with `folio roots`. Read commands never write state. `session.json` is written only by the app, so tab, recent-file, pin and reading-setting changes stay in the window. Pure interface gestures (editing, preview, undo, opening a window) have no command; agents edit Markdown files directly, and Folio reloads unmodified tabs and flags a conflict, without overwriting, on tabs with unsaved edits.
+Every command has `--help` and `--json`; exit status is 0 on success (including no matches), 1 on failure and 2 on a usage error. Search returns at most 20 files by default and `--limit 0` removes the cap; a blank query (for example an empty variable) and a `--since` value that is not a date are usage errors, so they never list the whole index or return a silent empty result. Settings → Update index always rebuilds from index.json as it is on disk, so a folder list the window read earlier never overwrites changes made with `folio roots`. Read commands never write state. `session.json` is written only by the app, so tab, recent-file, pin and reading-setting changes stay in the window (`folio status` and `folio session` read them). Gestures that act on the window (undo, find and replace, preview, switching views) have no command; agents use `folio write` or edit Markdown files directly, and Folio reloads unmodified tabs and flags a conflict, without overwriting, on tabs with unsaved edits. `folio --help` lists the read and write commands, the `--json` shape, exit codes and the window-only items.
 
 In 1.2.0 (57) and earlier, `search`/`files --json` returned an array of full documents, treated `%` and `_` as wildcards, matched short queries against bodies only and found matching lines case-sensitively. Later builds return an object and match exactly like the sidebar; the text output format is unchanged.
 

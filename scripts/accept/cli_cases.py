@@ -43,7 +43,7 @@ def same(a, b):
 
 def agent_surface():
     """Agent-facing commands: help, exit codes, stable JSON, sandboxed writes, read-only state."""
-    for name in ['index', 'build', 'search', 'files', 'stats', 'config', 'roots', 'session', 'graph', 'asset']:
+    for name in ['status', 'read', 'outline', 'write', 'open', 'index', 'build', 'search', 'files', 'stats', 'config', 'roots', 'session', 'graph', 'asset']:
         assert run(name, '--help').stdout.startswith('用法：folio'), name
     run('bogus', code=2)
     run(code=2)
@@ -142,9 +142,71 @@ def agent_surface():
     assert json.loads(run('stats', '--json').stdout)['database_source'] == 'settings'
     assert json.loads(run_env({'MDINDEX_DB': str(agent_db)}, 'stats', '--json').stdout)['database_source'] == 'environment'
 
+    png_early = base / 'pixel.png'
+    png_early.write_bytes(bytes.fromhex('89504e470d0a1a0a0000000d49484452'))
+    # status: the read-back; version, config, index, folders, session summary and settings in one object
+    status = json.loads(run('status', '--config', cfg, '--db', agent_db, '--json').stdout)
+    assert status['ok'] and status['version'] and status['index']['count'] == 3 and status['roots'][0]['exists'], status
+    assert status['session'] == {**status['session'], 'documents': 2, 'unsaved': 2, 'conflicts': 1, 'recent': 1, 'closed_drafts': 1}
+    assert status['settings']['image_folder'] == 'pics' and same(status['state_directory'], state)
+    assert '会话记录' in run('status', '--config', cfg, '--db', agent_db).stdout
+    run('status', 'extra', code=2)
+
+    # read / write: the editor's open and save rules (DocumentIO) on synthetic files
+    crlf = agent / 'crlf.md'
+    crlf.write_bytes(b'\xef\xbb\xbf# Title\r\nline two\r\n')
+    got = json.loads(run('read', crlf, '--json').stdout)
+    assert got['ok'] and got['text'] == '# Title\nline two\n' and got['line_ending'] == 'crlf' and got['bom'], got
+    assert got['characters'] == 17 and got['lines'] == 2 and got['bytes'] == 22 and not got['open_in_folio']
+    assert run('read', crlf).stdout == '# Title\nline two\n'
+    wrote = json.loads(run('write', crlf, '--content', '# Title\nchanged\n', '--json').stdout)
+    assert wrote['ok'] and wrote['changed'] and not wrote['created'] and wrote['line_ending'] == 'crlf' and wrote['bom'], wrote
+    assert crlf.read_bytes() == b'\xef\xbb\xbf# Title\r\nchanged\r\n'      # line ending and BOM survive a save
+    same_again = json.loads(run('write', crlf, '--content', '# Title\nchanged\n', '--json').stdout)
+    assert same_again['ok'] and not same_again['changed']
+    source = base / 'source.txt'
+    source.write_text('# New\nfrom a file\n')
+    fresh = agent / 'fresh.md'
+    made = json.loads(run('write', fresh, '--from', source, '--json').stdout)
+    assert made['created'] and fresh.read_text() == '# New\nfrom a file\n' and made['characters'] == 18
+    piped = subprocess.run([str(binary), 'write', str(fresh), '--json'], env=env, input='piped\n', text=True, capture_output=True, timeout=30)
+    assert piped.returncode == 0 and fresh.read_text() == 'piped\n', piped
+    # outline: the sidebar's heading parser; fenced examples are not headings (same fixture as the editor test)
+    run('write', fresh, '--content', '# Real\n\n````swift\n# Example only\n```\n# Still example\n````\n\n~~~\n# Tilde example\n~~~\n\n## After 标题\n')
+    outline = json.loads(run('outline', fresh, '--json').stdout)
+    assert outline['ok'] and outline['count'] == 2, outline
+    assert outline['headings'] == [{'line': 1, 'level': 1, 'title': 'Real', 'offset': 0}, {'line': 13, 'level': 2, 'title': 'After 标题', 'offset': 84}], outline
+    assert run('outline', fresh).stdout == '1\tReal\n13\t  After 标题\n'
+    run('outline', agent / 'absent.md', code=1)
+    run('outline', code=2)
+    # a document with unsaved changes in the window is not overwritten unless forced
+    plan_before = plan.read_bytes()
+    refused = json.loads(run('write', plan, '--content', 'agent text\n', '--json', code=1).stdout)
+    assert refused['ok'] is False and refused['usage'] is False and plan.read_bytes() == plan_before, refused
+    seen = json.loads(run('read', plan, '--json').stdout)
+    assert seen['open_in_folio'] and seen['dirty'] and seen['conflict']
+    run('write', plan, '--content', plan_before.decode(), '--force')
+    assert plan.read_bytes() == plan_before
+    run('write', agent / 'shot.png', '--content', 'x', code=1)
+    run('write', agent / 'no-such-folder/a.md', '--content', 'x', code=1)
+    run('write', fresh, '--content', 'a', '--from', source, code=2)
+    run('read', agent / 'absent.md', code=1)
+    run('read', code=2)
+    (agent / 'latin.md').write_bytes(b'caf\xe9')
+    bad = json.loads(run('read', agent / 'latin.md', '--json', code=1).stdout)
+    assert bad['ok'] is False and bad['error']
+    # open: validated like the editor, then handed to the window; tests never launch the app (-n only)
+    checked = json.loads(run('open', fresh, crlf, '-n', '--json').stdout)
+    assert checked['ok'] and checked['opened'] is False and [Path(f).name for f in checked['files']] == ['fresh.md', 'crlf.md'], checked
+    run('open', agent / 'absent.md', '-n', code=1)
+    run('open', agent / 'latin.md', '-n', code=1)
+    run('open', png_early, '-n', code=1)
+    run('open', '-n', code=2)
+    for extra in ['crlf.md', 'fresh.md', 'latin.md']:
+        (agent / extra).unlink()
+
     # asset add: the editor's insert-image rule; the document is not modified
-    png = base / 'pixel.png'
-    png.write_bytes(bytes.fromhex('89504e470d0a1a0a0000000d49484452'))
+    png = png_early
     plan_bytes = plan.read_bytes()
     asset = json.loads(run('asset', 'add', plan, png, '--json').stdout)
     stored = Path(asset['path'])

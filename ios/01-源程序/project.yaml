@@ -32,6 +32,44 @@ sop:
   cli:
     commands: [folio]
     app: cyou.tianli.TLMarkdown
+  # 手机、平板与 Vision 上能看、能点的 → Mac 上同一个 folio 命令（写法见 app 技能 references/agent-cli.md）。
+  # 从 Sources/ContentView.swift、MobileStore.swift、DocumentWorkspace.swift 与 Shared/AppLifecycleMobile.swift 逐项列出；
+  # 两端共用族根的 DocumentIO / SessionDisk，命令作用于 Mac 上的文件与会话记录。
+  agent_cli:
+    readback: folio status
+    features:
+    - name: 打开 Markdown（文件选择器、从其他 App 打开）
+      command: folio open
+    - name: 新建文稿
+      command: folio write
+    - name: 编辑正文
+      command: folio write
+    - name: 保存原文件
+      command: folio write
+    - name: 另存为…
+      command: folio write
+    - name: 文稿与恢复草稿列表（标题、有本地恢复草稿、提示）
+      command: folio session
+    - name: 在列表里切换文稿
+      human: 窗口导航
+    - name: 阅读文稿 / 编辑文稿
+      human: 窗口的显示方式
+    - name: 显示 Markdown 源码
+      human: 窗口的显示方式
+    - name: 状态条（原文件已保存 / 修改已存为本地恢复草稿、字数）
+      command: folio session
+    - name: 插入图片到文档旁的图片目录
+      command: folio asset
+    - name: 授权图片目录…
+      human: 系统“文件”授权面板，只能真人在手机上点；Mac 端不需要这层授权
+    - name: 重新载入并保留当前草稿
+      human: 窗口里的缓冲区操作；磁盘上的正文用 folio read 读
+    - name: 提示条与关闭提示
+      human: 只在窗口里有意义
+    - name: 配置与更新（版本；移动版无可迁移配置）
+      command: folio status
+    - name: 检查更新
+      missing: 移动版尚未配置发行渠道（界面只显示说明）；Mac 端也没有检查更新的命令
   account:
     mode: none
     rationale: 本地文稿阅读与编辑入口，没有产品账号、注册或登录；文稿经系统“文件”授权读写，iCloud 云盘等位置由系统 Apple ID 管理，不作为本产品账号。
