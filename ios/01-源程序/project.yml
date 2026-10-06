@@ -13,7 +13,6 @@ settings:
     ENABLE_USER_SCRIPT_SANDBOXING: NO
 targetTemplates:
   FolioDocumentApp:
-    type: application
     sources:
       - path: Sources
       - path: Shared
@@ -31,6 +30,12 @@ targetTemplates:
         buildPhase: resources
       - path: Fixtures/demo.md
         buildPhase: resources
+targets:
+  FolioMobile:
+    type: application
+    templates: [FolioDocumentApp]
+    supportedDestinations: [iOS, visionOS]
+    scheme: {testTargets: []}
     dependencies:
       - sdk: libsqlite3.tbd
     settings:
@@ -64,8 +69,3 @@ targetTemplates:
             UTTypeTagSpecification:
               public.filename-extension: [md, markdown]
               public.mime-type: text/markdown
-targets:
-  FolioMobile:
-    templates: [FolioDocumentApp]
-    supportedDestinations: [iOS, visionOS]
-    scheme: {testTargets: []}

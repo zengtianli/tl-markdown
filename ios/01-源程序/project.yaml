@@ -49,14 +49,14 @@ sop:
       launch_args: [-folio-demo]
       store_shots: shots/appstore/iphone/*.png
       budget: {memory_mb: 150, cpu: 0.5, size_mb: 12, cold_launch_ms: 1500}
-      distribution: none
+      distribution: testflight
     ipad:
       scheme: FolioMobile
       simulator: {device_type: iPad-Pro-13-inch-M5-12GB}
       launch_args: [-folio-demo]
       store_shots: shots/appstore/ipad/*.png
       budget: {memory_mb: 150, cpu: 0.5, size_mb: 12, cold_launch_ms: 1500}
-      distribution: none
+      distribution: testflight
     vision:
       scheme: FolioMobile
       simulator: {device_type: Apple-Vision-Pro-4K}

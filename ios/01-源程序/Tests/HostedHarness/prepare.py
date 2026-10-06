@@ -35,10 +35,14 @@ def overlay(component, family, destination, test_source):
             else:
                 item["path"] = str(component / path)
     app = document["targets"]["FolioMobile"]
+    # Release identity now lives on the actual target for ASC preflight.
+    # Keep the hosted overlay's generated plist outside the frozen source tree.
+    if "info" in app:
+        app["info"]["path"] = str(destination / "Generated/FolioMobile-Info.plist")
     app.setdefault("settings", {}).setdefault("base", {}).update({
         "PRODUCT_MODULE_NAME": "Folio", "ENABLE_TESTABILITY": "YES",
     })
-    # Properties remain those of the production template; only the output path changes.
+    # Production properties are preserved; only the output path changes.
     app["scheme"] = {"testTargets": ["FolioHostedIntegration"]}
     test_source = test_source.resolve()
     if not test_source.is_file():
