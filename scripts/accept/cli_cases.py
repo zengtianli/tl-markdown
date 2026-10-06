@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Exercise the real shipped engine through its CLI, using only synthetic files."""
+import fcntl
 import json
 import os
 from pathlib import Path
+import shutil
 import signal
 import sqlite3
 import subprocess
@@ -43,7 +45,7 @@ def same(a, b):
 
 def agent_surface():
     """Agent-facing commands: help, exit codes, stable JSON, sandboxed writes, read-only state."""
-    for name in ['status', 'read', 'outline', 'write', 'open', 'index', 'build', 'search', 'files', 'stats', 'config', 'roots', 'session', 'graph', 'asset']:
+    for name in ['status', 'read', 'outline', 'write', 'open', 'index', 'build', 'search', 'files', 'stats', 'config', 'roots', 'session', 'settings', 'recent', 'graph', 'asset']:
         assert run(name, '--help').stdout.startswith('用法：folio'), name
     run('bogus', code=2)
     run(code=2)
@@ -51,9 +53,9 @@ def agent_surface():
     run('stats', '--full', code=2)
     run('search', '--limit', '-1', code=2)
     failure = json.loads(run('bogus', '--json', code=2).stdout)
-    assert failure['ok'] is False and failure['usage'] is True and failure['error'], failure
+    assert failure['ok'] is False and failure['usage'] is True and failure['error'] and failure['code'] == 'usage', failure
     missing = json.loads(run('stats', '--db', base / 'absent.db', '--json', code=1).stdout)
-    assert missing['ok'] is False and missing['usage'] is False
+    assert missing['ok'] is False and missing['usage'] is False and missing['code'] == 'failed', missing
     assert not (base / 'absent.db').exists()
 
     agent = home / 'Agent'
@@ -185,6 +187,7 @@ def agent_surface():
     plan_before = plan.read_bytes()
     refused = json.loads(run('write', plan, '--content', 'agent text\n', '--json', code=1).stdout)
     assert refused['ok'] is False and refused['usage'] is False and plan.read_bytes() == plan_before, refused
+    assert refused['code'] == 'window_unsaved', refused
     seen = json.loads(run('read', plan, '--json').stdout)
     assert seen['open_in_folio'] and seen['dirty'] and seen['conflict']
     run('write', plan, '--content', plan_before.decode(), '--force')
@@ -205,6 +208,17 @@ def agent_surface():
     run('open', agent / 'latin.md', '-n', code=1)
     run('open', png_early, '-n', code=1)
     run('open', '-n', code=2)
+    run('open', fresh, '--example', '-n', code=2)
+    # --example is the welcome page's document; a binary outside an app bundle has none to offer
+    assert json.loads(run('open', '--example', '-n', '--json', code=1).stdout)['code'] == 'not_found'
+    # settings / recent without an action only read: same values as status, nothing created in the state folder
+    shown = json.loads(run('settings', '--json').stdout)
+    assert shown['ok'] and shown['settings'] == status['settings'] and shown['limits']['font_size'] == [13, 26], shown
+    assert 'changed' not in shown and 'applied_by' not in shown
+    assert 'image_folder\tpics' in run('settings').stdout
+    listed = json.loads(run('recent', '--json').stdout)
+    assert listed['ok'] and listed['count'] == 1 and listed['recent'][0]['pinned'] and listed['recent'][0]['exists'], listed
+    assert 'action' not in listed and '[固定]' in run('recent', 'list').stdout
     for extra in ['crlf.md', 'fresh.md', 'latin.md']:
         (agent / extra).unlink()
 
@@ -223,10 +237,15 @@ def agent_surface():
     run('asset', 'add', plan, code=2)
     assert (session_file.stat().st_mtime_ns, sorted(p.name for p in state.iterdir())) == before
 
-    # an unreadable session fails without being rewritten
+    session_edits(state, session_file, snapshot, plan, agent)
+
+    # an unreadable session fails without being rewritten, by the readers and by the writers
     session_file.write_text('not json')
     broken = json.loads(run('session', '--json', code=1).stdout)
-    assert broken['ok'] is False and session_file.read_text() == 'not json'
+    assert broken['ok'] is False and broken['code'] == 'session_unreadable' and session_file.read_text() == 'not json'
+    for args in [('settings',), ('recent',), ('settings', 'set', 'font_size', '18'), ('recent', 'clear')]:
+        refused = json.loads(run(*args, '--json', code=1).stdout)
+        assert refused['code'] == 'session_unreadable' and session_file.read_text() == 'not json', (args, refused)
 
     # graph --json never opens a browser and reports the page's counts
     graph = json.loads(run('graph', agent, '--json', '--config', cfg).stdout)
@@ -236,6 +255,103 @@ def agent_surface():
     assert removed['changed'] and removed['roots'] == []
     absent = json.loads(run('roots', 'remove', agent, '--config', cfg, '--json').stdout)
     assert not absent['changed'] and len(absent['not_found']) == 1
+
+
+def session_edits(state, session_file, snapshot, plan, agent):
+    """settings set / recent …: the settings panel's and the recent list's changes, written to the same
+    session.json. No window runs here, so the command edits the file itself (applied_by: file)."""
+    def stored():
+        return json.loads(session_file.read_text())
+    changed = json.loads(run('settings', 'set', 'font_size', '21', 'content_width', '900', 'font_family', 'serif',
+                             'restore_session', 'false', 'image_folder', 'img', '--json').stdout)
+    assert changed['ok'] and changed['applied_by'] == 'file', changed
+    assert changed['changed'] == ['font_family', 'font_size', 'content_width', 'restore_session', 'image_folder'], changed
+    after = stored()
+    assert after['settings'] == {**snapshot['settings'], 'fontSize': 21, 'contentWidth': 900, 'fontFamily': 'serif',
+                                 'restoreSession': False, 'imageFolder': 'img'}, after['settings']
+    # everything else in the record survives the rewrite: tabs with unsaved text, the active tab, closed drafts
+    assert [d['text'] for d in after['documents']] == ['edited', 'draft text'] and after['documents'][0]['savedText'] == 'orig'
+    assert after['documents'][0]['conflict'] is True and after['activeID'] == 'A' and after['closedDrafts'][0]['text'] == 'closed draft'
+    assert (session_file.stat().st_mode & 0o777) == 0o600
+    read_back = json.loads(run('status', '--json').stdout)['settings']
+    assert read_back['font_size'] == 21 and read_back['font_family'] == 'serif' and read_back['restore_session'] is False
+    assert json.loads(run('asset', 'add', plan, base / 'pixel.png', '--json').stdout)['folder'] == 'img'
+    # ⌘+ / ⌘- stop at the same limits as the menu
+    assert json.loads(run('settings', 'set', 'font_size', 'larger', '--json').stdout)['settings']['font_size'] == 22
+    run('settings', 'set', 'font_size', '26')
+    top = json.loads(run('settings', 'set', 'font_size', 'larger', '--json').stdout)
+    assert top['settings']['font_size'] == 26 and top['changed'] == [], top
+    run('settings', 'set', 'font_size', '13')
+    assert json.loads(run('settings', 'set', 'font_size', 'smaller', '--json').stdout)['changed'] == []
+    # the custom index: default returns every command to the default index
+    cleared = json.loads(run('settings', 'set', 'note_index_path', 'default', '--json').stdout)
+    assert cleared['changed'] == ['note_index_path'] and 'note_index_path' not in cleared['settings'], cleared
+    assert json.loads(run('config', '--json').stdout)['database']['source'] == 'default'
+    # a value outside the panel's range changes nothing and is a usage error
+    saved = session_file.read_bytes()
+    for bad in [('font_size', '40'), ('font_size', '17.5'), ('content_width', '825'), ('content_width', '2000'),
+                ('font_family', 'comic'), ('image_folder', '../out'), ('image_folder', '/abs'), ('restore_session', 'maybe'),
+                ('bogus', '1'), ('font_size',), ('font_size', '18', 'font_size', '19')]:
+        refused = json.loads(run('settings', 'set', *bad, '--json', code=2).stdout)
+        assert refused['ok'] is False and refused['usage'] is True, (bad, refused)
+    assert json.loads(run('settings', 'set', 'font_size', '40', '--json', code=2).stdout)['code'] == 'invalid_value'
+    run('settings', 'get', code=2)
+    run('settings', 'set', code=2)
+    assert session_file.read_bytes() == saved
+
+    # recent: pin / unpin / remove / clear on a list with a file that no longer exists
+    snake, gone = agent / 'snake.md', agent / 'moved-away.md'
+    record = stored()
+    record['recent'] = [{'path': str(p), 'opened': opened, 'pinned': False, 'scroll': 0, 'selection': 0}
+                        for p, opened in [(plan, 300), (snake, 200), (gone, 100)]]
+    session_file.write_text(json.dumps(record))
+    def names(result):
+        return [(item['name'], item['pinned']) for item in result['recent']]
+    listed = json.loads(run('recent', '--json').stdout)
+    assert names(listed) == [('plan.md', False), ('snake.md', False), ('moved-away.md', False)]
+    assert [item['exists'] for item in listed['recent']] == [True, True, False]
+    pinned = json.loads(run('recent', 'pin', snake, '--json').stdout)
+    assert pinned['action'] == 'pin' and pinned['applied_by'] == 'file' and pinned['changed'] == [str(snake)], pinned
+    assert names(pinned) == [('snake.md', True), ('plan.md', False), ('moved-away.md', False)]   # pinned first, as in the sidebar
+    again = json.loads(run('recent', 'pin', snake, '--json').stdout)
+    assert again['changed'] == [] and again['unchanged'] == [str(snake)]
+    assert [(Path(r['path']).name, r['pinned']) for r in stored()['recent']] == [('snake.md', True), ('plan.md', False), ('moved-away.md', False)]
+    unpinned = json.loads(run('recent', 'unpin', snake, '--json').stdout)
+    assert names(unpinned) == [('plan.md', False), ('snake.md', False), ('moved-away.md', False)]
+    removed = json.loads(run('recent', 'remove', gone, agent / 'never-opened.md', '--json').stdout)
+    assert removed['changed'] == [str(gone)] and removed['not_found'] == [str(agent / 'never-opened.md')] and removed['count'] == 2, removed
+    assert snake.exists() and plan.exists()      # only the record changes, never the file
+    for bad in [('pin',), ('remove',), ('clear', 'extra'), ('list', 'extra'), ('forget', plan)]:
+        run('recent', *bad, code=2)
+    # a window that holds the session lock owns the file: the command asks it and, with no answer,
+    # fails without writing and withdraws its request
+    saved = session_file.read_bytes()
+    with open(state / 'session.lock', 'a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        unanswered = json.loads(run('recent', 'clear', '--json', code=1).stdout)
+        assert unanswered['ok'] is False and unanswered['code'] == 'window_no_reply', unanswered
+        assert json.loads(run('recent', '--json').stdout)['count'] == 2      # reading never needs the lock
+    assert session_file.read_bytes() == saved and list((state / 'requests').iterdir()) == []
+    emptied = json.loads(run('recent', 'clear', '--json').stdout)
+    assert emptied['cleared'] == 2 and emptied['count'] == 0 and stored()['recent'] == [], emptied
+    assert len(stored()['documents']) == 2 and plan.exists()
+
+    # open --example from inside an app bundle: the bundled guide is copied once and never overwritten
+    bundle = base / 'Example.app/Contents/Resources'
+    (bundle / 'bin').mkdir(parents=True, exist_ok=True)
+    shutil.copy2(binary, bundle / 'bin/folio')
+    (bundle / '欢迎使用.md').write_text('# 欢迎\n')
+    def example():
+        result = subprocess.run([str(bundle / 'bin/folio'), 'open', '--example', '-n', '--json'], env=env, text=True, capture_output=True, timeout=30)
+        assert result.returncode == 0, result
+        return json.loads(result.stdout)
+    first = example()
+    copy = state / '欢迎使用.md'
+    assert first['opened'] is False and same(first['files'][0], copy) and copy.read_text() == '# 欢迎\n', first
+    copy.write_text('# 本人改过\n')
+    example()
+    assert copy.read_text() == '# 本人改过\n'
+    copy.unlink()
 
 
 def index(*args):

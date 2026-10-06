@@ -10,7 +10,7 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold），全 Swift，无外�
 `SessionDisk`、文档读写 `DocumentIO.open/save`、插图 `DocumentIO.storeImage`；大纲 `MarkdownOutline` 在 GraphEngine.swift）。入口 `CLI/main.swift`，由 `scripts/build-cli.sh` 与上述三文件一起编进
 `Folio.app/Contents/Resources/bin/folio`（签名 `cyou.tianli.TLMarkdown.cli`，≤2 MB），`scripts/install-cli.py` 链接
 `~/.local/bin/folio`。新增界面能力时同步补命令：读命令只读、支持 `--json`（`{ok: …}`）；写命令复用界面的校验；
-退出码 0/1/2 = 成功/失败/用法错误。`session.json` 只由运行中的 App 写，命令行对它只读。命令清单、JSON 结构与
+退出码 0/1/2 = 成功/失败/用法错误。`session.json` 同一时刻只有一个写入者：窗口运行期间持有状态目录里的 `session.lock`，`folio settings set` / `folio recent …` 这时把修改放进 `requests/` 交给窗口（`EditorStore.apply`，与设置面板共用 `SessionEdits`，在 GraphEngine.swift 末尾），窗口没开时命令自己拿锁经 `SessionDisk` 改；其余命令对它只读。新增会改会话的命令走同一条通道，不直接写文件。命令清单、JSON 结构与
 仅界面的手势见 `docs/cli.md`；界面功能逐项对照登记在 `project.yaml` 的 `sop.agent_cli`（手机端在 ios 组件），增删界面功能或命令时同步改；真二进制回归在 `scripts/accept/cli_cases.py`（`scripts/test.sh --core-only` 也会跑）。
 
 新需求先读 playbook：`~/Dev/tools/configs/playbooks/native-console-app.md`（决策树 + 全部坑单）。

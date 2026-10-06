@@ -63,13 +63,15 @@ sop:
     - name: 授权图片目录…
       human: 系统“文件”授权面板，只能真人在手机上点；Mac 端不需要这层授权
     - name: 重新载入并保留当前草稿
-      human: 窗口里的缓冲区操作；磁盘上的正文用 folio read 读
+      missing: 没有命令；这是手机上缓冲区的操作，Mac 端对应的「重新载入」也还没有命令
+    - name: 点正文里的链接（跳到锚点、用系统打开网页与邮件链接、其他文稿给提示）
+      human: 窗口里的手势
     - name: 提示条与关闭提示
       human: 只在窗口里有意义
     - name: 配置与更新（版本；移动版无可迁移配置）
-      command: folio status
+      missing: 读不到手机上装的版本（folio status 读的是 Mac 包的版本）；共享生命周期模块暂无命令入口
     - name: 检查更新
-      missing: 移动版尚未配置发行渠道（界面只显示说明）；Mac 端也没有检查更新的命令
+      missing: 共享生命周期模块暂无命令入口
   account:
     mode: none
     rationale: 本地文稿阅读与编辑入口，没有产品账号、注册或登录；文稿经系统“文件”授权读写，iCloud 云盘等位置由系统 Apple ID 管理，不作为本产品账号。

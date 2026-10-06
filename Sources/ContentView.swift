@@ -153,10 +153,10 @@ struct FolioSettingsView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack { Text("阅读与编辑").font(.title2.bold()); Spacer(); Button("完成") { store.showSettings = false }.keyboardShortcut(.defaultAction) }
             Picker("正文字体", selection: Binding(get: { store.settings.fontFamily ?? "system" }, set: { store.settings.fontFamily = $0; store.settingsChanged() })) {
-                Text("系统字体").tag("system"); Text("宋体").tag("serif"); Text("等宽字体").tag("mono")
+                Text("系统字体").tag(SessionEdits.fontFamilies[0]); Text("宋体").tag(SessionEdits.fontFamilies[1]); Text("等宽字体").tag(SessionEdits.fontFamilies[2])
             }
-            LabeledContent("正文字号 · \(Int(store.settings.fontSize))") { Slider(value: $store.settings.fontSize, in: 13...26, step: 1) }
-            LabeledContent("正文宽度 · \(Int(store.settings.contentWidth))") { Slider(value: $store.settings.contentWidth, in: 560...1300, step: 20) }
+            LabeledContent("正文字号 · \(Int(store.settings.fontSize))") { Slider(value: $store.settings.fontSize, in: SessionEdits.fontSizes, step: 1) }
+            LabeledContent("正文宽度 · \(Int(store.settings.contentWidth))") { Slider(value: $store.settings.contentWidth, in: SessionEdits.contentWidths, step: SessionEdits.contentWidthStep) }
             Toggle("启动时恢复上次打开的文件", isOn: $store.settings.restoreSession)
             LabeledContent("图片目录") { TextField("assets", text: $store.settings.imageFolder).frame(width: 200) }
             Text("图片保存在文档旁的相对目录。未保存的文档会先提示保存。恢复草稿始终保留在本机。").font(.caption).foregroundStyle(.secondary)

@@ -5,7 +5,24 @@ private var interrupted: Int32 = 0
 private func stderr(_ message: String) { FileHandle.standardError.write(Data((message + "\n").utf8)) }
 
 /// How the command was called is wrong (exit 2), as opposed to an operation that failed (exit 1).
-private struct UsageError: Error, LocalizedError { let message: String; var errorDescription: String? { message } }
+private struct UsageError: Error, LocalizedError { let message: String; var code = "usage"; var errorDescription: String? { message } }
+/// An operation that failed for a reason callers may want to branch on (the `code` of the --json reply).
+private struct CodedFailure: Error, LocalizedError { let code: String, message: String; var errorDescription: String? { message } }
+private func errorCode(_ error: Error) -> String {
+    switch error {
+    case let failure as CodedFailure: return failure.code
+    case let usage as UsageError: return usage.code
+    case DocumentError.encoding: return "encoding"
+    case DocumentError.readOnly: return "read_only"
+    case DocumentError.conflict: return "conflict"
+    case DocumentError.missing: return "not_found"
+    case DocumentError.state: return "session_unreadable"
+    case SessionEditError.noReply: return "window_no_reply"
+    case SessionEditError.invalid: return "invalid_value"
+    case FolioIndexError.cancelled: return "cancelled"
+    default: return "failed"
+    }
+}
 /// The command already printed its result, which reports the failure; only the exit status remains.
 private struct ReportedFailure: Error {}
 
@@ -14,7 +31,7 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
 
 用法：folio <命令> [参数]        folio <命令> --help 查看单个命令
 
-读取（不写任何文件或状态）：
+读取（不改文档、配置、会话记录或索引内容）：
   status                       读回当前状态：版本、配置与索引库、索引文件夹、窗口会话摘要与阅读设置
   read <文档>                  按编辑器的规则读一篇文档：正文、字符数、换行与 BOM、窗口里有无未保存修改
   outline <文档>               文档大纲：各级标题、所在行（与侧栏「大纲」同一解析，跳过代码块）
@@ -24,34 +41,43 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
   config                       生效的配置、索引库位置、索引文件夹与规则数
   roots                        列出索引文件夹
   session                      Folio 窗口状态：打开的文档（未保存/冲突）、最近文件、关闭的草稿
+  settings                     阅读设置的当前值与可取范围（字体、字号、宽度、启动恢复、图片目录、自定义索引）
+  recent                       最近文件列表：路径、是否固定、上次打开时间、文件是否还在
 
 写入：
   write <文档>                 按编辑器「保存 / 另存为」的规则写文档（正文来自 --content、--from 或标准输入）
-  open <文件>…                 交给 Folio 窗口打开（后台，不抢焦点；-n 只校验不打开）
+  open <文件>…                 交给 Folio 窗口打开（后台，不抢焦点；-n 只校验不打开；--example 打开示例文档）
   index [--full]               按配置增量更新索引（build 是兼容别名）
   roots add|remove <目录>…     增删索引文件夹，规则同设置界面；下次 index 生效
+  settings set <键> <值>…      改阅读设置，同设置面板与 ⌘+ / ⌘-；窗口开着时由窗口应用并立即生效
+  recent pin|unpin|remove <文件>…   固定、取消固定、从最近记录移除（文件本身不动）
+  recent clear                 清空最近记录
   graph <目录>                 生成静态目录图谱 HTML（-n 或 --json 时不打开浏览器）
   asset add <文档> <图片>      把图片复制到文档旁的图片目录，输出 Markdown 引用（不改文档）
 
 通用参数：--db 文件  --config 文件  --json  --help  --version
 没有配置不会扫描任何目录：先 folio roots add <目录>（或在 Folio 设置中添加文件夹），再 folio index。
+读索引库的命令以只读方式打开它；SQLite 会刷新库旁它自己的 -shm 共享内存文件，库内容不变。
 
 --json：每个命令输出一个对象（字段 snake_case，时间 ISO 8601 UTC）。
   成功 {"ok": true, …该命令的字段}，字段见 folio <命令> --help
-  失败 {"ok": false, "command": 命令, "error": 原因, "usage": 是否用法错误}，原因同时写到 stderr
+  失败 {"ok": false, "command": 命令, "error": 原因, "code": 短码, "usage": 是否用法错误}，原因同时写到 stderr
+  短码：usage、not_found、window_unsaved、window_no_reply、window_outdated、session_unreadable、invalid_value、
+        encoding、read_only、conflict、cancelled，其余为 failed
 
 退出码：
   0  成功（检索无命中也算）
-  1  操作失败：文件或索引不存在、配置不可读、写入被拒、文档在窗口里有未保存修改等
-  2  用法错误：不认识的命令或参数、缺少参数、该命令不接受的参数
+  1  操作失败：文件或索引不存在、配置不可读、写入被拒、文档在窗口里有未保存修改、窗口没有应答等
+  2  用法错误：不认识的命令或参数、缺少参数、该命令不接受的参数、设置的值不在可取范围
 
 仅在窗口中（没有对应命令）：
-  编辑手势：撤销/重做、搜索与替换、查找下一个、加粗/斜体/插入链接、勾选任务列表、代码块复制
-  视图：侧栏显示与切换、源码/即时渲染（手机端的阅读/编辑）切换、完整预览、大纲与搜索命中的点击跳转
-  标签页：切换、关闭、保留草稿并关闭、恢复关闭的草稿到标签页、重新载入、未命名草稿
-  系统面板与外部跳转：文件选择面板、拖入、在 Finder 中显示、拷贝 路径:行号、使用指南与产品主页
-  暂缺命令（只能在界面改，folio session / status 可读）：阅读设置（字体、字号、宽度、启动恢复、图片目录、
-  自定义索引位置）、最近记录的固定/移除/清空、配置导出导入与 iCloud 同步开关、检查更新与升级
+  草稿与设置入口：未命名草稿标签（保存前只在窗口里）、打开设置面板、帮助菜单的使用指南与产品主页
+  编辑手势：撤销/重做、搜索与替换、查找下一个、加粗/斜体/插入链接、勾选任务列表、代码块复制、点正文里的链接
+  视图：侧栏显示与切换（最近/大纲/搜索）、切换标签（手机端为在列表里切换文稿）、源码/即时渲染切换
+        （手机端为阅读/编辑与显示 Markdown 源码）、完整预览、点大纲跳转、打开搜索命中后光标跳到该行
+  提示与系统面板：关闭提示横幅（手机端为提示条与关闭提示）、在 Finder 中显示、手机端的「授权图片目录…」
+  暂缺命令（见 folio status / session 读到的状态）：关闭标签、恢复关闭的草稿到标签页、提示条上的「重新载入」；
+  配置与更新窗口里的「使用 iCloud 记住配置」、导出配置、导入配置、检查更新、升级到新版
 agent 改 Markdown 用 folio write 或直接写文件：窗口会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。
 """
 
@@ -104,9 +130,11 @@ private let commandUsage: [String: String] = [
     """,
     "open": """
     用法：folio open <文件>… [-n] [--json]
+          folio open --example [-n] [--json]
     把文件交给 Folio 窗口打开，等同「打开…」、拖入或点最近文件：先按编辑器的规则校验（存在、
     .md/.markdown/.txt、UTF-8），全部通过才交给系统在后台打开（不抢焦点；Folio 未运行时会启动它）。
-    -n（--no-open）只校验不打开。打开后可用 folio session --file <文件> 读回标签状态。
+    --example 等同欢迎页的「打开示例文档」：把随 App 的《欢迎使用.md》复制到状态目录（已有则不覆盖）再打开。
+    -n（--no-open）只校验（--example 时仍会复制）不打开。打开后可用 folio session --file <文件> 读回标签状态。
     --json：{ok, files: [路径], app, opened}（app 为所在的 Folio.app；开发版二进制为 bundle id）
     """,
     "index": """
@@ -140,12 +168,43 @@ private let commandUsage: [String: String] = [
     已存在的 add 和不在列表中的 remove 不算失败，见 unchanged / not_found。
     --json：{ok, action, config, roots, added, removed, unchanged, not_found, changed}
     """,
+    "settings": """
+    用法：folio settings [--json]
+          folio settings set <键> <值> [<键> <值>…] [--json]
+    设置面板「阅读与编辑」里的各项，存在 session.json 的 settings 里，窗口与命令读写同一份。不带 set 只读。
+      font_family       system | serif | mono（系统字体 / 宋体 / 等宽字体）
+      font_size         13 到 26 的整数；larger / smaller 同菜单的放大字号（⌘+）/ 缩小字号（⌘-），到头不再变
+      content_width     560 到 1300、20 的倍数
+      restore_session   true | false（启动时恢复上次打开的文件）
+      image_folder      文档旁的相对目录，不能是绝对路径或含 ..
+      note_index_path   自定义索引文件；default 或空字符串回到默认索引
+    值不在范围内是用法错误（退出 2），什么都不改。Folio 窗口开着时由窗口应用：编辑器与设置面板立即跟着变，
+    并马上存盘；窗口没开时直接改 session.json（其余内容原样保留）。applied_by 说明走的哪条路。窗口 5 秒内
+    没有应答，或开着的是装新版之前启动的旧窗口（不接收命令的修改）时退出 1，不写入。
+    --json：{ok, session_file, exists, settings: {font_family, font_size, content_width, restore_session, image_folder,
+             note_index_path?}, limits: {font_family: [..], font_size: [最小, 最大], content_width: [最小, 最大],
+             content_width_step}}；set 另有 changed: [键]、applied_by: window|file
+    """,
+    "recent": """
+    用法：folio recent [list] [--json]
+          folio recent pin|unpin|remove <文件>… [--json]
+          folio recent clear [--json]
+    侧栏「最近」的列表与它的右键菜单：固定到顶部 / 取消固定、从最近记录移除、清空最近记录。只改记录，
+    不动文件本身。顺序同侧栏：固定的在前，其余按上次打开时间倒序。exists 为 false 的是已移动或删除的文件；
+    「重新定位文件…」等于 folio recent remove <旧路径> 再 folio open <新路径>。
+    已是所要状态的记在 unchanged，不在列表里的记在 not_found，都不算失败。窗口开着时由窗口应用并立即
+    显示，没开时直接改 session.json（此时程序坞菜单里的系统最近文档不会被清，下次在窗口里清空时一并清）。
+    窗口没有应答或是旧窗口时退出 1，不写入。
+    --json：{ok, session_file, exists, count, recent: [{path, name, pinned, opened, exists}]}；
+             写入另有 action、changed: [路径]、unchanged、not_found、cleared（清掉的条数）、applied_by: window|file
+    """,
     "session": """
     用法：folio session [--file 路径] [--text] [--json]
     只读显示 Folio 最近保存的窗口状态（session.json，最多比界面晚约 0.25 秒）：打开的文档（当前、未保存、冲突、
     提示、字符数）、最近文件（是否固定）、关闭后保留的草稿、阅读设置，以及记录损坏时另存的 session-unreadable-*.json。
     --file 只看某个文件；--text 附带未保存文档和草稿的正文。修改某个 Markdown 前可先确认它在 Folio 中没有未保存修改。
-    从不写 session.json：它只由运行中的 App 写入；标签、最近记录和设置的修改请在界面里做。
+    本命令从不写 session.json。阅读设置用 folio settings set 改，最近记录用 folio recent 改；标签的关闭、
+    恢复与重新载入目前只能在窗口里做。
     --json：{ok, session_file, exists, modified, active_id, documents, recent, closed_drafts, settings, unreadable_records}
     """,
     "graph": """
@@ -163,13 +222,14 @@ private let commandUsage: [String: String] = [
     --json：{ok, document, source, path, folder, markdown, bytes}
     """,
 ]
-private let commands = ["status", "read", "outline", "write", "open", "index", "build", "search", "files", "stats", "config", "roots", "session", "graph", "asset"]
+private let commands = ["status", "read", "outline", "write", "open", "index", "build", "search", "files", "stats", "config", "roots", "session", "settings", "recent", "graph", "asset"]
 private let valueOptions: Set<String> = ["--db", "--config", "--ws", "--repo", "--path", "--since", "--limit", "--per-file", "--width", "-o", "--output", "--folder", "--file", "--content", "--from"]
 private let searchOptions: Set<String> = ["--ws", "--repo", "--path", "--since", "--title", "--limit", "--per-file", "--width", "--body"]
 private let allowedOptions: [String: Set<String>] = [
     "index": ["--full"], "search": searchOptions, "files": searchOptions, "stats": [], "config": ["--show-rules"],
     "roots": [], "session": ["--text", "--file"], "graph": ["--launcher", "-o", "--output", "-n", "--no-open"], "asset": ["--folder"],
-    "status": [], "read": [], "outline": [], "write": ["--content", "--from", "--force"], "open": ["-n", "--no-open"],
+    "status": [], "read": [], "outline": [], "write": ["--content", "--from", "--force"], "open": ["-n", "--no-open", "--example"],
+    "settings": [], "recent": [],
 ]
 
 /// The app bundle this binary ships in (Resources/bin/folio shares the app's version; no second counter).
@@ -193,7 +253,8 @@ private struct Options {
     var explicitDatabase: String?
     var config = FolioIndexConfig.defaultURL
     var query = FolioIndexQuery()
-    var json = false, full = false, launcher = false, noOpen = false, showRules = false, text = false, force = false
+    var json = false, full = false, launcher = false, noOpen = false, showRules = false, text = false, force = false, example = false
+    var edit: SessionEdit?
     var output: URL?, root: URL?, folder: String?, file: String?, content: String?, from: String?
     var operands: [String] = []
     init(_ args: [String]) throws {
@@ -242,6 +303,7 @@ private struct Options {
             case "--content": content = try value()
             case "--from": from = try value()
             case "--force": force = true
+            case "--example": example = true
             case "--": positional.append(contentsOf: args.dropFirst(i + 1)); i = args.count
             default:
                 guard !option.hasPrefix("-") || option == "-" else { throw UsageError(message: "不认识的参数：\(option)") }
@@ -249,7 +311,7 @@ private struct Options {
             }
             i += 1
         }
-        guard let name = positional.first else { throw UsageError(message: "请指定命令（status、read、outline、write、open、search、files、stats、config、roots、session、index、graph、asset）；运行 folio --help 查看用法。") }
+        guard let name = positional.first else { throw UsageError(message: "请指定命令（status、read、outline、write、open、search、files、stats、config、roots、session、settings、recent、index、graph、asset）；运行 folio --help 查看用法。") }
         guard commands.contains(name) else { throw UsageError(message: "不认识的命令：\(name)；运行 folio --help 查看用法。") }
         invoked = name; command = name == "build" ? "index" : name
         let allowed = allowedOptions[command, default: []].union(["--db", "--config", "--json"])
@@ -280,14 +342,57 @@ private struct Options {
             if command == "write", content != nil, from != nil { throw UsageError(message: "--content 与 --from 只能给一个") }
             operands = rest
         case "open":
-            guard !rest.isEmpty else { throw UsageError(message: "用法：folio open <文件>… [-n]") }
+            guard example ? rest.isEmpty : !rest.isEmpty else { throw UsageError(message: "用法：folio open <文件>… [-n]，或 folio open --example [-n]") }
             operands = rest
+        case "settings":
+            action = rest.first ?? "list"
+            guard action == "list" || action == "set" else { throw UsageError(message: "settings 只支持 set；不带参数时读取当前值") }
+            if action == "list" { guard rest.count <= 1 else { throw UsageError(message: "settings 读取时不接受其他参数") } }
+            else { edit = try Self.settingsEdit(Array(rest.dropFirst())) }
+        case "recent":
+            action = rest.first ?? "list"
+            operands = Array(rest.dropFirst())
+            switch action {
+            case "list", "clear": guard operands.isEmpty else { throw UsageError(message: "recent \(action) 不接受其他参数") }
+            case "pin", "unpin", "remove": guard !operands.isEmpty else { throw UsageError(message: "用法：folio recent \(action) <文件>…") }
+            default: throw UsageError(message: "recent 只支持 list、pin、unpin、remove、clear")
+            }
         case "asset":
             guard rest.first == "add", rest.count == 3 else { throw UsageError(message: "用法：folio asset add <文档> <图片> [--folder 相对目录]") }
             action = "add"; operands = Array(rest.dropFirst())
         default:
             guard rest.isEmpty else { throw UsageError(message: "\(name) 不接受位置参数") }
         }
+    }
+    /// `<键> <值>` pairs for `settings set`; the limits are the settings panel's (SessionEdits.validate).
+    static func settingsEdit(_ pairs: [String]) throws -> SessionEdit {
+        guard !pairs.isEmpty, pairs.count % 2 == 0 else { throw UsageError(message: "用法：folio settings set <键> <值> [<键> <值>…]；运行 folio settings --help 查看键") }
+        var edit = SessionEdit(), seen: Set<String> = []
+        for i in stride(from: 0, to: pairs.count, by: 2) {
+            let key = pairs[i], value = pairs[i + 1]
+            guard seen.insert(key).inserted else { throw UsageError(message: "\(key) 给了两次") }
+            func number() throws -> Double {
+                guard let n = Double(value), n.isFinite else { throw UsageError(message: "\(key) 需要数字：\(value)") }
+                return n
+            }
+            switch key {
+            case "font_family": edit.fontFamily = value
+            case "font_size":
+                if value == "larger" { edit.fontSizeStep = 1 } else if value == "smaller" { edit.fontSizeStep = -1 } else { edit.fontSize = try number() }
+            case "content_width": edit.contentWidth = try number()
+            case "restore_session":
+                switch value.lowercased() {
+                case "true", "on", "yes", "1": edit.restoreSession = true
+                case "false", "off", "no", "0": edit.restoreSession = false
+                default: throw UsageError(message: "restore_session 需要 true 或 false：\(value)")
+                }
+            case "image_folder": edit.imageFolder = value
+            case "note_index_path": edit.noteIndexPath = value == "default" ? "" : value.trimmingCharacters(in: .whitespaces)
+            default: throw UsageError(message: "不认识的设置：\(key)；可用 font_family、font_size、content_width、restore_session、image_folder、note_index_path")
+            }
+        }
+        do { try SessionEdits.validate(edit) } catch { throw UsageError(message: error.localizedDescription, code: "invalid_value") }
+        return edit
     }
     static func validDate(_ raw: String) -> Bool {
         let parts = raw.split(separator: "T", omittingEmptySubsequences: false)
@@ -324,7 +429,7 @@ private struct Reply<T: Encodable, E: Encodable>: Encodable {
     func encode(to encoder: Encoder) throws { try extra.encode(to: encoder); try value.encode(to: encoder) }
 }
 private struct Located: Encodable { var ok = true; let database: String; let databaseSource: String }
-private struct ErrorReply: Encodable { var ok = false; let command: String?; let error: String; let usage: Bool }
+private struct ErrorReply: Encodable { var ok = false; let command: String?; let error: String; let code: String; let usage: Bool }
 
 private func displayPath(_ path: String) -> String { FolioIndexConfig.inside(path, FolioIndexConfig.home) ? "~" + path.dropFirst(FolioIndexConfig.home.count) : path }
 private func oneLine(_ value: String) -> String {
@@ -402,6 +507,10 @@ private func run(_ options: Options) throws {
         try roots(options)
     case "session":
         try session(options)
+    case "settings":
+        try settings(options)
+    case "recent":
+        try recent(options)
     case "graph":
         let config = FileManager.default.fileExists(atPath: options.config.path) ? try FolioIndexConfig.load(from: options.config) : FolioIndexConfig()
         let result = try FolioGraphEngine.generateReport(root: options.root!, output: options.output, launcher: options.launcher, config: config, cancelled: { interrupted != 0 })
@@ -581,7 +690,7 @@ private struct ReadReport: Encodable {
 }
 private func readDocument(_ options: Options) throws {
     let url = documentURL(options.operands[0])
-    guard existingFile(url) else { throw FolioIndexError.message("文档不存在：\(url.path)") }
+    guard existingFile(url) else { throw CodedFailure(code: "not_found", message: "文档不存在：\(url.path)") }
     let doc = try DocumentIO.open(url), window = windowState(url.path)
     // Lines as an editor counts them: a trailing newline does not start another line.
     let lines = doc.text.isEmpty ? 0 : doc.text.split(separator: "\n", omittingEmptySubsequences: false).count - (doc.text.hasSuffix("\n") ? 1 : 0)
@@ -601,7 +710,7 @@ private struct OutlineReport: Encodable {
 }
 private func outline(_ options: Options) throws {
     let url = documentURL(options.operands[0])
-    guard existingFile(url) else { throw FolioIndexError.message("文档不存在：\(url.path)") }
+    guard existingFile(url) else { throw CodedFailure(code: "not_found", message: "文档不存在：\(url.path)") }
     let headings = MarkdownOutline.headings(in: try DocumentIO.open(url).text)
     if options.json { try emit(OutlineReport(path: url.path, count: headings.count, headings: headings.map { .init(line: $0.line, level: $0.level, title: $0.title, offset: $0.offset) })) }
     else { for item in headings { print("\(item.line)\t\(String(repeating: "  ", count: item.level - 1))\(item.title)") } }
@@ -630,7 +739,7 @@ private func writeDocument(_ options: Options) throws {
     let text = raw.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n")
     let window = windowState(url.path)
     if (window.dirty || window.conflict) && !options.force {
-        throw FolioIndexError.message("此文档在 Folio 窗口里有未保存修改\(window.conflict ? "（冲突）" : "")，未写入；先在窗口里保存或处理，或加 --force（窗口会标记冲突，不覆盖窗口里的修改）")
+        throw CodedFailure(code: "window_unsaved", message: "此文档在 Folio 窗口里有未保存修改\(window.conflict ? "（冲突）" : "")，未写入；先在窗口里保存或处理，或加 --force（窗口会标记冲突，不覆盖窗口里的修改）")
     }
     var directory: ObjCBool = false
     let exists = fm.fileExists(atPath: url.path, isDirectory: &directory)
@@ -655,9 +764,16 @@ private func writeDocument(_ options: Options) throws {
 private struct OpenReport: Encodable { var ok = true; let files: [String], app: String, opened: Bool }
 private func openDocuments(_ options: Options) throws {
     var files: [String] = []
-    for raw in options.operands {
+    var requested = options.operands
+    if options.example {
+        // Resources/bin/folio sits beside the bundle's Resources/欢迎使用.md, the file the welcome page opens.
+        let original = FolioExecutable.url.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(ExampleDocument.name)
+        guard existingFile(original) else { throw CodedFailure(code: "not_found", message: "示例文档随 Folio.app 提供；这个命令不在应用包里") }
+        requested = [try ExampleDocument.install(from: original, into: FolioIndexConfig.stateDirectory).path]
+    }
+    for raw in requested {
         let url = documentURL(raw)
-        guard existingFile(url) else { throw FolioIndexError.message("文件不存在：\(url.path)") }
+        guard existingFile(url) else { throw CodedFailure(code: "not_found", message: "文件不存在：\(url.path)") }
         guard documentExtensions.contains(url.pathExtension.lowercased()) else { throw FolioIndexError.message("Folio 只打开 .md、.markdown、.txt：\(url.lastPathComponent)") }
         _ = try DocumentIO.open(url)
         files.append(url.path)
@@ -731,7 +847,7 @@ private func session(_ options: Options) throws {
     let snapshot: SessionSnapshot
     do { snapshot = try disk.read() }
     catch {
-        if options.json { try emit(ErrorReply(command: "session", error: error.localizedDescription, usage: false)) }
+        if options.json { try emit(ErrorReply(command: "session", error: error.localizedDescription, code: errorCode(error), usage: false)) }
         stderr("[fail] \(error.localizedDescription)"); if !records.isEmpty { stderr("另存的损坏记录：\(records.joined(separator: ", "))") }
         throw ReportedFailure()
     }
@@ -770,6 +886,103 @@ private func session(_ options: Options) throws {
         if let text = draft.text { print(text.split(separator: "\n", omittingEmptySubsequences: false).map { "    | " + $0 }.joined(separator: "\n")) }
     }
     if !records.isEmpty { print("\n另存的损坏记录：\(records.joined(separator: ", "))") }
+}
+
+// MARK: settings and recent (session.json, shared with the window)
+/// A Folio window started by a build from before the window held the session lock: it would write
+/// its own copy of session.json over a file edit. Only the default state directory can have one.
+private func outdatedWindowRunning() -> Bool {
+    guard (ProcessInfo.processInfo.environment["TL_MARKDOWN_STATE_DIR"] ?? "").isEmpty else { return false }
+    var pids = [pid_t](repeating: 0, count: 8192)
+    let bytes = proc_listallpids(&pids, Int32(MemoryLayout<pid_t>.size * pids.count))
+    var path = [CChar](repeating: 0, count: 4096)
+    for pid in pids.prefix(max(0, Int(bytes))) where pid > 0 {
+        guard proc_pidpath(pid, &path, UInt32(path.count)) > 0 else { continue }
+        if String(cString: path).hasSuffix(".app/Contents/MacOS/TLMarkdown") { return true }
+    }
+    return false
+}
+/// One writer at a time: the window when it is running (it applies the edit itself and shows it),
+/// otherwise this command, holding the same lock while it rewrites the file through SessionDisk.
+private func applySessionEdit(_ edit: SessionEdit) throws -> (outcome: SessionEditOutcome, by: String) {
+    let state = FolioIndexConfig.stateDirectory
+    guard let lock = SessionLock.acquire(in: state) else { return (try SessionRequests.send(edit, state: state), "window") }
+    defer { withExtendedLifetime(lock) {} }
+    if outdatedWindowRunning() {
+        throw CodedFailure(code: "window_outdated", message: "开着的 Folio 窗口是装新版之前启动的，不接收命令的修改，也会覆盖对记录文件的修改；退出并重新打开 Folio 后再试。未写入。")
+    }
+    let disk = SessionDisk(directory: state)
+    var snapshot = try disk.read()   // an unreadable record is left as it is
+    let outcome = try SessionEdits.apply(edit, settings: &snapshot.settings, recent: &snapshot.recent)
+    if outcome.changed { try disk.write(snapshot) }
+    return (outcome, "file")
+}
+private struct SettingsReport: Encodable {
+    struct Limits: Encodable { let fontFamily: [String], fontSize: [Int], contentWidth: [Int], contentWidthStep: Int }
+    var ok = true
+    let sessionFile: String, exists: Bool, settings: SessionReport.Settings, limits: Limits
+    let changed: [String]?, appliedBy: String?
+}
+private func settingsView(_ s: EditorSettings) -> SessionReport.Settings {
+    .init(fontFamily: s.fontFamily, fontSize: s.fontSize, contentWidth: s.contentWidth, restoreSession: s.restoreSession, imageFolder: s.imageFolder, noteIndexPath: s.noteIndexPath)
+}
+private func settings(_ options: Options) throws {
+    let disk = SessionDisk(directory: FolioIndexConfig.stateDirectory)
+    var current: EditorSettings, changed: [String]?, by: String?
+    if let edit = options.edit {
+        let result = try applySessionEdit(edit)
+        current = result.outcome.settings; changed = result.outcome.settingsChanged; by = result.by
+    } else { current = try disk.read().settings }
+    let limits = SettingsReport.Limits(fontFamily: SessionEdits.fontFamilies, fontSize: [Int(SessionEdits.fontSizes.lowerBound), Int(SessionEdits.fontSizes.upperBound)],
+                                       contentWidth: [Int(SessionEdits.contentWidths.lowerBound), Int(SessionEdits.contentWidths.upperBound)], contentWidthStep: Int(SessionEdits.contentWidthStep))
+    if options.json {
+        try emit(SettingsReport(sessionFile: disk.file.path, exists: FileManager.default.fileExists(atPath: disk.file.path), settings: settingsView(current), limits: limits, changed: changed, appliedBy: by))
+        return
+    }
+    print("font_family\t\(current.fontFamily ?? "system")")
+    print("font_size\t\(Int(current.fontSize))")
+    print("content_width\t\(Int(current.contentWidth))")
+    print("restore_session\t\(current.restoreSession)")
+    print("image_folder\t\(current.imageFolder)")
+    print("note_index_path\t\(current.noteIndexPath ?? "")")
+    if let changed, let by { stderr(changed.isEmpty ? "已是所要的值，未改动。" : "已修改 \(changed.joined(separator: "、"))（\(by == "window" ? "由 Folio 窗口应用" : "写入会话记录")）。") }
+}
+private struct RecentReport: Encodable {
+    struct Item: Encodable { let path: String, name: String, pinned: Bool, opened: Date, exists: Bool }
+    var ok = true
+    let sessionFile: String, exists: Bool, count: Int, recent: [Item]
+    let action: String?, changed: [String]?, unchanged: [String]?, notFound: [String]?, cleared: Int?, appliedBy: String?
+}
+private func recent(_ options: Options) throws {
+    let disk = SessionDisk(directory: FolioIndexConfig.stateDirectory), fm = FileManager.default
+    var list: [RecentFile], outcome: SessionEditOutcome?, by: String?
+    if options.action == "list" { list = try disk.read().recent }
+    else {
+        // The window may run in another folder: name files by absolute path.
+        let paths = options.operands.map { URL(fileURLWithPath: FolioIndexConfig.expanded($0)).path }
+        var edit = SessionEdit()
+        switch options.action {
+        case "pin": edit.pin = paths
+        case "unpin": edit.unpin = paths
+        case "remove": edit.remove = paths
+        default: edit.clearRecent = true
+        }
+        let result = try applySessionEdit(edit)
+        list = result.outcome.recent; outcome = result.outcome; by = result.by
+    }
+    let items = list.map { RecentReport.Item(path: $0.path, name: $0.name, pinned: $0.pinned, opened: $0.opened, exists: fm.fileExists(atPath: $0.path)) }
+    if options.json {
+        try emit(RecentReport(sessionFile: disk.file.path, exists: fm.fileExists(atPath: disk.file.path), count: items.count, recent: items,
+                              action: outcome == nil ? nil : options.action, changed: outcome?.recentChanged, unchanged: outcome?.recentUnchanged,
+                              notFound: outcome?.notFound, cleared: outcome.map { $0.cleared }, appliedBy: by))
+        return
+    }
+    for item in items { print("\(item.pinned ? "[固定] " : "")\(displayPath(item.path))\(item.exists ? "" : "  [文件不在]")") }
+    if let outcome, let by {
+        for path in outcome.notFound { stderr("[note] 不在最近记录中：\(path)") }
+        let count = outcome.recentChanged.count + outcome.cleared
+        stderr(count == 0 ? "没有需要改动的记录。" : "已改动 \(count) 条最近记录（\(by == "window" ? "由 Folio 窗口应用" : "写入会话记录")）。")
+    }
 }
 
 // MARK: asset
@@ -825,11 +1038,11 @@ private func commandName(_ args: [String]) -> String? {
         do { let options = try Options(args); command = options.invoked; try run(options); exit(0) }
         catch is ReportedFailure { exit(1) }
         catch let error as UsageError {
-            if json { try? emit(ErrorReply(command: command ?? commandName(args), error: error.message, usage: true)) }
+            if json { try? emit(ErrorReply(command: command ?? commandName(args), error: error.message, code: error.code, usage: true)) }
             stderr("[usage] \(error.message)"); exit(2)
         }
         catch {
-            if json { try? emit(ErrorReply(command: command, error: error.localizedDescription, usage: false)) }
+            if json { try? emit(ErrorReply(command: command, error: error.localizedDescription, code: errorCode(error), usage: false)) }
             stderr("[fail] \(error.localizedDescription)"); exit(1)
         }
     }

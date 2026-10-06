@@ -31,11 +31,19 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     private var conflictNotes: [String: String] = [:]
     /// Documents whose autosave was skipped because of a conflict; saved as soon as it resolves.
     private var blockedAutosave: Set<String> = []
+    /// Held while this window owns session.json; `folio settings` / `folio recent` then ask it to
+    /// make the change instead of editing the file under it.
+    private var sessionLock: SessionLock?
+    private var requestWatch: SessionRequestWatch?
+    var ownsSession: Bool { sessionLock != nil }
     var active: OpenDocument? { documents.first { $0.id == activeID } }
 
     init(directory: URL? = nil) {
         let base = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TLMarkdown")
         disk = SessionDisk(directory: base)
+        // Before the first read: a command that is editing the file right now finishes within
+        // milliseconds, and what it wrote is then what this window starts from.
+        sessionLock = SessionLock.acquire(in: base, wait: 0.3)
         indexSettings = NoteIndexSettingsModel(configURL: directory?.appendingPathComponent("index.json") ?? FolioIndexConfig.defaultURL,
             database: directory?.appendingPathComponent("md_index.db") ?? NoteIndex.defaultPath)
         bridge.store = self
@@ -67,11 +75,35 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
         watcher = ExternalChangeWatcher { [weak self] in self?.checkExternalChanges() }
         watcher?.update(Set(documents.compactMap(\.path)))
         indexSettings.onUpdated = { [weak self] in self?.notes.reloadIndex() }
+        if sessionLock != nil {
+            requestWatch = SessionRequestWatch(state: base) { [weak self] in MainActor.assumeIsolated { self?.answerRequests() } }
+            answerRequests()
+        }
     }
-    func persist() {
-        guard stateReadable else { return }
-        do { try disk.write(SessionSnapshot(documents: documents, activeID: activeID, recent: recent, settings: settings, closedDrafts: closedDrafts)) }
-        catch { banner = "恢复草稿未能写入磁盘：\(error.localizedDescription)" }
+    @discardableResult func persist() -> Bool {
+        guard stateReadable else { return false }
+        do { try disk.write(SessionSnapshot(documents: documents, activeID: activeID, recent: recent, settings: settings, closedDrafts: closedDrafts)); return true }
+        catch { banner = "恢复草稿未能写入磁盘：\(error.localizedDescription)"; return false }
+    }
+    // MARK: Edits from `folio settings` / `folio recent`
+    /// The same change the settings panel and the recent list's menu make, then saved at once so
+    /// the command's read-back sees it. The editor and the open panel follow the published values.
+    @discardableResult func apply(_ edit: SessionEdit) throws -> SessionEditOutcome {
+        guard stateReadable else { throw SessionEditError.unwritable }
+        let outcome = try SessionEdits.apply(edit, settings: &settings, recent: &recent)
+        if outcome.cleared > 0 { NSDocumentController.shared.clearRecentDocuments(nil) }
+        if !outcome.settingsChanged.isEmpty { settingsChanged() }
+        guard !outcome.changed || persist() else { throw SessionEditError.unwritable }
+        return outcome
+    }
+    func answerRequests() {
+        for request in SessionRequests.take(in: disk.directory) {
+            var reply = SessionRequests.Reply()
+            if let edit = request.edit {
+                do { reply.outcome = try apply(edit) } catch { reply.error = error.localizedDescription }
+            } else { reply.error = "无法读取这次修改的内容" }
+            SessionRequests.answer(request.id, reply, state: disk.directory)
+        }
     }
     func persistSoon() {
         snapshotWork?.cancel(); let work = DispatchWorkItem { [weak self] in self?.persist() }
@@ -79,13 +111,9 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     }
     func newDocument() { let doc = OpenDocument(); documents.append(doc); activeID = doc.id; outline = []; persist(); display() }
     func openExample() {
-        guard let original = Bundle.main.resourceURL?.appendingPathComponent("欢迎使用.md") else { return }
-        let destination = disk.directory.appendingPathComponent("欢迎使用.md")
-        do {
-            try FileManager.default.createDirectory(at: disk.directory, withIntermediateDirectories: true)
-            if !FileManager.default.fileExists(atPath: destination.path) { try FileManager.default.copyItem(at: original, to: destination) }
-            open(destination)
-        } catch { banner = error.localizedDescription }
+        guard let original = Bundle.main.resourceURL?.appendingPathComponent(ExampleDocument.name) else { return }
+        do { open(try ExampleDocument.install(from: original, into: disk.directory)) }
+        catch { banner = error.localizedDescription }
     }
     func openPanel() {
         let panel = NSOpenPanel(); panel.allowsMultipleSelection = true
@@ -115,7 +143,7 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     }
     func pin(_ item: RecentFile) {
         if let index = recent.firstIndex(where: { $0.path == item.path }) { recent[index].pinned.toggle() }
-        recent.sort { $0.pinned != $1.pinned ? $0.pinned : $0.opened > $1.opened }; persist()
+        SessionEdits.order(&recent); persist()
     }
     func removeRecent(_ item: RecentFile) { recent.removeAll { $0.path == item.path }; persist() }
     func clearRecent() { recent = []; NSDocumentController.shared.clearRecentDocuments(nil); persist() }

@@ -593,3 +593,213 @@ enum MarkdownOutline {
         return items
     }
 }
+
+// MARK: - Session edits (reading preferences and the recent list)
+// session.json holds the reading preferences and the recent list. The window's controls and
+// `folio settings` / `folio recent` change them through the functions below, so the limits and the
+// ordering are written once. It lives in this engine file for the same reason as the outline: the
+// app, the command line and the tests compile it, the mobile target does not.
+
+/// One requested change; fields left nil are not touched. Paths are absolute.
+struct SessionEdit: Codable {
+    var fontFamily: String?
+    var fontSize: Double?
+    /// ⌘+ / ⌘-: relative to the current size, stopping at the limits.
+    var fontSizeStep: Double?
+    var contentWidth: Double?
+    var restoreSession: Bool?
+    var imageFolder: String?
+    /// Empty returns to the default index.
+    var noteIndexPath: String?
+    var pin: [String]?
+    var unpin: [String]?
+    var remove: [String]?
+    var clearRecent: Bool?
+}
+/// What an edit did, with the preferences and the recent list as they are afterwards.
+struct SessionEditOutcome: Codable {
+    var settingsChanged: [String] = []
+    var recentChanged: [String] = []
+    var recentUnchanged: [String] = []
+    var notFound: [String] = []
+    var cleared = 0
+    var settings = EditorSettings()
+    var recent: [RecentFile] = []
+    var changed: Bool { !settingsChanged.isEmpty || !recentChanged.isEmpty || cleared > 0 }
+}
+enum SessionEditError: LocalizedError {
+    case invalid(String), noReply, unwritable
+    var errorDescription: String? {
+        switch self {
+        case .invalid(let detail): return detail
+        case .noReply: return "Folio 窗口正在运行，但没有应答这次修改；请在窗口里改，或退出 Folio 后重试。未写入。"
+        case .unwritable: return "Folio 窗口的会话记录当前不可写，未修改。"
+        }
+    }
+}
+enum SessionEdits {
+    static let fontFamilies = ["system", "serif", "mono"]
+    static let fontSizes: ClosedRange<Double> = 13...26
+    static let contentWidths: ClosedRange<Double> = 560...1300
+    static let contentWidthStep: Double = 20
+
+    static func steppedFontSize(_ size: Double, by step: Double) -> Double { min(fontSizes.upperBound, max(fontSizes.lowerBound, size + step)) }
+    /// The same rule the editor applies when it stores an image beside a document.
+    static func validImageFolder(_ folder: String) -> Bool { !folder.isEmpty && !folder.hasPrefix("/") && !folder.split(separator: "/").contains("..") }
+    static func validate(_ edit: SessionEdit) throws {
+        if let family = edit.fontFamily, !fontFamilies.contains(family) { throw SessionEditError.invalid("正文字体只能是 \(fontFamilies.joined(separator: "、"))：\(family)") }
+        if let size = edit.fontSize, !fontSizes.contains(size) || size.rounded() != size {
+            throw SessionEditError.invalid("正文字号是 \(Int(fontSizes.lowerBound)) 到 \(Int(fontSizes.upperBound)) 的整数")
+        }
+        if let width = edit.contentWidth, !contentWidths.contains(width) || width.truncatingRemainder(dividingBy: contentWidthStep) != 0 {
+            throw SessionEditError.invalid("正文宽度是 \(Int(contentWidths.lowerBound)) 到 \(Int(contentWidths.upperBound))、\(Int(contentWidthStep)) 的倍数")
+        }
+        if let folder = edit.imageFolder, !validImageFolder(folder) { throw SessionEditError.invalid(DocumentError.imageFolder.localizedDescription) }
+    }
+    /// Pinned entries first, then most recently opened: the order the sidebar shows.
+    static func order(_ recent: inout [RecentFile]) { recent.sort { $0.pinned != $1.pinned ? $0.pinned : $0.opened > $1.opened } }
+    /// A recent entry is named by the path it was opened with; a caller may give the same file
+    /// before or after symlinks are resolved, and the file may no longer exist.
+    static func index(of path: String, in recent: [RecentFile]) -> Int? {
+        let url = URL(fileURLWithPath: path)
+        let names: Set<String> = [path, url.standardizedFileURL.path, url.standardizedFileURL.resolvingSymlinksInPath().path]
+        return recent.firstIndex { names.contains($0.path) }
+    }
+    static func apply(_ edit: SessionEdit, settings: inout EditorSettings, recent: inout [RecentFile]) throws -> SessionEditOutcome {
+        try validate(edit)
+        var next = settings, list = recent, outcome = SessionEditOutcome()
+        func note(_ key: String, _ differs: Bool) { if differs { outcome.settingsChanged.append(key) } }
+        if let family = edit.fontFamily { note("font_family", (next.fontFamily ?? "system") != family); next.fontFamily = family }
+        if let size = edit.fontSize { note("font_size", next.fontSize != size); next.fontSize = size }
+        if let step = edit.fontSizeStep {
+            let size = steppedFontSize(next.fontSize, by: step)
+            if !outcome.settingsChanged.contains("font_size") { note("font_size", next.fontSize != size) }
+            next.fontSize = size
+        }
+        if let width = edit.contentWidth { note("content_width", next.contentWidth != width); next.contentWidth = width }
+        if let restore = edit.restoreSession { note("restore_session", next.restoreSession != restore); next.restoreSession = restore }
+        if let folder = edit.imageFolder { note("image_folder", next.imageFolder != folder); next.imageFolder = folder }
+        if let raw = edit.noteIndexPath {
+            let path: String? = raw.isEmpty ? nil : raw
+            note("note_index_path", next.noteIndexPath != path); next.noteIndexPath = path
+        }
+        for (paths, pinned) in [(edit.pin ?? [], true), (edit.unpin ?? [], false)] {
+            for path in paths {
+                guard let i = index(of: path, in: list) else { outcome.notFound.append(path); continue }
+                if list[i].pinned == pinned { outcome.recentUnchanged.append(list[i].path) }
+                else { list[i].pinned = pinned; outcome.recentChanged.append(list[i].path) }
+            }
+        }
+        if edit.pin != nil || edit.unpin != nil { order(&list) }
+        for path in edit.remove ?? [] {
+            guard let i = index(of: path, in: list) else { outcome.notFound.append(path); continue }
+            outcome.recentChanged.append(list[i].path); list.remove(at: i)
+        }
+        if edit.clearRecent == true { outcome.cleared = list.count; list = [] }
+        settings = next; recent = list
+        outcome.settings = next; outcome.recent = list
+        return outcome
+    }
+}
+
+/// Who may write session.json. A running window holds this lock for its whole life (the kernel
+/// releases it when the process ends, a crash included). `folio` takes it only for the moment it
+/// edits the file itself, which it does only when no window holds it; otherwise it asks the window.
+final class SessionLock {
+    private let descriptor: Int32
+    private init(_ descriptor: Int32) { self.descriptor = descriptor }
+    deinit { flock(descriptor, LOCK_UN); close(descriptor) }
+    /// nil when another process holds the lock after `wait` seconds.
+    static func acquire(in directory: URL, wait: TimeInterval = 0) -> SessionLock? {
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+        let descriptor = Darwin.open(directory.appendingPathComponent("session.lock").path, O_RDWR | O_CREAT | O_CLOEXEC, 0o600)
+        guard descriptor >= 0 else { return nil }
+        let deadline = Date().addingTimeInterval(wait)
+        while flock(descriptor, LOCK_EX | LOCK_NB) != 0 {
+            if Date() >= deadline { close(descriptor); return nil }
+            usleep(10_000)
+        }
+        return SessionLock(descriptor)
+    }
+}
+
+/// Edits handed to the window that holds the lock: one small file per request in `requests/`, the
+/// answer beside it. The window is woken by the folder's change event; nothing polls while idle.
+enum SessionRequests {
+    struct Reply: Codable { var outcome: SessionEditOutcome?; var error: String? }
+    /// A request nobody answered in time was withdrawn by its sender; one left behind is not applied later.
+    static let lifetime: TimeInterval = 30
+    static func directory(_ state: URL) -> URL { state.appendingPathComponent("requests", isDirectory: true) }
+
+    /// Command side: wait for the window's answer; withdraw the request when none comes.
+    static func send(_ edit: SessionEdit, state: URL, timeout: TimeInterval = 5) throws -> SessionEditOutcome {
+        let folder = directory(state), id = UUID().uuidString, fm = FileManager.default
+        try fm.createDirectory(at: folder, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+        let request = folder.appendingPathComponent(id + ".request.json"), answer = folder.appendingPathComponent(id + ".reply.json")
+        try JSONEncoder().encode(edit).write(to: request, options: .atomic)
+        var deadline = Date().addingTimeInterval(timeout), withdrawn = false
+        while true {
+            if let data = try? Data(contentsOf: answer), let reply = try? JSONDecoder().decode(Reply.self, from: data) {
+                try? fm.removeItem(at: answer)
+                if let outcome = reply.outcome { return outcome }
+                throw SessionEditError.invalid(reply.error ?? "Folio 窗口拒绝了这次修改")
+            }
+            if Date() >= deadline {
+                if withdrawn { throw SessionEditError.noReply }
+                // Still there: nobody took it, so nothing was applied. Gone: the window is answering.
+                withdrawn = true
+                if (try? fm.removeItem(at: request)) != nil { throw SessionEditError.noReply }
+                deadline = Date().addingTimeInterval(1)
+            }
+            usleep(20_000)
+        }
+    }
+    /// Window side: takes every waiting request out of the folder (so none is applied twice).
+    static func take(in state: URL, now: Date = Date()) -> [(id: String, edit: SessionEdit?)] {
+        let folder = directory(state), fm = FileManager.default
+        var taken: [(id: String, edit: SessionEdit?)] = []
+        for name in ((try? fm.contentsOfDirectory(atPath: folder.path)) ?? []).sorted() {
+            let file = folder.appendingPathComponent(name)
+            let age = ((try? fm.attributesOfItem(atPath: file.path))?[.modificationDate] as? Date).map { now.timeIntervalSince($0) } ?? 0
+            guard name.hasSuffix(".request.json") else {
+                if name.hasSuffix(".reply.json"), age > lifetime { try? fm.removeItem(at: file) }
+                continue
+            }
+            let data = try? Data(contentsOf: file)
+            guard (try? fm.removeItem(at: file)) != nil, age <= lifetime else { continue }
+            taken.append((String(name.dropLast(".request.json".count)), data.flatMap { try? JSONDecoder().decode(SessionEdit.self, from: $0) }))
+        }
+        return taken
+    }
+    static func answer(_ id: String, _ reply: Reply, state: URL) {
+        guard let data = try? JSONEncoder().encode(reply) else { return }
+        try? data.write(to: directory(state).appendingPathComponent(id + ".reply.json"), options: .atomic)
+    }
+}
+/// The window's wake-up for `requests/`; cancelling on release closes the folder descriptor.
+final class SessionRequestWatch {
+    private let source: DispatchSourceFileSystemObject
+    init?(state: URL, onChange: @escaping () -> Void) {
+        let folder = SessionRequests.directory(state)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+        let descriptor = Darwin.open(folder.path, O_EVTONLY)
+        guard descriptor >= 0 else { return nil }
+        source = DispatchSource.makeFileSystemObjectSource(fileDescriptor: descriptor, eventMask: .write, queue: .main)
+        source.setEventHandler(handler: onChange)
+        source.setCancelHandler { close(descriptor) }
+        source.resume()
+    }
+    deinit { source.cancel() }
+}
+
+/// The welcome page's example and `folio open --example`: a copy of the bundled guide in the state
+/// folder, so edits never touch the app bundle; an existing copy (with the user's edits) is kept.
+enum ExampleDocument {
+    static let name = "欢迎使用.md"
+    static func install(from original: URL, into state: URL) throws -> URL {
+        let destination = state.appendingPathComponent(name)
+        try FileManager.default.createDirectory(at: state, withIntermediateDirectories: true)
+        if !FileManager.default.fileExists(atPath: destination.path) { try FileManager.default.copyItem(at: original, to: destination) }
+        return destination
+    }
+}

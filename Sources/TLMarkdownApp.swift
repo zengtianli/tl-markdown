@@ -203,8 +203,8 @@ private final class FolioRecordingPanel: NSPanel {
                 }.keyboardShortcut("p", modifiers: [.command, .shift])
                 Divider()
                 Button("切换源码 / 即时渲染") { store.toggleSource() }.keyboardShortcut("/", modifiers: [.command, .shift])
-                Button("放大字号") { store.settings.fontSize = min(26, store.settings.fontSize + 1); store.settingsChanged() }.keyboardShortcut("+")
-                Button("缩小字号") { store.settings.fontSize = max(13, store.settings.fontSize - 1); store.settingsChanged() }.keyboardShortcut("-")
+                Button("放大字号") { store.settings.fontSize = SessionEdits.steppedFontSize(store.settings.fontSize, by: 1); store.settingsChanged() }.keyboardShortcut("+")
+                Button("缩小字号") { store.settings.fontSize = SessionEdits.steppedFontSize(store.settings.fontSize, by: -1); store.settingsChanged() }.keyboardShortcut("-")
             }
         }
     }

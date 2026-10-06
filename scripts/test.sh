@@ -33,7 +33,8 @@ xcrun swiftc -parse-as-library "${ENGINES[@]}" Sources/Models.swift Sources/View
 build/watcher-tests build/watcher-tests-data | tee build/watcher-test-results.txt
 (cd Editor && node --test structure-tests.mjs)
 for suite in IndexEngine GraphEngine; do
-  xcrun swiftc -parse-as-library "${ENGINES[@]}" "Tests/${suite}Tests.swift" -o "build/${suite}-tests"
+  # Models.swift: the session-edit section of GraphEngine.swift uses its settings and recent-file types.
+  xcrun swiftc -parse-as-library "${ENGINES[@]}" Sources/Models.swift "Tests/${suite}Tests.swift" -o "build/${suite}-tests"
   FOLIO_GRAPH_TEMPLATE="$DIR/Resources/graph-view.html" "build/${suite}-tests" "build/${suite}-tests-data"
 done
 # The shipped command line (the agent's surface): build the real CLI, run it on synthetic files only.
