@@ -39,6 +39,8 @@ private func aligned(_ block: String) -> String {
         return "  " + name + String(repeating: " ", count: max(3, 29 - name.count)) + about
     }.joined(separator: "\n")
 }
+/// The shared layer's write lines that belong to `folio config`; its last one, `update install`, is `folio update`'s.
+private let configWrites = AppLifecycleCLI.helpWrite("folio").split(separator: "\n").filter { $0.drop { $0 == " " }.hasPrefix("config ") }.joined(separator: "\n")
 private let overview = """
 Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。
 
@@ -82,15 +84,16 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
   失败 {"ok": false, "command": 命令, "error": 原因, "code": 短码, "usage": 是否用法错误}，原因同时写到 stderr
   短码：usage、not_found、window_unsaved、window_no_reply、window_outdated、session_unreadable、invalid_value、
         encoding、read_only、conflict、cancelled，其余为 failed
-  config status|export|import|sync 与 update check 另有：confirmation_required、file_exists（退出 2）；
-        import_rejected、export_failed、sync_incomplete、check_incomplete、no_settings、isolation_incomplete（退出 1）
+  config status|export|import|sync 与 update check|install 另有：confirmation_required、file_exists（退出 2）；
+        import_rejected、export_failed、sync_incomplete、check_incomplete、no_settings、isolation_incomplete、
+        manual_install、needs_product_installer、upgrade_failed、app_busy、replace_failed、cleanup_failed（退出 1）
 
 退出码：
-  0  成功（检索无命中也算）
+  0  成功（检索无命中也算；update install 没有新版时也是 0，installed 为 false）
   1  操作失败：文件或索引不存在、配置不可读、写入被拒、文档在窗口里有未保存修改、窗口没有应答、导入被拒、
-     同步或检查更新未完成等
-  2  用法错误：不认识的命令或参数、缺少参数、该命令不接受的参数、设置的值不在可取范围；config import / sync
-     缺确认参数 --yes、config export 的目标已存在而没加 --force
+     同步或检查更新未完成、升级未完成或这个安装位置不能由命令替换等
+  2  用法错误：不认识的命令或参数、缺少参数、该命令不接受的参数、设置的值不在可取范围；config import / sync、
+     update install 缺确认参数 --yes、config export 的目标已存在而没加 --force
 
 仅在窗口中（没有对应命令）：
   草稿与设置入口：未命名草稿标签（保存前只在窗口里）、打开设置面板、\(AppLifecycleCLI.helpWindowOnly)、帮助菜单的使用指南与产品主页
@@ -98,10 +101,6 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
   视图：侧栏显示与切换（最近/大纲/搜索）、切换标签（手机端为在列表里切换文稿）、源码/即时渲染切换
         （手机端为阅读/编辑与显示 Markdown 源码）、完整预览及关闭它的窗口、点大纲跳转、打开搜索命中后光标跳到该行
   提示与系统面板：关闭提示横幅（手机端为提示条与关闭提示）、在 Finder 中显示、手机端的「授权图片目录…」
-暂无命令：
-  \(AppLifecycleCLI.helpNoCommand)
-  「\(AppLifecycleCLI.defaultWindowEntry)」窗口里那句实时同步状态：由运行中的 App 持有；folio config sync on 与同步开着时的
-  folio config import 只回报它们自己那一次同步的结果
 agent 改 Markdown 用 folio write 或直接写文件：窗口会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。
 """
 
@@ -192,7 +191,7 @@ private let commandUsage: [String: String] = [
     读（不写任何文件或状态）：
     \(aligned(String(AppLifecycleCLI.helpRead("folio").split(separator: "\n")[0])))
     写：
-    \(aligned(AppLifecycleCLI.helpWrite("folio")))
+    \(aligned(configWrites))
     导入用文件里的整组设置替换现有的，所以文件要带齐字号、宽度、启动时恢复、图片目录（config export 导出的就是完整的；
     只改一项用 folio settings set）。导入前按设置面板的范围核对每一项（字号 13–26、宽度 560–1300 且为 20 的倍数、
     字体 system/serif/mono、图片目录为相对目录），缺项或有一项不合就整份拒绝（import_rejected），什么都不改。
@@ -201,7 +200,10 @@ private let commandUsage: [String: String] = [
     applied_by 说明走的哪条路。窗口没有应答（window_no_reply）或是装新版之前启动的旧窗口（window_outdated）时
     退出 1，不写入。sync on 最多等 30 秒这一次同步；没等到时开关已打开，退出 1（sync_incomplete）。
     --json：成功 {ok: true, command, …}；失败同其他命令 {ok: false, command, error, code, usage}
-      config status → has_settings, sync_enabled, keys[], app_running, problem
+      config status → has_settings, sync_enabled, sync_status{text, at, from, live}, keys[], app_running, problem
+                      sync_status 是窗口开关下面那句同步状态。from：app（运行中的 Folio 窗口此刻显示的，live 为 true）·
+                      record（Folio 没在运行，上一次同步留下的那句，at 是当时）· derived（没有可用的记录，按开关给
+                      窗口打开时的初值）
       config export → path, bytes, keys[]（-o - 把配置本身写到标准输出，不能与 --json 同用）
       config import → imported, path, sync_enabled, app_running, applied_by, sync{completed, status}（仅同步开着时）
       config sync   → action, changed, sync_enabled, status, app_running, check_with, applied_by（改动了才有）；
@@ -210,17 +212,35 @@ private let commandUsage: [String: String] = [
       1  not_found（没有这个文件）· import_rejected（导入被拒，原配置保留）· export_failed · sync_incomplete（开关已打开，
          首次同步未完成）· no_settings · isolation_incomplete（隔离运行缺一半环境变量）· window_no_reply · window_outdated
       2  usage（参数不对）· confirmation_required（import、sync 缺 --yes）· file_exists（导出目标已存在，缺 --force）
-    仅在窗口中：\(AppLifecycleCLI.helpWindowOnly)。窗口里那句实时同步状态由运行中的 App 持有，命令只回报自己那一次。
+    仅在窗口中：\(AppLifecycleCLI.helpWindowOnly)。升级到新版见 folio update --help。
     """,
     "update": """
     用法：folio update check [--json]
+          folio update install --yes [--dry-run] [--json]
     \(aligned(AppLifecycleCLI.helpUpdate).drop { $0 == " " })
-    与窗口「检查更新…」同一个发行记录（产品主页上的 release.json）和同一套判断，只读，不写任何文件或状态。
-    --json：{ok, command, current: {version, build}, source: {kind, url}, latest: {version, build, channel, download_url,
-             release_url, sha256, size_bytes}, update_available, state: update_available | up_to_date | ahead_of_channel,
-             message, upgrade: {in_app, button, how, download_url}}
-    没读到发行记录时退出 1（check_incomplete，仍带 current 与 source）；参数不对退出 2。
-    暂无命令：\(AppLifecycleCLI.helpNoCommand)
+    \(aligned(AppLifecycleCLI.helpInstall("folio")).drop { $0 == " " })
+    与窗口「检查更新…」「升级到新版…」同一个发行记录（产品主页上的 release.json）、同一套判断和同一个安装器。
+    update check 只读，不写任何文件或状态。update install 先做同一次检查：
+      没有新版            退出 0，installed 为 false，什么都不动
+      不能由命令替换      窗口里是「下载新版…」的情形（公开渠道要求当前 App 带开发者签名，Folio 所在的目录要可写）：
+                          退出 1（manual_install），给出安装包地址，什么都不动
+      能替换              --dry-run 只说会做什么；不带 --yes 退出 2；带 --yes 才下载、验证发行包与签名、替换：运行中的
+                          Folio 先正常退出（未保存的正文照常留在会话记录里），换好再重开，旧 App 移到废纸篓，
+                          配置与会话记录不动；替换失败回滚
+    --json（update check）：{ok, command, current: {version, build}, source: {kind, url}, latest: {version, build, channel,
+             download_url, release_url, sha256, size_bytes}, update_available,
+             state: update_available | up_to_date | ahead_of_channel, message,
+             upgrade: {in_app, button, how, download_url, command}}（command 是能由命令替换时的那条升级命令，否则为 null）
+    --json（update install）：{ok, command, current, latest, source, app_running, installed,
+             state: installed | up_to_date | ahead_of_channel, message}
+             --dry-run 另有 dry_run, would_install: {from, to}, installation, will_quit_app, will_relaunch
+             装上后另有 previous: {version, build}, backup（成功为 null）, old_app_cleanup: "trashed", relaunched
+    退出码与短码（失败同其他命令 {ok: false, command, error, code, usage}，现场字段照带）：
+      1  check_incomplete（没读到发行记录，仍带 current 与 source）· manual_install（带 download_url、release_url）·
+         needs_product_installer · upgrade_failed（下载或验证未通过，当前 App 未动）· app_busy（运行中的 Folio 没有
+         退出，未替换）· replace_failed（替换未完成，旧版已保留或已回滚）· cleanup_failed（新版已验证，旧包清理
+         失败并保留）· isolation_incomplete（测试或隔离运行不替换隔离目录之外的 App）
+      2  usage（参数不对）· confirmation_required（update install 缺 --yes）
     """,
     "tabs": """
     用法：folio tabs close <文档|标签id> [--save | --keep-draft] [--json]
@@ -455,7 +475,7 @@ private struct Options {
             // status、export、import、sync 在进到这里之前已交给共用的「配置与更新」命令层。
             guard rest.isEmpty else { throw UsageError(message: "config 的子命令只有 status、export、import、sync（不带子命令时显示索引配置）：\(rest[0])") }
         case "update":
-            throw UsageError(message: "用法：folio update check [--json]")
+            throw UsageError(message: "用法：folio update check [--json]，或 folio update install --yes [--dry-run] [--json]")
         default:
             guard rest.isEmpty else { throw UsageError(message: "\(name) 不接受位置参数") }
         }
@@ -1121,7 +1141,7 @@ private func tabs(_ options: Options) throws {
     }
 }
 
-// MARK: config status|export|import|sync and update check (the shared「配置与更新」command layer)
+// MARK: config status|export|import|sync and update check|install (the shared「配置与更新」command layer)
 private let lifecycleSubcommands: Set<String> = ["status", "export", "import", "sync"]
 /// `update …`, or `config` followed by one of the shared layer's subcommands: the words for that layer, verb
 /// first. Bare `folio config` stays Folio's own index-configuration report.

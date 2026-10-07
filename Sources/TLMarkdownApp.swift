@@ -261,7 +261,9 @@ extension FolioLifecycle {
             }
             let passed = !checks.isEmpty && checks.values.allSatisfy { $0 }
             var result: [String: Any] = ["ok": passed, "checks": checks, "failed": order.filter { checks[$0] == false }, "count": checks.count,
-                                         "not_covered": ["the owner's real iCloud Drive and preference domain", "update check (reads the network)",
+                                         "not_covered": ["the owner's real iCloud Drive and preference domain",
+                                                         "the public release channel (an isolated run reads its own test release record, never the network)",
+                                                         "update install --yes (the replacement itself is exercised by scripts/accept/cli_cases.py on a throwaway app)",
                                                          "a physical click on the window's switch and menus", "a visible window",
                                                          "a save by the window at the very moment a background sync pass writes session.json"]]
             facts.forEach { result[$0.key] = $0.value }
@@ -370,10 +372,24 @@ extension FolioLifecycle {
             return followed
         }
 
+        /// `sync_status` of a fresh `folio config status`: the sentence under the window's switch, as a command reads it.
+        func sentence() -> (text: String?, from: String?, live: Bool?) {
+            let status = run("config", "status").body["sync_status"] as? [String: Any]
+            return (status?["text"] as? String, status?["from"] as? String, status?["live"] as? Bool)
+        }
+        /// The command reports this window's own sentence, the one its status line shows right now.
+        func sentenceIsTheWindows() -> Bool {
+            wait(3) { let read = sentence(); return read.from == "app" && read.live == true && read.text == statusLine?.stringValue && read.text == configuration.status }
+        }
+
         let first = run("config", "status")
         check("status_reads_the_same_settings", first.code == 0 && first.body["has_settings"] as? Bool == true && first.body["sync_enabled"] as? Bool == false
               && first.body["app_running"] as? Bool == true && first.body["problem"] is NSNull
               && (first.body["keys"] as? [String])?.contains("file.0.settings.fontSize") == true)
+        // A window that has published no sentence yet shows the switch's initial one: that is what the command reports.
+        let initial = first.body["sync_status"] as? [String: Any]
+        check("status_gives_the_sentence_under_the_switch", initial?["text"] as? String == off && initial?["text"] as? String == statusLine?.stringValue
+              && initial?["live"] as? Bool == true && initial?["from"] as? String == "derived")
         facts["portable_keys"] = first.body["keys"] ?? []
         check("status_writes_nothing", !files.fileExists(atPath: support.appendingPathComponent(FolioLifecycle.productID).path) && !files.fileExists(atPath: cloud.path))
 
@@ -384,6 +400,8 @@ extension FolioLifecycle {
                   && on.body["applied_by"] as? String == "window" && on.body["app_running"] as? Bool == true)
             check("round\(round)_window_follows_on", follows(true))
             check("round\(round)_on_is_not_written_back", holds(true, 1.2))
+            // The window ran that command on its own configuration; the sentence it shows is still read as the window's.
+            check("round\(round)_command_reads_the_windows_sentence_on", statusLine?.stringValue != off && sentenceIsTheWindows())
             if round == 1 {
                 check("sync_on_uploads_through_the_shared_reconcile", cloudSize() == 18)
                 // Nothing below can pass when the very first command did not get through: stop here with what was seen.
@@ -393,6 +411,7 @@ extension FolioLifecycle {
             check("round\(round)_command_switches_off", offResult.code == 0 && offResult.body["changed"] as? Bool == true && offResult.body["sync_enabled"] as? Bool == false)
             check("round\(round)_window_follows_off", follows(false))
             check("round\(round)_off_is_not_written_back", holds(false, 1.2))
+            check("round\(round)_command_reads_the_windows_sentence_off", statusLine?.stringValue == off && sentenceIsTheWindows())
         }
 
         // Back to back: the second command is sent the moment the first returns. From the moment the second
@@ -418,7 +437,7 @@ extension FolioLifecycle {
         if let toggle, let action = toggle.action {
             (toggle as? NSButton)?.state = .on; (toggle as? NSSwitch)?.state = .on
             NSApp.sendAction(action, to: toggle.target, from: toggle)
-            check("window_switch_is_read_by_the_command", wait(5) { configuration.status != off } && stored() == true)
+            check("window_switch_is_read_by_the_command", wait(5) { configuration.status != off } && stored() == true && sentenceIsTheWindows())
             let back = sync(false)
             check("command_switch_is_shown_by_the_window", back.code == 0 && follows(false) && holds(false, 0.6))
         } else { check("window_switch_is_read_by_the_command", false) }
@@ -542,8 +561,29 @@ extension FolioLifecycle {
         check("usage_error_exit_2_in_folios_envelope", usage.code == 2 && usage.body["code"] as? String == "usage" && usage.body["usage"] as? Bool == true
               && usage.body["ok"] as? Bool == false && usage.body["error"] is String && usage.err.contains("[usage]"))
         let help = run("--help", json: false).out
-        check("help_lists_every_lifecycle_subcommand", ["\n  config status", "\n  config export", "\n  update check", "\n  config import", "\n  config sync on|off", "\n  tabs close"].allSatisfy(help.contains)
-              && help.components(separatedBy: "暂无命令").last?.contains("升级到新版") == true)
+        check("help_lists_every_lifecycle_subcommand", ["\n  config status", "\n  config export", "\n  update check", "\n  config import", "\n  config sync on|off",
+                                                        "\n  update install --yes", "\n  tabs close"].allSatisfy(help.contains) && !help.contains("暂无命令"))
+
+        // Updates: an isolated run reads its own release record. A dry run names this window as the app it would ask
+        // to quit, and asks nothing; without --yes nothing is installed. (--yes is never given here.)
+        let unpublished = run("update", "check")
+        check("update_reads_the_isolated_channel_only", unpublished.code == 1 && unpublished.body["code"] as? String == "check_incomplete"
+              && (unpublished.body["source"] as? [String: Any])?["kind"] as? String == "private_cloud")
+        let own = Bundle.main.bundleIdentifier ?? ""
+        let feed = cloud.appendingPathComponent("TianliApps/Updates/\(own)/\(FolioLifecycle.isolatedChannel)")
+        try? files.createDirectory(at: feed, withIntermediateDirectories: true)
+        let release: [String: Any] = ["version": "99.0", "build": "1", "bundle_id": own, "channel": FolioLifecycle.isolatedChannel,
+                                      "filename": "Folio-99.0.zip", "sha256": String(repeating: "a", count: 64), "size_bytes": 10]
+        try? JSONSerialization.data(withJSONObject: release).write(to: feed.appendingPathComponent("release.json"))
+        let offered = run("update", "check"), plan = run("update", "install", "--dry-run"), unconfirmed = run("update", "install")
+        check("update_check_names_the_install_command", offered.code == 0 && offered.body["state"] as? String == "update_available"
+              && (offered.body["upgrade"] as? [String: Any])?["command"] as? String == "folio update install --yes")
+        check("update_install_dry_run_names_this_window_and_quits_nothing", plan.code == 0 && plan.body["dry_run"] as? Bool == true && plan.body["installed"] as? Bool == false
+              && plan.body["app_running"] as? Bool == true && plan.body["will_quit_app"] as? Bool == true && plan.body["will_relaunch"] as? Bool == true
+              && ((plan.body["would_install"] as? [String: Any])?["to"] as? [String: Any])?["version"] as? String == "99.0")
+        check("update_install_needs_yes", unconfirmed.code == 2 && unconfirmed.body["code"] as? String == "confirmation_required" && unconfirmed.body["usage"] as? Bool == true)
+        check("update_commands_leave_the_app_in_place", files.isExecutableFile(atPath: cli.path) && store.ownsSession && SessionLock.held(in: state)
+              && ((try? files.contentsOfDirectory(atPath: Bundle.main.bundleURL.deletingLastPathComponent().path)) ?? []).filter { $0.hasSuffix(".app") }.count == 1)
 
         // The tab commands, run by this window: close keeping the draft, bring it back, reload a changed file.
         let refusedClose = run("tabs", "close", draftID)

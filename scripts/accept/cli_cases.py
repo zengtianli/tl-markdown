@@ -2,9 +2,11 @@
 """Exercise the real shipped engine through its CLI, using only synthetic files."""
 import base64
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
+import plistlib
 import shutil
 import signal
 import sqlite3
@@ -363,6 +365,7 @@ def lifecycle_and_tabs():
     suite = 'test.tianli.folio.' + uuid.uuid4().hex
     try:
         lifecycle_and_tabs_cases(suite)
+        upgrade_cases(suite)
     finally:
         subprocess.run(['/usr/bin/defaults', 'delete', suite], capture_output=True)
         forget_empty_preferences(suite)
@@ -416,17 +419,29 @@ def lifecycle_and_tabs_cases(suite):
     # help: every subcommand is listed in the top-level help as a command, and folio config --help still explains bare config
     top = run('--help').stdout
     for line in ['\n  config status ', '\n  update check ', '\n  config export -o <file> ', '\n  config import <file> --yes ', '\n  config sync on|off --yes ',
-                 '\n  tabs close ', '\n  tabs restore ', '\n  tabs reload ']:
+                 '\n  update install --yes ', '\n  tabs close ', '\n  tabs restore ', '\n  tabs reload ']:
         assert line in top, line
-    assert '升级到新版' in top.split('暂无命令')[-1] and '打开「配置与更新…」窗口' in top.split('仅在窗口中')[-1]
+    # every item of the「配置与更新…」window has a command now: nothing is listed as having none, and the upgrade is a write
+    assert '暂无命令' not in top and '静默' not in top and '打开「配置与更新…」窗口' in top.split('仅在窗口中')[-1]
+    assert '\n  update install --yes ' in top.split('\n写入：')[1].split('\n通用参数')[0] and '同步状态' in top.split('\n  config status ')[1].split('\n')[0]
+    for code in ['manual_install', 'needs_product_installer', 'upgrade_failed', 'app_busy', 'replace_failed', 'cleanup_failed']:
+        assert code in top.split('退出码：')[0], code
     usage = run('config', '--help').stdout
     assert 'folio config [--show-rules]' in usage and 'folio config sync on|off --yes' in usage and 'applied_by' in usage
-    assert run('config', 'sync', '--help').stdout == usage and 'folio update check' in run('update', 'check', '--help').stdout
+    assert 'sync_status{text, at, from, live}' in usage and all(word in usage for word in ['app（', 'record（', 'derived（']) and '由运行中的 App 持有' not in usage
+    assert '\n    update install' not in usage      # config --help lists the three config writes; the upgrade is under update --help
+    upgrade_usage = run('update', '--help').stdout
+    assert run('config', 'sync', '--help').stdout == usage and run('update', 'check', '--help').stdout == upgrade_usage == run('update', 'install', '--help').stdout
+    for word in ['folio update check [--json]', 'folio update install --yes [--dry-run] [--json]', 'would_install', 'will_quit_app', 'old_app_cleanup', 'upgrade: {in_app, button, how, download_url, command}',
+                 'check_incomplete', 'manual_install', 'needs_product_installer', 'upgrade_failed', 'app_busy', 'replace_failed', 'cleanup_failed', 'isolation_incomplete', 'confirmation_required']:
+        assert word in upgrade_usage, word
+    assert '暂无命令' not in upgrade_usage and '静默' not in upgrade_usage
 
     # bare `folio config` is still the index configuration; an unknown word after it is a usage error as before
     assert 'state_directory' in json.loads(run('config', '--json').stdout)
     assert json.loads(run('config', 'bogus', '--json', code=2).stdout)['code'] == 'usage'
-    for bad in [('update',), ('update', 'check', 'extra'), ('update', 'install'), ('config', 'status', 'extra'), ('config', 'export'),
+    for bad in [('update',), ('update', 'check', 'extra'), ('update', 'bogus'), ('update', 'install', 'extra'), ('update', 'install', '--no-such'),
+                ('update', 'install', '-o', 'x'), ('config', 'status', 'extra'), ('config', 'export'),
                 ('config', 'sync'), ('config', 'sync', 'maybe', '--yes'), ('config', 'import'), ('config', 'status', '--db', 'x')]:
         refused, err = go(*bad, code=2)
         assert refused['ok'] is False and refused['usage'] is True and refused['code'] == 'usage' and isinstance(refused['error'], str) and '[usage]' in err, (bad, refused)
@@ -463,8 +478,12 @@ def lifecycle_and_tabs_cases(suite):
     # config status: read-only, writes nothing (not even the lock file)
     before = (session_file.read_bytes(), listing())
     status, _ = go('config', 'status')
+    # sync_status is the sentence under the window's switch; with no window and nothing synced yet it is the switch's initial one
     assert status == {'ok': True, 'command': 'config status', 'has_settings': True, 'sync_enabled': False, 'app_running': False, 'problem': None,
+                      'sync_status': {'text': 'iCloud 配置同步已关闭', 'at': None, 'from': 'derived', 'live': False},
                       'keys': ['file.0.settings.' + k for k in ['contentWidth', 'fontFamily', 'fontSize', 'imageFolder', 'restoreSession']]}, status
+    told = subprocess.run([str(binary), 'config', 'status'], env={**env, **lc}, text=True, capture_output=True, timeout=30)
+    assert told.returncode == 0 and '\n同步状态：iCloud 配置同步已关闭' in told.stdout, told
     dry, _ = go('config', 'sync', 'on', '--dry-run')
     assert dry['dry_run'] is True and dry['would_change'] is True and dry['sync_enabled'] is False and 'applied_by' not in dry, dry
     needs, _ = go('config', 'sync', 'on', code=2)
@@ -515,12 +534,17 @@ def lifecycle_and_tabs_cases(suite):
     on, _ = go('config', 'sync', 'on', '--yes')
     assert on['changed'] is True and on['sync_enabled'] is True and on['applied_by'] == 'file' and on['action'] == 'on' and on['check_with'] == 'folio config status' and on['status'], on
     assert go('config', 'status')[0]['sync_enabled'] is True and json.loads(cloud_file.read_text())['values']['file.0.settings.fontSize'] == 22
+    # no window is running: the sentence is the one that sync left behind, with when
+    left = go('config', 'status')[0]['sync_status']
+    assert left['text'] == on['status'] and left['from'] == 'record' and left['live'] is False and left['at'], left
     same_again, _ = go('config', 'sync', 'on', '--yes')
     assert same_again['changed'] is False and 'applied_by' not in same_again
     carried, _ = go('config', 'import', envelope('synced', fontSize=23), '--yes')
     assert carried['sync'] == {'completed': True, 'status': on['status']} and json.loads(cloud_file.read_text())['values']['file.0.settings.fontSize'] == 23, carried
     off, _ = go('config', 'sync', 'off', '--yes')
     assert off['changed'] is True and off['sync_enabled'] is False and go('config', 'status')[0]['sync_enabled'] is False
+    closed_sentence = go('config', 'status')[0]['sync_status']
+    assert closed_sentence['text'] == 'iCloud 配置同步已关闭' and closed_sentence['live'] is False and closed_sentence['from'] in ('record', 'derived'), closed_sentence
     # back to back, both orders: the second command's value is what every later process reads
     for last in (False, True, False):
         go('config', 'sync', 'off' if last else 'on', '--yes')
@@ -538,7 +562,9 @@ def lifecycle_and_tabs_cases(suite):
         began = time.monotonic()
         unanswered, _ = go('config', 'import', envelope('held', fontSize=25), '--yes', code=1)
         assert unanswered['code'] == 'window_no_reply' and time.monotonic() - began < 15, unanswered
-        assert go('config', 'status')[0]['app_running'] is True       # reading never needs the lock
+        held = go('config', 'status')[0]                              # reading never needs the lock
+        # a window that has published no sentence yet shows the switch's initial one
+        assert held['app_running'] is True and held['sync_status'] == {'text': 'iCloud 配置同步已关闭', 'at': None, 'from': 'derived', 'live': True}, held
         assert go('tabs', 'restore', code=1)[0]['code'] == 'window_no_reply'
         requests = state / 'requests'
 
@@ -614,6 +640,131 @@ def lifecycle_and_tabs_cases(suite):
     for args in [('config', 'import', envelope('good', fontSize=21), '--yes'), ('config', 'sync', 'on', '--yes'), ('tabs', 'restore'), ('tabs', 'close', 'DRAFT', '--keep-draft')]:
         assert go(*args, code=1)[0]['code'] == 'session_unreadable' and session_file.read_text() == 'not json', args
     assert go('config', 'status')[0]['sync_enabled'] is False
+
+
+def upgrade_cases(suite):
+    """update install, the window's「升级到新版…」as a command, on a throwaway signed app that holds the real folio in
+    Resources/bin the way Folio.app holds the installed command (which is called through a link, as ~/.local/bin/folio
+    is). The app, its isolated release record, the rollback copy and the "Trash" are all inside the work folder:
+    APP_LIFECYCLE_NO_RELAUNCH keeps the last two under the isolated support folder, and nothing is opened."""
+    stage = base / 'lc-upgrade'
+    shutil.rmtree(stage, ignore_errors=True)
+    fixture = 'test.tianli.folio.fixture'
+    feed = stage / 'cloud/TianliApps/Updates' / fixture / 'isolated'
+    feed.mkdir(parents=True)
+    up = {**env, 'TL_MARKDOWN_STATE_DIR': str(stage / 'state'), 'APP_LIFECYCLE_SUPPORT_DIR': str(stage), 'APP_LIFECYCLE_CLOUD_DIR': str(stage / 'cloud'),
+          'APP_LIFECYCLE_NO_RELAUNCH': '1', 'FOLIO_PREFERENCES_SUITE': suite}
+
+    def signed(path, version, build):
+        (path / 'Contents/MacOS').mkdir(parents=True)
+        (path / 'Contents/Resources/bin').mkdir(parents=True)
+        shutil.copyfile('/usr/bin/true', path / 'Contents/MacOS/Folio')
+        shutil.copyfile(binary, path / 'Contents/Resources/bin/folio')
+        for program in ('Contents/MacOS/Folio', 'Contents/Resources/bin/folio'):
+            (path / program).chmod(0o755)
+        (path / 'Contents/Info.plist').write_bytes(plistlib.dumps({'CFBundleIdentifier': fixture, 'CFBundleExecutable': 'Folio', 'CFBundlePackageType': 'APPL',
+                                                                   'CFBundleShortVersionString': version, 'CFBundleVersion': build, 'LSMinimumSystemVersion': '14.0'}))
+        subprocess.run(['/usr/bin/codesign', '--force', '--sign', '-', '--identifier', 'cyou.tianli.TLMarkdown.cli', str(path / 'Contents/Resources/bin/folio')], check=True, capture_output=True, timeout=60)
+        subprocess.run(['/usr/bin/codesign', '--force', '--sign', '-', str(path)], check=True, capture_output=True, timeout=60)
+
+    def on_disk(path):
+        info = plistlib.loads((path / 'Contents/Info.plist').read_bytes())
+        return {'version': info['CFBundleShortVersionString'], 'build': info['CFBundleVersion']}
+
+    def publish(version, build, **changes):
+        """The isolated channel's release record and package, as the private channel keeps them."""
+        source = stage / f'source-{version}-{build}/Folio.app'
+        if not source.exists():
+            signed(source, version, build)
+        package = feed / f'Folio-{version}-{build}.zip'
+        package.unlink(missing_ok=True)
+        subprocess.run(['/usr/bin/ditto', '-c', '-k', '--keepParent', str(source), str(package)], check=True, capture_output=True, timeout=120)
+        record = {'version': version, 'build': build, 'bundle_id': fixture, 'channel': 'isolated', 'filename': package.name,
+                  'sha256': hashlib.sha256(package.read_bytes()).hexdigest(), 'size_bytes': package.stat().st_size, **changes}
+        (feed / 'release.json').write_text(json.dumps(record))
+
+    installed = stage / 'installed/Folio.app'
+    signed(installed, '1.2.1', '7')
+    old, new = {'version': '1.2.1', 'build': '7'}, {'version': '1.3.0', 'build': '9'}
+    (stage / 'bin').mkdir()
+    command = stage / 'bin/folio'
+    command.symlink_to(installed / 'Contents/Resources/bin/folio')
+
+    def call(*args, code=0, through=command, environment=None, **more):
+        result = subprocess.run([str(through), *map(str, args), '--json'], env=environment or up, text=True, capture_output=True, timeout=120, **more)
+        assert result.returncode == code, (args, result.returncode, result.stdout, result.stderr)
+        return json.loads(result.stdout)
+
+    def untouched():
+        return on_disk(installed) == old and not (stage / 'backups').exists() and not (stage / 'trash').exists() \
+            and sorted(p.name for p in installed.parent.iterdir()) == ['Folio.app']
+
+    # an isolated run reads the isolated release record, never the public channel or the network
+    none = call('update', 'install', code=1)
+    assert none['code'] == 'check_incomplete' and none['usage'] is False and isinstance(none['error'], str) and none['current'] == old \
+        and none['source'] == {'kind': 'private_cloud', 'channel': 'isolated'} and untouched(), none
+    assert call('update', 'check', code=1)['source'] == none['source']
+    # no newer release: exit 0, installed false, with or without --yes
+    publish('1.2.1', '7')
+    for flags in ([], ['--yes'], ['--dry-run']):
+        same_version = call('update', 'install', *flags)
+        assert same_version['ok'] is True and same_version['command'] == 'update install' and same_version['installed'] is False and same_version['state'] == 'up_to_date' \
+            and same_version['current'] == old and same_version['app_running'] is False and untouched(), (flags, same_version)
+    told = subprocess.run([str(command), 'update', 'install', '--yes'], env=up, text=True, capture_output=True, timeout=60)
+    assert told.returncode == 0 and '不需要升级' in told.stdout, told
+    publish('1.2.0', '68')
+    assert call('update', 'install', '--yes')['state'] == 'ahead_of_channel' and untouched()
+    # a newer release: update check names the command, a dry run says what would happen, a missing --yes is exit 2
+    publish(new['version'], new['build'])
+    offer = call('update', 'check')
+    assert offer['state'] == 'update_available' and offer['current'] == old and offer['latest']['version'] == new['version'] and offer['upgrade']['in_app'] is True \
+        and offer['upgrade']['button'] == '升级到新版…' and offer['upgrade']['command'] == 'folio update install --yes' and offer['upgrade']['command'] in offer['upgrade']['how'], offer
+    dry = call('update', 'install', '--dry-run')
+    assert dry['dry_run'] is True and dry['installed'] is False and dry['would_install'] == {'from': old, 'to': new} and dry['installation'] == 'bundle' \
+        and dry['will_quit_app'] is False and dry['will_relaunch'] is False and dry['app_running'] is False and untouched(), dry
+    assert call('update', 'install', '--dry-run', '--yes')['dry_run'] is True and untouched()
+    unconfirmed = subprocess.run([str(command), 'update', 'install', '--json'], env=up, text=True, capture_output=True, timeout=60)
+    refused = json.loads(unconfirmed.stdout)
+    assert unconfirmed.returncode == 2 and refused['ok'] is False and refused['code'] == 'confirmation_required' and refused['usage'] is True \
+        and isinstance(refused['error'], str) and '[usage]' in unconfirmed.stderr and untouched(), unconfirmed
+    # a package that does not match its record is refused, the app is as it was
+    record = (feed / 'release.json').read_text()
+    (feed / 'release.json').write_text(json.dumps(dict(json.loads(record), sha256='0' * 64)))
+    wrong = call('update', 'install', '--yes', code=1)
+    assert wrong['code'] == 'upgrade_failed' and wrong['current'] == old and untouched(), wrong
+    (feed / 'release.json').write_text(record)
+    # an app the command cannot replace where it is (the window shows「下载新版…」there): manual_install, nothing touched
+    locked = stage / 'locked/Folio.app'
+    shutil.copytree(installed, locked, symlinks=True)
+    locked.parent.chmod(0o555)
+    try:
+        manual = call('update', 'install', '--yes', code=1, through=locked / 'Contents/Resources/bin/folio')
+        button = call('update', 'check', through=locked / 'Contents/Resources/bin/folio')['upgrade']
+    finally:
+        locked.parent.chmod(0o755)
+    assert manual['code'] == 'manual_install' and 'download_url' in manual and 'release_url' in manual and manual['usage'] is False and on_disk(locked) == old, manual
+    assert button['in_app'] is False and button['button'] == '下载新版…' and button['command'] is None, button
+    # a test or diagnostic run never replaces an app outside its own support folder: refused before anything is looked up
+    outside = call('update', 'install', '--yes', code=1, through=binary)
+    assert outside['code'] == 'isolation_incomplete' and outside['command'] == 'update install', outside
+    half = call('update', 'install', '--yes', code=1, environment=env)       # its own state folder only: no network, nothing replaced
+    assert half['code'] == 'isolation_incomplete', half
+    assert untouched()
+    # the real thing, through the link, while someone holds the session lock without being a process the command could
+    # name (a test, as above): nobody is asked to quit. The command sits inside the app it replaces and still reports.
+    (stage / 'state').mkdir(exist_ok=True)
+    with open(stage / 'state/session.lock', 'a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        done = call('update', 'install', '--yes', start_new_session=True)
+    assert done['ok'] is True and done['installed'] is True and done['state'] == 'installed' and done['previous'] == old and done['current'] == new \
+        and done['backup'] is None and done['old_app_cleanup'] == 'trashed' and done['relaunched'] is False and done['app_running'] is False, done
+    trashed = list((stage / 'trash').glob('*/Folio.app'))
+    assert on_disk(installed) == new and not (stage / 'backups/Folio.app').exists() and len(trashed) == 1 and on_disk(trashed[0]) == old, (trashed, on_disk(installed))
+    assert sorted(p.name for p in installed.parent.iterdir()) == ['Folio.app']      # nothing left beside the app, nothing reopened
+    subprocess.run(['/usr/bin/codesign', '--verify', '--deep', '--strict', str(installed)], check=True, capture_output=True, timeout=60)
+    again = call('update', 'check')                                                 # the link now reaches the new app's command
+    assert again['state'] == 'up_to_date' and again['current'] == new and again['upgrade']['command'] is None, again
+    assert call('update', 'install', '--yes')['installed'] is False
 
 
 def index(*args):

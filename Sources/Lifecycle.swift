@@ -2,14 +2,19 @@ import AppKit
 
 // Folio's side of the shared「配置与更新」layer (Shared/AppLifecycle*.swift, byte copies of swift-shared). This file is
 // the one place that names the product, its release channel and its portable settings. The app's window, the
-// `folio config …` / `folio update check` commands and a window answering such a command are all built from it,
-// so they read and write one thing. Compiled into the app and into Resources/bin/folio.
+// `folio config …` / `folio update check|install` commands and a window answering such a command are all built
+// from it, so they read and write one thing. Compiled into the app and into Resources/bin/folio.
 enum FolioLifecycle {
     static let productID = "cyou.tianli.TLMarkdown"
     static let name = "Folio"
     static let command = "folio"
-    /// The one release channel: the window's「检查更新」and `folio update check` both read it.
-    static let updateSource: AppUpdateSource = .manifest(URL(string: "https://app-mac-folio.tianli.cyou/release.json")!)
+    /// The one release channel: the window's「检查更新」and「升级到新版…」, `folio update check` and
+    /// `folio update install` all read it.
+    static let releaseFeed = URL(string: "https://app-mac-folio.tianli.cyou/release.json")!
+    /// An isolated run (APP_LIFECYCLE_SUPPORT_DIR) never reads the public channel or the network: it reads the test
+    /// release record the shared layer keeps under APP_LIFECYCLE_CLOUD_DIR (TianliApps/Updates/<bundle id>/isolated).
+    static let isolatedChannel = "isolated"
+    static var updateSource: AppUpdateSource { lifecycleIsolated ? .privateCloud(channel: isolatedChannel) : .manifest(releaseFeed) }
     /// The reading preferences inside session.json that travel with「导出配置」and the optional iCloud copy.
     /// The custom index file, the index folders, the recent list and the tabs stay on this Mac.
     static let portableKeys = ["settings.fontFamily", "settings.fontSize", "settings.contentWidth", "settings.restoreSession", "settings.imageFolder"]
@@ -88,6 +93,9 @@ enum FolioLifecycle {
     /// text or JSON; `folio` puts a failure into its usual envelope). `arguments` starts at the verb; main thread.
     static func run(_ arguments: [String], configuration: AppConfiguration?, as runner: Runner) -> SessionRequests.CommandReply {
         if let refusal = importRefusal(arguments) { return refusal }
+        if let problem = replacementProblem(arguments) {
+            return failure(command: "update install", code: "isolation_incomplete", message: problem, exit: 1, json: arguments.contains("--json"))
+        }
         var out = "", err = ""
         var product = AppLifecycleCLI.Product(command: command, name: name, configuration: configuration, updateSource: updateSource)
         if let hostBundle { product.bundle = hostBundle }
@@ -98,14 +106,40 @@ enum FolioLifecycle {
         case .commandWithLock: product.runningApp = { [] }
         case .reader:
             // An isolated run has no installed app to look up: its "app" is whoever holds that state folder's lock.
-            if lifecycleIsolated { let state = FolioIndexConfig.stateDirectory; product.runningApp = { SessionLock.held(in: state) ? [0] : [] } }
+            // That is this command's own app when one is running (the self-test's window), found the way the shared
+            // layer finds the installed one. A holder with no process to name (a test holding the lock) still counts
+            // as a running window for `config`; `update install` asks the processes it is given to quit, so it is
+            // never handed a made-up pid.
+            if lifecycleIsolated {
+                let state = FolioIndexConfig.stateDirectory, identifier = hostBundle?.bundleIdentifier, update = arguments.first == "update"
+                product.runningApp = {
+                    guard SessionLock.held(in: state) else { return [] }
+                    let own = ProcessInfo.processInfo.processIdentifier
+                    let windows = identifier.map { NSRunningApplication.runningApplications(withBundleIdentifier: $0).map(\.processIdentifier).filter { $0 != own } } ?? []
+                    return windows.isEmpty && !update ? [0] : windows
+                }
+            }
         }
         // The shared layer writes session.json itself, not through SessionDisk. When this command is the writer
         // (no window), it keeps the record as it was, to put back should the result not be a readable session.
         let disk = SessionDisk(directory: FolioIndexConfig.stateDirectory)
         var kept: Data?
         if case .commandWithLock = runner, (try? disk.read()) != nil { kept = FileManager.default.contents(atPath: disk.file.path) }
+        // The shared layer gives every command its own status record, so that a short-lived command never replaces
+        // the sentence a running window shows. Here the window itself runs the command, on its own configuration:
+        // what that publishes is the window's sentence, and `folio config status` reads it from the window's record.
+        // The name is put back before the first sentence of this command is recorded (those arrive on the main
+        // queue, behind this block) and again when the command returns without having waited for anything.
+        if case .window = runner, let configuration {
+            DispatchQueue.main.async { configuration.statusRecordName = AppConfiguration.appStatusRecord }
+        }
         let code = AppLifecycleCLI.run(arguments, product: product)
+        if case .window = runner, let configuration {
+            configuration.statusRecordName = AppConfiguration.appStatusRecord
+            // A sentence that was already on its way when the command began went to the command's record. Should the
+            // window's record now say something else than the window shows, one more pass publishes it again.
+            if let record = configuration.statusRecord(), record.status != configuration.status { configuration.reconcile() }
+        }
         if case .commandWithLock = runner, FileManager.default.fileExists(atPath: disk.file.path) {
             if let kept, (try? disk.read()) == nil {
                 // Settings that arrived (from the cloud copy, say) left the record undecodable: tabs and drafts come first.
@@ -151,6 +185,25 @@ enum FolioLifecycle {
         case "sync": return !arguments.contains("--dry-run")
         default: return false
         }
+    }
+    /// `update install` that would really replace the app: not a dry run, and confirmed.
+    static func replaces(_ arguments: [String]) -> Bool {
+        arguments.first == "update" && positionals(arguments).first == "install" && arguments.contains("--yes") && !arguments.contains("--dry-run")
+    }
+    /// A test or diagnostic run never swaps the owner's installed Folio, whatever a release record says. A run on
+    /// its own state folder alone replaces nothing; an isolated run replaces only an app inside its own support
+    /// folder (where the shared layer also keeps that run's rollback copy and its "Trash"). nil: nothing to object to.
+    static func replacementProblem(_ arguments: [String]) -> String? {
+        guard replaces(arguments) else { return nil }
+        guard lifecycleIsolated else {
+            return stateIsolated ? "TL_MARKDOWN_STATE_DIR 指到了独立的状态目录（测试或诊断运行）：这样的运行不替换 App；未执行。" : nil
+        }
+        func real(_ url: URL) -> String { url.standardizedFileURL.resolvingSymlinksInPath().path }
+        let support = real(URL(fileURLWithPath: environment["APP_LIFECYCLE_SUPPORT_DIR"] ?? "", isDirectory: true)) + "/"
+        guard let app = hostBundle?.bundleURL, real(app).hasPrefix(support) else {
+            return "隔离运行只替换隔离目录（APP_LIFECYCLE_SUPPORT_DIR）里的 App，不替换这一个；未执行。"
+        }
+        return nil
     }
     /// The window may run in another folder: the file to import is named by absolute path.
     static func absolute(_ arguments: [String]) -> [String] {

@@ -59,7 +59,7 @@ sop:
     - name: 使用 iCloud 记住配置
       command: folio config sync
     - name: iCloud 配置同步状态那句话
-      missing: 实时状态由运行中的 App 持有；folio config sync on 与同步开着时的 folio config import 只回报它们自己那一次同步的结果，开关本身用 folio config status 读
+      command: folio config status
     - name: 导出配置…
       command: folio config export
     - name: 导入配置…
@@ -67,7 +67,7 @@ sop:
     - name: 检查更新…
       command: folio update check
     - name: 升级到新版… / 下载新版…
-      missing: 命令做得到、但不做静默安装：folio update check 给出新版、按钮名、安装包地址与步骤，替换并重启 App 仍在窗口确认
+      command: folio update install
     - name: 帮助：Folio 使用指南 / 产品主页
       human: 打开网页，只在窗口里有意义
     # 编辑菜单与「编辑文档」菜单
