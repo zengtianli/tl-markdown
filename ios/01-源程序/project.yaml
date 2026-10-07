@@ -68,10 +68,12 @@ sop:
       human: 窗口里的手势
     - name: 提示条与关闭提示
       human: 只在窗口里有意义
+    # 「配置与更新」面板（共享 AppLifecycleMobile）：移动版渠道是「本地构建」（MobileProductLifecycle 的 unreleased，
+    # 没有安装说明链接）、没有可迁移配置，面板上只有版本、渠道名和一句说明，没有按钮。移动版没有往 Mac 或后端发数据的通道。
     - name: 配置与更新（版本；移动版无可迁移配置）
-      missing: 读不到手机上装的版本：folio status 与 folio update check 读的是 Mac 包的版本，Mac 上的命令够不到手机上装的那一份
+      device: 显示的是这台手机上装的那一份 App 的版本与构建号（读自手机上的 App 包），移动版不上报；folio status 与 folio update check 读的是 Mac 包的版本，读不到手机上这一份
     - name: 检查更新
-      missing: 移动版尚未配置正式发行渠道，App 里这一项只显示这句说明；folio update check 查的是 Mac 版的发行记录，不是手机版的
+      device: 移动版的渠道是「本地构建」，面板上这一栏只有编进 App 的渠道名和一句说明，没有按钮，也没有可查询的发行记录；它只在这台手机的面板里显示，folio update check 查的是 Mac 版的发行记录
   account:
     mode: none
     rationale: 本地文稿阅读与编辑入口，没有产品账号、注册或登录；文稿经系统“文件”授权读写，iCloud 云盘等位置由系统 Apple ID 管理，不作为本产品账号。
