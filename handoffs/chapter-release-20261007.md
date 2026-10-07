@@ -20,7 +20,8 @@
 ## 待自动补（不需要本人）
 
 - 实测 1.2.1 (128) 发行包后，主页的历史标注自动消失：`sop.measure`（`scripts/release/measure-sop.py`，会找 `build/release-1.2.1/Folio-1.2.1-128-arm64.zip`）写入 `perf/lightweight.json` 后，默认 `site_build` 就能构建 128 的正式页并部署。这一步要等空闲门（测量会启动隐藏副本，在 Dock 冒图标）。
-- media_playback：部署后跑一次失败（readyState 0，当时负载 12.9）；三段视频线上 206 / video/mp4 可取，文件与上一版逐字节相同。属验收器高负载超时，已知同类两次。
+- media_playback：部署后共三次记录——22:02:29 通过（三段各播到 1.2 秒），22:04:42 与 22:05:09 失败（open、save 停在 readyState 0，edit 正常播到 6–16 秒；负载 7.7–12.9，期间另有一轮 app_sop 在跑）。页面没有脚本，视频标签未改，线上三个文件 206 / video/mp4、与本地逐字节相同。判断为验收器的无界面浏览器同时加载多段视频时不稳定，归 Chapter；未再重跑。
+- `app_sop run --stage ship --check-only` 两次返回 busy（另一轮 app_sop 持锁），未绕过；「装机与发布」由 Chapter 排队的重检写入。
 
 ## 没验证的
 
