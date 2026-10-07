@@ -148,3 +148,62 @@
   - Mac mini 上的装机没有动。
 - **Chapter 自查**：`chapter sop accept --app folio-mac --check agent_cli` → 登记与帮助无问题，暂缺 2 项；`chapter agent-cli --json --app folio-mac` → `status: missing`，62 项 = 命令 43、human 17、missing 2，`problems` 为空（上一轮是 59 项、暂缺 8）。`--app folio`（手机端）→ 17 项 = 命令 9、human 6、missing 2，`problems` 为空（上一轮暂缺 3；「重新载入并保留当前草稿」现在对应 `folio tabs`）。
 - **提交**：`0bb5776`（命令、窗口通道、自检、测试、登记、文档）与本节加装机回执的提交；未推送。`perf/acceptance/**` 等其他会话留下的未提交文件没有动。
+
+## 2026-10-07 傍晚 · 命令入口第四轮：「升级到新版」与同步状态那句话有了命令，装机 1.2.1 (128)
+
+共用层这天下午定稿了两条：`update install --yes [--dry-run]` 和 `config status` 的 `sync_status`（总部 `5d2ad1d`、`50a4919`）。本节把它们接进 Folio。本人对这一轮的原话只有「继续全部做完。按照你的意思」；下面的具体做法是执行时定的。只动 Folio 的 Mac 端，不测性能、不发布、不推送，`ios/` 不归本节。
+
+这一轮由两个执行者接力：前一个 17:46 开工，18:05 随主会话重启被结束，没有留下提交和交接；后一个 18:10 接手。下面标「前任」的是前一个留在工作区、后一个逐处读过并自己跑过测试后沿用的。
+
+- **结果**：`folio update install --yes [--dry-run]` 与 `folio config status` 的 `sync_status` 在装机版 1.2.1 (128) 里可用；`folio --help` 不再有「暂无命令」；登记里原来的 2 项暂缺改成命令。Chapter：`folio-mac` 由 `missing`（62 项 = 命令 43、human 17、暂缺 2）变为 `passed`（命令 45、human 17、暂缺 0）。
+- **边界（实际改动）**
+  - 前任写、后任沿用：`CLI/main.swift`（顶层帮助、`config --help` / `update --help` 的形状与短码表、`update` 的用法提示；命令实现没动）、`Sources/Lifecycle.swift`（隔离运行的更新渠道、`replacementProblem`、窗口执行命令时状态记录名的处理、隔离运行里「运行中的 App」怎么认）、`Sources/TLMarkdownApp.swift`（只动 `--lifecycle-self-test`：加同步状态那句话与 `update` 的检查）、`scripts/accept/cli_cases.py`（帮助核对、`sync_status` 各段、新增 `upgrade_cases`）。
+  - 后任写：`project.yaml` 的 `sop.agent_cli` 两行、`docs/cli.md`、两份 README 的命令行一节、`CLAUDE.md` 命令行一节、本节。
+  - 没碰：`Sources/Shared/` 四份副本、`Sources/ViewModel.swift`、`GraphEngine.swift`、`Models.swift`、`IndexEngine.swift`、`Tests/`、`scripts/accept/lifecycle.sh`、`build.sh`、`scripts/test.sh`、`Info.plist`、`ios/`、`site/`、`perf/lightweight.json`、别的产品与总部原版。`perf/build-receipt.json` 由装机入口重写；`perf/acceptance/agent_cli*` 与 `perf/delivery-evidence.json` 由 `chapter sop accept` 重写，没有提交。
+- **接法**
+  - `update install` 不改 `session.json`，所以不走窗口通道、不拿会话锁，由命令进程直接交给共用层（`FolioLifecycle.run(… as: .reader)`）。失败仍转成 folio 自己的信封（`{ok, command, error, code, usage}`）。
+  - 本机从源码装的 Folio 是临时签名，更新源是公开渠道（产品主页的 `release.json`）。共用层对这种组合不替换：有新版时窗口里是「下载新版…」，命令退出 1（`manual_install`）并给出安装包地址。所以 `update install --yes` 在这台机器的装机版上现在不会替换任何东西；带开发者签名的发行版才会走完整替换。
+  - 隔离运行（设了 `APP_LIFECYCLE_SUPPORT_DIR`）的更新源换成隔离目录里的测试发行记录（`.privateCloud(channel: "isolated")`，读 `APP_LIFECYCLE_CLOUD_DIR/TianliApps/Updates/<bundle id>/isolated`），不联网。真实运行的更新源没变。
+  - `FolioLifecycle.replacementProblem`：带 `--yes` 的 `update install` 在隔离运行里只替换隔离目录里的 App，只设了 `TL_MARKDOWN_STATE_DIR` 的运行一律不替换，都在查发行记录之前拒绝（`isolation_incomplete`）。
+  - 共用层让每条命令把自己的同步结果记到命令自己的记录里（`status-command.json`），免得盖掉窗口那句。Folio 的 `config import` / `config sync` 在窗口开着时是窗口自己执行的，所以 `FolioLifecycle.run(… as: .window)` 在执行前后把记录名放回窗口那份（`status.json`），窗口执行完命令后 `config status` 读到的仍是窗口此刻显示的那句（`from: app`）。
+- **验证**
+  - `bash scripts/test.sh --core-only` 退出 0：Swift 测试 188 条 PASS（与上一轮同数，本轮没加 Swift 用例），真二进制用例 `scripts/accept/cli_cases.py functionality` 通过。这次测试编出的 `folio` 与装机版里的 `folio` 是同一个文件（sha256 都是 `592093bc1cfe413b…`）。
+  - `cli_cases.py` 本轮新增的（都在 `build/cli-tests/work` 里的合成文件和隔离目录）：帮助逐项核对（顶层有 `update install --yes`、没有「暂无命令」、短码齐全，`update --help` 的形状）；`config status` 的 `sync_status` 在没同步过、同步后、关掉后、有人持锁四种情形的取值；`upgrade_cases` 在一个一次性的临时签名假 App 上（真 `folio` 放在它的 `Resources/bin`，经软链调用）验没有发行记录、版本相同、比渠道新、有新版时的 `update check` 与 `--dry-run`、缺 `--yes` 退出 2、发行包哈希不对（`upgrade_failed`，App 未动）、所在目录不可写（`manual_install`）、隔离目录之外的 App 与只隔离状态目录的运行（`isolation_incomplete`），以及真的替换一次：装上新版、旧包进隔离目录里的「废纸篓」、`backup` 为 null、`old_app_cleanup` 为 `trashed`、没有重开任何东西。
+  - 带窗口的自检 `bash scripts/accept/lifecycle.sh`：64 项（上一轮 52 项）全过，跑了两次——提交前的试构建一次，装机后对 `/Applications/Folio.app` 的隔离副本一次（`build/accept/lifecycle/lifecycle.json`、`lifecycle-installed-128.json`）。新增的 12 项：窗口还没发布过句子时命令读到开关的初值；三轮开关里窗口执行完命令后，命令读到的是窗口此刻显示的那句（`from: app`、`live: true`，与窗口的状态行、`configuration.status` 三者相同）；窗口自己拨开关后同样；隔离运行的 `update check` 只读隔离渠道；有新版时 `update check` 给出 `folio update install --yes`；`--dry-run` 认出这个窗口是要先退出的 App 而没有让它退出；缺 `--yes` 退出 2；这几条之后 App、会话锁都还在。自检里从不带 `--yes` 跑 `update install`。
+  - 跑测试和自检时机器负载均值在 200 以上（十几个单元同时编译），没有出现计时类失败。
+- **装机**
+  - 提交 `fe37ed1` 后用产品既有入口 `python3 scripts/verify-install.py`（`build.sh --install`）装为 **1.2.1 (128)**（装前 1.2.1 (123)；构建号取提交数），receipt 与当前构建输入匹配。签名装前装后都是 ad-hoc（`spctl -a -vv`：rejected；没有公证票据），等级没变。可执行文件 sha256 前 16 位：`6a05539fe96febf0` → `a0fec3e6be1082bc`；`folio`：`e557225e71395974` → `592093bc1cfe413b`。
+  - 旧包由 `build.sh` 移到 `~/.Trash/folio-previous-1791369787/Folio.app`（构建号 123，可执行文件哈希与装前留底相同）。`/Applications` 里只有一个 Folio。
+  - 装前装后 Folio 都没有在运行，没有启动或重启它。
+  - 装前装后 `defaults export cyou.tianli.TLMarkdown` 逐字节相同；`~/Library/Application Support/TLMarkdown` 六个文件的 SHA256、大小、修改时间、权限相同（与 18:15 的第一次留底相比只有 `md_index.db-shm` 的修改时间变了，是装前读索引的只读命令造成的，内容哈希没变）；`TianliApps/Configuration/cyou.tianli.TLMarkdown` 与 iCloud Drive 里的配置文件装前装后都不存在。
+  - 原有命令装前装后对照：`status / config / settings / recent / roots / stats / session / config status` 的 `--json` 没有少字段，除构建号外取值相同，退出码都是 0；`config status` 多了 `sync_status` 一组；`folio settings --no-such --json`、`folio config status --no-such --json` 仍退出 2、`code: usage`。
+- **装机版上的实机证据**（只跑了只读的）
+  - `folio --version` = `folio 1.2.1 (128)`；`folio --help` 退出 0，写入一段有 `update install --yes`，`config status` 那行提到同步状态，全文没有「暂无命令」。
+  - `folio config status --json`：`sync_status` 为 `{text: "iCloud 配置同步已关闭", at: null, from: "derived", live: false}`（开关为关、Folio 没在运行、从没同步过）；文字输出多一行「同步状态：iCloud 配置同步已关闭」。
+  - `folio update install --no-such --json` 退出 2、`code: usage`；多给一个词同样退出 2。
+  - `folio update check --json`（联网读产品主页的发行记录，不读 iCloud）：当前 1.2.1 (128)，此渠道 1.2.0 (68)，`ahead_of_channel`，`upgrade.command` 为 null。`folio update install --dry-run --json` 与不带参数的 `folio update install --json`：都退出 0、`installed: false`、`state: ahead_of_channel`，什么都没动。这几条之后状态目录没有多出文件，装机版仍是 128。
+- **Chapter 自查**：`chapter sop accept --app folio-mac --check agent_cli` → `passed`，界面功能对照 62 项 = 命令 45、human 17、暂缺 0，读回 `folio status`；`chapter agent-cli --json --app folio-mac` → `status: passed`，`problems` 为空（上一轮是 `missing`、暂缺 2；改登记后、装机前读到的是 `unchecked`）。手机端组件（`folio`）这一轮由别的单元处理，不在本节。
+- **没有验证的**
+  - **没有对真实装机版跑过 `update install --yes`**（约定不跑）。真的替换只在一次性的假 App 上验过，走的是隔离渠道的本地发行包。
+  - 公开渠道那条完整的路（https 下载、开发者签名比对、`spctl` 评估、替换、重开）在 Folio 上没有任何实跑：本机构建是临时签名，按共用层源码这种组合在有新版时是 `manual_install`。`manual_install` 这个分支只用「所在目录不可写」触发验过，「公开渠道加临时签名」触发的没有实测（现在渠道没有比本机新的版本）。
+  - 装机版上「有新版」的各分支没有实机证据（本机比渠道新）。
+  - 运行中的真窗口加 `sync_status` 的 `from: app`：只在离屏自检里验过，自检的窗口从未显示；Folio 的真窗口这一轮没有开过。
+  - 运行中的 Folio 被 `update install --yes` 要求退出、换好再重开这一段没有实跑。按源码，Folio 退出前会存盘、未保存的正文留在会话记录里并在下次启动恢复；没存成时退出会被取消，命令 20 秒后报 `app_busy`、不替换。
+  - 新增的「窗口那句话」检查没有做对照（去掉 `FolioLifecycle.run` 里放回记录名的那两处之后自检会不会失败，没有试）。
+  - 没有对本人真实的会话记录、偏好和 iCloud Drive 跑过任何一条写命令（同上一轮）。没测性能（约定不测）。Mac mini 上的装机没有动。
+- **留给后面的**
+  - 隔离运行的窗口现在读隔离渠道而不是公开渠道（`FolioLifecycle.updateSource` 改成了按是否隔离取值）。真实运行不受影响；以后写隔离测试时不要指望它联网。
+  - `scripts/accept/lifecycle.sh` 仍没有登记进 `sop.accept`（这轮 `project.yaml` 只许动 `sop.agent_cli`），回归不会被 Chapter 自动发现。
+  - 冲突副本 4 个留在原处（见下），要不要清由本人或管两机同步的会话定。
+- **提交**：`fe37ed1`（命令、工厂、自检、用例、登记、文档）与本节加装机回执的提交；未推送。`perf/acceptance/**`、`perf/delivery-evidence.json`、`ios/` 下别的会话的未提交文件没有动。
+
+- **经过（按时间）**
+  - 18:12 声明边界被两机准入挡住：mini 侧账本上还挂着前任同名会话的租约（进程已不在，本机记录也没了）。没有绕，等它在 18:23 自己到期后才声明（`agentcli2-folio-mac`，13 个文件）。等的时候只做了不写产品目录的事。
+  - 四份共用副本（`Sources/Shared/`）与总部现版逐字节相同，已由别的会话在 `129ea99` 提交，没有再动。
+  - 冲突副本 4 个（`perf/delivery-evidence.sync-conflict-…json`、`handoffs/chapter-maintenance-20261001.sync-conflict-…md`、`ios/01-源程序/project.sync-conflict-…yaml`、`ios/01-源程序/perf/delivery-evidence.sync-conflict-…json`），都不在编译或打包路径，当前文件都比冲突副本新且更长；没有移，也没有提交它们。
+  - 留底（18:15，在执行者自己的临时目录）：装机版 1.2.1 (123)，ad-hoc 签名，`spctl` rejected，无公证票据；`defaults export`、数据目录六个文件的清单与 SHA256；Folio 没在运行。
+  - 18:32 `bash scripts/test.sh --core-only` 在当前工作区（含前任的改动）退出 0：Swift 测试 188 条 PASS（与上一轮同数，本轮没加 Swift 用例），真二进制用例 `cli_cases.py functionality` 通过，含本轮新加的 `upgrade_cases` 与 `sync_status` 各段。跑的时候机器负载均值 210 上下，没有出现计时类失败。
+  - 18:32 起重命令按主线的排队规则跑（先 1 号槽，18:34 改 3 号槽）：试构建 → `scripts/accept/lifecycle.sh` → 提交 → 装机。
+  - 18:37 试构建（`bash build.sh --build-only`，当时还没提交）编过；18:38 `bash scripts/accept/lifecycle.sh` 在这份构建上通过：64 项（上一轮 52 项），`failed` 为空，背靠背回退 0，偏好域与工作目录都已清掉。结果在 `build/accept/lifecycle/lifecycle.json`。
+  - 18:39 提交 `fe37ed1`（九个文件：命令、工厂、自检、用例、登记、文档）。构建号取提交数，现在是 128。
+  - 18:40–18:43 `python3 scripts/verify-install.py` 装机（装前再核一次 Folio 没在运行、偏好与数据和 18:15 的留底一致）。18:43 装后比对与装机版只读验证；18:44 Chapter 验收 `passed`；18:45 装机包隔离副本上的自检通过。声明在收尾提交后释放。
