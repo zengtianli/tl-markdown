@@ -35,13 +35,16 @@ sop:
   # 手机、平板与 Vision 上能看、能点的 → Mac 上同一个 folio 命令（写法见 app 技能 references/agent-cli.md）。
   # 从 Sources/ContentView.swift、MobileStore.swift、DocumentWorkspace.swift 与 Shared/AppLifecycleMobile.swift 逐项列出；
   # 两端共用族根的 DocumentIO / SessionDisk，命令作用于 Mac 上的文件与会话记录。
+  # 手机上的会话（打开了哪些文稿、未保存的修改、恢复草稿）存在手机 App 沙盒 Application Support/FolioMobile，
+  # 移动版没有往 Mac 或后端发数据的通道；Mac 上 folio session、folio tabs 读写的是 Mac 窗口自己的会话，
+  # 所以只落在手机会话里的几项记 device。文稿文件本身在“文件”里，放在 iCloud 云盘时 Mac 上是同一个文件。
   agent_cli:
     readback: folio status
     features:
     - name: 打开 Markdown（文件选择器、从其他 App 打开）
       command: folio open
     - name: 新建文稿
-      command: folio write
+      device: 新建的未命名文稿只存在这台手机的会话记录里（App 沙盒 Application Support/FolioMobile），另存为之前没有文件；移动版没有往 Mac 或后端发数据的通道，Mac 上 folio write 写的是 Mac 能看到的文件，够不到手机上这份未命名文稿
     - name: 编辑正文
       command: folio write
     - name: 保存原文件
@@ -49,7 +52,7 @@ sop:
     - name: 另存为…
       command: folio write
     - name: 文稿与恢复草稿列表（标题、有本地恢复草稿、提示）
-      command: folio session
+      device: 列的是这台手机上打开过的文稿与本地恢复草稿，会话记录存在手机 App 沙盒（Application Support/FolioMobile），移动版不上报；Mac 上 folio session 读的是 Mac 窗口自己的会话，不是这一份
     - name: 在列表里切换文稿
       human: 窗口导航
     - name: 阅读文稿 / 编辑文稿
@@ -57,13 +60,13 @@ sop:
     - name: 显示 Markdown 源码
       human: 窗口的显示方式
     - name: 状态条（原文件已保存 / 修改已存为本地恢复草稿、字数）
-      command: folio session
+      device: 显示的是手机会话里当前文稿的状态（有没有未保存的修改、字数）；未保存的修改只存成手机 App 沙盒里的本地恢复草稿，移动版不上报。Mac 上 folio session 读的是 Mac 窗口自己的会话，不是这一份
     - name: 插入图片到文档旁的图片目录
       command: folio asset
     - name: 授权图片目录…
       human: 系统“文件”授权面板，只能真人在手机上点；Mac 端不需要这层授权
     - name: 重新载入并保留当前草稿
-      command: folio tabs
+      device: 改的是手机上的会话：当前文稿改用磁盘上的文件，未保存的修改另存成手机 App 沙盒里的一份恢复草稿。Mac 上 folio tabs reload 操作的是 Mac 窗口的标签，够不到手机的会话
     - name: 点正文里的链接（跳到锚点、用系统打开网页与邮件链接、其他文稿给提示）
       human: 窗口里的手势
     - name: 提示条与关闭提示
