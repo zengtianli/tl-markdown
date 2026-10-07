@@ -1,5 +1,6 @@
 import Foundation
 import Darwin
+import AppKit
 
 private var interrupted: Int32 = 0
 private func stderr(_ message: String) { FileHandle.standardError.write(Data((message + "\n").utf8)) }
@@ -19,6 +20,9 @@ private func errorCode(_ error: Error) -> String {
     case DocumentError.state: return "session_unreadable"
     case SessionEditError.noReply: return "window_no_reply"
     case SessionEditError.invalid: return "invalid_value"
+    case SessionEditError.outdated: return "window_outdated"
+    case SessionEditError.notFound: return "not_found"
+    case SessionEditError.unsaved: return "window_unsaved"
     case FolioIndexError.cancelled: return "cancelled"
     default: return "failed"
     }
@@ -26,6 +30,15 @@ private func errorCode(_ error: Error) -> String {
 /// The command already printed its result, which reports the failure; only the exit status remains.
 private struct ReportedFailure: Error {}
 
+/// The shared「配置与更新」layer writes its own help lines; they are shown here in this help's columns.
+private func aligned(_ block: String) -> String {
+    block.split(separator: "\n").map { line -> String in
+        let text = line.drop { $0 == " " }
+        guard let gap = text.range(of: "  ") else { return "  " + text }
+        let name = String(text[..<gap.lowerBound]), about = text[gap.upperBound...].drop { $0 == " " }
+        return "  " + name + String(repeating: " ", count: max(3, 29 - name.count)) + about
+    }.joined(separator: "\n")
+}
 private let overview = """
 Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。
 
@@ -43,6 +56,7 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
   session                      Folio 窗口状态：打开的文档（未保存/冲突）、最近文件、关闭的草稿
   settings                     阅读设置的当前值与可取范围（字体、字号、宽度、启动恢复、图片目录、自定义索引）
   recent                       最近文件列表：路径、是否固定、上次打开时间、文件是否还在
+\(aligned(AppLifecycleCLI.helpRead("folio")))
 
 写入：
   write <文档>                 按编辑器「保存 / 另存为」的规则写文档（正文来自 --content、--from 或标准输入）
@@ -52,8 +66,12 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
   settings set <键> <值>…      改阅读设置，同设置面板与 ⌘+ / ⌘-；窗口开着时由窗口应用并立即生效
   recent pin|unpin|remove <文件>…   固定、取消固定、从最近记录移除（文件本身不动）
   recent clear                 清空最近记录
+  tabs close <文档|标签id>     关闭标签，同 ⌘W 与标签上的 ×；有未保存修改时须带 --save 或 --keep-draft（保留草稿并关闭）
+  tabs restore                 把最近关闭的草稿放回标签页，同「恢复关闭的草稿」
+  tabs reload <文档|标签id>    提示条上的「重新载入」：标签改用磁盘上的文件，未保存的修改另存为一个未命名草稿
   graph <目录>                 生成静态目录图谱 HTML（-n 或 --json 时不打开浏览器）
   asset add <文档> <图片>      把图片复制到文档旁的图片目录，输出 Markdown 引用（不改文档）
+\(aligned(AppLifecycleCLI.helpWrite("folio")))
 
 通用参数：--db 文件  --config 文件  --json  --help  --version
 没有配置不会扫描任何目录：先 folio roots add <目录>（或在 Folio 设置中添加文件夹），再 folio index。
@@ -64,20 +82,26 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
   失败 {"ok": false, "command": 命令, "error": 原因, "code": 短码, "usage": 是否用法错误}，原因同时写到 stderr
   短码：usage、not_found、window_unsaved、window_no_reply、window_outdated、session_unreadable、invalid_value、
         encoding、read_only、conflict、cancelled，其余为 failed
+  config status|export|import|sync 与 update check 另有：confirmation_required、file_exists（退出 2）；
+        import_rejected、export_failed、sync_incomplete、check_incomplete、no_settings、isolation_incomplete（退出 1）
 
 退出码：
   0  成功（检索无命中也算）
-  1  操作失败：文件或索引不存在、配置不可读、写入被拒、文档在窗口里有未保存修改、窗口没有应答等
-  2  用法错误：不认识的命令或参数、缺少参数、该命令不接受的参数、设置的值不在可取范围
+  1  操作失败：文件或索引不存在、配置不可读、写入被拒、文档在窗口里有未保存修改、窗口没有应答、导入被拒、
+     同步或检查更新未完成等
+  2  用法错误：不认识的命令或参数、缺少参数、该命令不接受的参数、设置的值不在可取范围；config import / sync
+     缺确认参数 --yes、config export 的目标已存在而没加 --force
 
 仅在窗口中（没有对应命令）：
-  草稿与设置入口：未命名草稿标签（保存前只在窗口里）、打开设置面板、帮助菜单的使用指南与产品主页
+  草稿与设置入口：未命名草稿标签（保存前只在窗口里）、打开设置面板、\(AppLifecycleCLI.helpWindowOnly)、帮助菜单的使用指南与产品主页
   编辑手势：撤销/重做、搜索与替换、查找下一个、加粗/斜体/插入链接、勾选任务列表、代码块复制、点正文里的链接
   视图：侧栏显示与切换（最近/大纲/搜索）、切换标签（手机端为在列表里切换文稿）、源码/即时渲染切换
-        （手机端为阅读/编辑与显示 Markdown 源码）、完整预览、点大纲跳转、打开搜索命中后光标跳到该行
+        （手机端为阅读/编辑与显示 Markdown 源码）、完整预览及关闭它的窗口、点大纲跳转、打开搜索命中后光标跳到该行
   提示与系统面板：关闭提示横幅（手机端为提示条与关闭提示）、在 Finder 中显示、手机端的「授权图片目录…」
-  暂缺命令（见 folio status / session 读到的状态）：关闭标签、恢复关闭的草稿到标签页、提示条上的「重新载入」；
-  配置与更新窗口里的「使用 iCloud 记住配置」、导出配置、导入配置、检查更新、升级到新版
+暂无命令：
+  \(AppLifecycleCLI.helpNoCommand)
+  「\(AppLifecycleCLI.defaultWindowEntry)」窗口里那句实时同步状态：由运行中的 App 持有；folio config sync on 与同步开着时的
+  folio config import 只回报它们自己那一次同步的结果
 agent 改 Markdown 用 folio write 或直接写文件：窗口会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。
 """
 
@@ -153,11 +177,67 @@ private let commandUsage: [String: String] = [
     """,
     "config": """
     用法：folio config [--show-rules] [--config 文件] [--db 文件] [--json]
-    只读显示所有命令实际使用的设置：index.json 位置、索引库位置及来源（--db > MDINDEX_DB > Folio 设置里的
+          folio config status [--json]
+          folio config export -o <file.json> [--force] [--json]
+          folio config import <file.json> --yes [--json]
+          folio config sync on|off --yes [--dry-run] [--json]
+    不带子命令：只读显示所有命令实际使用的设置：index.json 位置、索引库位置及来源（--db > MDINDEX_DB > Folio 设置里的
     自定义索引位置 > 默认）、篇数与最后更新、索引文件夹及是否存在、各类排除规则的条数。
     --show-rules 同时列出规则内容（可能含本机私有目录名）。配置文件不可读时退出 1。
     --json：{ok, state_directory, config: {path, exists, error?}, database: {path, source, exists}, index?,
              roots: [{path, exists}], rules: {…条数}, rule_values?}
+
+    带子命令：「\(AppLifecycleCLI.defaultWindowEntry)」窗口里的配置三项，与窗口读写同一份设置（共用的生命周期模块）。可迁移的是阅读设置：
+    正文字体、字号、宽度、启动时恢复、图片目录；自定义索引文件、索引文件夹、最近记录与标签留在本机。
+    读（不写任何文件或状态）：
+    \(aligned(String(AppLifecycleCLI.helpRead("folio").split(separator: "\n")[0])))
+    写：
+    \(aligned(AppLifecycleCLI.helpWrite("folio")))
+    导入用文件里的整组设置替换现有的，所以文件要带齐字号、宽度、启动时恢复、图片目录（config export 导出的就是完整的；
+    只改一项用 folio settings set）。导入前按设置面板的范围核对每一项（字号 13–26、宽度 560–1300 且为 20 的倍数、
+    字体 system/serif/mono、图片目录为相对目录），缺项或有一项不合就整份拒绝（import_rejected），什么都不改。
+    import 与真正拨动开关的 sync 会改 session.json
+    里的阅读设置：Folio 窗口开着时交给窗口执行（窗口的开关、状态与编辑器当场跟着变），没开时命令自己拿会话锁执行；
+    applied_by 说明走的哪条路。窗口没有应答（window_no_reply）或是装新版之前启动的旧窗口（window_outdated）时
+    退出 1，不写入。sync on 最多等 30 秒这一次同步；没等到时开关已打开，退出 1（sync_incomplete）。
+    --json：成功 {ok: true, command, …}；失败同其他命令 {ok: false, command, error, code, usage}
+      config status → has_settings, sync_enabled, keys[], app_running, problem
+      config export → path, bytes, keys[]（-o - 把配置本身写到标准输出，不能与 --json 同用）
+      config import → imported, path, sync_enabled, app_running, applied_by, sync{completed, status}（仅同步开着时）
+      config sync   → action, changed, sync_enabled, status, app_running, check_with, applied_by（改动了才有）；
+                      --dry-run 给 dry_run, would_change；已是所要状态时 changed 为 false
+    退出码与短码：
+      1  not_found（没有这个文件）· import_rejected（导入被拒，原配置保留）· export_failed · sync_incomplete（开关已打开，
+         首次同步未完成）· no_settings · isolation_incomplete（隔离运行缺一半环境变量）· window_no_reply · window_outdated
+      2  usage（参数不对）· confirmation_required（import、sync 缺 --yes）· file_exists（导出目标已存在，缺 --force）
+    仅在窗口中：\(AppLifecycleCLI.helpWindowOnly)。窗口里那句实时同步状态由运行中的 App 持有，命令只回报自己那一次。
+    """,
+    "update": """
+    用法：folio update check [--json]
+    \(aligned(AppLifecycleCLI.helpUpdate).drop { $0 == " " })
+    与窗口「检查更新…」同一个发行记录（产品主页上的 release.json）和同一套判断，只读，不写任何文件或状态。
+    --json：{ok, command, current: {version, build}, source: {kind, url}, latest: {version, build, channel, download_url,
+             release_url, sha256, size_bytes}, update_available, state: update_available | up_to_date | ahead_of_channel,
+             message, upgrade: {in_app, button, how, download_url}}
+    没读到发行记录时退出 1（check_incomplete，仍带 current 与 source）；参数不对退出 2。
+    暂无命令：\(AppLifecycleCLI.helpNoCommand)
+    """,
+    "tabs": """
+    用法：folio tabs close <文档|标签id> [--save | --keep-draft] [--json]
+          folio tabs restore [--json]
+          folio tabs reload <文档|标签id> [--json]
+    标签栏上的三个动作，与窗口同一段代码。标签用文件路径或 folio session 里的 id 指定（未命名草稿只有 id）。
+      close     关闭标签（⌘W、标签上的 ×）。标签有未保存修改时窗口会问「保存 / 取消 / 保留草稿并关闭」，命令要自带回答：
+                --save 先按「保存」的规则写文件（冲突或只读时不关闭，退出 1）；--keep-draft 把它放进「关闭的草稿」；
+                都不给等于取消，退出 1（window_unsaved），什么都不改。未命名草稿没有文件名，不能 --save。
+      restore   「恢复关闭的草稿」：最近关闭的那份草稿回到标签页并成为当前标签；它的文件已在别的标签里打开时作为
+                未命名草稿回来，文件在关闭后被改过时标记冲突（conflict 为 true）。没有草稿可恢复时退出 1（not_found）。
+      reload    提示条上的「重新载入」：标签改用磁盘上的文件；有未保存修改时，修改前的正文另存为一个未命名草稿
+                （draft_copy 是它的 id），不会丢。文件读不出时什么都不改，退出 1。
+    Folio 窗口开着时由窗口执行并立即显示，没开时直接改 session.json（其余内容原样保留）；applied_by 说明走的哪条路。
+    没有这个标签退出 1（not_found）；窗口没有应答或是旧窗口时退出 1，不写入。关闭完整预览窗口只在窗口里。
+    --json：{ok, action, id, path?, title, saved, kept_draft, draft_copy?, conflict, documents, closed_drafts, active_id?,
+             session_file, applied_by: window|file}（documents、closed_drafts 为操作后的数量）
     """,
     "roots": """
     用法：folio roots [list] [--config 文件] [--json]
@@ -204,7 +284,7 @@ private let commandUsage: [String: String] = [
     提示、字符数）、最近文件（是否固定）、关闭后保留的草稿、阅读设置，以及记录损坏时另存的 session-unreadable-*.json。
     --file 只看某个文件；--text 附带未保存文档和草稿的正文。修改某个 Markdown 前可先确认它在 Folio 中没有未保存修改。
     本命令从不写 session.json。阅读设置用 folio settings set 改，最近记录用 folio recent 改；标签的关闭、
-    恢复与重新载入目前只能在窗口里做。
+    恢复关闭的草稿与重新载入用 folio tabs。
     --json：{ok, session_file, exists, modified, active_id, documents, recent, closed_drafts, settings, unreadable_records}
     """,
     "graph": """
@@ -222,14 +302,14 @@ private let commandUsage: [String: String] = [
     --json：{ok, document, source, path, folder, markdown, bytes}
     """,
 ]
-private let commands = ["status", "read", "outline", "write", "open", "index", "build", "search", "files", "stats", "config", "roots", "session", "settings", "recent", "graph", "asset"]
+private let commands = ["status", "read", "outline", "write", "open", "index", "build", "search", "files", "stats", "config", "roots", "session", "settings", "recent", "tabs", "graph", "asset", "update"]
 private let valueOptions: Set<String> = ["--db", "--config", "--ws", "--repo", "--path", "--since", "--limit", "--per-file", "--width", "-o", "--output", "--folder", "--file", "--content", "--from"]
 private let searchOptions: Set<String> = ["--ws", "--repo", "--path", "--since", "--title", "--limit", "--per-file", "--width", "--body"]
 private let allowedOptions: [String: Set<String>] = [
     "index": ["--full"], "search": searchOptions, "files": searchOptions, "stats": [], "config": ["--show-rules"],
     "roots": [], "session": ["--text", "--file"], "graph": ["--launcher", "-o", "--output", "-n", "--no-open"], "asset": ["--folder"],
     "status": [], "read": [], "outline": [], "write": ["--content", "--from", "--force"], "open": ["-n", "--no-open", "--example"],
-    "settings": [], "recent": [],
+    "settings": [], "recent": [], "tabs": ["--save", "--keep-draft"],
 ]
 
 /// The app bundle this binary ships in (Resources/bin/folio shares the app's version; no second counter).
@@ -254,6 +334,7 @@ private struct Options {
     var config = FolioIndexConfig.defaultURL
     var query = FolioIndexQuery()
     var json = false, full = false, launcher = false, noOpen = false, showRules = false, text = false, force = false, example = false
+    var save = false, keepDraft = false
     var edit: SessionEdit?
     var output: URL?, root: URL?, folder: String?, file: String?, content: String?, from: String?
     var operands: [String] = []
@@ -304,6 +385,8 @@ private struct Options {
             case "--from": from = try value()
             case "--force": force = true
             case "--example": example = true
+            case "--save": save = true
+            case "--keep-draft": keepDraft = true
             case "--": positional.append(contentsOf: args.dropFirst(i + 1)); i = args.count
             default:
                 guard !option.hasPrefix("-") || option == "-" else { throw UsageError(message: "不认识的参数：\(option)") }
@@ -311,7 +394,7 @@ private struct Options {
             }
             i += 1
         }
-        guard let name = positional.first else { throw UsageError(message: "请指定命令（status、read、outline、write、open、search、files、stats、config、roots、session、settings、recent、index、graph、asset）；运行 folio --help 查看用法。") }
+        guard let name = positional.first else { throw UsageError(message: "请指定命令（status、read、outline、write、open、search、files、stats、config、roots、session、settings、recent、tabs、index、graph、asset、update）；运行 folio --help 查看用法。") }
         guard commands.contains(name) else { throw UsageError(message: "不认识的命令：\(name)；运行 folio --help 查看用法。") }
         invoked = name; command = name == "build" ? "index" : name
         let allowed = allowedOptions[command, default: []].union(["--db", "--config", "--json"])
@@ -360,6 +443,19 @@ private struct Options {
         case "asset":
             guard rest.first == "add", rest.count == 3 else { throw UsageError(message: "用法：folio asset add <文档> <图片> [--folder 相对目录]") }
             action = "add"; operands = Array(rest.dropFirst())
+        case "tabs":
+            guard let verb = rest.first, SessionTabs.actions.contains(verb) else { throw UsageError(message: "tabs 只支持 close、restore、reload；运行 folio tabs --help 查看用法") }
+            action = verb; operands = Array(rest.dropFirst())
+            guard operands.count == (verb == "restore" ? 0 : 1) else {
+                throw UsageError(message: verb == "restore" ? "tabs restore 不接受其他参数" : "用法：folio tabs \(verb) <文档|标签id>")
+            }
+            guard verb == "close" || !(save || keepDraft) else { throw UsageError(message: "--save 与 --keep-draft 只用于 tabs close") }
+            guard !(save && keepDraft) else { throw UsageError(message: "--save 与 --keep-draft 只能给一个") }
+        case "config":
+            // status、export、import、sync 在进到这里之前已交给共用的「配置与更新」命令层。
+            guard rest.isEmpty else { throw UsageError(message: "config 的子命令只有 status、export、import、sync（不带子命令时显示索引配置）：\(rest[0])") }
+        case "update":
+            throw UsageError(message: "用法：folio update check [--json]")
         default:
             guard rest.isEmpty else { throw UsageError(message: "\(name) 不接受位置参数") }
         }
@@ -511,6 +607,8 @@ private func run(_ options: Options) throws {
         try settings(options)
     case "recent":
         try recent(options)
+    case "tabs":
+        try tabs(options)
     case "graph":
         let config = FileManager.default.fileExists(atPath: options.config.path) ? try FolioIndexConfig.load(from: options.config) : FolioIndexConfig()
         let result = try FolioGraphEngine.generateReport(root: options.root!, output: options.output, launcher: options.launcher, config: config, cancelled: { interrupted != 0 })
@@ -906,17 +1004,22 @@ private func outdatedWindowRunning() -> Bool {
 /// otherwise this command, holding the same lock while it rewrites the file through SessionDisk.
 private func applySessionEdit(_ edit: SessionEdit) throws -> (outcome: SessionEditOutcome, by: String) {
     let state = FolioIndexConfig.stateDirectory
-    guard let lock = SessionLock.acquire(in: state) else { return (try SessionRequests.send(edit, state: state), "window") }
-    defer { withExtendedLifetime(lock) {} }
-    if outdatedWindowRunning() {
-        throw CodedFailure(code: "window_outdated", message: "开着的 Folio 窗口是装新版之前启动的，不接收命令的修改，也会覆盖对记录文件的修改；退出并重新打开 Folio 后再试。未写入。")
+    guard let lock = SessionLock.acquire(in: state) else {
+        let outcome = try SessionRequests.send(edit, state: state)
+        // A window from before tab actions existed answers the part of the edit it knows: nothing.
+        if edit.tab != nil, outcome.tab == nil { throw SessionEditError.outdated }
+        return (outcome, "window")
     }
+    defer { withExtendedLifetime(lock) {} }
+    if outdatedWindowRunning() { throw CodedFailure(code: "window_outdated", message: outdatedWindowMessage) }
     let disk = SessionDisk(directory: state)
     var snapshot = try disk.read()   // an unreadable record is left as it is
-    let outcome = try SessionEdits.apply(edit, settings: &snapshot.settings, recent: &snapshot.recent)
-    if outcome.changed { try disk.write(snapshot) }
+    var outcome = try SessionEdits.apply(edit, settings: &snapshot.settings, recent: &snapshot.recent)
+    if let tab = edit.tab { outcome.tab = try SessionTabs.apply(tab, to: &snapshot); outcome.recent = snapshot.recent }
+    if outcome.changed || outcome.tab != nil { try disk.write(snapshot) }
     return (outcome, "file")
 }
+private let outdatedWindowMessage = "开着的 Folio 窗口是装新版之前启动的，不接收命令的修改，也会覆盖对记录文件的修改；退出并重新打开 Folio 后再试。未写入。"
 private struct SettingsReport: Encodable {
     struct Limits: Encodable { let fontFamily: [String], fontSize: [Int], contentWidth: [Int], contentWidthStep: Int }
     var ok = true
@@ -985,6 +1088,87 @@ private func recent(_ options: Options) throws {
     }
 }
 
+// MARK: tabs (close, restore a closed draft, reload)
+private struct TabsReport: Encodable {
+    var ok = true
+    let action: String, id: String, path: String?, title: String
+    let saved: Bool, keptDraft: Bool, draftCopy: String?, conflict: Bool
+    let documents: Int, closedDrafts: Int, activeId: String?
+    let sessionFile: String, appliedBy: String
+}
+private func tabs(_ options: Options) throws {
+    var tab = SessionTabEdit(action: options.action)
+    if let target = options.operands.first {
+        // An id is matched as typed; a path is also sent absolute, because the window may run in another folder.
+        tab.target = target; tab.path = URL(fileURLWithPath: FolioIndexConfig.expanded(target)).path
+    }
+    tab.decision = options.save ? "save" : (options.keepDraft ? "keep-draft" : nil)
+    var edit = SessionEdit(); edit.tab = tab
+    let result = try applySessionEdit(edit)
+    guard let done = result.outcome.tab else { throw SessionEditError.outdated }
+    if options.json {
+        try emit(TabsReport(action: done.action, id: done.id, path: done.path, title: done.title, saved: done.saved, keptDraft: done.keptDraft,
+                            draftCopy: done.draftCopy, conflict: done.conflict, documents: done.documents, closedDrafts: done.closedDrafts,
+                            activeId: done.activeId, sessionFile: SessionDisk(directory: FolioIndexConfig.stateDirectory).file.path, appliedBy: result.by))
+        return
+    }
+    print(done.path ?? done.title)
+    let by = result.by == "window" ? "由 Folio 窗口执行" : "写入会话记录"
+    switch done.action {
+    case "close": stderr("已关闭标签\(done.saved ? "，修改已保存" : (done.keptDraft ? "，草稿已保留（folio tabs restore 可放回）" : ""))（\(by)）。")
+    case "restore": stderr("已恢复关闭的草稿\(done.conflict ? "；它的文件在关闭后被改过，标记为冲突" : "")（\(by)）。")
+    default: stderr("已重新载入\(done.draftCopy == nil ? "" : "；修改前的正文另存为一个未命名草稿")（\(by)）。")
+    }
+}
+
+// MARK: config status|export|import|sync and update check (the shared「配置与更新」command layer)
+private let lifecycleSubcommands: Set<String> = ["status", "export", "import", "sync"]
+/// `update …`, or `config` followed by one of the shared layer's subcommands: the words for that layer, verb
+/// first. Bare `folio config` stays Folio's own index-configuration report.
+private func lifecycleWords(_ args: [String]) -> [String]? {
+    guard let at = commandIndex(args) else { return nil }
+    let verb = args[at]
+    var rest = args; rest.remove(at: at)
+    guard verb == "update" || (verb == "config" && commandIndex(rest).map { lifecycleSubcommands.contains(rest[$0]) } == true) else { return nil }
+    return [verb] + rest
+}
+/// Runs the command where it may run: a change to the settings by whoever owns session.json right now (the
+/// window when it is open, otherwise this command holding the session lock), everything else right here.
+private func lifecycle(_ words: [String]) throws -> Int32 {
+    let json = words.contains("--json")
+    if words[0] == "config", let problem = FolioLifecycle.isolationProblem { throw CodedFailure(code: "isolation_incomplete", message: problem) }
+    let arguments = FolioLifecycle.absolute(words)
+    guard FolioLifecycle.writes(arguments) else {
+        return present(FolioLifecycle.run(arguments, configuration: FolioLifecycle.configuration(), as: .reader), json: json, by: nil)
+    }
+    let state = FolioIndexConfig.stateDirectory
+    guard let lock = SessionLock.acquire(in: state) else {
+        return present(try SessionRequests.command(arguments, state: state), json: json, by: "window")
+    }
+    defer { withExtendedLifetime(lock) {} }
+    if outdatedWindowRunning() { throw CodedFailure(code: "window_outdated", message: outdatedWindowMessage) }
+    _ = try SessionDisk(directory: state).read()   // an unreadable record is left as it is, as by settings set
+    return present(FolioLifecycle.run(arguments, configuration: FolioLifecycle.makeConfiguration(), as: .commandWithLock), json: json, by: "file")
+}
+/// The shared layer's result in folio's own conventions: one compact JSON object, a failure in the usual
+/// envelope ({ok, command, error: reason, code, usage}) with the reason on stderr as well.
+private func present(_ reply: SessionRequests.CommandReply, json: Bool, by: String?) -> Int32 {
+    let mark = reply.exit == 2 ? "[usage] " : "[fail] "
+    if json, var body = (try? JSONSerialization.jsonObject(with: Data(reply.out.utf8))) as? [String: Any] {
+        if let error = body["error"] as? [String: Any] {
+            let reason = error["message"] as? String ?? ""
+            body["error"] = reason; body["code"] = error["code"] as? String ?? "failed"; body["usage"] = reply.exit == 2
+            stderr(mark + reason)
+        }
+        if let by, body["changed"] as? Bool == true || body["imported"] as? Bool == true { body["applied_by"] = by }
+        if let data = try? JSONSerialization.data(withJSONObject: body, options: [.sortedKeys, .withoutEscapingSlashes]) {
+            FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data([10]))
+        }
+    } else if !reply.out.isEmpty { FileHandle.standardOutput.write(Data(reply.out.utf8)) }
+    for line in reply.err.split(separator: "\n") { stderr((reply.exit == 0 ? "" : mark) + line) }
+    return reply.exit
+}
+
 // MARK: asset
 private struct AssetReport: Encodable {
     var ok = true
@@ -1010,17 +1194,18 @@ private func asset(_ options: Options) throws {
 
 // MARK: - Entry
 /// The first word before `--` that is not an option value names the command.
-private func commandName(_ args: [String]) -> String? {
+private func commandIndex(_ args: [String]) -> Int? {
     var i = 0
     while i < args.count {
         let arg = args[i]
         if arg == "--" { return nil }
         if valueOptions.contains(arg) { i += 2; continue }
-        if !arg.hasPrefix("-") { return arg }
+        if !arg.hasPrefix("-") { return i }
         i += 1
     }
     return nil
 }
+private func commandName(_ args: [String]) -> String? { commandIndex(args).map { args[$0] } }
 
 @main enum FolioCLI {
     static func main() {
@@ -1035,7 +1220,13 @@ private func commandName(_ args: [String]) -> String? {
         }
         let json = flags.contains("--json")
         var command: String?
-        do { let options = try Options(args); command = options.invoked; try run(options); exit(0) }
+        do {
+            if let words = lifecycleWords(args) {
+                command = ([words[0]] + FolioLifecycle.positionals(words).prefix(1)).joined(separator: " ")
+                exit(try lifecycle(words))
+            }
+            let options = try Options(args); command = options.invoked; try run(options); exit(0)
+        }
         catch is ReportedFailure { exit(1) }
         catch let error as UsageError {
             if json { try? emit(ErrorReply(command: command ?? commandName(args), error: error.message, code: error.code, usage: true)) }

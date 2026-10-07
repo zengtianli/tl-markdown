@@ -6,6 +6,10 @@ import UniformTypeIdentifiers
 /// It hosts the production ContentView and store; it does not simulate product UI.
 enum FolioLaunch {
     static var uiSelfTest: Bool { CommandLine.arguments.contains("--ui-self-test") }
+    /// The running window for the lifecycle command checks: the store and the「配置与更新」wiring of an ordinary
+    /// launch, on isolated state, with no window, Dock icon or activation (see FolioLifecycleSelfTest).
+    static var lifecycleSelfTest: Bool { CommandLine.arguments.contains("--lifecycle-self-test") }
+    static var selfTest: Bool { uiSelfTest || lifecycleSelfTest }
     static var background: Bool {
         let env = ProcessInfo.processInfo.environment
         guard env["FOLIO_BACKGROUND"] == "1", let path = env["TL_MARKDOWN_STATE_DIR"], !path.isEmpty else { return false }
@@ -23,10 +27,11 @@ private final class FolioRecordingPanel: NSPanel {
 
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
     var store: EditorStore?
+    var lifecycle: AppConfiguration?
     var pending: [URL] = []
     private var recordingPanel: NSPanel?
     func applicationWillFinishLaunching(_ notification: Notification) {
-        if FolioLaunch.uiSelfTest { NSApp.setActivationPolicy(.prohibited) }
+        if FolioLaunch.selfTest { NSApp.setActivationPolicy(.prohibited) }
         if FolioLaunch.background {
             // A nonactivating NSPanel is not a SwiftUI Window scene. AppKit can
             // otherwise mark this accessory process eligible for TAL recycling.
@@ -38,6 +43,12 @@ private final class FolioRecordingPanel: NSPanel {
     func applicationDidFinishLaunching(_ notification: Notification) {
         if FolioLaunch.uiSelfTest, let store {
             Task { await FolioUISelfTest.run(store: store) }
+            return
+        }
+        if FolioLaunch.lifecycleSelfTest, let store {
+            // A run-loop block, not a main-queue one: the self-test spins the run loop while its commands run, and
+            // the main dispatch queue is only served again once no main-queue block is in progress.
+            RunLoop.main.perform { [lifecycle] in MainActor.assumeIsolated { FolioLifecycleSelfTest.run(store: store, configuration: lifecycle) } }
             return
         }
         if FolioLaunch.background, let store {
@@ -86,7 +97,7 @@ private final class FolioRecordingPanel: NSPanel {
         // Ordinary launches use one SwiftUI Window scene, which exits when its
         // last window closes. The isolated NSPanel is not that scene: recording
         // overlay teardown must not schedule an exit for the still-visible panel.
-        return !FolioLaunch.background && !FolioLaunch.uiSelfTest
+        return !FolioLaunch.background && !FolioLaunch.selfTest
     }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         if FolioLaunch.background {
@@ -123,7 +134,7 @@ private final class FolioRecordingPanel: NSPanel {
         return .terminateLater
     }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if FolioLaunch.background || FolioLaunch.uiSelfTest { return false }
+        if FolioLaunch.background || FolioLaunch.selfTest { return false }
         if !flag { sender.windows.first(where: { $0.canBecomeMain })?.makeKeyAndOrderFront(nil) }; return true
     }
 }
@@ -133,22 +144,27 @@ private final class FolioRecordingPanel: NSPanel {
     @StateObject private var store: EditorStore
     private let configuration: AppConfiguration?
     init() {
-        // Refuse this diagnostic before creating a store unless its state is isolated.
-        if FolioLaunch.uiSelfTest && !FolioLaunch.background {
-            fputs("--ui-self-test requires FOLIO_BACKGROUND=1 and an isolated TL_MARKDOWN_STATE_DIR\n", stderr)
+        // Refuse these diagnostics before creating a store unless their state is isolated.
+        if FolioLaunch.selfTest && !FolioLaunch.background {
+            fputs("--ui-self-test and --lifecycle-self-test require FOLIO_BACKGROUND=1 and an isolated TL_MARKDOWN_STATE_DIR\n", stderr)
+            exit(64)
+        }
+        if FolioLaunch.lifecycleSelfTest && !(FolioLifecycle.lifecycleIsolated && FolioLifecycle.stateIsolated) {
+            fputs("--lifecycle-self-test also requires APP_LIFECYCLE_SUPPORT_DIR, APP_LIFECYCLE_CLOUD_DIR and FOLIO_PREFERENCES_SUITE\n", stderr)
             exit(64)
         }
         let root = ProcessInfo.processInfo.environment["TL_MARKDOWN_STATE_DIR"].map { URL(fileURLWithPath: $0) }
-        let model = EditorStore(directory: root)
+        // An ordinary launch has the「配置与更新」window (recording and UI-test windows do not); the lifecycle
+        // self-test runs this same wiring on isolated state. The configuration comes from the one factory the
+        // `folio` command uses, and the store gets the means to run `folio config import|sync` in this window.
+        let wired = (!FolioLaunch.background && !FolioLaunch.uiSelfTest) || FolioLaunch.lifecycleSelfTest
+        let config = wired ? FolioLifecycle.configuration() : nil
+        let model = EditorStore(directory: root, lifecycle: config.map(FolioLifecycle.windowCommand))
         _store = StateObject(wrappedValue: model)
-        if !FolioLaunch.background && !FolioLaunch.uiSelfTest {
-            let session = FolioIndexConfig.stateDirectory.appendingPathComponent("session.json")
-            let config = AppConfiguration(productID: "cyou.tianli.TLMarkdown", files: [AppConfigurationFile(url: session, keys: ["settings.fontFamily", "settings.fontSize", "settings.contentWidth", "settings.restoreSession", "settings.imageFolder"])])
-            config.onChange = { [weak model] in model?.reloadConfiguration() }
-            configuration = config
-            AppLifecycleUI.install(name: "Folio", configuration: config, updateSource: .manifest(URL(string: "https://app-mac-folio.tianli.cyou/release.json")!))
-        } else { configuration = nil }
-        if FolioLaunch.background || FolioLaunch.uiSelfTest { delegate.store = model }
+        configuration = config
+        if wired { FolioLifecycle.installApp(config, store: model) }
+        if FolioLaunch.background || FolioLaunch.selfTest { delegate.store = model }
+        if FolioLaunch.lifecycleSelfTest { delegate.lifecycle = config }
     }
     var body: some Scene {
         Window(ProductIdentity.name, id: "editor") {
@@ -159,7 +175,7 @@ private final class FolioRecordingPanel: NSPanel {
                     delegate.reportBenchmarkIfRequested()
                 }
         }.defaultSize(width: 1120, height: 780)
-        .defaultLaunchBehavior(FolioLaunch.background || FolioLaunch.uiSelfTest ? .suppressed : .automatic)
+        .defaultLaunchBehavior(FolioLaunch.background || FolioLaunch.selfTest ? .suppressed : .automatic)
         .commands {
             CommandGroup(replacing: .newItem) {
                 Button("新建文档") { store.newDocument() }.keyboardShortcut("n")
@@ -207,6 +223,352 @@ private final class FolioRecordingPanel: NSPanel {
                 Button("缩小字号") { store.settings.fontSize = SessionEdits.steppedFontSize(store.settings.fontSize, by: -1); store.settingsChanged() }.keyboardShortcut("-")
             }
         }
+    }
+}
+
+extension FolioLifecycle {
+    /// The window's side, called once at launch (and so by the lifecycle self-test): the shared window with Folio's
+    /// portable settings, and the store re-reading them when an import or a sync changed session.json.
+    /// There is no cross-process follower here: while this window runs it is the only writer of session.json and of
+    /// the switch, because `folio config import|sync` hands the command to it (EditorStore.answerRequests).
+    @MainActor static func installApp(_ configuration: AppConfiguration?, store: EditorStore) {
+        configuration?.onChange = { [weak store] in store?.reloadConfiguration() }
+        AppLifecycleUI.install(name: name, configuration: configuration, updateSource: updateSource)
+    }
+}
+
+/// `--lifecycle-self-test`: this process is the running Folio window. It holds the session lock and has the
+/// production「配置与更新」wiring (TLMarkdownApp.init), offscreen: activation policy .prohibited, no window ordered
+/// in, no Dock icon. The real `folio` from this bundle's Resources/bin is run against it as child processes, through
+/// a symlink named folio the way the installed command is called. Every judgement reads the stored values back
+/// with a fresh process. State folder, preference domain, support folder and "cloud" folder are throwaway (set by
+/// scripts/accept/lifecycle.sh): the owner's session, preferences and iCloud Drive are only stat'ed, before and after.
+@MainActor private enum FolioLifecycleSelfTest {
+    static func run(store: EditorStore, configuration: AppConfiguration?) {
+        let files = FileManager.default, environment = ProcessInfo.processInfo.environment
+        let suite = environment["FOLIO_PREFERENCES_SUITE"] ?? ""
+        var checks: [String: Bool] = [:], order: [String] = [], facts: [String: Any] = [:]
+        func check(_ name: String, _ passed: Bool) {
+            if checks[name] == nil { order.append(name) }
+            checks[name] = (checks[name] ?? true) && passed
+            fputs("\(passed ? "ok  " : "FAIL") \(name)\n", stderr)   // progress, should the run be cut short
+        }
+        func finish() -> Never {
+            // The throwaway preference domain goes with the run. The preferences daemon may still write an empty
+            // shell for it after this process is gone; the caller deletes that by the name reported below.
+            if suite.hasPrefix(FolioLifecycle.isolatedSuitePrefix) {
+                UserDefaults.standard.removePersistentDomain(forName: suite); CFPreferencesAppSynchronize(suite as CFString)
+            }
+            let passed = !checks.isEmpty && checks.values.allSatisfy { $0 }
+            var result: [String: Any] = ["ok": passed, "checks": checks, "failed": order.filter { checks[$0] == false }, "count": checks.count,
+                                         "not_covered": ["the owner's real iCloud Drive and preference domain", "update check (reads the network)",
+                                                         "a physical click on the window's switch and menus", "a visible window",
+                                                         "a save by the window at the very moment a background sync pass writes session.json"]]
+            facts.forEach { result[$0.key] = $0.value }
+            if let data = try? JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]) {
+                FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data("\n".utf8))
+            }
+            exit(passed ? 0 : 1)
+        }
+        // Deadlines count time the Mac was awake: a wait that spans a sleep must not fail (or pass) because of it.
+        func awake() -> TimeInterval { ProcessInfo.processInfo.systemUptime }
+        func spin(_ seconds: Double) { RunLoop.main.run(until: Date().addingTimeInterval(seconds)) }
+        @discardableResult func wait(_ seconds: Double, until done: () -> Bool) -> Bool {
+            let end = awake() + seconds
+            while !done() && awake() < end { spin(0.02) }
+            return done()
+        }
+        func stamp(_ url: URL) -> String {
+            guard let attributes = try? files.attributesOfItem(atPath: url.path) else { return "absent" }
+            return "\((attributes[.modificationDate] as? Date)?.timeIntervalSince1970 ?? 0)/\(attributes[.size] ?? 0)"
+        }
+
+        // The owner's real state, looked at (never opened) before and after.
+        let home = files.homeDirectoryForCurrentUser
+        let owned = [home.appendingPathComponent("Library/Application Support/TLMarkdown/session.json"),
+                     home.appendingPathComponent("Library/Preferences/\(FolioLifecycle.productID).plist"),
+                     home.appendingPathComponent("Library/Application Support/TianliApps/Configuration/\(FolioLifecycle.productID)")]
+        let ownedBefore = owned.map(stamp)
+
+        let state = store.disk.directory
+        guard let configuration, let outPath = environment["SOP_OUT_DIR"], let supportPath = environment["APP_LIFECYCLE_SUPPORT_DIR"],
+              let cloudPath = environment["APP_LIFECYCLE_CLOUD_DIR"] else { check("isolated_environment", false); finish() }
+        let out = URL(fileURLWithPath: outPath), support = URL(fileURLWithPath: supportPath), cloud = URL(fileURLWithPath: cloudPath)
+        try? files.createDirectory(at: out, withIntermediateDirectories: true)
+        facts["preference_domain"] = suite
+        check("isolation_in_force", FolioLifecycle.lifecycleIsolated && FolioLifecycle.stateIsolated && FolioLifecycle.isolationProblem == nil
+              && suite.hasPrefix(FolioLifecycle.isolatedSuitePrefix) && !state.path.hasPrefix(home.appendingPathComponent("Library").path)
+              && environment["APP_LIFECYCLE_FOLLOW_CHANNEL"] == nil)
+        check("window_owns_the_session", store.ownsSession && SessionLock.held(in: state))
+        guard checks.values.allSatisfy({ $0 }) else { finish() }
+
+        // What the owner would have open: a reading size of their own, a saved document and an unsaved draft.
+        let note = state.appendingPathComponent("note.md")
+        try? Data("# 笔记\n\n正文\n".utf8).write(to: note)
+        guard let saved = try? DocumentIO.open(note) else { check("seed", false); finish() }
+        store.documents = [saved]; store.activeID = saved.id
+        store.newDocument()
+        guard let draftID = store.activeID else { check("seed", false); finish() }
+        store.changed(id: draftID, text: "未保存的草稿正文", selection: 0, scroll: 0)
+        store.settings.fontSize = 18; store.settingsChanged()
+        check("seed", store.persist() && store.documents.count == 2)
+
+        // The shared window, built offscreen; its switch and status line are read directly.
+        let shot = (try? AppLifecycleUI.shared.offscreenSnapshot(to: out.appendingPathComponent("lifecycle-window.png"))) ?? [:]
+        let mirror = Mirror(reflecting: AppLifecycleUI.shared)
+        let toggle = mirror.descendant("cloudToggle") as? NSControl, statusLine = mirror.descendant("syncStatus") as? NSTextField
+        // A checkbox in this copy of the shared window, a switch in the current shared one: both are read.
+        func toggleOn() -> Bool? { (toggle as? NSButton).map { $0.state == .on } ?? (toggle as? NSSwitch).map { $0.state == .on } }
+        let off = "iCloud 配置同步已关闭"
+        check("settings_window_offscreen_with_configuration_group", shot["upgrade_window_offscreen"] == true && shot["upgrade_image_rendered"] == true
+              && toggle?.window != nil && toggle?.window?.isVisible == false && statusLine?.window === toggle?.window)
+        check("app_starts_with_sync_off", !configuration.enabled && toggleOn() == false && statusLine?.stringValue == off)
+
+        // The command, as an agent runs it: the bundle's own folio through a symlink named folio.
+        let link = out.appendingPathComponent("folio")
+        try? files.removeItem(at: link)
+        let cli = Bundle.main.bundleURL.appendingPathComponent("Contents/Resources/bin/folio")
+        guard files.isExecutableFile(atPath: cli.path), (try? files.createSymbolicLink(at: link, withDestinationURL: cli)) != nil else { check("command_link", false); finish() }
+        var commands = 0
+        func run(_ arguments: String..., json: Bool = true) -> (code: Int32, body: [String: Any], out: String, err: String) {
+            let process = Process(), outPipe = Pipe(), errPipe = Pipe()
+            process.executableURL = link; process.arguments = arguments + (json ? ["--json"] : [])
+            process.standardOutput = outPipe; process.standardError = errPipe; process.standardInput = FileHandle.nullDevice
+            guard (try? process.run()) != nil else { return (-1, [:], "", "not started") }
+            commands += 1
+            // The window keeps running while the command does: this is where it takes the request and answers it.
+            while process.isRunning { spin(0.01) }
+            let text = String(decoding: outPipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+            let body = (try? JSONSerialization.jsonObject(with: Data(text.utf8))) as? [String: Any]
+            return (process.terminationStatus, body ?? [:], text, String(decoding: errPipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self))
+        }
+        /// The stored switch, and the stored reading size, as a fresh process reads them; nil when the readback failed.
+        func stored() -> Bool? { let status = run("config", "status"); return status.code == 0 ? status.body["sync_enabled"] as? Bool : nil }
+        func storedSize() -> Double? { let r = run("settings"); return r.code == 0 ? (r.body["settings"] as? [String: Any])?["font_size"] as? Double : nil }
+        let cloudFile = cloud.appendingPathComponent(FolioLifecycle.productID + ".json")
+        func cloudSize() -> Double? {
+            (((try? JSONSerialization.jsonObject(with: Data(contentsOf: cloudFile))) as? [String: Any])?["values"] as? [String: Any])?["file.0.settings.fontSize"] as? Double
+        }
+        /// For `seconds`, the window, its switch and every fresh read of the stored value all stay at `target`.
+        func holds(_ target: Bool, _ seconds: Double) -> Bool {
+            let end = awake() + seconds
+            repeat {
+                guard configuration.enabled == target, toggleOn() == target, stored() == target else { return false }
+                spin(0.03)
+            } while awake() < end
+            return true
+        }
+        func sync(_ target: Bool) -> (code: Int32, body: [String: Any], out: String, err: String) { run("config", "sync", target ? "on" : "off", "--yes") }
+        var unfollowed: [[String: Any]] = []
+        func follows(_ target: Bool) -> Bool {
+            let began = awake(), clock = Date()
+            let followed = wait(5) { configuration.enabled == target && toggleOn() == target && (statusLine?.stringValue == off) == !target }
+            if !followed {
+                unfollowed.append(["target": target, "enabled": configuration.enabled, "toggle_on": toggleOn() ?? false,
+                                   "status": statusLine?.stringValue ?? "", "awake_s": awake() - began, "wall_s": Date().timeIntervalSince(clock)])
+            }
+            return followed
+        }
+
+        let first = run("config", "status")
+        check("status_reads_the_same_settings", first.code == 0 && first.body["has_settings"] as? Bool == true && first.body["sync_enabled"] as? Bool == false
+              && first.body["app_running"] as? Bool == true && first.body["problem"] is NSNull
+              && (first.body["keys"] as? [String])?.contains("file.0.settings.fontSize") == true)
+        facts["portable_keys"] = first.body["keys"] ?? []
+        check("status_writes_nothing", !files.fileExists(atPath: support.appendingPathComponent(FolioLifecycle.productID).path) && !files.fileExists(atPath: cloud.path))
+
+        // Switch on and off, several rounds: the command is run by this window, which shows it; nothing puts the old value back.
+        for round in 1...3 {
+            let on = sync(true)
+            check("round\(round)_command_switches_on", on.code == 0 && on.body["changed"] as? Bool == true && on.body["sync_enabled"] as? Bool == true
+                  && on.body["applied_by"] as? String == "window" && on.body["app_running"] as? Bool == true)
+            check("round\(round)_window_follows_on", follows(true))
+            check("round\(round)_on_is_not_written_back", holds(true, 1.2))
+            if round == 1 {
+                check("sync_on_uploads_through_the_shared_reconcile", cloudSize() == 18)
+                // Nothing below can pass when the very first command did not get through: stop here with what was seen.
+                if checks.values.contains(false) { facts["first_sync"] = ["code": Int(on.code), "out": on.out, "err": on.err]; finish() }
+            }
+            let offResult = sync(false)
+            check("round\(round)_command_switches_off", offResult.code == 0 && offResult.body["changed"] as? Bool == true && offResult.body["sync_enabled"] as? Bool == false)
+            check("round\(round)_window_follows_off", follows(false))
+            check("round\(round)_off_is_not_written_back", holds(false, 1.2))
+        }
+
+        // Back to back: the second command is sent the moment the first returns. From the moment the second
+        // returns, no fresh read may see the first command's value again.
+        var regressions: [String] = []
+        func settled(_ target: Bool, _ label: String) {
+            let end = awake() + 1.5
+            while awake() < end { if stored() != target { regressions.append(label); return } }
+            if !follows(target) { regressions.append(label + ":window") }
+        }
+        for round in 1...4 {
+            _ = sync(true); _ = sync(false)
+            settled(false, "on>off#\(round)")
+            _ = sync(true); _ = follows(true); wait(0.5) { false }
+            _ = sync(false); _ = sync(true)
+            settled(true, "off>on#\(round)")
+            _ = sync(false); _ = follows(false); wait(0.5) { false }
+        }
+        facts["back_to_back_regressions"] = regressions
+        check("back_to_back_switches_never_regress", regressions.isEmpty)
+
+        // The window's own switch and the command are one setting, both ways.
+        if let toggle, let action = toggle.action {
+            (toggle as? NSButton)?.state = .on; (toggle as? NSSwitch)?.state = .on
+            NSApp.sendAction(action, to: toggle.target, from: toggle)
+            check("window_switch_is_read_by_the_command", wait(5) { configuration.status != off } && stored() == true)
+            let back = sync(false)
+            check("command_switch_is_shown_by_the_window", back.code == 0 && follows(false) && holds(false, 0.6))
+        } else { check("window_switch_is_read_by_the_command", false) }
+
+        // Import: this window takes the settings, the switch is left alone, tabs and the unsaved draft stay.
+        /// A complete set of the portable settings (an import replaces the set), with `changes` on top; `only` writes just those.
+        func envelope(_ changes: [String: Any], product: String = FolioLifecycle.productID, only: Bool = false) -> Data {
+            var values: [String: Any] = only ? [:] : ["file.0.settings.fontFamily": "system", "file.0.settings.fontSize": 18, "file.0.settings.contentWidth": 820,
+                                                      "file.0.settings.restoreSession": true, "file.0.settings.imageFolder": "assets"]
+            changes.forEach { values[$0.key] = $0.value }
+            return (try? JSONSerialization.data(withJSONObject: ["version": 1, "product": product, "values": values], options: [.sortedKeys])) ?? Data()
+        }
+        func draftIntact() -> Bool {
+            let session = run("session", "--text")
+            let documents = session.body["documents"] as? [[String: Any]] ?? []
+            return session.code == 0 && documents.count == 2 && documents.contains { $0["id"] as? String == draftID && $0["text"] as? String == "未保存的草稿正文" }
+                && store.documents.first { $0.id == draftID }?.text == "未保存的草稿正文"
+        }
+        /// For `seconds` from now, every fresh read of the stored size is `size`; the window saves and "types" meanwhile,
+        /// which is what would put a stale setting back if the window still held one.
+        func sizeHolds(_ size: Double, _ seconds: Double, _ label: String) -> Bool {
+            let end = awake() + seconds
+            var saves = 0
+            repeat {
+                store.changed(id: draftID, text: "未保存的草稿正文", selection: saves % 3, scroll: 0)   // schedules the window's own save
+                if saves % 2 == 0 { store.persist() }
+                saves += 1
+                guard storedSize() == size, store.settings.fontSize == size else { facts["size_regression_" + label] = ["stored": storedSize() ?? -1, "window": store.settings.fontSize]; return false }
+                spin(0.05)
+            } while awake() < end
+            return true
+        }
+        // Someone typing in the window while the commands run: every keystroke ends in a save of the window's own
+        // state a moment later. Here a save is due every millisecond, so one is always waiting to run the instant
+        // the shared layer has written the imported settings into session.json: what a window still holding the
+        // old settings would use to put them back.
+        var typing: DispatchSourceTimer?
+        func type(_ on: Bool) {
+            typing?.cancel(); typing = nil
+            guard on else { return }
+            let timer = DispatchSource.makeTimerSource(queue: .main)
+            timer.schedule(deadline: .now(), repeating: .milliseconds(1))
+            timer.setEventHandler { MainActor.assumeIsolated { _ = store.persist() } }
+            timer.resume(); typing = timer
+        }
+        let incoming = out.appendingPathComponent("in.json")
+        try? envelope(["file.0.settings.fontSize": 21, "file.0.settings.contentWidth": 900]).write(to: incoming)
+        type(true)
+        check("import_needs_yes", run("config", "import", incoming.path).code == 2 && storedSize() == 18)
+        let imported = run("config", "import", incoming.path, "--yes")
+        check("import_command_runs_in_the_window", imported.code == 0 && imported.body["imported"] as? Bool == true && imported.body["applied_by"] as? String == "window"
+              && imported.body["sync"] == nil && imported.body["sync_enabled"] as? Bool == false)
+        check("window_takes_imported_settings", wait(5) { store.settings.fontSize == 21 && store.settings.contentWidth == 900 })
+        check("import_survives_the_windows_own_saves", sizeHolds(21, 1.5, "import"))
+        check("import_leaves_the_switch_alone", holds(false, 0.6))
+        check("import_keeps_tabs_and_unsaved_draft", draftIntact())
+        let backups = (try? files.contentsOfDirectory(atPath: support.appendingPathComponent(FolioLifecycle.productID + "/Backups").path)) ?? []
+        check("import_backs_up_and_keeps_owner_only_mode", backups.count == 1
+              && ((try? files.attributesOfItem(atPath: store.disk.file.path))?[.posixPermissions] as? NSNumber)?.intValue == 0o600)
+
+        // Two imports back to back: the second one stands.
+        let second = out.appendingPathComponent("in2.json")
+        try? envelope(["file.0.settings.fontSize": 22]).write(to: incoming)
+        try? envelope(["file.0.settings.fontSize": 23]).write(to: second)
+        let a = run("config", "import", incoming.path, "--yes"), b = run("config", "import", second.path, "--yes")
+        check("back_to_back_imports_keep_the_last", a.code == 0 && b.code == 0 && sizeHolds(23, 1.5, "back_to_back"))
+        type(false)
+
+        // Refused imports change nothing, and the session record stays readable.
+        let bad: [(String, Data)] = [("wrong-type", envelope(["file.0.settings.fontSize": "big"])), ("out-of-range", envelope(["file.0.settings.fontSize": 99])),
+                                     ("number-as-switch", envelope(["file.0.settings.restoreSession": 1])),
+                                     ("incomplete", envelope(["file.0.settings.fontSize": 20], only: true)),
+                                     ("foreign", envelope(["file.0.settings.fontSize": 20], product: "someone.else")),
+                                     ("not-portable", envelope(["file.0.settings.noteIndexPath": "/tmp/other.db"]))]
+        var refusedAll = true
+        for (name, data) in bad {
+            let file = out.appendingPathComponent("bad-\(name).json")
+            try? data.write(to: file)
+            let refused = run("config", "import", file.path, "--yes")
+            if !(refused.code == 1 && refused.body["code"] as? String == "import_rejected" && refused.body["ok"] as? Bool == false && refused.body["error"] is String) {
+                refusedAll = false; facts["not_refused_" + name] = refused.out
+            }
+        }
+        check("bad_imports_are_refused_and_change_nothing", refusedAll && storedSize() == 23 && store.settings.fontSize == 23 && draftIntact())
+
+        // With sync on, an import reaches the cloud copy; preferences, product file and cloud copy all keep it.
+        check("window_follows_on_before_synced_import", sync(true).code == 0 && follows(true))
+        try? envelope(["file.0.settings.fontSize": 24]).write(to: incoming)
+        type(true)
+        let carried = run("config", "import", incoming.path, "--yes")
+        check("import_while_syncing_reaches_the_cloud_copy", carried.code == 0 && (carried.body["sync"] as? [String: Any])?["completed"] as? Bool == true && cloudSize() == 24)
+        var syncedHolds = true
+        let syncedEnd = awake() + 1.5
+        repeat {
+            store.persist()
+            if !(storedSize() == 24 && cloudSize() == 24 && stored() == true && store.settings.fontSize == 24) { syncedHolds = false; break }
+            spin(0.05)
+        } while awake() < syncedEnd
+        type(false)
+        check("synced_import_holds_in_preferences_file_and_cloud", syncedHolds && follows(true))
+        // A change made in the window while sync is on still reaches the cloud copy (the window's own path, untouched).
+        store.settings.fontSize = 25; store.settingsChanged()
+        check("window_change_while_syncing_reaches_the_cloud_copy", wait(8) { cloudSize() == 25 } && storedSize() == 25)
+        _ = sync(false)
+        check("window_follows_final_off", follows(false) && holds(false, 0.6))
+        try? envelope(["file.0.settings.fontSize": 20]).write(to: incoming)
+        let afterOff = run("config", "import", incoming.path, "--yes")
+        check("import_after_switching_off_stays_local", afterOff.code == 0 && afterOff.body["sync"] == nil && sizeHolds(20, 0.8, "after_off") && cloudSize() == 25 && stored() == false)
+
+        // Export is the window's envelope; failures use folio's own envelope; help lists every subcommand.
+        let exported = out.appendingPathComponent("out.json")
+        try? files.removeItem(at: exported)
+        let export = run("config", "export", "-o", exported.path)
+        let written = (try? JSONSerialization.jsonObject(with: Data(contentsOf: exported))) as? [String: Any]
+        let again = run("config", "export", "-o", exported.path)
+        check("export_writes_the_portable_settings_only", export.code == 0 && written?["product"] as? String == FolioLifecycle.productID
+              && Set((written?["values"] as? [String: Any] ?? [:]).keys).isSubset(of: Set(FolioLifecycle.portableKeys.map { "file.0." + $0 }))
+              && (written?["values"] as? [String: Any])?["file.0.settings.fontSize"] as? Double == 20
+              && again.code == 2 && again.body["code"] as? String == "file_exists")
+        let usage = run("config", "sync", "maybe")
+        check("usage_error_exit_2_in_folios_envelope", usage.code == 2 && usage.body["code"] as? String == "usage" && usage.body["usage"] as? Bool == true
+              && usage.body["ok"] as? Bool == false && usage.body["error"] is String && usage.err.contains("[usage]"))
+        let help = run("--help", json: false).out
+        check("help_lists_every_lifecycle_subcommand", ["\n  config status", "\n  config export", "\n  update check", "\n  config import", "\n  config sync on|off", "\n  tabs close"].allSatisfy(help.contains)
+              && help.components(separatedBy: "暂无命令").last?.contains("升级到新版") == true)
+
+        // The tab commands, run by this window: close keeping the draft, bring it back, reload a changed file.
+        let refusedClose = run("tabs", "close", draftID)
+        let closed = run("tabs", "close", draftID, "--keep-draft")
+        check("tabs_close_asks_then_keeps_the_draft", refusedClose.code == 1 && refusedClose.body["code"] as? String == "window_unsaved"
+              && closed.code == 0 && closed.body["kept_draft"] as? Bool == true && closed.body["applied_by"] as? String == "window"
+              && store.documents.count == 1 && store.closedDrafts.count == 1)
+        let restored = run("tabs", "restore")
+        check("tabs_restore_brings_the_draft_back", restored.code == 0 && store.documents.count == 2 && store.closedDrafts.isEmpty
+              && store.active?.text == "未保存的草稿正文" && (run("session").body["closed_drafts"] as? [Any])?.isEmpty == true)
+        try? Data("# 笔记\n\n别的软件改过\n".utf8).write(to: note, options: .atomic)
+        if let i = store.documents.firstIndex(where: { $0.path != nil }) {
+            let id = store.documents[i].id
+            store.changed(id: id, text: "# 笔记\n\n窗口里没保存的修改\n", selection: 0, scroll: 0)
+            let reloaded = run("tabs", "reload", note.path)
+            check("tabs_reload_takes_the_file_and_keeps_the_edits", reloaded.code == 0 && reloaded.body["draft_copy"] is String
+                  && store.documents.first { $0.id == id }?.text == "# 笔记\n\n别的软件改过\n"
+                  && store.documents.contains { $0.path == nil && $0.text == "# 笔记\n\n窗口里没保存的修改\n" })
+        } else { check("tabs_reload_takes_the_file_and_keeps_the_edits", false) }
+
+        check("never_visible_or_active", NSApp.activationPolicy() == .prohibited && !NSApp.isActive && NSApp.windows.allSatisfy { !$0.isVisible })
+        check("owner_session_preferences_and_sync_state_untouched", owned.map(stamp) == ownedBefore)
+        facts["not_followed"] = unfollowed
+        facts["commands_run"] = commands
+        finish()
     }
 }
 

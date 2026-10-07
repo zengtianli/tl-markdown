@@ -39,29 +39,35 @@ sop:
       command: folio write
     - name: 编辑正文
       command: folio write
-    - name: 关闭标签 / 预览（⌘W、标签上的 ×）及关闭时的保存 / 取消 / 保留草稿
-      missing: 没有关闭标签的命令；标签在窗口的会话里，关未保存的标签还要选保存或保留草稿，这类请求还没接到 folio settings / recent 用的那条窗口通道
+    - name: 关闭标签（⌘W、标签上的 ×）及关闭时的保存 / 取消 / 保留草稿
+      command: folio tabs
+    - name: 关闭完整预览窗口（预览在前时的 ⌘W）
+      human: 窗口导航；完整预览本身只在窗口里渲染
     - name: 关闭的草稿（数量与正文）
       command: folio session
     - name: 恢复关闭的草稿到标签页
-      missing: 没有命令；草稿正文可用 folio session --text 读，但放回标签页要改窗口的会话，还没接到窗口通道
+      command: folio tabs
     - name: 生成目录图谱…
       command: folio graph
     # App 菜单与「配置与更新」窗口
     - name: 设置…（⌘,、工具栏、搜索栏里的「选择索引文件夹…」）
       human: 打开设置面板，只在窗口里有意义；面板里各项见下面对应的命令
-    - name: 配置与更新…（当前版本）
+    - name: 配置与更新…（打开窗口）
+      human: 只在窗口里有意义；窗口里各项见下面对应的命令
+    - name: 配置与更新窗口标题行的当前版本
       command: folio status
     - name: 使用 iCloud 记住配置
-      missing: 共享生命周期模块暂无命令入口
+      command: folio config sync
+    - name: iCloud 配置同步状态那句话
+      missing: 实时状态由运行中的 App 持有；folio config sync on 与同步开着时的 folio config import 只回报它们自己那一次同步的结果，开关本身用 folio config status 读
     - name: 导出配置…
-      missing: 共享生命周期模块暂无命令入口
+      command: folio config export
     - name: 导入配置…
-      missing: 共享生命周期模块暂无命令入口
+      command: folio config import
     - name: 检查更新…
-      missing: 共享生命周期模块暂无命令入口
+      command: folio update check
     - name: 升级到新版… / 下载新版…
-      missing: 共享生命周期模块暂无命令入口
+      missing: 命令做得到、但不做静默安装：folio update check 给出新版、按钮名、安装包地址与步骤，替换并重启 App 仍在窗口确认
     - name: 帮助：Folio 使用指南 / 产品主页
       human: 打开网页，只在窗口里有意义
     # 编辑菜单与「编辑文档」菜单
@@ -93,7 +99,7 @@ sop:
     - name: 文档提示条（冲突、已载入其他软件的修改、已恢复草稿）
       command: folio session
     - name: 提示条上的「重新载入」
-      missing: 没有命令；冲突或被其他软件改过的标签只能在窗口里重新载入（folio write --force 只是绕过，不解除冲突），还没接到窗口通道
+      command: folio tabs
     - name: 关闭提示横幅
       human: 只在窗口里有意义
     - name: 渲染模式下勾选任务列表、代码块复制按钮、点正文里的链接

@@ -8,9 +8,13 @@ if [ -z "${DEVELOPER_DIR:-}" ]; then
   source "$HOME/Dev/tools/dev/lib/tools/macapp/xcode_env.sh"
   xcode_env_use macosx
 fi
+# Sources/Shared + Lifecycle.swift: the shared「配置与更新」command layer behind folio config status|export|import|sync
+# and folio update check (the same files the app compiles; AppLifecycleCLI.swift needs the other three).
 xcrun swiftc -Osize -whole-module-optimization -parse-as-library \
   -target arm64-apple-macosx15.0 \
-  Sources/IndexEngine.swift Sources/GraphEngine.swift Sources/Models.swift CLI/main.swift -o "$OUT"
+  Sources/IndexEngine.swift Sources/GraphEngine.swift Sources/Models.swift \
+  Sources/Shared/AppLifecycle.swift Sources/Shared/AppConfiguration.swift Sources/Shared/AppLifecycleUI.swift \
+  Sources/Shared/AppLifecycleCLI.swift Sources/Lifecycle.swift CLI/main.swift -o "$OUT"
 xcrun strip -x "$OUT"
 test "$(stat -f %z "$OUT")" -le 2000000
 # codesign reports "<absolute path>: replacing existing signature" on success;

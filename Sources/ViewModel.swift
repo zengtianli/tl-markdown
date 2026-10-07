@@ -36,9 +36,13 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     private var sessionLock: SessionLock?
     private var requestWatch: SessionRequestWatch?
     var ownsSession: Bool { sessionLock != nil }
+    /// Runs a `folio config import|sync …` command on this window's own configuration (set by the app; nil in
+    /// isolated recording and test windows, which have no「配置与更新」).
+    private let lifecycleCommand: (([String]) -> SessionRequests.CommandReply)?
     var active: OpenDocument? { documents.first { $0.id == activeID } }
 
-    init(directory: URL? = nil) {
+    init(directory: URL? = nil, lifecycle: (([String]) -> SessionRequests.CommandReply)? = nil) {
+        lifecycleCommand = lifecycle
         let base = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TLMarkdown")
         disk = SessionDisk(directory: base)
         // Before the first read: a command that is editing the file right now finishes within
@@ -82,6 +86,10 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     }
     @discardableResult func persist() -> Bool {
         guard stateReadable else { return false }
+        // While a `folio config import|sync` command runs in this window, the shared layer writes the portable
+        // settings into session.json itself, and it keeps the run loop turning while it waits for a sync pass: a
+        // save falling into that wait takes those settings from the file first instead of putting the old ones back.
+        if lifecycleRunning { adoptStoredSettings() }
         do { try disk.write(SessionSnapshot(documents: documents, activeID: activeID, recent: recent, settings: settings, closedDrafts: closedDrafts)); return true }
         catch { banner = "恢复草稿未能写入磁盘：\(error.localizedDescription)"; return false }
     }
@@ -90,20 +98,100 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     /// the command's read-back sees it. The editor and the open panel follow the published values.
     @discardableResult func apply(_ edit: SessionEdit) throws -> SessionEditOutcome {
         guard stateReadable else { throw SessionEditError.unwritable }
-        let outcome = try SessionEdits.apply(edit, settings: &settings, recent: &recent)
+        var outcome = try SessionEdits.apply(edit, settings: &settings, recent: &recent)
         if outcome.cleared > 0 { NSDocumentController.shared.clearRecentDocuments(nil) }
         if !outcome.settingsChanged.isEmpty { settingsChanged() }
         guard !outcome.changed || persist() else { throw SessionEditError.unwritable }
+        if let tab = edit.tab { outcome.tab = try apply(tab: tab); outcome.recent = recent }
+        return outcome
+    }
+    /// `folio tabs close|restore|reload`: the tab bar's own actions, with the close dialog's answer
+    /// supplied by the caller instead of asked. Saved at once, like the buttons.
+    func apply(tab edit: SessionTabEdit) throws -> SessionTabOutcome {
+        var outcome: SessionTabOutcome
+        switch edit.action {
+        case "close":
+            guard let i = SessionTabs.index(of: edit, in: documents) else { throw SessionTabs.notFound(edit) }
+            let id = documents[i].id
+            let decision = try SessionTabs.closeDecision(for: documents[i], edit.decision)
+            if decision == "save" {
+                guard save(id: id) else { throw SessionEditError.refused("未能保存，标签未关闭：\(documents.first { $0.id == id }?.message ?? "")") }
+            } else if decision == "keep-draft" { closedDrafts.append(documents[i]) }
+            let doc = documents[i]
+            removeTab(id)
+            outcome = SessionTabOutcome(action: "close", id: doc.id, path: doc.path, title: doc.title, saved: decision == "save", keptDraft: decision == "keep-draft")
+        case "restore":
+            guard let doc = restoreClosedDraft() else { throw SessionEditError.notFound("没有关闭的草稿可恢复") }
+            outcome = SessionTabOutcome(action: "restore", id: doc.id, path: doc.path, title: doc.title, conflict: doc.conflict)
+        case "reload":
+            guard let i = SessionTabs.index(of: edit, in: documents) else { throw SessionTabs.notFound(edit) }
+            let id = documents[i].id
+            let copy: String?
+            do { copy = try reloadTab(id) }
+            catch let error as SessionEditError { throw error }
+            catch { throw SessionEditError.refused("未能重新载入：\(error.localizedDescription)") }
+            let doc = documents.first { $0.id == id }
+            outcome = SessionTabOutcome(action: "reload", id: id, path: doc?.path, title: doc?.title ?? "", draftCopy: copy)
+        default: throw SessionEditError.invalid("标签操作只有 close、restore、reload：\(edit.action)")
+        }
+        outcome.documents = documents.count; outcome.closedDrafts = closedDrafts.count; outcome.activeId = activeID
         return outcome
     }
     func answerRequests() {
         for request in SessionRequests.take(in: disk.directory) {
             var reply = SessionRequests.Reply()
-            if let edit = request.edit {
-                do { reply.outcome = try apply(edit) } catch { reply.error = error.localizedDescription }
+            if let words = request.edit?.lifecycle {
+                guard lifecycleCommand != nil else {
+                    reply.error = "这个 Folio 窗口没有接入「配置与更新」（隔离或录制运行），未改动"
+                    SessionRequests.answer(request.id, reply, state: disk.directory)
+                    continue
+                }
+                runLifecycle(id: request.id, words: words)
+                continue
+            } else if let edit = request.edit {
+                do { reply.outcome = try apply(edit) }
+                catch {
+                    reply.error = error.localizedDescription
+                    switch error {
+                    case SessionEditError.notFound: reply.kind = "not_found"
+                    case SessionEditError.unsaved: reply.kind = "unsaved"
+                    case SessionEditError.refused: reply.kind = "refused"
+                    default: break
+                    }
+                }
             } else { reply.error = "无法读取这次修改的内容" }
             SessionRequests.answer(request.id, reply, state: disk.directory)
         }
+    }
+    /// A `folio config import|sync` command handed to this window. The shared layer keeps the run loop turning
+    /// while it waits for one sync pass, and what it waits for arrives on the main dispatch queue, which is not
+    /// served again while a main-queue block (such as the request folder's event handler) is still running. So
+    /// the command runs from a run-loop block, one at a time, in the order received.
+    private var lifecycleWaiting: [(id: String, words: [String], taken: Date)] = []
+    private var lifecycleRunning = false
+    private func runLifecycle(id: String, words: [String]) {
+        lifecycleWaiting.append((id, words, Date()))
+        guard !lifecycleRunning else { return }
+        lifecycleRunning = true
+        RunLoop.main.perform { [weak self] in MainActor.assumeIsolated { self?.drainLifecycle() } }
+    }
+    private func drainLifecycle() {
+        while !lifecycleWaiting.isEmpty {
+            let request = lifecycleWaiting.removeFirst()
+            var reply = SessionRequests.Reply()
+            // The sender waits a limited time for the answer: a command that could only start much later (a modal
+            // panel was up, say) is refused instead of run after its sender has given up.
+            if Date().timeIntervalSince(request.taken) > 5 { reply.error = "Folio 窗口当时正忙，没有执行这条命令；未改动，请重试" }
+            else if let run = lifecycleCommand {
+                reply.command = run(request.words)
+                // The shared layer writes imported or synced settings straight into session.json. Take them into
+                // this window's state before anything here saves again, or the next save would put the old ones back.
+                // Then save: should what it wrote not be a readable record, this window's own state replaces it at once.
+                reloadConfiguration(); persist()
+            }
+            SessionRequests.answer(request.id, reply, state: disk.directory)
+        }
+        lifecycleRunning = false
     }
     func persistSoon() {
         snapshotWork?.cancel(); let work = DispatchWorkItem { [weak self] in self?.persist() }
@@ -135,12 +223,7 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
         guard let doc = active else { bridge.send("empty"); outline = []; return }
         outline = []; bridge.load(doc, settings: settings, source: sourceMode)
     }
-    func touchRecent(_ doc: OpenDocument) {
-        guard let path = doc.path else { return }
-        let old = recent.first { $0.path == path }; recent.removeAll { $0.path == path }
-        recent.insert(RecentFile(path: path, pinned: old?.pinned ?? false, scroll: doc.scroll, selection: doc.selection), at: 0)
-        let pinned = recent.filter(\.pinned); recent = pinned + Array(recent.filter { !$0.pinned }.prefix(max(0, 100 - pinned.count)))
-    }
+    func touchRecent(_ doc: OpenDocument) { SessionTabs.touchRecent(doc, recent: &recent) }
     func pin(_ item: RecentFile) {
         if let index = recent.firstIndex(where: { $0.path == item.path }) { recent[index].pinned.toggle() }
         SessionEdits.order(&recent); persist()
@@ -209,16 +292,19 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
             persist(); return false
         }
     }
+    /// The banner's「重新载入」for the current tab.
     func reload() {
-        guard let i = documents.firstIndex(where: { $0.id == activeID }), let path = documents[i].path else { return }
-        if documents[i].dirty {
-            var copy = documents[i]; copy.id = UUID().uuidString; copy.path = nil; copy.savedText = ""; copy.diskData = nil
-            copy.conflict = false; copy.message = "重新载入前的修改副本"; documents.append(copy)
-        }
-        do {
-            var live = try DocumentIO.open(URL(fileURLWithPath: path)); live.id = documents[i].id; live.revision = documents[i].revision + 1; forgetConflict(live.id)
-            live.scroll = documents[i].scroll; live.selection = documents[i].selection; documents[i] = live; persist(); display()
-        } catch { banner = error.localizedDescription }
+        guard let id = activeID, documents.contains(where: { $0.id == id && $0.path != nil }) else { return }
+        do { try reloadTab(id) } catch { banner = error.localizedDescription }
+    }
+    /// The rule is SessionTabs.reload (shared with `folio tabs reload`); this adds the window's side: the
+    /// conflict bookkeeping, the save, and showing the reloaded text when the tab is the current one.
+    @discardableResult private func reloadTab(_ id: String) throws -> String? {
+        guard let i = documents.firstIndex(where: { $0.id == id }) else { return nil }
+        let copy = try SessionTabs.reload(i, documents: &documents)
+        forgetConflict(id); persist()
+        if id == activeID { display() }
+        return copy
     }
     func close(_ id: String) {
         guard let doc = documents.first(where: { $0.id == id }) else { return }
@@ -230,14 +316,20 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
             if choice == .alertThirdButtonReturn { closedDrafts.append(doc) }
             else if !save(id: id) { return }
         }
-        touchRecent(doc); saveWork[id]?.cancel(); saveWork[id] = nil; forgetConflict(id); documents.removeAll { $0.id == id }; bridge.send("forget", value: id)
-        if activeID == id { activeID = documents.last?.id }; persist(); display()
+        removeTab(id)
     }
-    func restoreClosedDraft() {
-        guard var doc = closedDrafts.popLast() else { return }
-        if documents.contains(where: { $0.path == doc.path && doc.path != nil }) { doc.path = nil; doc.savedText = ""; doc.diskData = nil }
-        if let path = doc.path { doc.conflict = (try? Data(contentsOf: URL(fileURLWithPath: path))) != doc.diskData }
-        doc.message = "已恢复关闭的草稿"; documents.append(doc); activeID = doc.id; persist(); display()
+    /// What closing does once the question about unsaved edits is settled (by the dialog above, or by
+    /// the answer `folio tabs close` brought).
+    private func removeTab(_ id: String) {
+        guard let i = documents.firstIndex(where: { $0.id == id }) else { return }
+        saveWork[id]?.cancel(); saveWork[id] = nil; forgetConflict(id)
+        SessionTabs.remove(i, documents: &documents, activeID: &activeID, recent: &recent)
+        bridge.send("forget", value: id); persist(); display()
+    }
+    @discardableResult func restoreClosedDraft() -> OpenDocument? {
+        guard let doc = SessionTabs.restoreDraft(documents: &documents, activeID: &activeID, closedDrafts: &closedDrafts) else { return nil }
+        persist(); display()
+        return doc
     }
     func checkExternalChanges() {
         for i in documents.indices {
@@ -275,15 +367,19 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     }
     func settingsChanged() { persist(); bridge.send("settings", value: ["fontSize": settings.fontSize, "contentWidth": settings.contentWidth, "fontFamily": settings.fontFamily ?? "system"]) }
     func reloadConfiguration() {
-        do {
-            // Read only preferences from the session; the active draft and document list stay in memory.
-            let restored = try disk.read().settings
-            settings.fontFamily = restored.fontFamily; settings.fontSize = restored.fontSize
-            settings.contentWidth = restored.contentWidth; settings.restoreSession = restored.restoreSession
-            settings.imageFolder = restored.imageFolder
-            settingsChanged()
-        } catch { banner = "配置恢复未完成：\(error.localizedDescription)" }
+        do { try adoptStoredSettings(orThrow: true); settingsChanged() }
+        catch { banner = "配置恢复未完成：\(error.localizedDescription)" }
     }
+    /// Reads only the portable preferences from the session; the active draft and document list stay in memory.
+    /// An unreadable record changes nothing here.
+    private func adoptStoredSettings(orThrow: Bool = false) throws {
+        let restored: EditorSettings
+        do { restored = try disk.read().settings } catch { if orThrow { throw error }; return }
+        settings.fontFamily = restored.fontFamily; settings.fontSize = restored.fontSize
+        settings.contentWidth = restored.contentWidth; settings.restoreSession = restored.restoreSession
+        settings.imageFolder = restored.imageFolder
+    }
+    private func adoptStoredSettings() { try? adoptStoredSettings(orThrow: false) }
     func toggleSource() { sourceMode.toggle(); bridge.send("mode", value: sourceMode) }
     func command(_ command: String) { bridge.send("command", value: command) }
     func insertImage(data: Data, ext: String, documentID: String) {

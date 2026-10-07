@@ -615,6 +615,11 @@ struct SessionEdit: Codable {
     var unpin: [String]?
     var remove: [String]?
     var clearRecent: Bool?
+    /// `folio tabs close|restore|reload`: the tab bar's own actions (see SessionTabs).
+    var tab: SessionTabEdit?
+    /// `folio config import|sync …` words for the shared「配置与更新」command layer. The window that owns the
+    /// session runs them on its own configuration, so session.json is never written behind it.
+    var lifecycle: [String]?
 }
 /// What an edit did, with the preferences and the recent list as they are afterwards.
 struct SessionEditOutcome: Codable {
@@ -625,15 +630,26 @@ struct SessionEditOutcome: Codable {
     var cleared = 0
     var settings = EditorSettings()
     var recent: [RecentFile] = []
+    /// Set when the edit was a tab action; a window from before tab actions existed leaves it out.
+    var tab: SessionTabOutcome?
     var changed: Bool { !settingsChanged.isEmpty || !recentChanged.isEmpty || cleared > 0 }
 }
 enum SessionEditError: LocalizedError {
     case invalid(String), noReply, unwritable
+    /// The window answered without the part this command needs: it was started by an older build.
+    case outdated
+    /// No open tab (or closed draft) matches.
+    case notFound(String)
+    /// The tab has unsaved edits and the caller did not say what to do with them.
+    case unsaved(String)
+    /// The window refused or could not do it; nothing was changed.
+    case refused(String)
     var errorDescription: String? {
         switch self {
-        case .invalid(let detail): return detail
+        case .invalid(let detail), .notFound(let detail), .unsaved(let detail), .refused(let detail): return detail
         case .noReply: return "Folio 窗口正在运行，但没有应答这次修改；请在窗口里改，或退出 Folio 后重试。未写入。"
         case .unwritable: return "Folio 窗口的会话记录当前不可写，未修改。"
+        case .outdated: return "开着的 Folio 窗口是装新版之前启动的，不认识这条命令；退出并重新打开 Folio 后再试。未改动。"
         }
     }
 }
@@ -702,6 +718,138 @@ enum SessionEdits {
     }
 }
 
+// MARK: Tab actions (close, restore a closed draft, reload)
+// The tab bar's actions without their dialogs, so the window's buttons and `folio tabs …` do one thing:
+// the window calls these on its own state, the command calls them on session.json when no window runs.
+
+/// One tab action. `target` is a tab id (from `folio session`) or a file path as typed; `path` is the
+/// same path made absolute by the caller, because the window may run in another folder.
+struct SessionTabEdit: Codable {
+    var action: String            // close | restore | reload
+    var target: String?
+    var path: String?
+    /// For a tab with unsaved edits, the answer to the window's question: save | keep-draft.
+    var decision: String?
+}
+/// What a tab action did, with the tab counts as they are afterwards.
+struct SessionTabOutcome: Codable {
+    var action: String
+    var id: String
+    var path: String?
+    var title: String
+    /// close: the edits were saved to the file first / the tab went to the closed drafts.
+    var saved = false
+    var keptDraft = false
+    /// reload: the id of the untitled tab that now holds the edits made before reloading.
+    var draftCopy: String?
+    /// restore: the file changed since the draft was closed, so the restored tab is marked as a conflict.
+    var conflict = false
+    var documents = 0
+    var closedDrafts = 0
+    var activeId: String?
+}
+enum SessionTabs {
+    static let actions = ["close", "restore", "reload"]
+    static let decisions = ["save", "keep-draft"]
+
+    /// A tab is named by its id, or by its file: as typed, standardized, or with symlinks resolved.
+    static func index(of edit: SessionTabEdit, in documents: [OpenDocument]) -> Int? {
+        if let target = edit.target, let i = documents.firstIndex(where: { $0.id == target }) { return i }
+        guard let path = edit.path ?? edit.target else { return nil }
+        let url = URL(fileURLWithPath: path)
+        let names: Set<String> = [path, url.standardizedFileURL.path, url.standardizedFileURL.resolvingSymlinksInPath().path]
+        return documents.firstIndex { $0.path.map(names.contains) ?? false }
+    }
+    static func notFound(_ edit: SessionTabEdit) -> SessionEditError {
+        .notFound("没有打开这个标签：\(edit.target ?? edit.path ?? "")（标签的路径与 id 见 folio session）")
+    }
+    /// The recent list remembers where a document was left; pinned entries stay, the rest is capped at 100.
+    static func touchRecent(_ doc: OpenDocument, recent: inout [RecentFile]) {
+        guard let path = doc.path else { return }
+        let old = recent.first { $0.path == path }; recent.removeAll { $0.path == path }
+        recent.insert(RecentFile(path: path, pinned: old?.pinned ?? false, scroll: doc.scroll, selection: doc.selection), at: 0)
+        let pinned = recent.filter(\.pinned); recent = pinned + Array(recent.filter { !$0.pinned }.prefix(max(0, 100 - pinned.count)))
+    }
+    /// The window asks 保存 / 取消 / 保留草稿并关闭 before closing a tab with unsaved edits; a command must
+    /// bring the answer. Saving an untitled draft needs a file name, which only the save panel asks for.
+    static func closeDecision(for doc: OpenDocument, _ decision: String?) throws -> String? {
+        if let decision, !decisions.contains(decision) { throw SessionEditError.invalid("关闭时的处理只能是 save 或 keep-draft：\(decision)") }
+        guard doc.dirty else { return nil }
+        guard let decision else {
+            throw SessionEditError.unsaved("“\(doc.title)”有未保存的修改，未关闭；加 --save 先保存，或 --keep-draft 保留草稿并关闭（之后可用 folio tabs restore 放回）")
+        }
+        if decision == "save", doc.path == nil {
+            throw SessionEditError.refused("未命名草稿还没有文件名，不能直接保存；先用 folio write <文件> 另存它的正文（folio session --text 可读），或加 --keep-draft")
+        }
+        return decision
+    }
+    /// The tab leaves the bar: its position goes to the recent list and, if it was current, the last tab becomes current.
+    @discardableResult static func remove(_ index: Int, documents: inout [OpenDocument], activeID: inout String?, recent: inout [RecentFile]) -> OpenDocument {
+        let doc = documents.remove(at: index)
+        touchRecent(doc, recent: &recent)
+        if activeID == doc.id { activeID = documents.last?.id }
+        return doc
+    }
+    /// 「恢复关闭的草稿」: the most recently closed draft comes back as the current tab. If its file is open
+    /// again in another tab it returns as an untitled draft; if the file changed meanwhile it is a conflict.
+    static func restoreDraft(documents: inout [OpenDocument], activeID: inout String?, closedDrafts: inout [OpenDocument]) -> OpenDocument? {
+        guard var doc = closedDrafts.popLast() else { return nil }
+        if documents.contains(where: { $0.path == doc.path && doc.path != nil }) { doc.path = nil; doc.savedText = ""; doc.diskData = nil }
+        if let path = doc.path { doc.conflict = (try? Data(contentsOf: URL(fileURLWithPath: path))) != doc.diskData }
+        doc.message = "已恢复关闭的草稿"; documents.append(doc); activeID = doc.id
+        return doc
+    }
+    /// 「重新载入」: the tab takes the file as it is on disk. Unsaved edits are kept as a separate untitled
+    /// draft (its id is returned). Nothing changes when the file cannot be read.
+    static func reload(_ index: Int, documents: inout [OpenDocument]) throws -> String? {
+        guard let path = documents[index].path else { throw SessionEditError.refused("未命名草稿没有可重新载入的文件") }
+        var live = try DocumentIO.open(URL(fileURLWithPath: path))
+        live.id = documents[index].id; live.revision = documents[index].revision + 1
+        live.scroll = documents[index].scroll; live.selection = documents[index].selection
+        var copyID: String?
+        if documents[index].dirty {
+            var copy = documents[index]; copy.id = UUID().uuidString; copy.path = nil; copy.savedText = ""; copy.diskData = nil
+            copy.conflict = false; copy.message = "重新载入前的修改副本"; documents.append(copy); copyID = copy.id
+        }
+        documents[index] = live
+        return copyID
+    }
+    /// No window is running: the same actions on the saved session record. `save` writes the document
+    /// through DocumentIO.save, like the window's own save, and refuses on a conflict.
+    static func apply(_ edit: SessionTabEdit, to snapshot: inout SessionSnapshot) throws -> SessionTabOutcome {
+        var drafts = snapshot.closedDrafts ?? []
+        var outcome: SessionTabOutcome
+        switch edit.action {
+        case "close":
+            guard let i = index(of: edit, in: snapshot.documents) else { throw notFound(edit) }
+            let decision = try closeDecision(for: snapshot.documents[i], edit.decision)
+            if decision == "save" {
+                do { try DocumentIO.save(&snapshot.documents[i]) }
+                catch { throw SessionEditError.refused("未能保存，标签未关闭：\(error.localizedDescription)") }
+            } else if decision == "keep-draft" { drafts.append(snapshot.documents[i]) }
+            let doc = remove(i, documents: &snapshot.documents, activeID: &snapshot.activeID, recent: &snapshot.recent)
+            outcome = SessionTabOutcome(action: "close", id: doc.id, path: doc.path, title: doc.title, saved: decision == "save", keptDraft: decision == "keep-draft")
+        case "restore":
+            guard let doc = restoreDraft(documents: &snapshot.documents, activeID: &snapshot.activeID, closedDrafts: &drafts) else {
+                throw SessionEditError.notFound("没有关闭的草稿可恢复")
+            }
+            outcome = SessionTabOutcome(action: "restore", id: doc.id, path: doc.path, title: doc.title, conflict: doc.conflict)
+        case "reload":
+            guard let i = index(of: edit, in: snapshot.documents) else { throw notFound(edit) }
+            let copy: String?
+            do { copy = try reload(i, documents: &snapshot.documents) }
+            catch let error as SessionEditError { throw error }
+            catch { throw SessionEditError.refused("未能重新载入：\(error.localizedDescription)") }
+            let doc = snapshot.documents[i]
+            outcome = SessionTabOutcome(action: "reload", id: doc.id, path: doc.path, title: doc.title, draftCopy: copy)
+        default: throw SessionEditError.invalid("标签操作只有 close、restore、reload：\(edit.action)")
+        }
+        snapshot.closedDrafts = drafts
+        outcome.documents = snapshot.documents.count; outcome.closedDrafts = drafts.count; outcome.activeId = snapshot.activeID
+        return outcome
+    }
+}
+
 /// Who may write session.json. A running window holds this lock for its whole life (the kernel
 /// releases it when the process ends, a crash included). `folio` takes it only for the moment it
 /// edits the file itself, which it does only when no window holds it; otherwise it asks the window.
@@ -721,28 +869,67 @@ final class SessionLock {
         }
         return SessionLock(descriptor)
     }
+    /// Read-only: whether some process holds the lock right now. Creates nothing; a state folder no
+    /// window has used has no lock file and so no holder.
+    static func held(in directory: URL) -> Bool {
+        let descriptor = Darwin.open(directory.appendingPathComponent("session.lock").path, O_RDONLY | O_CLOEXEC)
+        guard descriptor >= 0 else { return false }
+        defer { close(descriptor) }
+        guard flock(descriptor, LOCK_EX | LOCK_NB) == 0 else { return true }
+        flock(descriptor, LOCK_UN)
+        return false
+    }
 }
 
 /// Edits handed to the window that holds the lock: one small file per request in `requests/`, the
 /// answer beside it. The window is woken by the folder's change event; nothing polls while idle.
 enum SessionRequests {
-    struct Reply: Codable { var outcome: SessionEditOutcome?; var error: String? }
+    /// What a command printed and returned, when the window ran it (`SessionEdit.lifecycle`).
+    struct CommandReply: Codable { var exit: Int32; var out: String; var err: String }
+    /// `kind` names which SessionEditError a refusal was, so the command reports the same code either way.
+    struct Reply: Codable { var outcome: SessionEditOutcome?; var error: String?; var kind: String?; var command: CommandReply? }
     /// A request nobody answered in time was withdrawn by its sender; one left behind is not applied later.
     static let lifetime: TimeInterval = 30
     static func directory(_ state: URL) -> URL { state.appendingPathComponent("requests", isDirectory: true) }
 
     /// Command side: wait for the window's answer; withdraw the request when none comes.
     static func send(_ edit: SessionEdit, state: URL, timeout: TimeInterval = 5) throws -> SessionEditOutcome {
+        let reply = try exchange(edit, state: state, timeout: timeout)
+        if let outcome = reply.outcome { return outcome }
+        let detail = reply.error ?? "Folio 窗口拒绝了这次修改"
+        switch reply.kind {
+        case "not_found": throw SessionEditError.notFound(detail)
+        case "unsaved": throw SessionEditError.unsaved(detail)
+        case "refused": throw SessionEditError.refused(detail)
+        default: throw SessionEditError.invalid(detail)
+        }
+    }
+    /// A `config import|sync` command for the window to run. The window takes a request within moments (`pickup`:
+    /// one still lying there after that is withdrawn, nothing ran); running it may wait for one iCloud pass, hence
+    /// the longer `timeout` for the answer.
+    static func command(_ words: [String], state: URL, timeout: TimeInterval = 40, pickup: TimeInterval = 5) throws -> CommandReply {
+        var edit = SessionEdit(); edit.lifecycle = words
+        let reply = try exchange(edit, state: state, timeout: timeout, pickup: pickup)
+        if let result = reply.command { return result }
+        if let error = reply.error { throw SessionEditError.refused(error) }
+        throw SessionEditError.outdated   // an older window answered the edit it could read: an empty one
+    }
+    private static func exchange(_ edit: SessionEdit, state: URL, timeout: TimeInterval, pickup: TimeInterval? = nil) throws -> Reply {
         let folder = directory(state), id = UUID().uuidString, fm = FileManager.default
         try fm.createDirectory(at: folder, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
         let request = folder.appendingPathComponent(id + ".request.json"), answer = folder.appendingPathComponent(id + ".reply.json")
         try JSONEncoder().encode(edit).write(to: request, options: .atomic)
         var deadline = Date().addingTimeInterval(timeout), withdrawn = false
+        var unclaimed = pickup.map { Date().addingTimeInterval(min($0, timeout)) }
         while true {
             if let data = try? Data(contentsOf: answer), let reply = try? JSONDecoder().decode(Reply.self, from: data) {
                 try? fm.removeItem(at: answer)
-                if let outcome = reply.outcome { return outcome }
-                throw SessionEditError.invalid(reply.error ?? "Folio 窗口拒绝了这次修改")
+                return reply
+            }
+            if let limit = unclaimed, Date() >= limit {
+                // Still there: nobody took it, so nothing ran. Gone: the window is working on it; wait for the answer.
+                if (try? fm.removeItem(at: request)) != nil { throw SessionEditError.noReply }
+                unclaimed = nil
             }
             if Date() >= deadline {
                 if withdrawn { throw SessionEditError.noReply }

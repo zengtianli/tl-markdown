@@ -7,10 +7,10 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold），全 Swift，无外�
 
 界面给人用，`folio` 给程序和 agent 用，共用同一业务层：`Sources/IndexEngine.swift`（索引、检索 `FolioIndexEngine.find`、
 库位置 `resolveDatabase`、索引文件夹增删）、`Sources/GraphEngine.swift`（目录图谱）、`Sources/Models.swift`（会话记录
-`SessionDisk`、文档读写 `DocumentIO.open/save`、插图 `DocumentIO.storeImage`；大纲 `MarkdownOutline` 在 GraphEngine.swift）。入口 `CLI/main.swift`，由 `scripts/build-cli.sh` 与上述三文件一起编进
+`SessionDisk`、文档读写 `DocumentIO.open/save`、插图 `DocumentIO.storeImage`；大纲 `MarkdownOutline` 在 GraphEngine.swift）。入口 `CLI/main.swift`，由 `scripts/build-cli.sh` 与上述三文件、`Sources/Shared` 四个生命周期文件和 `Sources/Lifecycle.swift` 一起编进
 `Folio.app/Contents/Resources/bin/folio`（签名 `cyou.tianli.TLMarkdown.cli`，≤2 MB），`scripts/install-cli.py` 链接
 `~/.local/bin/folio`。新增界面能力时同步补命令：读命令只读、支持 `--json`（`{ok: …}`）；写命令复用界面的校验；
-退出码 0/1/2 = 成功/失败/用法错误。`session.json` 同一时刻只有一个写入者：窗口运行期间持有状态目录里的 `session.lock`，`folio settings set` / `folio recent …` 这时把修改放进 `requests/` 交给窗口（`EditorStore.apply`，与设置面板共用 `SessionEdits`，在 GraphEngine.swift 末尾），窗口没开时命令自己拿锁经 `SessionDisk` 改；其余命令对它只读。新增会改会话的命令走同一条通道，不直接写文件。命令清单、JSON 结构与
+退出码 0/1/2 = 成功/失败/用法错误。`session.json` 同一时刻只有一个写入者：窗口运行期间持有状态目录里的 `session.lock`，`folio settings set` / `folio recent …` 这时把修改放进 `requests/` 交给窗口（`EditorStore.apply`，与设置面板共用 `SessionEdits`，在 GraphEngine.swift 末尾），窗口没开时命令自己拿锁经 `SessionDisk` 改；其余命令对它只读。新增会改会话的命令走同一条通道，不直接写文件：`folio tabs close|restore|reload` 的规则在 `SessionTabs`（GraphEngine.swift 末尾，窗口的按钮也调它）。「配置与更新…」窗口的四项是共用层 `Sources/Shared/AppLifecycleCLI.swift`（总部 swift-shared 的逐字节副本，不在这里改）：产品名、更新源、可迁移的键、隔离与导入前的核对只写在 `Sources/Lifecycle.swift` 一处，窗口、`folio config status|export|import|sync`、`folio update check` 都取它；共用层会自己写 session.json，所以 `config import` 和真正拨开关的 `config sync` 在窗口开着时整条交给窗口执行（`SessionEdit.lifecycle` → `EditorStore.answerRequests`，执行后窗口立刻重读设置并存盘），没开时命令拿会话锁自己执行，App 里因此不接 `AppLifecycleCLI.follow`；不带子命令的 `folio config` 仍是索引配置。带窗口的回写自检是 `bash scripts/accept/lifecycle.sh`（`--lifecycle-self-test`，离屏、隔离、不构建）。命令清单、JSON 结构与
 仅界面的手势见 `docs/cli.md`；界面功能逐项对照登记在 `project.yaml` 的 `sop.agent_cli`（手机端在 ios 组件），增删界面功能或命令时同步改；真二进制回归在 `scripts/accept/cli_cases.py`（`scripts/test.sh --core-only` 也会跑）。
 
 新需求先读 playbook：`~/Dev/tools/configs/playbooks/native-console-app.md`（决策树 + 全部坑单）。

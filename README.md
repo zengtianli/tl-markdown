@@ -55,6 +55,10 @@ folio write notes/a.md --from new.md           # 与「保存」同一实现；�
 folio open notes/a.md                          # 后台交给 Folio 窗口打开，不抢焦点
 folio settings set font_size 18 content_width 900   # 改阅读设置，窗口开着时当场生效；folio settings 读回
 folio recent pin notes/a.md                    # 最近记录：pin / unpin / remove <文件>、clear；folio recent 读回
+folio tabs close notes/a.md --save             # 关闭标签；有未保存修改时带 --save 或 --keep-draft；另有 tabs restore、tabs reload
+folio config status --json                     # 「配置与更新…」窗口：iCloud 开关与可迁移的阅读设置
+folio config export -o folio-config.json       # 导出配置；config import <文件> --yes 导入；config sync on|off --yes 拨开关
+folio update check --json                      # 检查更新：当前版本、最新版本、怎么升级（命令不做静默安装）
 ```
 
 | 命令 | 对应界面 |
@@ -65,8 +69,11 @@ folio recent pin notes/a.md                    # 最近记录：pin / unpin / re
 | `roots add/remove`、`index`（写） | 设置「添加文件夹」「移除」「更新索引」 |
 | `graph`（写） | 菜单「文件 → 生成目录图谱…」 |
 | `asset add`（写） | 插入图片（菜单、拖入、粘贴）的保存规则 |
+| `tabs close/restore/reload`（写） | 关闭标签（⌘W、×）、「恢复关闭的草稿」、提示条上的「重新载入」 |
+| `config status`、`update check`（读） | 「配置与更新…」窗口：「使用 iCloud 记住配置」的开关状态、「检查更新…」 |
+| `config export/import/sync`（写） | 「配置与更新…」窗口：导出配置、导入配置、拨动「使用 iCloud 记住配置」 |
 
-每个命令都有 `--help` 和 `--json`；退出码 0 成功（含无命中）、1 失败、2 用法错误。检索默认最多 20 篇，`--limit 0` 不限；空白查询词（如空变量）和不是日期的 `--since` 都按用法错误处理，不会列出整个索引或静默返回空结果。设置里的「更新索引」每次按磁盘上的 index.json 重建，不会用窗口里的旧文件夹列表覆盖 `folio roots` 的修改。只读命令不改文档、配置和会话记录。阅读设置（`folio settings set`）与最近记录（`folio recent`）和窗口写同一份 `session.json`：窗口开着时由窗口应用并立即显示，没开时命令直接改；标签的关闭、恢复与重新载入仍在窗口里做（`folio session` 可读）。撤销、搜索替换、预览、切换视图等作用于窗口的手势没有命令；agent 用 `folio write` 或直接改 Markdown 文件，Folio 会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。`folio --help` 列出读写命令、`--json` 形状、退出码和仅在窗口中的项。
+每个命令都有 `--help` 和 `--json`；退出码 0 成功（含无命中）、1 失败、2 用法错误。检索默认最多 20 篇，`--limit 0` 不限；空白查询词（如空变量）和不是日期的 `--since` 都按用法错误处理，不会列出整个索引或静默返回空结果。设置里的「更新索引」每次按磁盘上的 index.json 重建，不会用窗口里的旧文件夹列表覆盖 `folio roots` 的修改。只读命令不改文档、配置和会话记录。阅读设置（`folio settings set`）与最近记录（`folio recent`）和窗口写同一份 `session.json`：窗口开着时由窗口应用并立即显示，没开时命令直接改；标签的关闭、恢复关闭的草稿与重新载入（`folio tabs`）以及配置的导入和 iCloud 开关（`folio config import` / `sync`）走同一条路，`applied_by` 说明是窗口还是命令写的。导入用文件里的整组阅读设置替换现有的，并先按设置面板的范围核对，缺项或越界整份拒绝；升级到新版仍在窗口确认，命令只给出新版与步骤。撤销、搜索替换、预览、切换视图等作用于窗口的手势没有命令；agent 用 `folio write` 或直接改 Markdown 文件，Folio 会重新载入未改动的标签，对有未保存修改的标签标记冲突而不覆盖。`folio --help` 列出读写命令、`--json` 形状、退出码和仅在窗口中的项。
 
 1.2.0 (57) 及更早版本的 `search`/`files --json` 输出带整篇正文的数组，且 `%`、`_` 当通配符、短词只查正文、命中行区分大小写；之后的构建输出对象，匹配规则与侧栏一致，文本输出格式不变。
 

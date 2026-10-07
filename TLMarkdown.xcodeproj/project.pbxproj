@@ -18,6 +18,8 @@
 		C10000000000000000000101 /* AppLifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000201 /* AppLifecycle.swift */; };
 		C10000000000000000000102 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000202 /* AppConfiguration.swift */; };
 		C10000000000000000000103 /* AppLifecycleUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000203 /* AppLifecycleUI.swift */; };
+		C10000000000000000000104 /* AppLifecycleCLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000204 /* AppLifecycleCLI.swift */; };
+		C10000000000000000000105 /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000205 /* Lifecycle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		C10000000000000000000201 /* AppLifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/AppLifecycle.swift; sourceTree = "<group>"; };
 		C10000000000000000000202 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/AppConfiguration.swift; sourceTree = "<group>"; };
 		C10000000000000000000203 /* AppLifecycleUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/AppLifecycleUI.swift; sourceTree = "<group>"; };
+		C10000000000000000000204 /* AppLifecycleCLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/AppLifecycleCLI.swift; sourceTree = "<group>"; };
+		C10000000000000000000205 /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +75,8 @@
 				C10000000000000000000201 /* AppLifecycle.swift */,
 				C10000000000000000000202 /* AppConfiguration.swift */,
 				C10000000000000000000203 /* AppLifecycleUI.swift */,
+				C10000000000000000000204 /* AppLifecycleCLI.swift */,
+				C10000000000000000000205 /* Lifecycle.swift */,
 				BF0000000000000000000201 /* TLMarkdownApp.swift */,
 				BF0000000000000000000202 /* ContentView.swift */,
 				BF0000000000000000000203 /* ViewModel.swift */,
@@ -154,6 +160,8 @@
 				C10000000000000000000101 /* AppLifecycle.swift in Sources */,
 				C10000000000000000000102 /* AppConfiguration.swift in Sources */,
 				C10000000000000000000103 /* AppLifecycleUI.swift in Sources */,
+				C10000000000000000000104 /* AppLifecycleCLI.swift in Sources */,
+				C10000000000000000000105 /* Lifecycle.swift in Sources */,
 				BF0000000000000000000101 /* TLMarkdownApp.swift in Sources */,
 				BF0000000000000000000102 /* ContentView.swift in Sources */,
 				BF0000000000000000000103 /* ViewModel.swift in Sources */,

@@ -85,6 +85,103 @@ import AppKit
         store.answerRequests()
         try check(store.settings.fontSize == 14 && !FileManager.default.fileExists(atPath: stale.path), "an abandoned request is dropped without being applied")
         try check(((try? FileManager.default.contentsOfDirectory(atPath: SessionRequests.directory(state).path)) ?? []).isEmpty, "answered requests leave nothing behind")
+        // `folio tabs close|restore|reload` while a window is open: the tab bar's own actions, with the close
+        // dialog's answer brought by the command. Nothing here shows a dialog.
+        func tabEdit(_ action: String, _ target: String? = nil, _ decision: String? = nil) -> SessionEdit {
+            var edit = SessionEdit(); edit.tab = SessionTabEdit(action: action, target: target, path: target, decision: decision); return edit
+        }
+        func ask(_ edit: SessionEdit) async -> Result<SessionEditOutcome, Error> {
+            await Task.detached { Result { try SessionRequests.send(edit, state: state, timeout: 5) } }.value
+        }
+        func denial(_ result: Result<SessionEditOutcome, Error>) -> SessionEditError? {
+            if case .failure(let error) = result { return error as? SessionEditError }
+            return nil
+        }
+        let tabsBefore = store.documents.count
+        let c = root.appendingPathComponent("c.md"); try Data("# C\n".utf8).write(to: c)
+        store.open(c); let cid = store.activeID!
+        let closedClean = try await ask(tabEdit("close", c.path)).get()
+        try check(closedClean.tab?.action == "close" && closedClean.tab?.id == cid && closedClean.tab?.saved == false && closedClean.tab?.keptDraft == false
+                  && store.documents.count == tabsBefore && !store.documents.contains { $0.id == cid } && store.recent.first?.name == "c.md",
+                  "a command closes a clean tab through the window and the file joins the recent list")
+        store.open(c); let cid2 = store.activeID!
+        store.changed(id: cid2, text: "# C\n窗口里没保存\n", selection: 0, scroll: 0)
+        if case .unsaved? = denial(await ask(tabEdit("close", c.path))) {} else { try check(false, "closing a tab with unsaved edits needs an answer") }
+        try check(store.documents.contains { $0.id == cid2 } && store.active?.text == "# C\n窗口里没保存\n", "an unanswered close leaves the tab and its edits")
+        if case .invalid? = denial(await ask(tabEdit("close", c.path, "discard"))) {} else { try check(false, "only save and keep-draft answer the close question") }
+        let savedClose = try await ask(tabEdit("close", cid2, "save")).get()
+        let cOnDisk = try DocumentIO.open(c).text
+        try check(savedClose.tab?.saved == true && cOnDisk == "# C\n窗口里没保存\n" && !store.documents.contains { $0.id == cid2 },
+                  "close with save writes the file through the window's own save, then closes")
+        store.newDocument(); let untitled = store.activeID!
+        store.changed(id: untitled, text: "未命名草稿", selection: 0, scroll: 0)
+        if case .refused? = denial(await ask(tabEdit("close", untitled, "save"))) {} else { try check(false, "an untitled draft cannot be saved without a name") }
+        let draftsBefore = store.closedDrafts.count
+        let kept = try await ask(tabEdit("close", untitled, "keep-draft")).get()
+        try check(kept.tab?.keptDraft == true && store.closedDrafts.count == draftsBefore + 1 && kept.tab?.closedDrafts == draftsBefore + 1 && !store.documents.contains { $0.id == untitled },
+                  "close keeping the draft moves the tab to the closed drafts")
+        let back = try await ask(tabEdit("restore")).get()
+        let draftsOnDisk = try store.disk.read().closedDrafts?.count
+        try check(back.tab?.id == untitled && store.activeID == untitled && store.active?.text == "未命名草稿" && store.closedDrafts.count == draftsBefore
+                  && draftsOnDisk == draftsBefore, "restore brings the closed draft back as the current tab and saves")
+        store.open(c); let cid3 = store.activeID!
+        store.changed(id: cid3, text: "# C\n又一次没保存\n", selection: 0, scroll: 0)
+        try Data("# C\n别的软件写的\n".utf8).write(to: c)
+        let reloaded = try await ask(tabEdit("reload", c.path)).get()
+        try check(reloaded.tab?.draftCopy != nil && store.documents.first { $0.id == cid3 }?.text == "# C\n别的软件写的\n"
+                  && store.documents.contains { $0.id == reloaded.tab?.draftCopy && $0.path == nil && $0.text == "# C\n又一次没保存\n" },
+                  "reload takes the file from disk and keeps the unsaved edits as a separate draft")
+        if case .notFound? = denial(await ask(tabEdit("close", root.appendingPathComponent("never-opened.md").path))) {} else { try check(false, "a tab that is not open is reported as not found") }
+        if case .refused? = denial(await ask(tabEdit("reload", untitled))) {} else { try check(false, "an untitled draft has no file to reload") }
+        try check(((try? FileManager.default.contentsOfDirectory(atPath: SessionRequests.directory(state).path)) ?? []).isEmpty, "answered tab requests leave nothing behind")
+
+        // `folio config import|sync` while a window is open: the window runs the command itself and then takes
+        // the settings the shared layer wrote into session.json, so its next save cannot put the old ones back.
+        let wired = root.appendingPathComponent("wired-state")
+        var ran: [[String]] = []
+        var wiredStore: EditorStore?
+        wiredStore = EditorStore(directory: wired, lifecycle: { words in
+            ran.append(words)
+            // What the shared layer does on an import: rewrites the settings inside session.json, behind the store.
+            let file = wired.appendingPathComponent("session.json")
+            if var object = (try? JSONSerialization.jsonObject(with: Data(contentsOf: file))) as? [String: Any], var settings = object["settings"] as? [String: Any] {
+                settings["fontSize"] = 20; object["settings"] = settings
+                try? JSONSerialization.data(withJSONObject: object).write(to: file, options: .atomic)
+            }
+            return SessionRequests.CommandReply(exit: 3, out: "printed\n", err: "warned\n")
+        })
+        guard let wiredStore else { return }
+        wiredStore.newDocument(); let wiredDraft = wiredStore.activeID!
+        wiredStore.changed(id: wiredDraft, text: "窗口里的草稿", selection: 0, scroll: 0)
+        wiredStore.settings.fontSize = 17; wiredStore.settingsChanged()
+        let answered = try await Task.detached { try SessionRequests.command(["config", "import", "/x.json", "--yes"], state: wired, timeout: 5) }.value
+        try check(answered.exit == 3 && answered.out == "printed\n" && answered.err == "warned\n" && ran == [["config", "import", "/x.json", "--yes"]],
+                  "the window runs a handed-over configuration command and returns what it printed")
+        try check(wiredStore.settings.fontSize == 20, "the window takes the settings the command wrote into session.json")
+        wiredStore.changed(id: wiredDraft, text: "窗口里的草稿，继续写", selection: 3, scroll: 0); wiredStore.persist()
+        let afterSave = try wiredStore.disk.read()
+        try check(afterSave.settings.fontSize == 20 && afterSave.documents.first?.text == "窗口里的草稿，继续写", "the window's next save keeps the imported setting and its own draft")
+        // A window without the「配置与更新」wiring (recording, tests) says so; one from before these commands answers
+        // the empty edit it can read, which the command recognises.
+        let plain = await Task.detached { Result { try SessionRequests.command(["config", "sync", "on", "--yes"], state: state, timeout: 5) } }.value
+        if case .failure(SessionEditError.refused) = plain {} else { try check(false, "a window without the lifecycle wiring refuses the command") }
+        let nobody = root.appendingPathComponent("nobody-state")
+        let began = Date()
+        let unanswered = await Task.detached { Result { try SessionRequests.command(["config", "sync", "on", "--yes"], state: nobody, timeout: 30, pickup: 0.3) } }.value
+        if case .failure(SessionEditError.noReply) = unanswered {} else { try check(false, "a command nobody takes is withdrawn") }
+        try check(Date().timeIntervalSince(began) < 5 && ((try? FileManager.default.contentsOfDirectory(atPath: SessionRequests.directory(nobody).path)) ?? []).isEmpty,
+                  "an unclaimed command is withdrawn at the pickup limit, long before the answer timeout")
+        let oldReply = SessionRequests.Reply(outcome: SessionEditOutcome(), error: nil)
+        let relic = root.appendingPathComponent("relic-state")
+        let relicTask = Task.detached { Result { try SessionRequests.command(["config", "sync", "on", "--yes"], state: relic, timeout: 5) } }
+        var relicID: String?
+        for _ in 0..<200 where relicID == nil {
+            relicID = SessionRequests.take(in: relic).first?.id
+            if relicID == nil { try await Task.sleep(for: .milliseconds(10)) }
+        }
+        if let relicID { SessionRequests.answer(relicID, oldReply, state: relic) }
+        if case .failure(SessionEditError.outdated) = await relicTask.value {} else { try check(false, "an older window's answer is recognised as outdated") }
+        print("PASS a window without the wiring, an unclaimed command and an older window are each told apart")
         // Without a window the command takes the lock itself; a window starting meanwhile waits for it.
         let free = root.appendingPathComponent("free-state")
         let held = SessionLock.acquire(in: free)

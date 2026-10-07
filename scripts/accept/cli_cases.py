@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Exercise the real shipped engine through its CLI, using only synthetic files."""
+import base64
 import fcntl
 import json
 import os
@@ -9,7 +10,9 @@ import signal
 import sqlite3
 import subprocess
 import sys
+import threading
 import time
+import uuid
 
 binary, base, mode = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve(), sys.argv[3]
 base.mkdir(parents=True, exist_ok=True)
@@ -45,7 +48,7 @@ def same(a, b):
 
 def agent_surface():
     """Agent-facing commands: help, exit codes, stable JSON, sandboxed writes, read-only state."""
-    for name in ['status', 'read', 'outline', 'write', 'open', 'index', 'build', 'search', 'files', 'stats', 'config', 'roots', 'session', 'settings', 'recent', 'graph', 'asset']:
+    for name in ['status', 'read', 'outline', 'write', 'open', 'index', 'build', 'search', 'files', 'stats', 'config', 'roots', 'session', 'settings', 'recent', 'tabs', 'graph', 'asset', 'update']:
         assert run(name, '--help').stdout.startswith('用法：folio'), name
     run('bogus', code=2)
     run(code=2)
@@ -354,6 +357,253 @@ def session_edits(state, session_file, snapshot, plan, agent):
     copy.unlink()
 
 
+def lifecycle_and_tabs():
+    """The「使用 iCloud 记住配置」switch is a preference, and a named preference domain is kept by the user's
+    preferences daemon whatever HOME says: each run uses its own throwaway domain and removes it afterwards."""
+    suite = 'test.tianli.folio.' + uuid.uuid4().hex
+    try:
+        lifecycle_and_tabs_cases(suite)
+    finally:
+        subprocess.run(['/usr/bin/defaults', 'delete', suite], capture_output=True)
+        shell = Path.home() / 'Library/Preferences' / (suite + '.plist')
+        if shell.is_file() and shell.stat().st_size <= 42:      # the empty shell the daemon may leave for a removed domain
+            shell.unlink()
+
+
+def lifecycle_and_tabs_cases(suite):
+    """config status|export|import|sync (the shared「配置与更新」command layer) and tabs close|restore|reload, with no
+    window running: the command holds the session lock and works on session.json itself (applied_by: file). The
+    state folder, the support folder and the "cloud" folder are inside the work folder; the switch is in `suite`."""
+    state, support, cloud = base / 'lc-state', base / 'lc-support', base / 'lc-cloud'
+    for folder in (state, support, cloud):
+        shutil.rmtree(folder, ignore_errors=True)
+    state.mkdir()
+    lc = {'TL_MARKDOWN_STATE_DIR': str(state), 'APP_LIFECYCLE_SUPPORT_DIR': str(support), 'APP_LIFECYCLE_CLOUD_DIR': str(cloud),
+          'FOLIO_PREFERENCES_SUITE': suite}
+    session_file = state / 'session.json'
+
+    def go(*args, code=0, extra=None):
+        result = subprocess.run([str(binary), *map(str, args), '--json'], env={**env, **lc, **(extra or {})}, text=True, capture_output=True, timeout=60)
+        assert result.returncode == code, (args, result.returncode, result.stdout, result.stderr)
+        return json.loads(result.stdout), result.stderr
+
+    def stored():
+        return json.loads(session_file.read_text())
+
+    def listing():
+        return sorted(str(p.relative_to(base)) for folder in (state, support, cloud) if folder.exists() for p in folder.rglob('*'))
+
+    def envelope(name, product='cyou.tianli.TLMarkdown', only=False, **changes):
+        values = {} if only else {'file.0.settings.fontFamily': 'system', 'file.0.settings.fontSize': 17, 'file.0.settings.contentWidth': 820,
+                                  'file.0.settings.restoreSession': True, 'file.0.settings.imageFolder': 'assets'}
+        values.update({'file.0.settings.' + key: value for key, value in changes.items()})
+        path = base / f'lc-{name}.json'
+        path.write_text(json.dumps({'version': 1, 'product': product, 'values': values}))
+        return path
+
+    # help: every subcommand is listed in the top-level help as a command, and folio config --help still explains bare config
+    top = run('--help').stdout
+    for line in ['\n  config status ', '\n  update check ', '\n  config export -o <file> ', '\n  config import <file> --yes ', '\n  config sync on|off --yes ',
+                 '\n  tabs close ', '\n  tabs restore ', '\n  tabs reload ']:
+        assert line in top, line
+    assert '升级到新版' in top.split('暂无命令')[-1] and '打开「配置与更新…」窗口' in top.split('仅在窗口中')[-1]
+    usage = run('config', '--help').stdout
+    assert 'folio config [--show-rules]' in usage and 'folio config sync on|off --yes' in usage and 'applied_by' in usage
+    assert run('config', 'sync', '--help').stdout == usage and 'folio update check' in run('update', 'check', '--help').stdout
+
+    # bare `folio config` is still the index configuration; an unknown word after it is a usage error as before
+    assert 'state_directory' in json.loads(run('config', '--json').stdout)
+    assert json.loads(run('config', 'bogus', '--json', code=2).stdout)['code'] == 'usage'
+    for bad in [('update',), ('update', 'check', 'extra'), ('update', 'install'), ('config', 'status', 'extra'), ('config', 'export'),
+                ('config', 'sync'), ('config', 'sync', 'maybe', '--yes'), ('config', 'import'), ('config', 'status', '--db', 'x')]:
+        refused, err = go(*bad, code=2)
+        assert refused['ok'] is False and refused['usage'] is True and refused['code'] == 'usage' and isinstance(refused['error'], str) and '[usage]' in err, (bad, refused)
+
+    # half an isolation is refused: a test state folder with the owner's iCloud copy and preferences, or the reverse
+    half = subprocess.run([str(binary), 'config', 'status', '--json'], env=env, text=True, capture_output=True, timeout=30)
+    assert half.returncode == 1 and json.loads(half.stdout)['code'] == 'isolation_incomplete', half
+    other = subprocess.run([str(binary), 'config', 'sync', 'on', '--yes', '--json'], text=True, capture_output=True, timeout=30,
+                           env={**{k: v for k, v in env.items() if k != 'TL_MARKDOWN_STATE_DIR'}, 'APP_LIFECYCLE_SUPPORT_DIR': str(support)})
+    # (the lock file is all a refused or mistyped write command leaves behind)
+    assert other.returncode == 1 and json.loads(other.stdout)['code'] == 'isolation_incomplete' and listing() in ([], ['lc-state/session.lock']), (other, listing())
+
+    # a session as the app leaves it: a saved tab, an untitled draft with unsaved text, a closed draft, a custom index
+    notes = base / 'lc-notes'
+    shutil.rmtree(notes, ignore_errors=True)
+    notes.mkdir()
+    one, two, three = notes / 'one.md', notes / 'two.md', notes / 'three.md'
+    for path, text in [(one, '# One\n'), (two, '# Two\n'), (three, '# Three\n')]:
+        path.write_text(text)
+
+    def document(id, path, text, saved=None, on_disk=None, **more):
+        doc = {'id': id, 'text': text, 'savedText': text if saved is None else saved, 'lineEnding': '\n', 'bom': False, 'scroll': 0,
+               'selection': 0, 'revision': 0, 'conflict': False, 'message': '', **more}
+        if path:
+            doc['path'] = os.path.realpath(path)
+            doc['diskData'] = base64.b64encode(Path(path).read_bytes() if on_disk is None else on_disk).decode()
+        return doc
+    record = {'documents': [document('ONE', one, '# One\n'), document('DRAFT', None, '没保存的草稿', saved='')], 'activeID': 'ONE', 'recent': [],
+              'settings': {'fontFamily': 'serif', 'fontSize': 19, 'contentWidth': 860, 'restoreSession': True, 'imageFolder': 'pics', 'noteIndexPath': '/somewhere/index.db'},
+              'closedDrafts': [document('CLOSED', None, '关掉的草稿', saved='')]}
+    session_file.write_text(json.dumps(record))
+    session_file.chmod(0o600)
+
+    # config status: read-only, writes nothing (not even the lock file)
+    before = (session_file.read_bytes(), listing())
+    status, _ = go('config', 'status')
+    assert status == {'ok': True, 'command': 'config status', 'has_settings': True, 'sync_enabled': False, 'app_running': False, 'problem': None,
+                      'keys': ['file.0.settings.' + k for k in ['contentWidth', 'fontFamily', 'fontSize', 'imageFolder', 'restoreSession']]}, status
+    dry, _ = go('config', 'sync', 'on', '--dry-run')
+    assert dry['dry_run'] is True and dry['would_change'] is True and dry['sync_enabled'] is False and 'applied_by' not in dry, dry
+    needs, _ = go('config', 'sync', 'on', code=2)
+    assert needs['code'] == 'confirmation_required' and needs['usage'] is True
+    # export: the window's envelope, only the portable settings
+    out = base / 'lc-out.json'
+    out.unlink(missing_ok=True)
+    exported, _ = go('config', 'export', '-o', out)
+    written = json.loads(out.read_text())
+    assert exported['bytes'] == out.stat().st_size and exported['keys'] == status['keys'] and same(exported['path'], out), exported
+    assert written['product'] == 'cyou.tianli.TLMarkdown' and written['values'] == {'file.0.settings.fontFamily': 'serif', 'file.0.settings.fontSize': 19,
+        'file.0.settings.contentWidth': 860, 'file.0.settings.restoreSession': True, 'file.0.settings.imageFolder': 'pics'}, written
+    exists, _ = go('config', 'export', '-o', out, code=2)
+    assert exists['code'] == 'file_exists' and exists['usage'] is True
+    go('config', 'export', '-o', out, '--force')
+    piped = subprocess.run([str(binary), 'config', 'export', '-o', '-'], env={**env, **lc}, text=True, capture_output=True, timeout=30)
+    assert piped.returncode == 0 and json.loads(piped.stdout) == written
+    unconfirmed, _ = go('config', 'import', out, code=2)
+    assert unconfirmed['code'] == 'confirmation_required'
+    assert (session_file.read_bytes(), listing()) == before, 'reading commands, a dry run and an unconfirmed write changed something'
+
+    # import: refused whole when a value is outside the settings panel's limits, of the wrong type, missing, foreign or not portable
+    for name, file in [('type', envelope('type', fontSize='big')), ('range', envelope('range', fontSize=99)), ('step', envelope('step', contentWidth=825)),
+                       ('family', envelope('family', fontFamily='comic')), ('folder', envelope('folder', imageFolder='../out')),
+                       ('switch', envelope('switch', restoreSession=1)), ('number', envelope('number', fontSize=True)),
+                       ('partial', envelope('partial', only=True, fontSize=20)), ('foreign', envelope('foreign', product='someone.else')),
+                       ('index', envelope('index', noteIndexPath='/other.db'))]:
+        refused, err = go('config', 'import', file, '--yes', code=1)
+        assert refused['code'] == 'import_rejected' and refused['ok'] is False and refused['usage'] is False and '[fail]' in err, (name, refused)
+        assert session_file.read_bytes() == before[0], name
+    missing, _ = go('config', 'import', base / 'lc-absent.json', '--yes', code=1)
+    assert missing['code'] == 'not_found'
+    # import: the portable settings change, everything else in the record stays, the file keeps its owner-only mode
+    imported, _ = go('config', 'import', envelope('good', fontSize=21, contentWidth=900, fontFamily='mono', restoreSession=False, imageFolder='img'), '--yes')
+    assert imported['imported'] is True and imported['applied_by'] == 'file' and imported['sync_enabled'] is False and imported['app_running'] is False and 'sync' not in imported, imported
+    after = stored()
+    assert after['settings'] == {'fontFamily': 'mono', 'fontSize': 21, 'contentWidth': 900, 'restoreSession': False, 'imageFolder': 'img', 'noteIndexPath': '/somewhere/index.db'}, after['settings']
+    assert [d['text'] for d in after['documents']] == ['# One\n', '没保存的草稿'] and after['activeID'] == 'ONE' and after['closedDrafts'][0]['text'] == '关掉的草稿'
+    assert (session_file.stat().st_mode & 0o777) == 0o600 and len(list((support / 'cyou.tianli.TLMarkdown/Backups').iterdir())) == 1
+    view = json.loads(subprocess.run([str(binary), 'session', '--json'], env={**env, **lc}, text=True, capture_output=True, timeout=30).stdout)
+    assert view['ok'] and view['settings']['font_size'] == 21 and len(view['documents']) == 2, view   # the app's own decoder still reads the record
+    # a relative file name is resolved where the command was typed
+    relative = subprocess.run([str(binary), 'config', 'import', envelope('relative', fontSize=22).name, '--yes', '--json'], cwd=base, env={**env, **lc}, text=True, capture_output=True, timeout=30)
+    assert relative.returncode == 0 and stored()['settings']['fontSize'] == 22, relative
+
+    # sync: the switch is stored for the next process to read; on uploads through the shared reconcile; an import made while it is on follows
+    cloud_file = cloud / 'cyou.tianli.TLMarkdown.json'
+    on, _ = go('config', 'sync', 'on', '--yes')
+    assert on['changed'] is True and on['sync_enabled'] is True and on['applied_by'] == 'file' and on['action'] == 'on' and on['check_with'] == 'folio config status' and on['status'], on
+    assert go('config', 'status')[0]['sync_enabled'] is True and json.loads(cloud_file.read_text())['values']['file.0.settings.fontSize'] == 22
+    same_again, _ = go('config', 'sync', 'on', '--yes')
+    assert same_again['changed'] is False and 'applied_by' not in same_again
+    carried, _ = go('config', 'import', envelope('synced', fontSize=23), '--yes')
+    assert carried['sync'] == {'completed': True, 'status': on['status']} and json.loads(cloud_file.read_text())['values']['file.0.settings.fontSize'] == 23, carried
+    off, _ = go('config', 'sync', 'off', '--yes')
+    assert off['changed'] is True and off['sync_enabled'] is False and go('config', 'status')[0]['sync_enabled'] is False
+    # back to back, both orders: the second command's value is what every later process reads
+    for last in (False, True, False):
+        go('config', 'sync', 'off' if last else 'on', '--yes')
+        go('config', 'sync', 'on' if last else 'off', '--yes')
+        assert [go('config', 'status')[0]['sync_enabled'] for _ in range(5)] == [last] * 5, last
+    local, _ = go('config', 'import', envelope('local', fontSize=24), '--yes')
+    assert 'sync' not in local and stored()['settings']['fontSize'] == 24 and json.loads(cloud_file.read_text())['values']['file.0.settings.fontSize'] == 23
+    assert len(stored()['documents']) == 2 and stored()['closedDrafts'][0]['text'] == '关掉的草稿'
+
+    # a window that holds the lock owns the record: with no answer the command gives up quickly and nothing is written;
+    # a window from before these commands answers the empty edit it can read, which is reported as outdated
+    saved = session_file.read_bytes()
+    with open(state / 'session.lock', 'a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        began = time.monotonic()
+        unanswered, _ = go('config', 'import', envelope('held', fontSize=25), '--yes', code=1)
+        assert unanswered['code'] == 'window_no_reply' and time.monotonic() - began < 15, unanswered
+        assert go('config', 'status')[0]['app_running'] is True       # reading never needs the lock
+        assert go('tabs', 'restore', code=1)[0]['code'] == 'window_no_reply'
+        requests = state / 'requests'
+
+        def old_window():
+            deadline = time.monotonic() + 20
+            while time.monotonic() < deadline:
+                for request in requests.glob('*.request.json'):
+                    request.unlink()
+                    reply = {'outcome': {'settingsChanged': [], 'recentChanged': [], 'recentUnchanged': [], 'notFound': [], 'cleared': 0,
+                                         'settings': after['settings'], 'recent': []}}
+                    (requests / request.name.replace('.request.json', '.reply.json')).write_text(json.dumps(reply))
+                    return
+                time.sleep(0.01)
+        for args in [('config', 'sync', 'on', '--yes'), ('tabs', 'close', one)]:
+            answering = threading.Thread(target=old_window)
+            answering.start()
+            outdated, _ = go(*args, code=1)
+            answering.join()
+            assert outdated['code'] == 'window_outdated', (args, outdated)
+    assert session_file.read_bytes() == saved and list((state / 'requests').iterdir()) == [] and go('config', 'status')[0]['sync_enabled'] is False
+
+    # tabs close: a clean tab closes and joins the recent list; unsaved edits need an answer
+    closed, _ = go('tabs', 'close', one)
+    assert closed['action'] == 'close' and closed['id'] == 'ONE' and closed['applied_by'] == 'file' and closed['saved'] is False and closed['kept_draft'] is False, closed
+    assert closed['documents'] == 1 and closed['active_id'] == 'DRAFT' and same(closed['session_file'], session_file)
+    now = stored()
+    assert [d['id'] for d in now['documents']] == ['DRAFT'] and now['activeID'] == 'DRAFT' and same(now['recent'][0]['path'], one) and one.read_text() == '# One\n'
+    assert now['settings']['fontSize'] == 24 and (session_file.stat().st_mode & 0o777) == 0o600
+    saved = session_file.read_bytes()
+    unsaved, _ = go('tabs', 'close', 'DRAFT', code=1)
+    assert unsaved['code'] == 'window_unsaved'
+    assert go('tabs', 'close', 'DRAFT', '--save', code=1)[0]['code'] == 'failed'          # an untitled draft has no file name
+    assert go('tabs', 'close', notes / 'never-opened.md', code=1)[0]['code'] == 'not_found'
+    assert go('tabs', 'reload', 'DRAFT', code=1)[0]['code'] == 'failed'
+    for bad in [('tabs',), ('tabs', 'frob'), ('tabs', 'close'), ('tabs', 'restore', 'x'), ('tabs', 'reload', one, '--save'), ('tabs', 'close', one, '--save', '--keep-draft'),
+                ('tabs', 'restore', '--keep-draft')]:
+        assert go(*bad, code=2)[0]['usage'] is True, bad
+    assert session_file.read_bytes() == saved
+    kept, _ = go('tabs', 'close', 'DRAFT', '--keep-draft')
+    assert kept['kept_draft'] is True and kept['documents'] == 0 and kept['closed_drafts'] == 2 and 'active_id' not in kept, kept
+    assert [d['id'] for d in stored()['closedDrafts']] == ['CLOSED', 'DRAFT']
+    # tabs restore: the most recently closed draft first, as the current tab; nothing left is not_found
+    first, _ = go('tabs', 'restore')
+    assert first['action'] == 'restore' and first['id'] == 'DRAFT' and first['active_id'] == 'DRAFT' and first['closed_drafts'] == 1 and first['conflict'] is False, first
+    restored = stored()['documents'][0]
+    assert restored['text'] == '没保存的草稿' and restored['message'] == '已恢复关闭的草稿'
+    assert go('tabs', 'restore')[0]['id'] == 'CLOSED'
+    assert go('tabs', 'restore', code=1)[0]['code'] == 'not_found'
+    # close --save: the edits go to the file by the editor's save rule; a file changed underneath refuses and keeps the tab
+    record = stored()
+    record['documents'] += [document('TWO', two, '# Two\n窗口里改过\n', saved='# Two\n'),
+                            document('THREE', three, '# Three\n窗口里改过\n', saved='# Three\n', on_disk=b'# Three\n')]
+    session_file.write_text(json.dumps(record))
+    three.write_text('# Three\n别的软件改过\n')
+    done, _ = go('tabs', 'close', two, '--save')
+    assert done['saved'] is True and two.read_text() == '# Two\n窗口里改过\n' and 'TWO' not in [d['id'] for d in stored()['documents']], done
+    conflict, _ = go('tabs', 'close', three, '--save', code=1)
+    assert conflict['code'] == 'failed' and three.read_text() == '# Three\n别的软件改过\n' and 'THREE' in [d['id'] for d in stored()['documents']], conflict
+    # tabs reload: the tab takes the file; the unsaved edits become a separate untitled draft
+    count = len(stored()['documents'])
+    reloaded, _ = go('tabs', 'reload', three)
+    docs = {d['id']: d for d in stored()['documents']}
+    assert reloaded['action'] == 'reload' and reloaded['draft_copy'] in docs and reloaded['documents'] == count + 1, reloaded
+    assert docs['THREE']['text'] == '# Three\n别的软件改过\n' and docs['THREE']['savedText'] == docs['THREE']['text'] and docs['THREE']['conflict'] is False
+    copy = docs[reloaded['draft_copy']]
+    assert 'path' not in copy and copy['text'] == '# Three\n窗口里改过\n' and copy['message'] == '重新载入前的修改副本'
+    assert 'draft_copy' not in go('tabs', 'reload', three)[0]                      # nothing unsaved: nothing to keep aside
+    saved = session_file.read_bytes()
+    three.unlink()
+    assert go('tabs', 'reload', 'THREE', code=1)[0]['code'] == 'failed' and session_file.read_bytes() == saved
+    # an unreadable record is left alone by every one of these
+    session_file.write_text('not json')
+    for args in [('config', 'import', envelope('good', fontSize=21), '--yes'), ('config', 'sync', 'on', '--yes'), ('tabs', 'restore'), ('tabs', 'close', 'DRAFT', '--keep-draft')]:
+        assert go(*args, code=1)[0]['code'] == 'session_unreadable' and session_file.read_text() == 'not json', args
+    assert go('config', 'status')[0]['sync_enabled'] is False
+
+
 def index(*args):
     return run('index', '--config', config, '--db', db, *args)
 
@@ -413,6 +663,7 @@ if mode == 'functionality':
     run('graph', root, '-n', '--config', config, code=1)
     assert html.read_text() == 'User-owned content'
     agent_surface()
+    lifecycle_and_tabs()
 elif mode == 'recovery':
     db.write_bytes(b'corrupt database fixture')
     index()
