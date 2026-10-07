@@ -20,7 +20,7 @@ OUT="$ROOT/build/accept/lifecycle"
 mkdir -p "$OUT"
 WORK="$(mktemp -d "$OUT/run.XXXXXX")"
 exec /Users/tianli/Dev/.venv/bin/python - "$APP" "$WORK" "$OUT" <<'PY'
-import json, os, pathlib, plistlib, shutil, subprocess, sys, uuid
+import json, os, pathlib, plistlib, shutil, subprocess, sys, time, uuid
 
 app, work, out = (pathlib.Path(p).resolve() for p in sys.argv[1:4])
 sys.path.insert(0, str(pathlib.Path.home() / 'Dev/tools/dev/lib/tools/macapp/ios'))
@@ -62,11 +62,19 @@ finally:
     if proc is not None and proc.poll() is None:
         proc.kill()
         proc.wait(timeout=5)
+    # The preferences daemon may write an empty 42-byte shell for the removed domain a moment after the last process
+    # that used it has gone: wait for that moment, then remove the shell (never a file with anything in it).
     subprocess.run(['/usr/bin/defaults', 'delete', suite], capture_output=True)
     shell = pathlib.Path.home() / 'Library/Preferences' / (suite + '.plist')
-    result['preference_domain_removed'] = not shell.exists() or shell.stat().st_size <= 42
-    if shell.exists() and shell.stat().st_size <= 42:
-        shell.unlink()
+    deadline, quiet = time.monotonic() + 3, 0
+    while time.monotonic() < deadline and quiet < 10:
+        if shell.is_file() and shell.stat().st_size <= 42:
+            shell.unlink()
+            quiet = 0
+        else:
+            quiet += 1
+        time.sleep(0.1)
+    result['preference_domain_removed'] = not shell.exists()
     shutil.rmtree(work, ignore_errors=True)
     result['work_removed'] = not work.exists()
     (out / 'lifecycle.json').write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + '\n')

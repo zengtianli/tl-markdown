@@ -90,3 +90,61 @@
   - 共享生命周期五项与手机端版本读取，等共享模块的命令入口。
   - Mac mini 上的装机没有动。
 - **提交**：`61bfa83`（命令、窗口通道、测试、登记、文档）与本节加装机回执的提交；未推送。`perf/acceptance/**` 等其他会话留下的未提交文件没有动。
+
+## 2026-10-07 下午 · 命令入口第三轮：「配置与更新」四项与标签的关闭 / 恢复 / 重新载入，装机 1.2.1 (123)
+
+需求与约定同前两节（`~/Apps/chapter/docs/PRD-agent-cli.md`、app 技能 `references/agent-cli.md`、`platforms.md`「配置迁移与版本更新」）。本人对这一轮的原话只有「好，继续做完，铺开」；下面每个具体做法是执行时自己定的，不是本人逐条同意过的。只动 Folio，不测性能、不发布、不推送。
+
+- **边界（实际改动）**
+  - 新增 `Sources/Shared/AppLifecycleCLI.swift`：总部 swift-shared 的逐字节副本，sha256 `c869edf8…5e`，没有在这里改。另三份共用副本（AppLifecycle / AppConfiguration / AppLifecycleUI）没动，`AppLifecycle.swift`、`AppLifecycleUI.swift` 仍落后总部，窗口没有换版。
+  - 新增 `Sources/Lifecycle.swift`：产品一侧唯一的工厂（产品名、更新源、可迁移的键、偏好域、隔离规则、导入前的核对、命令入口）。
+  - `CLI/main.swift`：帮助文字、命令表、`config` 子命令与 `update` 的分发、`tabs` 命令、失败短码三条。原有命令的实现没改。
+  - `Sources/GraphEngine.swift`：只动文件末尾「Session edits」一节（`SessionEdit` / `SessionRequests` 加字段，新增 `SessionTabs`、`SessionLock.held`）。
+  - `Sources/ViewModel.swift`：只动 `EditorStore` 的 `init` 参数、`persist` 开头一行、`apply` / `answerRequests`、`touchRecent`、`reload` / `close` / `restoreClosedDraft`、`reloadConfiguration`。
+  - `Sources/TLMarkdownApp.swift`：`FolioLaunch` 两个开关、`AppDelegate` 的自检分支、`TLMarkdownApp.init` 里接「配置与更新」的那一段、新增 `FolioLifecycleSelfTest`。
+  - `TLMarkdown.xcodeproj/project.pbxproj`（两个新文件的四处登记）、`scripts/build-cli.sh`（编译清单）、`scripts/accept/cli_cases.py`（加用例）、新增 `scripts/accept/lifecycle.sh`、`Tests/StoreTests.swift`（加用例）、`docs/cli.md`、两份 README 的命令行一节、`CLAUDE.md` 命令行一节、`project.yaml` 与 `ios/01-源程序/project.yaml` 的 `sop.agent_cli`。
+  - 没碰：`Sources/Models.swift`、`IndexEngine.swift`（手机端的受监测输入）、`Editor/`、手机端源码、`site/`、`perf/lightweight.json` 与测量脚本、`build.sh`、`scripts/test.sh`、swift-shared 原版、Chapter、别的产品。`perf/build-receipt.json` 由装机入口重写；`perf/acceptance/agent_cli*`、两份 `delivery-evidence.json` 由 `chapter sop accept` 重写。
+- **新增命令**
+  - `folio config status | export -o <文件> [--force] | import <文件> --yes | sync on|off --yes [--dry-run]`、`folio update check`：走共用层，与窗口同一个 `AppConfiguration` 逻辑和更新检查。不带子命令的 `folio config` 还是原来的索引配置，输出没变。
+  - `folio tabs close <文档|标签id> [--save|--keep-draft]`、`folio tabs restore`、`folio tabs reload <文档|标签id>`：标签栏的三个动作。规则在 `SessionTabs`，窗口的按钮改成也调它；关闭有未保存修改的标签时，窗口对话框的回答由命令自带，都不给等于取消。
+  - 失败输出仍是 folio 自己的信封（`{ok, command, error(文字), code, usage}`）：共用层的 `error:{code,message}` 在 `present()` 里转成这个形状，一个命令只有一种失败形状。新增短码写在 `folio --help` 和 `folio config --help`。
+- **接法，以及和轻仪不一样的地方**
+  - `folio` 是和 App 分开的 Swift 可执行文件，同一批源码编出：共用层四个文件加 `Lifecycle.swift` 直接编进 CLI（620 KB → 866 KB，上限 2 MB）。版本与 bundle id 取命令所在的 .app（`Product.bundle`）；开关的偏好域 App 用 `.standard`，命令用 `UserDefaults(suiteName: <所在 .app 的 bundle id>)`。
+  - **App 里没有接 `AppLifecycleCLI.follow`。** 共用层自己写 `session.json`（可迁移的阅读设置就在这个文件里），而本产品的规则是这个文件同一时刻只有一个写入者。所以 `config import --yes` 和真正拨开关的 `config sync … --yes`：窗口开着时整条命令经 `requests/` 交给窗口，在窗口进程里用窗口自己的 `AppConfiguration` 执行（开关、状态句、编辑器当场跟着变），执行完窗口立刻重读五项阅读设置并存盘；窗口没开时命令拿会话锁自己执行。只读的（`config status`、`config export`、`update check`、`--dry-run`、没带 `--yes` 的调用）不拿锁、不写任何东西。`applied_by` 写明走的哪条路。
+  - 窗口执行这条命令期间，窗口自己的每次保存先从文件取五项阅读设置再写（`persist` 里 `lifecycleRunning` 那一行）。原因见下面「对照」。
+  - 隔离：`TL_MARKDOWN_STATE_DIR` 和 `APP_LIFECYCLE_SUPPORT_DIR` 必须同时设或同时不设，只设一半时 `config` 子命令拒绝（`isolation_incomplete`），窗口也不接「配置」一组。隔离运行的开关放在 `FOLIO_PREFERENCES_SUITE` 指的 `test.tianli.folio.` 开头的具名偏好域。
+- **做的过程里发现并处理的两件事**
+  - 共用层的导入是「整组替换」：文件里没写的可迁移键会被从 `session.json` 删掉。`EditorSettings` 的字号、宽度、启动时恢复、图片目录是必需字段，少一个整份会话记录就解不出来（下次启动会被另存为 `session-unreadable-*.json`，标签和草稿不再恢复）。手测时用只含两项的文件导入，记录真的变成了读不出的 92 字节。处理：命令在交给共用层之前先核对（类型、设置面板的范围、必需项齐全），不合就整份拒绝（`import_rejected`），什么都不写；无窗口时另有兜底，共用层写完后记录解不出就恢复原字节并报失败。**窗口里「导入配置…」按钮本身没有这层核对**（原有行为，没改；改它要动共用窗口或 `Models.swift`）：给它一份不完整的文件，按源码推断窗口会提示「配置恢复未完成」并在下一次保存时把原设置写回，这条没有在按钮上实测。
+  - 第一版自检真实失败过一次：窗口执行 `config sync on` 时等了满 30 秒报 `sync_incomplete`，而同步其实已经完成。原因是请求目录的事件回调本身是主队列上的块，在里面转 run loop 等不到共用层经 `DispatchQueue.main.async` 送回的完成回调。改成从 run-loop 块里执行（`RunLoop.main.perform`），一次一条、按到达顺序；等了超过 5 秒才轮到的命令不执行并回报。
+- **验证**
+  - `bash scripts/test.sh --core-only` 退出 0，PASS 由 176 条变 188 条。`Tests/StoreTests.swift` 用真 `EditorStore` 验窗口一侧（标签三个动作、交来的配置命令、没接「配置与更新」的窗口、没人接的命令、旧窗口的应答）；`scripts/accept/cli_cases.py` 用真二进制验文件一侧（`lifecycle_and_tabs`：帮助、只读命令不写任何文件连锁文件都不建、十种坏导入逐字节不变、导入后其余记录原样且权限 0600、同步开关与云端副本、背靠背、持锁不应答 5 秒内放弃、旧窗口应答判为 `window_outdated`、标签三个动作的各种分支、记录损坏时都不重写）。
+  - `scripts/accept/recovery.sh`、`functionality.sh`、`privacy.sh` 通过（`SOP_OUT_DIR` 指到临时目录跑的，没有改 `perf/acceptance` 里 Chapter 的证据）。原有的 `--ui-self-test`（含重新载入、关闭标签）在试构建的隔离副本上 14 项通过。
+  - **带窗口的自检** `bash scripts/accept/lifecycle.sh [某个 .app]`：`--lifecycle-self-test` 让构建产物的隔离副本（`sim_lane.uielement_copy`，另一个 bundle id，LSUIElement）充当运行中的窗口，激活策略 `.prohibited`，不上屏、不进 Dock；用的是 `TLMarkdownApp.init` 里同一段接线和真的 `EditorStore`，共用窗口离屏构造；子进程经名为 `folio` 的软链跑包里真的命令；每次判定都另起进程读回（`config status`、`settings`、`session`），外加云端那份文件。52 项，含三轮开关、四轮「两条命令背靠背」（on>off、off>on，从第二条返回起 1.5 秒内每次读回都必须是第二条的值）、窗口自己的开关与命令互读、导入、两次导入背靠背、五种坏导入、同步开着时导入、标签三个动作，以及本人真实的会话记录、偏好文件、同步目录前后只 stat 比对未变。导入那几段期间窗口每毫秒存一次盘，模拟正在打字。最终这版在试构建、装机包的副本、默认构建产物上各跑一次，3 次全过（加每毫秒存盘那段负载之前的一版另过 1 次）；结果在 `build/accept/lifecycle/`（`lifecycle.json`、`lifecycle-installed-123.json`、离屏渲染 `lifecycle-window.png`）。
+  - **对照（分辨力）**：把「执行后重读设置」和「执行期间存盘先取文件里的设置」两处去掉另编一版，同一套自检 5 项失败（`window_takes_imported_settings`、`import_survives_the_windows_own_saves`、`back_to_back_imports_keep_the_last` 等），另起进程读到的字号退回导入前的 18；结果留在 `build/accept/lifecycle/lifecycle-counter-experiment.json`，那一版构建已删。没加每毫秒存盘之前，去掉第一处保护自检照过，所以这段负载是分辨力所在。背靠背开关这一段在本产品的接法下没有做对照：窗口是开关的唯一写入方，命令在窗口里串行执行。
+- **装机**
+  - 提交 `0bb5776` 后用产品既有入口 `python3 scripts/verify-install.py`（`build.sh --install`）装为 **1.2.1 (123)**，receipt 与当前构建输入匹配。签名装前装后都是 ad-hoc（`spctl -a -vv`：rejected；没有公证票据），等级没变。旧包在 `~/.Trash/folio-previous-1791354911/Folio.app`。装前装后 Folio 都没有在运行，没有启动它。
+  - 装前装后 `defaults export cyou.tianli.TLMarkdown` 逐字节相同；`~/Library/Application Support/TLMarkdown` 六个文件的 SHA256、大小、修改时间、权限相同；`TianliApps/Configuration/cyou.tianli.TLMarkdown` 与 iCloud Drive 里的配置文件装前装后都不存在。与当天最早那次留底相比只有 `md_index.db-shm` 的修改时间变了（读索引的只读命令都会，内容哈希没变）。
+  - 原有命令装前装后对照：`status / config / settings / recent / roots / stats / session` 的 `--json` 没有少字段，除构建号外取值相同，退出码相同；`folio settings --no-such --json` 仍退出 2。帮助里只有这轮有意改写的几行不同。
+- **装机版上的实机证据**
+  - 对本人真实状态只跑了只读的：`folio config status --json`（开关为关、五个可迁移项）、`folio config sync on --dry-run --json`（`would_change: true`，没改）、`folio config export -o <临时文件>`（导出的字号 19，与 `folio status` 读到的一致）、`folio update check --json`（联网读到产品主页的发行记录：当前 1.2.1 (123)，此渠道 1.2.0 (68)，`ahead_of_channel`）。这几条之后会话目录没有多出锁文件，`session.json` 与偏好未变。
+  - 错误参数：`folio config status --no-such --json`、`folio update bogus --json`、`folio tabs close --json` 都退出 2、`usage: true`；`folio config import <文件> --json`（没带 `--yes`）退出 2、`confirmation_required`、没写任何东西。
+  - 装机版的二进制在隔离状态里把 `lifecycle_and_tabs()` 整段和 `lifecycle.sh /Applications/Folio.app` 各跑了一遍，都过。
+- **没有验证的**
+  - **没有对本人真实的会话记录、偏好和 iCloud Drive 跑过任何一条写命令**（`config import --yes`、`config sync on|off --yes`、`tabs …`）。这几条在真实状态上没有实机证据。
+  - 真实 iCloud Drive、真实偏好域（App 用 `.standard`、命令用 `suiteName` 读同一个域）这条路径没有实测；自检用的是具名测试域和临时「云」目录。
+  - 上屏的真窗口加真命令没有实跑；自检的窗口从未显示，没有真人点开关。本人可以开着 Folio 跑一次 `folio config sync on --dry-run`，想真试再 `folio config sync on --yes` / `off --yes` 看窗口里的勾跟不跟（这会写 iCloud Drive）。
+  - `update check` 只有上面那一次真实联网结果，没有离线用例；「有新版」分支没有实机证据（现在本机比渠道新）。
+  - 没测性能（约定不测）；CLI 现在链接 AppKit，试编时粗看启动多约 1 毫秒，那是并行负载下的读数，不能当证据。
+- **界面行为有三处跟着变了**
+  - 提示条「重新载入」：文件读不出时，以前会先多出一个「重新载入前的修改副本」标签再报错，现在只报错、什么都不加（原标签里的修改仍在）。
+  - 带 `TL_MARKDOWN_STATE_DIR` 但没设 `APP_LIFECYCLE_SUPPORT_DIR` 的普通启动（比如诊断启动），「配置与更新」窗口不再有「配置」一组：以前这种启动会把隔离目录里的设置接到本人的偏好和 iCloud 上。
+  - 关闭标签、恢复草稿的收尾改成调 `SessionTabs` 里的同一段，行为按原样保留；`StoreTests`、`WatcherTests`、`RecoveryAcceptance`、`--ui-self-test` 都过。
+- **已知边界与留给后面的**
+  - 窗口没开时，`config sync on` 和同步开着时的 `config import` 在等 iCloud 那一次同步期间一直持有会话锁（通常不到一秒，最长 30 秒）。这期间启动的 Folio 只等 0.3 秒拿不到锁，之后的写命令会被 `window_outdated` 拒绝，直到重开 Folio；重叠的那一小段里窗口的保存和命令的写入仍可能互相覆盖。没有实测。
+  - 不是命令触发的后台同步（另一台设备改了设置、本机下载时）正好碰上窗口存盘，旧设置可能被写回：这是原有的情况，这轮只保护了「命令在窗口里执行」的那一段。
+  - `scripts/accept/lifecycle.sh` 没有登记进 `sop.accept`（这轮 `project.yaml` 只许动 `sop.agent_cli`），`build.sh` 的装机门也不跑它，回归不会被 Chapter 自动发现；要登记或接进装机门由本人定。
+  - 窗口换成总部现版（另三份副本刷新）没做，按约定要本人先定。现在窗口标题仍是「Folio · 配置与更新」，开关是复选框；自检两种控件都认。
+  - 暂缺 2 项按约定留着：「升级到新版 / 下载新版」（命令不做静默安装）、「iCloud 配置同步状态那句话」（由运行中的 App 持有）。手机端暂缺 2 项：读不到手机上装的版本、移动版尚无发行渠道。
+  - Mac mini 上的装机没有动。
+- **Chapter 自查**：`chapter sop accept --app folio-mac --check agent_cli` → 登记与帮助无问题，暂缺 2 项；`chapter agent-cli --json --app folio-mac` → `status: missing`，62 项 = 命令 43、human 17、missing 2，`problems` 为空（上一轮是 59 项、暂缺 8）。`--app folio`（手机端）→ 17 项 = 命令 9、human 6、missing 2，`problems` 为空（上一轮暂缺 3；「重新载入并保留当前草稿」现在对应 `folio tabs`）。
+- **提交**：`0bb5776`（命令、窗口通道、自检、测试、登记、文档）与本节加装机回执的提交；未推送。`perf/acceptance/**` 等其他会话留下的未提交文件没有动。

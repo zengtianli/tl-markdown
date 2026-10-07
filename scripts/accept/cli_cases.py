@@ -365,9 +365,21 @@ def lifecycle_and_tabs():
         lifecycle_and_tabs_cases(suite)
     finally:
         subprocess.run(['/usr/bin/defaults', 'delete', suite], capture_output=True)
-        shell = Path.home() / 'Library/Preferences' / (suite + '.plist')
-        if shell.is_file() and shell.stat().st_size <= 42:      # the empty shell the daemon may leave for a removed domain
+        forget_empty_preferences(suite)
+
+
+def forget_empty_preferences(suite, patience=3.0):
+    """The preferences daemon may write an empty 42-byte shell for a removed domain a moment after the last process
+    that used it has gone. Wait for that moment, then remove the shell (never a file with anything in it)."""
+    shell = Path.home() / 'Library/Preferences' / (suite + '.plist')
+    deadline, quiet = time.monotonic() + patience, 0
+    while time.monotonic() < deadline and quiet < 10:
+        if shell.is_file() and shell.stat().st_size <= 42:
             shell.unlink()
+            quiet = 0
+        else:
+            quiet += 1
+        time.sleep(0.1)
 
 
 def lifecycle_and_tabs_cases(suite):
