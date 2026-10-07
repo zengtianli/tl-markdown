@@ -447,6 +447,25 @@
         "9d33af3fdbb97cebea40f46b0390c8eab53f789a"
       ],
       "checked": "2026-10-05"
+    },
+    "1.2.1 (128)": {
+      "release_source_sha256": "164b1e0fb7a8e6efd342ab6401f96c3a72d0c32741ff394ea989e3e78801169d",
+      "release_sha256": "e2e3f477207a4b305f32abe2b3b1c98ade995f52d5ac51489bc6c9f7f6c2fa72",
+      "decided_by": "owner",
+      "decision": "本人 2026-10-05 晚：「录频就用原来都好了」。录像过期不重录，沿用原录像，差异照实写明。",
+      "reason": "1.2.1 (89) 之后界面源码有五次提交，都不改变三段录像和首图拍到的画面：762efff 把侧栏大纲的标题解析原样移到与 folio outline 共用的一处（同一正则与代码围栏规则）；61bfa83 设置面板与「放大字号／缩小字号」改读共用常量（文字与取值范围不变），最近文件排序改走共用函数；0bb5776 加 folio 命令与窗口之间的会话请求，关闭、恢复、重新载入标签的规则移到共用一处（关闭后回到上一个标签或欢迎页、写入最近记录、提示文字均不变）；129ea99 重排独立的「配置与更新」窗口（标题改为「Folio 设置」）；fe37ed1 加 folio update install 与同步说明。Editor/、Resources/、Info.plist、icon/ 无改动。三段所示的打开渲染与大纲、全部替换、保存后重开在 1.2.1 (128) 上按原样成立。画面仍录于 1.0：侧栏为旧版「侧栏 最近文件｜大纲」，1.2 起为「最近｜大纲｜搜索」（5c8251b），这处差异自 1.2.0 起已写明并在页面标注，本次没有新增画面差异。",
+      "hero_note": "1.2 起侧栏另有「搜索」标签",
+      "known_difference": "open 段第 3 镜与 folio-editor.png 拍到的是旧侧栏分段控件；要消除须重录该镜头与这张截图。1.2.1 的「配置与更新」窗口与 folio 命令未在录像中出现。",
+      "tests": "发版会话 2026-10-07 在从发行 ZIP 解压出的 Folio.app 上现跑：bash scripts/test.sh --main-editor（主编辑区 WKWebView）与 python3 scripts/test_file_open.py（隔离的 LaunchServices 文件打开）均退出 0，build/history-tests-1.2.1-128/proof.json 绑定本发行包与源码指纹。本次复核回读了 proof 与两份日志的 sha256，没有重跑。「全部替换」所用系统查找条无自动测试；(89)→(128) 之间 BackendClient.swift 只改了大纲解析。",
+      "review": "对照 1.2.1 (89)→(128)（9d33af3..fe37ed1）的 Sources/Editor/Resources/Info.plist/icon/xcodeproj 提交逐个读 diff，核对与三段录像的关系（2026-10-08 凌晨，只读）；没有抽视频帧、没有启动 App、没有重录。",
+      "reviewed_commits": [
+        "762efffc00ae26de79137e8feb44d45ea828c1a4",
+        "61bfa8314e85e47161af55c928099964c479154f",
+        "0bb5776dc900b45ae7ccd60a220597c7448e99ae",
+        "129ea99909cba3f85c7b188a058be25b18d995ee",
+        "fe37ed16ca1feb94db777bcc327fa7293dd92b99"
+      ],
+      "checked": "2026-10-08"
     }
   }
 }
