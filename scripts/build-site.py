@@ -312,12 +312,13 @@ def main():
         page = (ROOT / "site/index.html").read_text()
         for key, value in values.items():
             page = page.replace(f"@@{key}@@", value)
+        measured = json.loads((ROOT / "perf/lightweight.json").read_text())
+        block = perf_block.standalone_section(ROOT / "perf/lightweight.json", measured["version"].split(" ")[0], "#476d59")
         if args.keep_history:
-            block = perf_block.standalone_section(ROOT / "perf/lightweight.json", measured["version"].split(" ")[0], "#476d59")
             block = '<p class="wrap" role="note">' + escape(notice) + '</p>' + block
             block = block.replace("数字来自所列设备实测，版本更新后重新测量。", "数字来自上述旧版本原始实测，本次仅作历史参考。")
-            page, count = re.subn(r'<section class="lightweight wrap".*?</section>', lambda _: block, page, count=1, flags=re.S)
-            assert count == 1, "Historical performance block must replace the exact original section"
+        page, count = re.subn(r'<section class="lightweight wrap".*?</section>', lambda _: block, page, count=1, flags=re.S)
+        assert count == 1, "Shared performance block must replace the exact original section"
         (stage / "index.html").write_text(page)
         privacy = '''<p>Folio 是本地 Markdown 编辑器。无需注册账号，也不内置文档上传、广告或分析追踪服务。</p><h2>文件与恢复记录</h2><p>文档保存在你选择的位置。最近文件、设置和恢复草稿位于本机 <code>~/Library/Application Support/TLMarkdown/</code>。清空最近记录不会删除原文件；卸载应用前，请先把需要的未命名草稿另存为。</p><h2>什么时候会连接网络？</h2><p>文档中含有网络图片时，编辑器可能访问该图片的原站点，原站点可能收到 IP 地址等通常的网络请求信息。点击外部链接或产品帮助链接，会由系统浏览器打开相应网站。Folio 不代管这些网站的数据政策。</p><p>在「配置与更新…」里点「检查更新…」（或运行 <code>folio update check</code>）时，Folio 读取本网站的发行记录；升级时从本网站下载安装包。只在你操作时发生，不在后台自动检查。</p><p>「使用 iCloud 记住配置」默认关闭。打开后，字体、字号、正文宽度、启动时恢复和图片文件夹名这几项阅读设置保存到你自己的 iCloud Drive，由 Apple 的 iCloud 服务在你的设备之间同步；文档、恢复草稿、索引文件夹和索引不在其中。</p><p>将文档存入 iCloud 或其他同步文件夹时，同步由对应的服务负责；Folio 没有另建一份云端文档库。</p><h2>这份产品网站</h2><p>本网站经 Cloudflare 提供服务，并加载 Cloudflare Web Analytics，用于统计网页访问与页面性能。统计发生在网站页面，不读取 Folio 应用中的本地文档。详见 <a href="https://developers.cloudflare.com/web-analytics/about/">Cloudflare Web Analytics 官方说明</a>。</p><p>视频由本站提供，访问服务器可能保留常规访问日志。维护者联系方式见 <a href="https://github.com/zengtianli">GitHub 个人主页</a>。</p>'''
         (stage / "privacy.html").write_text(document_page("隐私说明", privacy))

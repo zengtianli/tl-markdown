@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#f7f4ee"><link rel="canonical" href="https://app-mac-folio.tianli.cyou/">
   <link rel="icon" type="image/png" href="images/icon.png"><link rel="stylesheet" href="style.css">
   <meta property="og:title" content="Folio — 打开一页，继续写下去"><meta property="og:description" content="在 Mac 上，把注意力留给文字。本地 Markdown，即时渲染，自动保存。">
+  <meta property="og:url" content="https://app-mac-folio.tianli.cyou/">
   <meta property="og:image" content="https://app-mac-folio.tianli.cyou/media/folio-editor.png">
 </head>
 <body>
@@ -22,7 +23,7 @@
         <h1>打开一页。<br><em>继续写下去。</em></h1>
         <p class="lede">笔记、想法和下一篇文章，都从一份 Markdown 开始。Folio 让你直接阅读、直接修改，文字始终保存在自己的文件里。</p>
         <div class="actions"><a class="button primary" href="@@DOWNLOAD_URL@@" download>下载 Folio <span aria-hidden="true">↓</span></a><a class="text-link" href="#demo">看看怎么用 <span aria-hidden="true">↘</span></a></div>
-        <p class="requirements">macOS @@MIN_MACOS@@ 及以上 · @@CHIP@@<br>v@@VERSION@@ · 安装包 @@SIZE@@（解压后 @@LW_INSTALLED@@）· <a href="#first-open">首次打开说明</a></p>
+        <p class="requirements">macOS @@MIN_MACOS@@ 及以上 · @@CHIP@@<br>v@@VERSION@@ · 安装包 @@SIZE@@（解压后 @@LW_INSTALLED@@）· 免费 Mac 版 · <a href="#first-open">首次打开说明</a></p>
       </div>
       <aside class="side-note" aria-label="产品特点"><span class="note-number">01 /</span><p>想法留在纸上，<br>文件留在本机。</p><div class="note-line"></div><span>MARKDOWN, AT HOME.</span></aside>
       <figure class="hero-shot">@@HERO@@<figcaption><span class="caption-dot"></span> @@HERO_CAPTION@@</figcaption></figure>
@@ -57,12 +58,6 @@
         <article><span class="feature-number">09</span><h3>有没有新版，在应用里就能看</h3><p>在「配置与更新…」里点「检查更新…」，Folio 读取本站的发行记录并告诉你当前版本和最新版本；有新版时给出下载或升级入口，装上新版后配置保留。只在你点的时候检查，不在后台自动联网。</p><span class="feature-tag">1.2.1 新增 / 检查更新</span></article>
       </div>
     </section>
-    <section class="demo-section" id="demo"><div class="wrap section">
-      <div class="section-heading"><p class="eyebrow">看得见的操作</p><h2>从打开，到下一次继续。</h2><p>三个真实窗口片段。每段都可以暂停、拖动和全屏查看。</p></div>
-      <div class="demo-grid">@@VIDEOS@@</div>
-      @@TUTORIAL@@
-      <p class="fineprint">@@CAPTURE_NOTE@@</p>
-    </div></section>
     <section class="section wrap" id="start">
       <div class="section-heading"><p class="eyebrow">第一次使用</p><h2>把 Folio 放进应用程序。</h2><p>下载的是 Mac 应用，无需安装其他运行环境。</p></div>
       <ol class="steps">
@@ -72,6 +67,13 @@
       </ol>
       <aside class="first-open" id="first-open"><div><p class="eyebrow">首次打开</p><h3>当前下载版尚未经过 Apple 公证。</h3></div><div><p>如果系统显示无法验证开发者，先确认文件来自本页且完整。在尝试打开后，进入“系统设置 → 隐私与安全性”，找到 Folio 的阻止记录，按“仍要打开”，再确认“打开”。</p><p>系统若要求密码，使用这台 Mac 的登录密码；Folio 本身不索取 Apple 账户密码。若提示“将损坏你的电脑”或文件已损坏，请停止打开，重新下载并反馈具体信息。</p><a class="text-link" href="https://support.apple.com/zh-cn/102445" target="_blank" rel="noopener noreferrer">查看 Apple 的打开说明 ↗</a></div></aside>
     </section>
+<section class="demo-section" id="demo"><div class="wrap section">
+      <div class="section-heading"><p class="eyebrow">看得见的操作</p><h2>从打开，到下一次继续。</h2><p>三个真实窗口片段。每段都可以暂停、拖动和全屏查看。</p></div>
+      <div class="demo-grid">@@VIDEOS@@</div>
+      @@TUTORIAL@@
+      <p class="fineprint">@@CAPTURE_NOTE@@</p>
+    </div></section>
+
     <section class="section wrap working"><div class="section-heading"><p class="eyebrow">日常用起来</p><h2>手不离键盘，想法不断线。</h2><p>Folio 的快捷键只在应用内使用，不占用全局快捷键。</p></div>
       <dl class="shortcuts"><div><dt>打开文档</dt><dd>⌘ O</dd></div><div><dt>保存文档</dt><dd>⌘ S</dd></div><div><dt>另存为</dt><dd>⌘ ⇧ S</dd></div><div><dt>搜索与替换</dt><dd>⌘ F</dd></div><div><dt>搜索全部笔记</dt><dd>⌘ ⇧ F</dd></div><div><dt>加粗 / 斜体</dt><dd>⌘ B / ⌘ I</dd></div><div><dt>切换源码</dt><dd>⌘ ⇧ /</dd></div></dl>
     </section>
@@ -85,6 +87,6 @@
     </section>
     <section class="download-panel wrap" id="download"><div><p class="eyebrow">让下一页，从这里开始</p><h2>给文字一个<br>舒服的位置。</h2><p>Folio v@@VERSION@@ · 构建 @@BUILD@@<br>macOS @@MIN_MACOS@@ 及以上 · @@CHIP@@</p></div><div class="download-side"><img src="images/icon.png" alt="Folio 应用图标" width="92" height="92"><a class="button primary" href="@@DOWNLOAD_URL@@" download>下载 Folio · @@SIZE@@ <span aria-hidden="true">↓</span></a><p>ZIP 安装包 · 未公证 · <a href="#first-open">首次打开指南</a></p><a href="downloads/SHA256SUMS.txt" class="checksum">下载 SHA-256 校验值</a></div></section>
   </main>
-  <footer class="wrap"><a class="brand" href="#"><img src="images/icon.png" width="30" height="30" alt=""><span>Folio</span></a><p>把注意力留给文字。</p><div><a href="privacy.html">隐私说明</a><a href="changelog.html">版本记录</a><a href="https://github.com/zengtianli" target="_blank" rel="noopener noreferrer">维护者 ↗</a></div></footer>
+  <footer class="wrap"><a class="brand" href="#"><img src="images/icon.png" width="30" height="30" alt=""><span>Folio</span></a><p>把注意力留给文字。</p><div><a href="https://github.com/zengtianli/tl-markdown">查看公开源码</a><a href="privacy.html">隐私说明</a><a href="changelog.html">版本记录</a><a href="https://github.com/zengtianli" target="_blank" rel="noopener noreferrer">维护者 ↗</a></div></footer>
 </body>
 </html>
