@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "built_at": "2026-10-07T18:43:08+08:00",
+  "built_at": "2026-10-10T00:08:22+08:00",
   "artifact": {
     "bundle_id": "cyou.tianli.TLMarkdown",
     "version": "1.2.1",
-    "build": "128",
+    "build": "143",
     "executable": "Contents/MacOS/TLMarkdown",
-    "sha256": "a0fec3e6be1082bca6a47faecc552687a6e074c3fd6a09d640c07ad1fde236af",
+    "sha256": "c3e8b00da53bf11dd5bce92f4c40f9ed81eb980ed326703f1ad7167a306e39c6",
     "icon": {
       "path": "Contents/Resources/AppIcon-a51366356ae2baca.icns",
       "sha256": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
@@ -26,6 +26,7 @@
       "scripts/package-release.py",
       "scripts/test_file_open.py",
       "scripts/install-cli.py",
+      "scripts/release_grade.py",
       "Editor/src/**",
       "Editor/*.mjs",
       "Editor/package*.json",
@@ -35,13 +36,13 @@
       "icon/*.png",
       "icon/*.icns"
     ],
-    "sha256": "b69bb26cf80bcfa82560bb470c79dc62885a77fcf719563e21714298d40c6104",
-    "file_count": 53,
+    "sha256": "8d389e7c20f67113acfdb30ae8bb56597c097ec74f28a7d3fd4f054e7f629063",
+    "file_count": 54,
     "files": {
       "Sources/BackendClient.swift": "b59366e2d30a58217d4f7e42176237c2583c2a251b3dea1d718ed4ed2410aa36",
       "Sources/ViewModel.swift": "a5102a0a0685a5d6069e38c28cc08cb1365613debc57192324ed415ef9d1d1d6",
       "Sources/Shared/AppConfiguration.swift": "ba4d6aa1f52966159e5b74b1ca2878734c61cad80355ace25e19c0f44626947f",
-      "Sources/Shared/AppLifecycleUI.swift": "fb946d731009b3a797427d706473cf8956c60d0a31a6ada287267f3acbdd7c34",
+      "Sources/Shared/AppLifecycleUI.swift": "6107d9e91f26769341722667f7b1d4d85843ff2c03c159f3456541d756328614",
       "Sources/Shared/AppLifecycleCLI.swift": "f33393d954dac50331f4fd650066c6ecea573970d53b50b43e8a86cab708241c",
       "Sources/Shared/AppLifecycle.swift": "3033bc6f87a69a2402ff1cda2c8196a4abd677222582c75d21302a65626c2d89",
       "Sources/GraphEngine.swift": "3730a9b6ceac29cf6f13f3bdc3c541ddb6a883df795ce26d92c7b67455542f20",
@@ -64,13 +65,14 @@
       "Tests/RecoveryAcceptance.swift": "1021f472d49ddd8c49dbe0d03583c9bdf245b4a501bfce3e4220503dbb5badb7",
       "TLMarkdown.xcodeproj/project.pbxproj": "a7b4d76af21f6e37d350839f17cf216d51671aa5a79494029395dae27b5e2707",
       "Info.plist": "bb998848c83de7d9f4b76c64d95804eb72fb94dfb7357936ef85f33d5de9c185",
-      "project.yaml": "b16a6594d9484d14b752ad15e28ddd0dc9ac38c9b3e315c05d679dc6491e8215",
-      "build.sh": "5185048677bee3c4da44293af61aaddc9f70967e6063b23b52bc26573e065c21",
+      "project.yaml": "1c8a5d4ae564dd2082e6bc7713220eb341616e4d9d8ea8310de88d94467d3104",
+      "build.sh": "1d437dd73524cf07a04cf103ed7789a80dcb637360185bb1e179ad3a05d05f02",
       "scripts/build-cli.sh": "c7a95aa520f3f949bf2de10b4fa589183411ca9e27ea7bb9286ee5de84ab6630",
       "scripts/test.sh": "4de1db967c8e5cba02a356e22aa4e32aba9b5f8f504f3cc34e3200e5b5e9c41c",
-      "scripts/package-release.py": "4eb0070927fab0a47bbb1835e60a26c1fad9588cd929dc4c4c1e2f907be5095e",
+      "scripts/package-release.py": "6dd5ab21179166f97b404a1e90513565a462449a123ffc1c3effc86fd540f31b",
       "scripts/test_file_open.py": "75027d2e7a6ac0712991d6d421c3b97954fbe45d48999734895231bdd759a77b",
       "scripts/install-cli.py": "c5dad846dea17c5c6f73a4f50963548b76130972548e93782a29b242ffca6cc5",
+      "scripts/release_grade.py": "d185681d9f4ac1c2d99e93fb0ef3226fd7fbc1eacee29d28c41b2268162f4fc6",
       "Editor/src/mermaid.js": "0f4a9816235fecedc5aa5fb37d87563af1d86448c5d439b486432ac194671587",
       "Editor/src/index.html": "dabc0c0795f5e8f31fa935c0321db088afc6a17d094508b17ed2090b13e33c1f",
       "Editor/src/katex.js": "80d0905931237b3fac93bfe40b133a7c8fa9ddd019662b8501f2d3bd11f87b69",
@@ -92,9 +94,9 @@
       "icon/AppIcon.png": "52bb539a1eeee31fff2112bf68923c4ef02c29050b203465de35b73e3826d2fc",
       "icon/AppIcon.icns": "a51366356ae2bacab1d7e3cdc82132b3b70d90daede6da0f16d3c038dea77693"
     },
-    "commit": "fe37ed16ca1feb94db777bcc327fa7293dd92b99",
+    "commit": "f696845f2f5f44e658e9dc6e167294ef07f3f858",
     "dirty_scope": "组件当前 Git 工作树；跨仓/软链输入的实际内容由 sha256 核验",
-    "dirty": false
+    "dirty": true
   },
   "build_command_sha256": "3f736bae245c01c36f33ad8b23ae5f1a55d53219a0efc6028212614359296fd1"
 }
