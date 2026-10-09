@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "name": "recovery",
+  "app_id": "folio-mac",
+  "command": "bash scripts/accept/recovery.sh",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-09T19:00:06.429006+08:00",
+  "finished_at": "2026-10-09T19:00:42.171327+08:00",
+  "input_sha256": "66178bad796c73cd2a6db7fcf89214b610544e453309b6483b2fafa8ae4aaa52",
+  "log": "perf/acceptance/run-ahh55qq3/recovery.log",
+  "log_sha256": "a7afecb4a317361cb90466e3af3d0627e057798947163b2cfb581fc8d78df965",
+  "summary": "真实 EditorStore/DocumentIO：外部冲突阻止自动保存、重新载入保留本地副本、会话重建恢复草稿、关闭草稿恢复、只读文件保存失败、损坏会话保留及持久化失败提示；无窗口。关闭草稿恢复使用预存会话，不覆盖人工关闭确认对话框。",
+  "detail": {
+    "summary": "真实 EditorStore/DocumentIO：外部冲突阻止自动保存、重新载入保留本地副本、会话重建恢复草稿、关闭草稿恢复、只读文件保存失败、损坏会话保留及持久化失败提示；无窗口。关闭草稿恢复使用预存会话，不覆盖人工关闭确认对话框。",
+    "environment": "isolated synthetic data; no input synthesis"
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/recovery/20261009T190006426409+0800-hherpgbc",
+    "manifest_sha256": "71ddeff5685f5591117d7b4dc70a32f89df3fb67bf997a76900b611f24001973"
+  },
+  "run_id": "run-ahh55qq3",
+  "evidence_file": "perf/acceptance/run-ahh55qq3/recovery.json"
+}

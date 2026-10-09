@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "name": "cli_entry",
+  "app_id": "folio-mac",
+  "command": "~/Dev/.venv/bin/python ~/Apps/chapter/engine/acceptors/cli_entry.py",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-09T18:45:28.652110+08:00",
+  "finished_at": "2026-10-09T18:45:28.748652+08:00",
+  "input_sha256": "ed90c4b453abe5b9800ee78888b8c570794698d90e8f19b8e501bc86201e59ab",
+  "log": "perf/acceptance/run-vth5x4jf/cli_entry.log",
+  "log_sha256": "ee43888a5d3331e39b9a953c0c0021fa1818aa84b4e1d02d8757738ed8f279bd",
+  "summary": "命令行在 App 里：folio — Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
+  "detail": {
+    "summary": "命令行在 App 里：folio — Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
+    "passed": true,
+    "commands": [
+      "folio"
+    ],
+    "app": "cyou.tianli.TLMarkdown",
+    "host_app": "/Applications/Folio.app",
+    "target": "/Applications/Folio.app/Contents/Resources/bin/folio",
+    "inside_app": true,
+    "help_summary": "Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
+    "entries": [
+      {
+        "command": "folio",
+        "link": "~/.local/bin/folio",
+        "target": "/Applications/Folio.app/Contents/Resources/bin/folio",
+        "inside_app": true,
+        "executable": true,
+        "exit_code": 0,
+        "summary": "Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界面共用同一 Swift 引擎：界面给人用，命令给程序和 agent 用。",
+        "error": null
+      }
+    ]
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/cli_entry/20261009T184528651284+0800-gnhg4bsi",
+    "manifest_sha256": "d82505cb2fb6b5e377c34efdf267e3f5ac0f87bf5e61d53601040cfa5efc506f"
+  },
+  "run_id": "run-vth5x4jf",
+  "evidence_file": "perf/acceptance/run-vth5x4jf/cli_entry.json"
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "name": "native_ui",
+  "app_id": "folio-mac",
+  "command": "bash scripts/accept/native_ui.sh",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-09T19:00:06.438985+08:00",
+  "finished_at": "2026-10-09T19:00:13.749553+08:00",
+  "input_sha256": "5ae21b99314d116443a581fda7d4c681022d8db44baf46f0e7f62c3277df1618",
+  "log": "perf/acceptance/run-fed5nm7y/native_ui.log",
+  "log_sha256": "aab0801a2da0e33c27a558cd5180e6ca4fe1cfd32bb44d612a345fa0d9f2ae23",
+  "summary": "进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。",
+  "detail": {
+    "summary": "进程内离屏真实 ContentView / EditorSurface / 设置页：源码切换、标签、刷新与关闭；无索引空态、文件夹增删与更新索引、查询行号、生成目录图谱菜单代码路径及防覆盖；六张截图尺寸/字节断言；全程无可见窗口、激活或输入合成。",
+    "environment": "isolated synthetic data; no input synthesis"
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/native_ui/20261009T190006427125+0800-os272ygv",
+    "manifest_sha256": "370cb533dcf711bf14f15bf04de2e395723f293a57f7cd2d1369c1659410a71d"
+  },
+  "run_id": "run-fed5nm7y",
+  "evidence_file": "perf/acceptance/run-fed5nm7y/native_ui.json"
+}

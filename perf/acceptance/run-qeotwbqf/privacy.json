@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "name": "privacy",
+  "app_id": "folio-mac",
+  "command": "bash scripts/accept/privacy.sh",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-09T19:00:06.429138+08:00",
+  "finished_at": "2026-10-09T19:00:39.815864+08:00",
+  "input_sha256": "66178bad796c73cd2a6db7fcf89214b610544e453309b6483b2fafa8ae4aaa52",
+  "log": "perf/acceptance/run-qeotwbqf/privacy.log",
+  "log_sha256": "4ed2f9732b330463752e087420619df7450a321695911292ced0a268db3c7c4b",
+  "summary": "Runtime privacy checks against production SessionDisk/DocumentIO/NoteIndex/RichEditorBridge: private session permissions and state separation; synthetic SQLite bytes and metadata unchanged by search; invalid image destinations rejected without outside writes; nonpersistent WebKit data store; remote programmatic navigation cancelled; mdasset serves approved image bytes but refuses non-image content and unknown document identities. No real notes, external requests, input synthesis, or packet captu",
+  "detail": {
+    "summary": "Runtime privacy checks against production SessionDisk/DocumentIO/NoteIndex/RichEditorBridge: private session permissions and state separation; synthetic SQLite bytes and metadata unchanged by search; invalid image destinations rejected without outside writes; nonpersistent WebKit data store; remote programmatic navigation cancelled; mdasset serves approved image bytes but refuses non-image content and unknown document identities. No real notes, external requests, input synthesis, or packet capture; explicit external-link opening and full process network behavior are outside this check.",
+    "environment": "isolated synthetic data; no input synthesis"
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/privacy/20261009T190006426895+0800-c0ofybv0",
+    "manifest_sha256": "845b69d01281de985396ce4b0c8a00b14f523cb084aff61e0cbc72894eb0c2cb"
+  },
+  "run_id": "run-qeotwbqf",
+  "evidence_file": "perf/acceptance/run-qeotwbqf/privacy.json"
+}

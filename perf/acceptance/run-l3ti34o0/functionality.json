@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "name": "functionality",
+  "app_id": "folio-mac",
+  "command": "bash scripts/accept/functionality.sh",
+  "exit_code": 0,
+  "status": "passed",
+  "started_at": "2026-10-09T19:00:06.428689+08:00",
+  "finished_at": "2026-10-09T19:01:07.820803+08:00",
+  "input_sha256": "66178bad796c73cd2a6db7fcf89214b610544e453309b6483b2fafa8ae4aaa52",
+  "log": "perf/acceptance/run-l3ti34o0/functionality.log",
+  "log_sha256": "f1e2681a0a690a96ba4e106daafccb980e39d1743c498508d186a3b6ca12b7a0",
+  "summary": "Production EditorStore/DocumentIO/NoteSearchModel: Unicode and spaced .md/.markdown files; exact UTF-8/BOM/CRLF preservation; timed autosave; background-tab save isolation; duplicate open and tab selection; session/recent restoration; real synthetic FTS5 and short-query search; result-open production action. No GUI input or real note index used; renderer/caret behavior belongs to native_ui.",
+  "detail": {
+    "summary": "Production EditorStore/DocumentIO/NoteSearchModel: Unicode and spaced .md/.markdown files; exact UTF-8/BOM/CRLF preservation; timed autosave; background-tab save isolation; duplicate open and tab selection; session/recent restoration; real synthetic FTS5 and short-query search; result-open production action. No GUI input or real note index used; renderer/caret behavior belongs to native_ui.",
+    "environment": "isolated synthetic data; no input synthesis"
+  },
+  "previous_observation": {
+    "path": "perf/acceptance/attempts/functionality/20261009T190006426299+0800-me7xgadk",
+    "manifest_sha256": "4b6ab7a5485b3dfc591afcd2a735592925dc21695287bf3d29d3943a71cc51a6"
+  },
+  "run_id": "run-l3ti34o0",
+  "evidence_file": "perf/acceptance/run-l3ti34o0/functionality.json"
+}

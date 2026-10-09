@@ -1,0 +1,107 @@
+{
+  "summary": "desktop 1440px：HTTP 200，标题「Folio — 打开一页，继续写下去」，无横向溢出，4 张图片全部加载",
+  "passed": true,
+  "url": "https://app-mac-folio.tianli.cyou/",
+  "viewport": [
+    1440,
+    900
+  ],
+  "http_status": 200,
+  "title": "Folio — 打开一页，继续写下去",
+  "inner_width": 1440,
+  "scroll_width": 1440,
+  "horizontal_overflow": false,
+  "images": [
+    {
+      "src": "https://app-mac-folio.tianli.cyou/images/icon.png",
+      "complete": true,
+      "natural_width": 1024,
+      "natural_height": 1024,
+      "rendered_width": 42,
+      "rendered_height": 42,
+      "alt": ""
+    },
+    {
+      "src": "https://app-mac-folio.tianli.cyou/media/folio-editor.png",
+      "complete": true,
+      "natural_width": 1120,
+      "natural_height": 864,
+      "rendered_width": 1200,
+      "rendered_height": 926,
+      "alt": "Folio 真实主编辑窗口：本地文档、最近文件、排版好的标题与表格"
+    },
+    {
+      "src": "https://app-mac-folio.tianli.cyou/images/icon.png",
+      "complete": true,
+      "natural_width": 1024,
+      "natural_height": 1024,
+      "rendered_width": 92,
+      "rendered_height": 92,
+      "alt": "Folio 应用图标"
+    },
+    {
+      "src": "https://app-mac-folio.tianli.cyou/images/icon.png",
+      "complete": true,
+      "natural_width": 1024,
+      "natural_height": 1024,
+      "rendered_width": 30,
+      "rendered_height": 30,
+      "alt": ""
+    }
+  ],
+  "videos": [
+    {
+      "src": "https://app-mac-folio.tianli.cyou/media/open.mp4",
+      "ready_state": 4,
+      "duration": 12.8,
+      "current_time": 0,
+      "paused": true,
+      "error": null,
+      "video_width": 1280,
+      "video_height": 1056,
+      "tracks": 1,
+      "play_error": null
+    },
+    {
+      "src": "https://app-mac-folio.tianli.cyou/media/edit.mp4",
+      "ready_state": 4,
+      "duration": 16.7,
+      "current_time": 0,
+      "paused": true,
+      "error": null,
+      "video_width": 1280,
+      "video_height": 1056,
+      "tracks": 1,
+      "play_error": null
+    },
+    {
+      "src": "https://app-mac-folio.tianli.cyou/media/save.mp4",
+      "ready_state": 4,
+      "duration": 11.2,
+      "current_time": 0,
+      "paused": true,
+      "error": null,
+      "video_width": 1280,
+      "video_height": 1056,
+      "tracks": 1,
+      "play_error": null
+    }
+  ],
+  "failed_requests": [],
+  "retried_requests": [],
+  "requests": 10,
+  "screenshot": "perf/acceptance/homepage_desktop.png",
+  "screenshot_sha256": "424a08ae5042c1888ddebafd73940f24c2dee8c956b600f57bdb508818f3b459",
+  "screenshot_check": "极差 255，标准差 34.8",
+  "browser": {
+    "binary": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "kind": "chrome_headless",
+    "version": "Google Chrome 155.0.8059.40"
+  },
+  "probe_timed_out": false,
+  "method": "隔离无界面浏览器（临时配置、无调试端口、不操作桌面）经本地透传代理加载线上页面，探针读取布局与资源状态",
+  "limits": [
+    "单一桌面视口",
+    "机器判定布局与资源；视觉美观未做人工审阅"
+  ]
+}
