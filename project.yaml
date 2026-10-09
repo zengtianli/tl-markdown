@@ -9,6 +9,9 @@ origin: own
 # 交付流程（SOP）事实：app_sop.py 据此检查轻量/测试、演示素材、推广页、装机与发布，字段说明见
 # ~/Dev/tools/dev/lib/tools/macapp/app_sop.py 的 SOP_KEYS。
 sop:
+  account:
+    mode: none
+    rationale: 本地 Markdown 文档工具，无产品账号；可选配置同步沿系统 Apple ID，文档、草稿和索引保留在本机。
   measure:
     command: ~/Dev/.venv/bin/python scripts/release/measure-sop.py
     outputs:
@@ -158,7 +161,7 @@ sop:
     cli_bytes: 2000000
     installed_growth_bytes: 3000000
     rationale: Swift 索引与静态目录图谱共用系统 SQLite，无新增运行时或常驻任务。
-  test: bash scripts/test.sh --core-only
+  test: python3 scripts/test-core-parallel.py
   accept:
     functionality: bash scripts/accept/functionality.sh
     recovery: bash scripts/accept/recovery.sh
