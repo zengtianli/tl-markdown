@@ -19,7 +19,12 @@ xcrun strip -x "$OUT"
 test "$(stat -f %z "$OUT")" -le 2000000
 # codesign reports "<absolute path>: replacing existing signature" on success;
 # keep that local path out of acceptance logs and show output only on failure.
-if ! sign_output="$(codesign --force --sign - --identifier cyou.tianli.TLMarkdown.cli "$OUT" 2>&1)"; then
+# FOLIO_SIGN_IDENTITY: build.sh --install passes the Developer ID identity (hardened runtime + secure timestamp,
+# what notarization requires of every Mach-O in the bundle). Unset or "-" is an ad hoc trial/test binary.
+SIGN_IDENTITY="${FOLIO_SIGN_IDENTITY:--}"
+SIGN_OPTIONS=()
+[ "$SIGN_IDENTITY" = "-" ] || SIGN_OPTIONS=(--options runtime --timestamp)
+if ! sign_output="$(codesign --force ${SIGN_OPTIONS[@]+"${SIGN_OPTIONS[@]}"} --sign "$SIGN_IDENTITY" --identifier cyou.tianli.TLMarkdown.cli "$OUT" 2>&1)"; then
   echo "$sign_output" >&2; exit 1
 fi
 codesign --verify --strict "$OUT"

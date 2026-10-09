@@ -29,8 +29,30 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold），全 Swift，无外�
 
 ```bash
 cd ~/Apps/folio
-./build.sh          # 构建 + 装 /Applications（Xcode 自动挑，见下）
+./build.sh --build-only   # 只构建（adhoc 试构建，留在 build/，不运行、不安装）
+./build.sh                # = --verify：构建 + 隔离的编辑器与文件打开测试，不安装
+./build.sh --install      # 正式发行等级：Developer ID 签名 → 测试 → 公证 → 装订 → 出 ZIP → 装 /Applications
+python3 scripts/verify-install.py                      # 同上，另写 Chapter 装机回执（源码没变就跳过）
+python3 scripts/release_grade.py install <Folio-…zip>  # 另一台 Mac 装同一份包
+python3 scripts/release_grade.py check /Applications/Folio.app   # 只读：这份 App 是不是发行等级
 ```
+
+## 装机与分发只有一个等级
+
+Folio 是给所有人用的产品，装进 `/Applications` 的和放出去下载的是同一份包，任何一台 Mac 拿到都能直接打开。等级写在
+`scripts/release_grade.py` 一处，`build.sh --install`、`scripts/package-release.py` 和第二台 Mac 的安装都过它：
+
+- 包内每个 Mach-O（主程序和 `Resources/bin/folio`）都是 `Developer ID Application: tianli Zeng (B9LJH93LA4)`，带 hardened runtime 和安全时间戳；
+- 已提交 Apple 公证并通过，票据已装订；`spctl --assess --type execute --verbose=2` 读到 `source=Notarized Developer ID`；
+- 包内没有带设备清单的描述文件。Folio 现在不带描述文件；以后要加 iCloud 容器、钥匙串组这类能力，用 Developer ID 的直接分发描述文件（没有 `ProvisionedDevices`），不用 Apple Development 签名，也不把“把某台设备加进清单”当修法。
+- adhoc 和 Apple Development 签名只算试构建：`--build-only` / `--verify` 的产物留在 `build/`，安装器和打包脚本都拒收。
+
+`--install` 的顺序：命令行与 App 用 Developer ID 签名 → 对签好的包跑编辑器与文件打开测试 → `~/Apps/mackit/scripts/notarize.py` 提交公证并等结果（凭据沿总部 asc 入口，不落在本仓）→ 装订 → `package-release.py` 出 `build/release/Folio-<版本>-<构建>-arm64.zip` 与 `release.json` → `release_grade.py install` 把这份 ZIP 装进 `/Applications`（旧版移进废纸篓）并接上 `~/.local/bin/folio`。公证是把包交给 Apple 的公证服务，不等于对外发布；官网、GitHub Release 仍是另外的发布动作。
+
+- 证书只在有 Developer ID 私钥的 Mac（现在是 Air）的登录钥匙串里。纯 SSH 会话里 `codesign` 报 `errSecInternalComponent`，`--install` 要在那台 Mac 的登录会话里跑（终端，或登录会话里的一次性 LaunchAgent）；没有证书的 Mac 上 `--install` 在构建前就退出，并提示改装现成的 ZIP。
+- 两台 Mac 装同一份 ZIP，不各自构建：主程序 SHA-256 要相同。
+- 构建号是提交数。同一个版本加构建号只对应一份内容：已装的就是这个构建号时 `--install` 拒绝重出，先提交再装。
+- 官网页面的“未公证 / 首次打开”说明还是 adhoc 时期的文案：`scripts/build-site.py` 读到 `release.json` 里签名状态已变会停下，下次发布官网前先改 `site/` 的安装说明，再改那条断言。
 
 **别自己写 `DEVELOPER_DIR=/Applications/Xcode.app/...`。** 本机 `xcode-select` 指向
 CommandLineTools（`xcodebuild` 在那儿直接报 requires Xcode），而盘上可能同时躺着好几个

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Stage a self-contained binary ZIP. Does not install, launch, or publish Folio."""
+"""Stage the release ZIP from the notarized, stapled build. Does not install, launch, or publish Folio.
+
+Only a package at Folio's release grade (scripts/release_grade.py) is staged: an ad hoc or Apple
+Development build is a trial build and is refused.
+"""
 from datetime import datetime, timezone
 from pathlib import Path
 import argparse
@@ -8,7 +12,11 @@ import json
 import plistlib
 import shutil
 import subprocess
+import sys
 import tempfile
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import release_grade
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_APP = ROOT / "build/DerivedData/Build/Products/Release/TLMarkdown.app"
@@ -58,8 +66,10 @@ def main():
     assert stamp["version"] == info["CFBundleShortVersionString"] and stamp["build"] == info["CFBundleVersion"], "Build metadata mismatch"
     run("codesign", "--verify", "--deep", "--strict", str(app))
     assert b"/Users/" not in executable.read_bytes(), "Developer debug paths remain in the distributed executable"
-    signing = run("codesign", "-d", "--verbose=4", str(app))
-    assert "Signature=adhoc" in signing, "This packaging description expects the current adhoc pipeline"
+    try:
+        release_grade.grade(app)
+    except release_grade.BelowGrade as error:
+        raise SystemExit(f"Not a release package: {error}")
     architectures = run("lipo", "-archs", str(executable)).split()
     # No external runtime is used. Inspect load commands instead of assuming a small bundle is portable.
     dependencies = run("otool", "-L", str(executable)).splitlines()[1:]
@@ -90,12 +100,15 @@ def main():
         # Verify the actual ZIP, including the signature, after a clean extraction.
         extracted = Path(temporary) / "unpacked"
         run("ditto", "-x", "-k", str(packed), str(extracted))
-        run("codesign", "--verify", "--deep", "--strict", str(extracted / "Folio.app"))
+        # The grade of what a downloader actually unpacks: signature, hardened runtime, stapled ticket, Gatekeeper.
+        verdict = release_grade.grade(extracted / "Folio.app")
         shutil.copyfile(packed, archive)
     metadata = {"product": "Folio", "bundle_id": info["CFBundleIdentifier"], **stamp,
                 "minimum_macos": info["LSMinimumSystemVersion"], "architectures": architectures,
                 "filename": filename, "bytes": archive.stat().st_size, "sha256": digest(archive),
-                "download_url": f"downloads/{filename}", "signature": "adhoc", "notarized": False,
+                "download_url": f"downloads/{filename}", "signature": "developer-id", "signing_identity": verdict["identity"],
+                "hardened_runtime": True, "notarized": True, "stapled": True, "gatekeeper": verdict["gatekeeper"],
+                "executable_sha256": verdict["executable_sha256"],
                 "verification": {"archive_signature": "passed", "bundled_resources": "passed",
                                  "system_runtime_dependencies": "passed", "gui_final_package": "pending"}}
     (out / "release.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")

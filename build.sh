@@ -7,6 +7,21 @@ case "$MODE" in
   --build-only|--verify|--install) ;;
   *) echo "Usage: bash build.sh [--build-only|--verify|--install]" >&2; exit 2 ;;
 esac
+# --install produces the one release grade (scripts/release_grade.py): Developer ID + hardened runtime +
+# secure timestamp, notarized by Apple, ticket stapled. --build-only / --verify sign ad hoc: trial builds
+# that stay in build/ and that the installer refuses. Fail before the long build when this session cannot sign.
+IDENTITY="Developer ID Application: tianli Zeng (B9LJH93LA4)"
+NOTARIZE="$HOME/Apps/mackit/scripts/notarize.py"
+if [ "$MODE" = "--install" ]; then
+  security find-identity -v -p codesigning 2>/dev/null | grep -Fq "\"$IDENTITY\"" || {
+    echo "build.sh --install 要用 ${IDENTITY} 签名，这台 Mac 的钥匙串里没有。" >&2
+    echo "在有证书的 Mac 的登录会话里跑它；其他 Mac 装它出的同一份包：python3 scripts/release_grade.py install build/release/Folio-<版本>-<构建>-arm64.zip" >&2
+    exit 1; }
+  test -f "$NOTARIZE" || { echo "找不到公证入口 ${NOTARIZE}" >&2; exit 1; }
+  export FOLIO_SIGN_IDENTITY="$IDENTITY"
+else
+  export FOLIO_SIGN_IDENTITY=-
+fi
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
 xcode_env_use macosx
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/scrub_env.sh
@@ -48,6 +63,14 @@ plutil -replace CFBundleIconFile -string "$ICON_NAME" "$APP/Contents/Info.plist"
 VERSION=1
 if git rev-parse --verify HEAD >/dev/null 2>&1; then VERSION="$(git rev-list --count HEAD)"; fi
 plutil -replace CFBundleVersion -string "$VERSION" "$APP/Contents/Info.plist"
+DEST="/Applications/$DISPLAY_NAME.app"
+if [ "$MODE" = "--install" ] && [ -d "$DEST" ]; then
+  # A rebuilt package needs a new build number (the commit count): one version + build is one content.
+  SHORT="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")"
+  if [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$DEST/Contents/Info.plist") ($(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$DEST/Contents/Info.plist"))" = "$SHORT ($VERSION)" ]; then
+    echo "${DEST} 已经是 ${SHORT} (${VERSION})。重出包先提交（构建号 = 提交数），不用同一个构建号装不同内容。" >&2; exit 1
+  fi
+fi
 mkdir -p "$APP/Contents/Resources"
 # ditto merges: clear the generated editor bundle so files a previous build
 # emitted (old hashed fonts) never linger in the app.
@@ -64,7 +87,12 @@ EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/
 LEFT="$(nm -a "$APP/Contents/MacOS/$EXECUTABLE_NAME" | awk 'substr($0,17,1)==" " && substr($0,19,1)==" " { t=substr($0,18,1); if (t ~ /[tdbs]/ || (t=="-" && $0 !~ /radr:\/\/5614542/)) n++ } END { print n+0 }')"
 [ "$LEFT" = 0 ] || { echo "Release executable still has $LEFT local/debug symbols" >&2; exit 1; }
 python3 "$DIR/scripts/package-release.py" --app "$APP" --stamp
-codesign --force --sign - "$APP"
+if [ "$MODE" = "--install" ]; then
+  # Over SSH codesign answers errSecInternalComponent: the private key only unlocks in the login session.
+  codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP"
+else
+  codesign --force --sign - "$APP"
+fi
 codesign --verify --deep --strict "$APP"
 if [ "$MODE" = "--build-only" ]; then
   echo "Built without launching an app: $APP"
@@ -74,18 +102,21 @@ fi
 bash "$DIR/scripts/test.sh" --main-editor "$APP/Contents/Resources"
 python3 "$DIR/scripts/test_file_open.py" "$APP"
 if [ "$MODE" = "--install" ]; then
-  DEST="/Applications/$DISPLAY_NAME.app"
-  if [ -e "$DEST" ]; then
-    ARCHIVE="$HOME/.Trash/folio-previous-$(date +%s)"
-    mkdir -p "$ARCHIVE"
-    mv "$DEST" "$ARCHIVE/"
-  fi
-  ditto "$APP" "$DEST"
-  codesign --verify --deep --strict "$DEST"
-  python3 "$DIR/scripts/install-cli.py" "$DEST"
+  # Apple notarization of the exact tested bundle, then the stapled ticket. Submitting is not publishing.
+  NOTARY="$DIR/build/notary"
+  rm -rf "$NOTARY"; mkdir -p "$NOTARY"
+  ditto -c -k --sequesterRsrc --keepParent "$APP" "$NOTARY/submission.zip"
+  /Users/tianli/Dev/.venv/bin/python3 "$NOTARIZE" "$NOTARY/submission.zip" "$NOTARY/notary.json"
+  xcrun stapler staple "$APP"
+  python3 "$DIR/scripts/release_grade.py" check "$APP" > "$NOTARY/grade.json"
+  # The ZIP is the one package: this Mac installs it, and so does every other Mac.
+  python3 "$DIR/scripts/package-release.py" --app "$APP" > "$NOTARY/package.log"
+  PACKAGE="$DIR/build/release/$(/Users/tianli/Dev/.venv/bin/python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["filename"])' "$DIR/build/release/release.json")"
+  python3 "$DIR/scripts/release_grade.py" install "$PACKAGE"
   /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$DEST/Contents/Info.plist"
   /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$DEST/Contents/Info.plist"
-  echo "Installed: $DEST"
+  echo "Installed: $DEST (Developer ID, notarized, stapled)"
+  echo "Package for the other Mac: $PACKAGE  →  python3 scripts/release_grade.py install <that zip>"
   echo "Existing user sessions were not stopped or restarted. For a source-bound receipt, use python3 scripts/verify-install.py."
 else
   echo "Built: $APP"

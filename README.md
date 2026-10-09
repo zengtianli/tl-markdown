@@ -105,7 +105,7 @@ Chapter 固定验收登记在 `project.yaml`，四项均使用合成数据和独
 
 ## 产品发行
 
-`python3 scripts/package-release.py` 从已签名的构建包生成 `build/release/Folio-<版本>-<构建>-arm64.zip`、`release.json` 和 SHA-256。脚本核包内资源、系统依赖、源码指纹与解压后的签名；不启动、安装或上传应用。当前是 macOS 15+、Apple Silicon、本地签名且未公证的直接下载版。运行包包含第三方许可，不包含开发环境或用户会话。
+`python3 scripts/package-release.py` 从已签名的构建包生成 `build/release/Folio-<版本>-<构建>-arm64.zip`、`release.json` 和 SHA-256。脚本核包内资源、系统依赖、源码指纹与解压后的签名；不启动、安装或上传应用。只接收正式发行等级的包：Developer ID 签名、hardened runtime、Apple 公证并装订（`python3 scripts/release_grade.py check <App>` 可单独核对），adhoc 试构建会被拒绝。当前是 macOS 15+、Apple Silicon 的直接下载版。运行包包含第三方许可，不包含开发环境或用户会话。
 
 主页源在 `site/`，实际版本、大小、下载名与哈希来自发行清单。`python3 scripts/build-site.py --out build/site` 生成可消费的静态包和 `site-manifest.json` 文件白名单；真实截图、视频与字幕缺失或版本不匹配时停止。`--preview` 仅出明确标记的内部预览，不可部署为完成站。源码按随仓许可公开；共享站群只消费白名单内的构建文件，不带入用户状态与录制原片。
 

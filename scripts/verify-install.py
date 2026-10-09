@@ -38,7 +38,7 @@ def main():
     # and listing them (scripts/*.py) made a page-only edit re-open the receipt and bump the build number.
     patterns = ["Sources/**", "CLI/**", "Tests/**", "TLMarkdown.xcodeproj/**", "Info.plist",
                 "project.yaml", "build.sh", "scripts/build-cli.sh", "scripts/test.sh", "scripts/package-release.py",
-                "scripts/test_file_open.py", "scripts/install-cli.py",
+                "scripts/test_file_open.py", "scripts/install-cli.py", "scripts/release_grade.py",
                 "Editor/src/**", "Editor/*.mjs", "Editor/package*.json",
                 "Resources/*.txt", "Resources/*.md", "Resources/graph-view.html", "icon/*.png", "icon/*.icns"]
     command = [str(PYTHON), str(ENGINE / "app_sop.py"), "build-receipt", "--app", "folio-mac",
