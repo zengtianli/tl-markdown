@@ -19,7 +19,7 @@ Mac 应用菜单的「配置与更新…」支持导出、导入编辑器偏好�
 
 编辑区是包内 CodeMirror 网页组件，跑在系统 WebKit 里，多出网页、GPU、网络三个辅助进程；公式（KaTeX）、代码着色与 Mermaid 图表都在文档用到时才加载；外部修改由系统文件事件通知，空闲时不轮询；无服务器与后台任务。
 
-<sub>v1.2.0 (68) · Mac16,12 / Apple M4 / 16 GB / macOS 27.2 · 合成 Markdown 样例 136,703 字节（200 节：标题、中文正文、表格、任务列表、代码块、10 个公式），由 scripts/measure-lightweight.py 生成；未打开用户文档 · 2026-10-03。数字来自所列设备实测，版本更新后重新测量。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
+<sub>v1.2.0 (68) · Mac16,12 / Apple M4 / 16 GB / macOS 27.2 · 合成 Markdown 样例 136,703 字节（200 节：标题、中文正文、表格、任务列表、代码块、10 个公式），由 scripts/measure-lightweight.py 生成；未打开用户文档 · 2026-10-03。数字来自所列版本与设备的测量记录；当前版本与测量范围以本页说明为准。内存口径为 phys_footprint；CPU 为 60 秒采样窗内 CPU 时间 ÷ 墙钟；大小按十进制 MB。原始数据见 [perf/lightweight.json](perf/lightweight.json)。</sub>
 <!-- lightweight:end -->
 
 ## 使用
