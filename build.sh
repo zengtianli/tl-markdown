@@ -58,6 +58,9 @@ if [ -n "$PREBUILT" ]; then
   codesign --verify --deep --strict "$APP"
   python3 "$DIR/scripts/package-release.py" --app "$APP" --adopt
 else
+# A shell profile's Homebrew llvm overrides (CC=/opt/homebrew/opt/llvm/bin/clang …) make Xcode probe a
+# compiler that a Mac without that formula does not have; this build uses Xcode's own toolchain.
+unset CC CXX CPPFLAGS CFLAGS LDFLAGS LIBRARY_PATH
 /opt/homebrew/bin/python3 /Users/tianli/Dev/tools/dev/lib/tools/macapp/check_codingkeys.py "$DIR"
 # Derive every build from catalog's source; an existing ICNS may be stale.
 /Users/tianli/Dev/.venv/bin/python3 - <<'PY'
