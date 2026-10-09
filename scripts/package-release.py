@@ -47,6 +47,8 @@ def main():
     parser.add_argument("--app", type=Path, default=DEFAULT_APP)
     parser.add_argument("--out", type=Path, default=ROOT / "build/release")
     parser.add_argument("--stamp", action="store_true", help="Record build provenance before signing; called by build.sh")
+    parser.add_argument("--adopt", action="store_true", help="Check that a build made on another Mac is this commit, these sources and this build number; called by build.sh")
+    parser.add_argument("--stamp-cli", action="store_true", help="Record the bundled command's digest after its Developer ID signature; called by build.sh")
     args = parser.parse_args()
     app = args.app.resolve()
     info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
@@ -62,6 +64,18 @@ def main():
         stamp_file.write_text(json.dumps(stamp, ensure_ascii=False, indent=2) + "\n")
         return
     stamp = json.loads(stamp_file.read_text())
+    if args.adopt:
+        commit, count = run("git", "-C", str(ROOT), "rev-parse", "HEAD"), run("git", "-C", str(ROOT), "rev-list", "--count", "HEAD")
+        assert stamp["source_commit"] == commit, f"Prebuilt app is commit {stamp['source_commit'][:7]}, this checkout is {commit[:7]}"
+        assert stamp["source_sha256"] == source_digest(), "Prebuilt app was built from different sources than this checkout"
+        assert stamp["build"] == info["CFBundleVersion"] == count, "Prebuilt app's build number is not this checkout's commit count"
+        assert stamp["version"] == info["CFBundleShortVersionString"], "Build metadata mismatch"
+        assert digest(app / "Contents/Resources/bin/folio") == stamp["cli_sha256"], "CLI changed after the build"
+        return
+    if args.stamp_cli:
+        stamp["cli_sha256"] = digest(app / "Contents/Resources/bin/folio")
+        stamp_file.write_text(json.dumps(stamp, ensure_ascii=False, indent=2) + "\n")
+        return
     assert stamp["source_sha256"] == source_digest(), "Sources changed after build; rebuild before packaging"
     assert stamp["version"] == info["CFBundleShortVersionString"] and stamp["build"] == info["CFBundleVersion"], "Build metadata mismatch"
     run("codesign", "--verify", "--deep", "--strict", str(app))

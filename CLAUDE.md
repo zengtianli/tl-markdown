@@ -29,9 +29,10 @@ SwiftUI macOS app（脚手架生成自 macapp_scaffold），全 Swift，无外�
 
 ```bash
 cd ~/Apps/folio
-./build.sh --build-only   # 只构建（adhoc 试构建，留在 build/，不运行、不安装）
+./build.sh --build-only   # 只构建（adhoc 试构建，留在 build/，不运行、不安装），并出 build/trial/TLMarkdown-<版本>-<构建>-trial.zip
 ./build.sh                # = --verify：构建 + 隔离的编辑器与文件打开测试，不安装
 ./build.sh --install      # 正式发行等级：Developer ID 签名 → 测试 → 公证 → 装订 → 出 ZIP → 装 /Applications
+FOLIO_PREBUILT=<trial.zip> ./build.sh --install   # 不重新编译，接手另一台 Mac 的 --build-only 产物，只做签名之后的步骤
 python3 scripts/verify-install.py                      # 同上，另写 Chapter 装机回执（源码没变就跳过）
 python3 scripts/release_grade.py install <Folio-…zip>  # 另一台 Mac 装同一份包
 python3 scripts/release_grade.py check /Applications/Folio.app   # 只读：这份 App 是不是发行等级
@@ -46,6 +47,8 @@ Folio 是给所有人用的产品，装进 `/Applications` 的和放出去下载
 - 已提交 Apple 公证并通过，票据已装订；`spctl --assess --type execute --verbose=2` 读到 `source=Notarized Developer ID`；
 - 包内没有带设备清单的描述文件。Folio 现在不带描述文件；以后要加 iCloud 容器、钥匙串组这类能力，用 Developer ID 的直接分发描述文件（没有 `ProvisionedDevices`），不用 Apple Development 签名，也不把“把某台设备加进清单”当修法。
 - adhoc 和 Apple Development 签名只算试构建：`--build-only` / `--verify` 的产物留在 `build/`，安装器和打包脚本都拒收。
+
+编译不需要证书，默认分两段：在 Mini 上 `./build.sh --build-only`（多核编译），把 `build/trial/` 里的 ZIP 送到有证书的 Mac（`build/` 不随两机同步），那边用 `FOLIO_PREBUILT=<那个 ZIP>` 跑 `--install` 或 `scripts/verify-install.py`。接手时 `package-release.py --adopt` 核对提交、源码指纹和构建号，不是同一份提交和源码就拒绝；有证书的 Mac 也可以不带 `FOLIO_PREBUILT` 自己从头编译。
 
 `--install` 的顺序：命令行与 App 用 Developer ID 签名 → 对签好的包跑编辑器与文件打开测试 → `~/Apps/mackit/scripts/notarize.py` 提交公证并等结果（凭据沿总部 asc 入口，不落在本仓）→ 装订 → `package-release.py` 出 `build/release/Folio-<版本>-<构建>-arm64.zip` 与 `release.json` → `release_grade.py install` 把这份 ZIP 装进 `/Applications`（旧版移进废纸篓）并接上 `~/.local/bin/folio`。公证是把包交给 Apple 的公证服务，不等于对外发布；官网、GitHub Release 仍是另外的发布动作。
 
