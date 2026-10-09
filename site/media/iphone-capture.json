@@ -1,0 +1,64 @@
+{
+  "version": "1.2.1",
+  "build": "2",
+  "device": "Folio Promo 20261009",
+  "device_type": "iPhone-17-Pro",
+  "runtime": "27.0",
+  "executable_sha256": "bde8699a003c7f62ca50683ee23feafd6e717dbaa813330dda3bb8268dca4db8",
+  "recorded_at": "2026-10-09 15:17:42 +0800",
+  "synthetic_input": true,
+  "method": "windowless Simulator; production app with isolated demo session",
+  "presentation": "native pixels retained; only blank side margins added to reach 1600px",
+  "coverage": "three read views; no Files picker, editing, saving or human authorization interaction",
+  "shots": [
+    {
+      "file": "iphone-read.png",
+      "caption": "阅读 Markdown：标题、正文与表格直接排版",
+      "raw_size": [
+        1206,
+        2622
+      ],
+      "presentation_size": [
+        1600,
+        2622
+      ],
+      "raw_sha256": "4e561bf981ff72eab11d95a1b2754c6bfdbf9486b613b66d9df3abb5e9d1e53a",
+      "sha256": "1d195313a43af8b1a41bed5a0358ecc2db51312368508c96f61995837a78d11f",
+      "ready_signal": "os_log",
+      "ready_seconds": 2.697
+    },
+    {
+      "file": "iphone-table.png",
+      "caption": "阅读表格：在手机上查看自己的行程与笔记",
+      "raw_size": [
+        1206,
+        2622
+      ],
+      "presentation_size": [
+        1600,
+        2622
+      ],
+      "raw_sha256": "63227aff290a87ee810ad617166ca54428aa47b6d6355a9d46f7099918df865a",
+      "sha256": "15275bae491782782b068b9bbbce68818727c5cfe92e356c0df30f7d539806d6",
+      "ready_signal": "os_log",
+      "ready_seconds": 1.311
+    },
+    {
+      "file": "iphone-draft.png",
+      "caption": "阅读任务清单与代码，查看未命名文稿",
+      "raw_size": [
+        1206,
+        2622
+      ],
+      "presentation_size": [
+        1600,
+        2622
+      ],
+      "raw_sha256": "63ce933752eff93e735c822b252a2776e1853fbdec0aa04cb29a0af604b688da",
+      "sha256": "31475a86bdbf04c7828d8e004c8fe6d90048aa65e42155f2c7493bbe442e370e",
+      "ready_signal": "os_log",
+      "ready_seconds": 3.076
+    }
+  ],
+  "final_state": "Shutdown"
+}

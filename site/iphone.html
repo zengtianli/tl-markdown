@@ -1,0 +1,59 @@
+<!-- FOLIO IPHONE BEGIN -->
+    <section class="section wrap iphone" id="iphone" aria-labelledby="iphone-title">
+      <div class="iphone-intro">
+        <div class="section-heading">
+          <p class="eyebrow">同一 Folio · iPhone 文稿入口</p>
+          <div class="iphone-brand"><img src="media/iphone-icon.png" width="64" height="64" alt="Folio · 文页 iPhone 应用图标"><span>Folio · 文页</span></div>
+          <h2 id="iphone-title">离开电脑，<br>也能读完这一页。</h2>
+          <p>给手边已有 Markdown 笔记、文章和清单的人。在 iPhone 上从“文件”打开文稿，阅读排版好的内容，进入编辑后继续写，再明确保存到自己的文件。</p>
+          <div class="actions"><a class="button primary" href="#iphone-demo">看 iPhone 导览 <span aria-hidden="true">↘</span></a><a class="text-link" href="#iphone-get">获取状态</a></div>
+          <p class="requirements">iPhone · iOS 18.0 及以上 · 无需 Folio 账号<br>移动版暂未开放获取；暂无可用商店或 TestFlight 入口，价格尚未公布。</p>
+        </div>
+        <aside class="iphone-relation"><p class="eyebrow">和 Mac 怎样配合</p><h3>同一种文稿，按设备分工。</h3><p>两端使用同一 Folio 编辑器与文档读写实现。Mac 负责桌面写作、整库检索与目录图谱；iPhone 负责随身阅读、编辑单份文稿和本地草稿恢复。</p><p>把 .md 文件放在 iCloud 云盘等位置，可以由系统文件服务同步。手机恢复草稿与 Mac 会话各自留在设备上；手机没有整库索引、目录图谱或自动同步草稿的入口。</p></aside>
+      </div>
+      <div class="iphone-shots" aria-label="iPhone 真实界面截图">
+        <figure><a href="media/iphone-read.png"><img src="media/iphone-read.png" width="1600" height="2622" loading="lazy" alt="iPhone Folio 阅读虚构山间书房文稿：标题、段落和表格"></a><figcaption>阅读一页 Markdown，直接看到排版。</figcaption></figure>
+        <figure><a href="media/iphone-table.png"><img src="media/iphone-table.png" width="1600" height="2622" loading="lazy" alt="iPhone Folio 显示虚构周末行程表格与笔记"></a><figcaption>表格、清单与自己的笔记放在同一页。</figcaption></figure>
+        <figure><a href="media/iphone-draft.png"><img src="media/iphone-draft.png" width="1600" height="2622" loading="lazy" alt="iPhone Folio 显示虚构未命名文稿的任务清单与 Swift 代码"></a><figcaption>在未命名文稿里，读清任务与代码。</figcaption></figure>
+      </div>
+      <p class="fineprint">截图版本 @@IPHONE_SHOT_VERSION@@ · @@IPHONE_SHOT_DATE@@ · iPhone 17 Pro / iOS 27.0 模拟器 · 浅色外观 · 虚构演示数据。原图保持设备像素，只在两侧增加留白；点击可查看大图。</p>
+      <div class="features pair iphone-block">
+        <article><span class="feature-number">01</span><h3>从“文件”继续读</h3><p>用“打开 Markdown”选择 UTF-8 文稿。默认进入阅读，标题、表格、清单和代码在原 Folio 编辑器中呈现；移动端文稿上限为 5 MB。</p></article>
+        <article><span class="feature-number">02</span><h3>阅读和编辑按需切换</h3><p>在右上角“文稿操作”中选“编辑文稿”，继续修改正文；编辑时可打开“显示 Markdown 源码”，需要时再切回“阅读文稿”。</p></article>
+        <article><span class="feature-number">03</span><h3>明确保存，也保留草稿</h3><p>修改先保留为本地恢复草稿。已有文件用“保存原文件”；未命名文稿或想保留一个副本时用“另存为…”。外部文件变更时保留修改，再处理冲突。</p></article>
+        <article><span class="feature-number">04</span><h3>权限只交给需要的文件</h3><p>正文通过系统“文件”授权。相对图片另外选择“授权图片目录…”，并选文稿所在目录；外部网络图片被阻断，Folio 不把正文发给服务端。</p></article>
+      </div>
+      <div class="iphone-block" aria-labelledby="iphone-perf-title">
+        <div class="section-heading"><p class="eyebrow">iPhone 端资源 · 模拟器实测</p><h3 id="iphone-perf-title">看清数字，也看清测量范围。</h3><p>以下是已有 Release 模拟器构建的历史实测，截图对应的新构建没有重新测性能。真机与商店包尚未测量。</p></div>
+        <div class="lw-cards">
+          <article><b>@@IPHONE_SIZE@@ MB</b><h3>压缩包体积</h3><p>Release 模拟器 .app 的压缩包；展开后 @@IPHONE_INSTALLED@@ MB。不是商店下载或真机安装体积。</p></article>
+          <article><b>@@IPHONE_MEMORY@@ MB</b><h3>空闲内存 · App 主进程</h3><p>原记录的 memory_mb 值，phys_footprint 采样口径；不含 WebKit 辅助进程与模拟器服务。</p></article>
+          <article><b>@@IPHONE_CPU@@%</b><h3>空闲 CPU · App 主进程</h3><p>静置 45 秒后，测量 60 秒内 CPU 时间相对墙钟时间的平均占用。</p></article>
+          <article><b>@@IPHONE_LAUNCH@@ 秒</b><h3>冷启动到有数据首屏</h3><p>模拟器启动命令发出到应用首屏就绪信号；@@IPHONE_RUNS@@ 次中位数。</p></article>
+        </div>
+        <p class="fineprint">来源：iPhone 组件 perf/lightweight.json · v@@IPHONE_PERF_VERSION@@ · @@IPHONE_PERF_DATE@@ · @@IPHONE_PERF_DEVICE@@ · Xcode 27.0。内存沿原记录单位展示，不把 MiB 换算假定成新的实测。<strong>未测：</strong>新构建 @@IPHONE_SHOT_VERSION@@ 的性能、真机安装体积与运行资源、WebKit 辅助进程及进程合计；原记录只覆盖模拟器 App 主进程，本轮只补页面与素材。</p>
+      </div>
+      <div class="iphone-block" id="iphone-start">
+        <div class="section-heading"><p class="eyebrow">已经装好之后 · 三步上手</p><h3>打开一份文稿，写完再确认保存。</h3><p>下面是当前界面里的真实名称。移动版尚未开放获取，这份教程供已装好本地构建的人使用。</p></div>
+        <ol class="steps">
+          <li><span class="step-number">1</span><div><h3>选择“打开 Markdown”</h3><p>在欢迎页或右上角“文稿操作”中打开它，在系统“文件”里选一份 UTF-8 .md 文稿。看到标题与正文，就是已经读入。</p></div></li>
+          <li><span class="step-number">2</span><div><h3>选择“编辑文稿”</h3><p>右上角“文稿操作”→“编辑文稿”，修改内容。需要源码时打开“显示 Markdown 源码”；修改先保留为本地恢复草稿，需要下一步明确写回文件。</p></div></li>
+          <li><span class="step-number">3</span><div><h3>保存并核对结果</h3><p>选“保存原文件”；未命名文稿选“另存为…”，在“文件”中确定位置。已有文件保存成功时会提示“已安全保存到原文件”；再重新打开同一文件，核对刚才的修改。</p></div></li>
+        </ol>
+      </div>
+      <div class="iphone-block" id="iphone-demo">
+        <div class="section-heading"><p class="eyebrow">真实界面 · 中文导览</p><h3>先看看手机上的这一页。</h3><p>三张离屏截图合成的阅读导览，不是连续操作录屏；不演示文件授权、键盘输入或保存操作。可以暂停、拖动、全屏，并显示中文字幕。</p></div>
+        <figure class="iphone-video"><video width="1440" height="1080" controls playsinline preload="metadata" poster="media/iphone-tour.jpg"><source src="media/iphone-tour.mp4" type="video/mp4"><track kind="captions" src="media/iphone-tour.vtt" srclang="zh" label="中文" default>浏览器不支持播放时，请下载观看。</video><figcaption>离屏截图导览 · 示例数据 · 无音频 · <a class="text-link" href="media/iphone-tour.mp4" download>下载导览 ↓</a></figcaption></figure>
+      </div>
+      <div class="iphone-block faq" aria-labelledby="iphone-faq-title">
+        <div class="section-heading"><p class="eyebrow">iPhone 常见问题</p><h3 id="iphone-faq-title">看提示，保留内容，再处理文件。</h3></div>
+        <details open><summary>手机上的修改会像 Mac 一样自动写回文件吗？</summary><p>手机编辑先保留本地恢复草稿，原文件需要明确选择“保存原文件”。保留草稿不等于文件已经保存。未命名文稿用“另存为…”变成普通 .md 文件；保存后重开同一文件核对内容。</p></details>
+        <details><summary>怎样回到没写完的文稿？能在 Mac 找到手机草稿吗？</summary><p>点左上角“文稿与恢复草稿”，选择对应文稿；“有本地恢复草稿”标明未保存内容。手机沙盒里的草稿不会发给 Mac。想换设备继续，先另存为普通文件，再由 iCloud 云盘等文件服务同步。</p></details>
+        <details><summary>相对图片没有显示怎么办？</summary><p>在“文稿操作”选择“授权图片目录…”，明确选择这份文稿所在的文件夹。正文保存与图片目录是独立授权；把文稿另存到其他目录后需重新授权。网络图片在移动版被阻断，不靠登录来恢复显示。</p></details>
+        <details><summary>保存失败、文件变了，或权限失效怎么办？</summary><p>先用“另存为…”保留当前内容。权限失效时从“文件”重新打开同一文件取得授权；外部修改冲突时可选“重新载入并保留当前草稿”，对照磁盘版本与本地草稿后再决定保留哪份。</p></details>
+        <details><summary>能搜索所有笔记、打开大文档或替代 Word 吗？</summary><p>iPhone 当前只处理单份 UTF-8 Markdown 文稿，大小上限 5 MB。整库索引、检索与目录图谱由 Mac 端承担；移动版不提供 Word 排版、团队协作或独立云端文档库。</p></details>
+        <details><summary>需要账号、联网或额外权限吗？</summary><p>无需 Folio 账号。文稿与恢复草稿留在本机；读写只用系统“文件”授予的权限，图片目录按需单独授权。点击外部链接会用系统打开；iCloud 云盘等文件位置由系统 Apple 账户与对应服务管理。</p></details>
+      </div>
+      <aside class="iphone-get iphone-block" id="iphone-get"><p class="eyebrow">获取与信任</p><h3>移动版暂未开放获取。</h3><p>当前是本地构建，尚未配置可用的 App Store 或 TestFlight 发行渠道；本页不提供安装包或商店按钮，也不承诺价格。页面上方的下载按钮提供 Mac 版。</p><p>“配置与更新”面板显示手机上实际安装包的版本和本地构建渠道，当前没有在线检查新版的按钮。卸载前先把需要的本地草稿另存为普通文件。</p><p>两端同属 Folio 产品，源码许可与维护入口沿用已有公开仓。<a class="text-link" href="https://github.com/zengtianli/tl-markdown">查看公开源码与说明 ↗</a> · <a class="text-link" href="https://github.com/zengtianli/tl-markdown/issues">反馈问题 ↗</a>。反馈时可写设备、iOS 版本与提示文字，请用脱敏样例，不要附私密文稿。</p></aside>
+    </section>
+<!-- FOLIO IPHONE END -->
