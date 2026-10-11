@@ -2,6 +2,8 @@
 
 task_id：`lintel-github-release-downloads-20261011`。本轮仅 Folio 原站点、发行迁移入口、必要回归和本交接；沿 Chapter 的 claims 身份，未新建或释放声明。网站未部署，最终冻结发布由 Lintel 主会话处理。
 
+**最新结果（同日纠正接续）：`ready:true / errors:0`，标准仍为 37。** 两个 Mac 安装按钮均改为对应版本 Release 页；校验仍指向该 Release 已公开的 `SHA256SUMS.txt`。未重复发行上传、未修改 Lintel 标准、未部署。接续使用 Chapter 新身份 `--pid 58641 --session chapter-task:bc68eafdebc943bbb39f56daf2dc4039` 检查写入路径，没有释放声明。
+
 ## 输入核实
 
 - 线上与 Air 原发行目录：Folio 1.2.1 (128)，`Folio-1.2.1-128-arm64.zip`，3,643,010 字节，SHA-256 `e2e3f477207a4b305f32abe2b3b1c98ade995f52d5ac51489bc6c9f7f6c2fa72`。原 ZIP、线上重新下载和 Mini 原站点镜像逐字节哈希一致。
@@ -13,7 +15,7 @@ task_id：`lintel-github-release-downloads-20261011`。本轮仅 Folio 原站点
 ## GitHub Release（已实际公开，门户登记依赖）
 
 - Release：<https://github.com/zengtianli/tl-markdown/releases/tag/v1.2.1-128>。
-- **门户 `download` 应登记的直链**：<https://github.com/zengtianli/tl-markdown/releases/download/v1.2.1-128/Folio-1.2.1-128-arm64.zip>。
+- **正式安装入口（已与当前 `apps-portal show folio-mac --json` 的 `download` 一致）**：<https://github.com/zengtianli/tl-markdown/releases/tag/v1.2.1-128>。ZIP 资产直链仅用于原发行元数据和哈希回读，不再用于站点安装按钮。
 - 校验：<https://github.com/zengtianli/tl-markdown/releases/download/v1.2.1-128/SHA256SUMS.txt>；发行记录：<https://github.com/zengtianli/tl-markdown/releases/download/v1.2.1-128/release.json>。
 - GitHub Release ID `409506586`，`draft:false`，实际公开时间 `2026-10-11T07:38:20Z`。tag 解引用仍是 `fe37ed16ca1feb94db777bcc327fa7293dd92b99`，没有推本轮源码。
 - 原入口 `package-release.py --publish-existing` 验证官网元数据、重新下载 SHA、公开源码提交的完整源码指纹、ZIP 内 Info.plist / FolioBuild.json / CLI SHA 和真实签名；上传后从 GitHub 下载全部三个资产逐字节校验，再将草稿转为公开。
@@ -43,7 +45,9 @@ lintel site check --site apps --product folio-mac --bundle /Users/tianli/Apps/fo
 
 `8fbbb5d20042d8d20947df463ba21ecf23bcb708`：`site: migrate Folio downloads to verified GitHub Release assets`。仅 7 个本轮文件：`scripts/package-release.py`、`scripts/build-site.py`、`site/index.html`、`site/build-iphone.py`、`site/README.md`、`README.md`、`Tests/ReleaseSiteTests.py`；本交接另作为说明提交。未执行源码 push。提交前核逐文件差异、`git diff --check`，提交后回读 7 文件统计与本轮改动一致。
 
-## 静态门禁阻挡（没有绕过）
+接续纠正源码提交 `c1f835b5320c1e3c446f328277b41ed7667e0e42`：`site: send Folio installer buttons to the versioned Release page`。仅 `scripts/build-site.py` 和 `site/index.html` 两文件、3 行替换：按钮取 `release_url`，移除文件下载属性，文字明确为“下载 Folio 安装包”。原发行 JSON 的 ZIP URL / SHA / 字节数以及 GitHub 资产保持不变；未运行发行上传入口或源码 push。
+
+## 前次静态检查记录（接续已消除，不再是当前阻挡）
 
 只读 `lintel site check --site apps --product folio-mac --bundle /Users/tianli/Apps/folio/build/site --json` 返回 `ok:true` 但 **`ready:false / errors:1`**，规范版本 37。完整 JSON 留在 `build/github-downloads-check-20261011.json`。
 
@@ -51,8 +55,14 @@ lintel site check --site apps --product folio-mac --bundle /Users/tianli/Apps/fo
 
 > 公开产品站点目录里的每个安装包（无论页面是否链接）都必须与发行清单的版本/文件名/字节数/SHA256 及 site-manifest 逐项吻合。未通过：https://github.com/zengtianli/tl-markdown/releases/download/v1.2.1-128/Folio-1.2.1-128-arm64.zip（链接不能映射到同源站点产物）、https://github.com/zengtianli/tl-markdown/releases/download/v1.2.1-128/Folio-1.2.1-128-arm64.zip（链接不能映射到同源站点产物）
 
-主会话需让原 Lintel 门禁支持真实 GitHub Release 外部资产，再按上述原 check 入口重验；不能恢复站内镜像或隐藏 ZIP 扩展名来通关。Folio 没有独立 Lintel site ID，其自有域名也是 apps 登记的 `folio-mac` 产品入口，所以沿 `--site apps --product folio-mac --bundle` 检查，无另一个产品部署入口。
+主会话及时纠正正式入口为 `/releases/tag/` 页，本次沿原标准改按钮后检查通过，没有修改或放宽标准。Folio 没有独立 Lintel site ID，其自有域名也是 apps 登记的 `folio-mac` 产品入口，所以沿 `--site apps --product folio-mac --bundle` 检查，无另一个产品部署入口。
 
-另有原有三条 `video.1/2/3.captions_default` warning（中文字幕未声明默认启用，需实际播放确认），没有扩本轮范围处理。门户 `download` 在本轮只读时仍空，真实 URL 如上，应由主会话登记。
+## 接续最终验证
+
+- 按上文原 Mac 构建入口和 `site/build-iphone.py` 顺序重建登记目录 `/Users/tianli/Apps/folio/build/site`，仍为 1.2.1 (128)、`preview:false`、29 文件；无 Folio 安装包，也无站内或备用安装下载。
+- 原只读检查 `lintel site check --site apps --product folio-mac --bundle /Users/tianli/Apps/folio/build/site --json` 退出 0，`ok:true / ready:true / errors:0`，标准版本 37。完整结果在 `build/github-downloads-release-page-check-20261011.json`。
+- 原回归 2 项通过。29 文件 SHA / 字节数逐项验证，两个安装按钮均为 Release 页且没有 `download` 文件属性；全部媒体（含 `capture.json`、iPhone、视频、教程、截图、字幕）与接续前 SHA 完全一致。原本地发行 ZIP 保留。
+- GitHub 只读回读确认仍是 Release ID `409506586`、三个原资产；ZIP digest 仍为 `e2e3f477207a4b305f32abe2b3b1c98ade995f52d5ac51489bc6c9f7f6c2fa72`，3,643,010 字节。没有重新上传或修改已公开发行记录。
+- 仍有原有三条 `video.1/2/3.captions_default` warning（中文字幕未声明默认启用，需实际播放确认），没有扩本轮范围处理。
 
 **网站未发布。** 官网仍是旧站内下载版，本地新站点等待主会话统一冻结、门禁检查和发布。
