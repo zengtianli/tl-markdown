@@ -2,6 +2,7 @@
 """Build Folio's allowlisted product site from an actual binary release and real media."""
 from html import escape
 from html.parser import HTMLParser
+from importlib import import_module
 from pathlib import Path
 from urllib.parse import urlsplit, unquote
 import argparse
@@ -18,6 +19,8 @@ import zipfile
 sys.path.insert(0, str(Path.home() / "Apps/apps-portal/site"))
 import product_facts  # facts.json published with the page for the portal and Chapter
 import perf_block
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+release_tools = import_module("package-release")
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENES = (
@@ -157,6 +160,8 @@ def validate_file_set(root, manifest):
     assert not any(path.is_symlink() for path in paths), "Generated site must not contain symlinks"
     actual = {str(path.relative_to(root)) for path in paths if path.is_file()}
     assert actual == expected, f"Generated files differ from allowlist: extra={sorted(actual - expected)}, missing={sorted(expected - actual)}"
+    assert not any(re.fullmatch(r"(?:Folio|TLMarkdown)-.*\.(?:zip|dmg|pkg)", path.name)
+                   for path in paths), "Installation archives belong only in GitHub Releases"
 
 
 def replace_generated_site(stage, out):
@@ -251,13 +256,13 @@ def main():
     with tempfile.TemporaryDirectory(prefix="folio-site-", dir=out.parent) as temporary:
         stage = Path(temporary) / "site"
         stage.mkdir()
-        for directory in ("images", "downloads", "media"):
+        for directory in ("images", "media"):
             (stage / directory).mkdir()
         shutil.copyfile(ROOT / "icon/AppIcon.png", stage / "images/icon.png")
         shutil.copyfile(ROOT / "site/style.css", stage / "style.css")
-        shutil.copyfile(archive, stage / "downloads" / release["filename"])
-        shutil.copyfile(args.release, stage / "release.json")
-        (stage / "downloads/SHA256SUMS.txt").write_text(f"{release['sha256']}  {release['filename']}\n")
+        # Keep the archive in its original local release directory. Only public metadata is served here.
+        release = release_tools.public_metadata(release)
+        (stage / "release.json").write_text(json.dumps(release, ensure_ascii=False, indent=2) + "\n")
         if media_files:
             for name in media_files:
                 if name != "capture.json":
@@ -296,6 +301,7 @@ def main():
         values = {"VERSION": escape(release["version"]), "BUILD": escape(release["build"]),
                   "MIN_MACOS": escape(release["minimum_macos"]), "CHIP": "Apple 芯片 Mac",
                   "SIZE": f"{release['bytes'] / 1e6:.1f} MB", "DOWNLOAD_URL": escape(release["download_url"], quote=True),
+                  "CHECKSUM_URL": escape(release["checksum_url"], quote=True),
                   "HERO": hero, "HERO_CAPTION": escape(hero_caption), "VIDEOS": "\n".join(videos), "CAPTURE_NOTE": escape(capture_note),
                   "TUTORIAL": '<p><a class="text-link" href="media/tutorial.mp4" download>下载三段完整演示 ↓</a></p>' if "tutorial.mp4" in media_files else '',
                   **lightweight(release, args.preview, args.keep_history),
@@ -323,6 +329,7 @@ def main():
         privacy = '''<p>Folio 是本地 Markdown 编辑器。无需注册账号，也不内置文档上传、广告或分析追踪服务。</p><h2>文件与恢复记录</h2><p>文档保存在你选择的位置。最近文件、设置和恢复草稿位于本机 <code>~/Library/Application Support/TLMarkdown/</code>。清空最近记录不会删除原文件；卸载应用前，请先把需要的未命名草稿另存为。</p><h2>什么时候会连接网络？</h2><p>文档中含有网络图片时，编辑器可能访问该图片的原站点，原站点可能收到 IP 地址等通常的网络请求信息。点击外部链接或产品帮助链接，会由系统浏览器打开相应网站。Folio 不代管这些网站的数据政策。</p><p>在「配置与更新…」里点「检查更新…」（或运行 <code>folio update check</code>）时，Folio 读取本网站的发行记录；升级时从本网站下载安装包。只在你操作时发生，不在后台自动检查。</p><p>「使用 iCloud 记住配置」默认关闭。打开后，字体、字号、正文宽度、启动时恢复和图片文件夹名这几项阅读设置保存到你自己的 iCloud Drive，由 Apple 的 iCloud 服务在你的设备之间同步；文档、恢复草稿、索引文件夹和索引不在其中。</p><p>将文档存入 iCloud 或其他同步文件夹时，同步由对应的服务负责；Folio 没有另建一份云端文档库。</p><h2>这份产品网站</h2><p>本网站经 Cloudflare 提供服务，并加载 Cloudflare Web Analytics，用于统计网页访问与页面性能。统计发生在网站页面，不读取 Folio 应用中的本地文档。详见 <a href="https://developers.cloudflare.com/web-analytics/about/">Cloudflare Web Analytics 官方说明</a>。</p><p>视频由本站提供，访问服务器可能保留常规访问日志。维护者联系方式见 <a href="https://github.com/zengtianli">GitHub 个人主页</a>。</p>'''
         (stage / "privacy.html").write_text(document_page("隐私说明", privacy))
         change = f'''<p>当前下载：Folio {values['VERSION']}，构建 {values['BUILD']}，{values['CHIP']}，macOS {values['MIN_MACOS']} 及以上。</p><h2>1.2.1：配置与更新，命令行补齐</h2><ul><li>应用菜单新增「配置与更新…」：导出、导入阅读设置，可选用 iCloud 在自己的 Mac 之间同步（默认关闭）；「检查更新…」读取本站发行记录，有新版时给出下载或升级入口。</li><li><code>folio</code> 命令新增 status、read、write、outline、open、settings、recent、tabs、config status / export / import / sync、update check / install：界面里能看、能做的事基本都有对应命令，输出可选 <code>--json</code>，失败带原因短码。</li><li>命令改阅读设置、最近记录或标签时，窗口开着由窗口应用并立即显示，窗口没开由命令直接写，两边不会互相覆盖。</li></ul><h2>1.2.0：全部笔记，由 Folio 自己索引</h2><ul><li>设置新增「索引文件夹」与「更新索引」：索引由 Folio 在本机维护，只读取笔记、不修改内容；没有配置时不扫描，建立和搜索都不联网。</li><li>侧栏「搜索」改读 Folio 自己的索引，任何用户添加文件夹后即可使用；点命中行打开文档并跳到该行。</li><li>菜单「文件 → 生成目录图谱…」：为一个文件夹生成离线 <code>知识图谱.html</code>，不覆盖非 Folio 生成的同名文件。</li><li>应用包内附带 <code>folio</code> 命令（index / search / files / stats / graph），与界面共用引擎，只依赖系统 SQLite。</li></ul><h2>1.1.0：侧栏搜索</h2><ul><li>侧栏新增「搜索」（⌘⇧F），跨笔记检索并跳到命中行。</li></ul><h2>1.0.1：更轻、更安静</h2><ul><li>外部修改检测改由系统文件事件通知，空闲时不再每 2 秒轮询；网络卷等无法监听的位置才退回轮询。</li><li>公式（KaTeX）与代码着色改为文档里用到时才加载，编辑器主脚本 1.44 MB → 0.74 MB；去掉重复打包的 KaTeX 和不会用到的字体格式。</li><li>输入时只重算块级结构：编辑器组件基准（无头浏览器）中，1.1 MB 文档单次按键中位 59.9 → 50.9 毫秒。</li><li>文件被移走或删除后再出现时重新比对内容，内容回到原样即解除冲突提示，自动保存不再被卡住。</li><li>安装包 4.4 MB → 2.7 MB（解压后 9.3 MB → 6.7 MB）。</li></ul><h2>这个版本可以做什么</h2><ul><li>在主编辑区阅读并编辑 Markdown，直接显示表格、公式与图表。</li><li>支持源码切换、标题大纲、最近文件、搜索替换及图片插入。</li><li>自动保存已命名文件，并在外部修改冲突时保留本地草稿。</li><li>从应用“帮助”菜单进入产品主页与使用指南。</li></ul><h2>分发说明</h2><p>当前提供直接下载的 ZIP，尚未经过 Apple 公证。首次打开方法见<a href="index.html#first-open">安装指南</a>。应用代码没有在本页开放下载。</p><p><a href="downloads/SHA256SUMS.txt">查看此安装包的 SHA-256</a>。</p>'''
+        change = change.replace('href="downloads/SHA256SUMS.txt"', f'href="{values["CHECKSUM_URL"]}"')
         (stage / "changelog.html").write_text(document_page("版本记录", change))
         validate(stage)
         # sop.release names the deployed copy (build/site/release.json), which is the previous build

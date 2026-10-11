@@ -50,7 +50,11 @@ def main():
         assert sha(base / item["path"]) == item["sha256"], f'Changed base asset: {item["path"]}'
     builder.validate(base)
     release = json.loads((base / "release.json").read_text())
-    assert sha(base / "downloads" / release["filename"]) == release["sha256"]
+    assert release["download_url"] == builder.release_tools.github_assets(release)["download_url"]
+    # The Mac generator no longer mirrors installers. Verify the unchanged original local archive.
+    archives = [path.parent / release["filename"] for path in ROOT.glob("build/release*/release.json")]
+    assert any(path.is_file() and path.stat().st_size == release["bytes"] and sha(path) == release["sha256"]
+               for path in archives), "Original Mac release ZIP is missing or changed"
     perf = json.loads((ROOT / "ios/01-源程序/perf/lightweight.json").read_text())
     capture = json.loads((ROOT / "site/media/iphone-capture.json").read_text())
     launch = next(p for p in perf["speed_gui"] if p["key"] == "first_screen_ready")

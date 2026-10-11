@@ -107,7 +107,9 @@ Chapter 固定验收登记在 `project.yaml`，四项均使用合成数据和独
 
 `python3 scripts/package-release.py` 从已签名的构建包生成 `build/release/Folio-<版本>-<构建>-arm64.zip`、`release.json` 和 SHA-256。脚本核包内资源、系统依赖、源码指纹与解压后的签名；不启动、安装或上传应用。只接收正式发行等级的包：Developer ID 签名、hardened runtime、Apple 公证并装订（`python3 scripts/release_grade.py check <App>` 可单独核对），adhoc 试构建会被拒绝。当前是 macOS 15+、Apple Silicon 的直接下载版。运行包包含第三方许可，不包含开发环境或用户会话。
 
-主页源在 `site/`，实际版本、大小、下载名与哈希来自发行清单。`python3 scripts/build-site.py --out build/site` 生成可消费的静态包和 `site-manifest.json` 文件白名单；真实截图、视频与字幕缺失或版本不匹配时停止。`--preview` 仅出明确标记的内部预览，不可部署为完成站。源码按随仓许可公开；共享站群只消费白名单内的构建文件，不带入用户状态与录制原片。
+主页源在 `site/`，实际版本、大小、下载名与哈希来自发行清单。安装包与 SHA-256 校验值只从 `zengtianli/tl-markdown` 的 GitHub Release 获取，tag 为 `v<版本>-<构建>`；站点不复制安装包，本地发行目录保留原包。`python3 scripts/build-site.py --out build/site` 生成可消费的静态包和 `site-manifest.json` 文件白名单；真实截图、视频与字幕缺失或版本不匹配时停止。`--preview` 仅出明确标记的内部预览，不可部署为完成站。源码按随仓许可公开；共享站群只消费白名单内的构建文件，不带入用户状态与录制原片。
+
+迁移官网已经公开的同字节发行包用 `python3 scripts/package-release.py --publish-existing <原发行目录>/release.json`：现场核官网元数据、下载 SHA、公开源码提交与指纹、包内构建记录和签名，再上传原 ZIP、脱敏 `release.json` 与 `SHA256SUMS.txt`。历史包如为 ad-hoc，发行页保留未公证说明；此入口不构建、重签、公证、安装或部署网站，也不改变新包的发行等级门禁。
 
 合成录制资料与输入在 `docs/demo/`；`python3 scripts/prepare-demo.py` 创建独立状态及带环境变量的演示副本，打印其路径但不启动。仅该副本启用不能成为 key/main 的后台窗口，真实编辑器与文件读写不变；普通应用保持正常窗口行为。实录成片落 `docs/demo/media/`，原片保留 `build/demo/`。详情见 [录制说明](docs/demo/录制说明.md)。
 
