@@ -300,7 +300,7 @@ def main():
                 hero_caption += f"，{reused['hero_note']}"
         values = {"VERSION": escape(release["version"]), "BUILD": escape(release["build"]),
                   "MIN_MACOS": escape(release["minimum_macos"]), "CHIP": "Apple 芯片 Mac",
-                  "SIZE": f"{release['bytes'] / 1e6:.1f} MB", "DOWNLOAD_URL": escape(release["download_url"], quote=True),
+                  "SIZE": f"{release['bytes'] / 1e6:.1f} MB", "DOWNLOAD_URL": escape(release["release_url"], quote=True),
                   "CHECKSUM_URL": escape(release["checksum_url"], quote=True),
                   "HERO": hero, "HERO_CAPTION": escape(hero_caption), "VIDEOS": "\n".join(videos), "CAPTURE_NOTE": escape(capture_note),
                   "TUTORIAL": '<p><a class="text-link" href="media/tutorial.mp4" download>下载三段完整演示 ↓</a></p>' if "tutorial.mp4" in media_files else '',
