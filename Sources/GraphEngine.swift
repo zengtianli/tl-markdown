@@ -204,7 +204,12 @@ enum FolioGraphEngine {
         guard template.components(separatedBy: "__PAYLOAD__").count == 2 else { throw Failure(message: "图谱模板缺少唯一数据入口") }
         let raw = try JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys, .withoutEscapingSlashes])
         let data = String(decoding: raw, as: UTF8.self).replacingOccurrences(of: "<", with: "\\u003c")
+        #if APP_STORE
+        let storeTemplate = template.replacingOccurrences(of: "双击同目录的知识图谱.command，或在终端执行 folio graph 后更新。", with: "在 Folio 的文件菜单中重新选择本目录生成图谱，即可更新快照。")
+        let html = storeTemplate.replacingOccurrences(of: "__PAYLOAD__", with: data).replacingOccurrences(of: "<head>", with: "<head>\n" + marker)
+        #else
         let html = template.replacingOccurrences(of: "__PAYLOAD__", with: data).replacingOccurrences(of: "<head>", with: "<head>\n" + marker)
+        #endif
         guard !cancelled() else { throw CancellationError() }
         // Recheck immediately before replacement. Temporary names are exclusive,
         // unpredictable and owned by this operation, never an existing .tmp file.
@@ -240,6 +245,14 @@ enum FolioGraphEngine {
     /// Walk from the filesystem root with O_NOFOLLOW on every component. Reads
     /// through a symlinked ancestor are rejected as well as a symlink leaf.
     private static func descriptor(_ url: URL, directory: Bool = false) throws -> Int32 {
+        #if APP_STORE
+        // A folder grant permits traversing its parents, not opening each parent for reading.
+        // Open the granted absolute path atomically; retain O_NOFOLLOW on the final component.
+        // Scanner still rejects symlink entries; Sandbox denies escapes outside the grant.
+        let fd = open(lexical(url).path, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC | (directory ? O_DIRECTORY : 0))
+        guard fd >= 0 else { throw Failure(message: "请允许这个文件夹；图谱不读取未授权目录或软链") }
+        return fd
+        #else
         var current = open("/", O_RDONLY | O_DIRECTORY | O_CLOEXEC)
         guard current >= 0 else { throw Failure(message: "无法读取文件系统根目录") }
         let parts = lexical(url).pathComponents.filter { $0 != "/" }
@@ -250,6 +263,7 @@ enum FolioGraphEngine {
             current = next
         }
         return current
+        #endif
     }
     private static func safeInfo(_ url: URL) throws -> stat {
         let fd = try descriptor(url); defer { close(fd) }

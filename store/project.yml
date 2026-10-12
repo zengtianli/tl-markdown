@@ -1,0 +1,100 @@
+name: Folio
+options:
+  deploymentTarget:
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.2.1"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: B9LJH93LA4
+targets:
+  Folio:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: ../Sources
+        excludes:
+          - Shared/AppLifecycle.swift
+          - Shared/AppLifecycleUI.swift
+          - Shared/AppLifecycleCLI.swift
+      - path: Assets.xcassets
+      - path: Generated/Editor
+        type: folder
+        buildPhase: resources
+      - path: Generated/THIRD-PARTY-NOTICES.txt
+        buildPhase: resources
+      - path: ../Resources/欢迎使用.md
+        buildPhase: resources
+      - path: ../Resources/graph-view.html
+        buildPhase: resources
+    preBuildScripts:
+      - name: Prepare local editor resources
+        script: /bin/bash "$SRCROOT/build-editor.sh" && /bin/bash "$SRCROOT/check.sh"
+        basedOnDependencyAnalysis: false
+    dependencies:
+      - sdk: AppKit.framework
+      - sdk: SwiftUI.framework
+      - sdk: WebKit.framework
+      - sdk: UniformTypeIdentifiers.framework
+      - sdk: ImageIO.framework
+      - sdk: libsqlite3.tbd
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: cyou.tianli.TLMarkdown
+        PRODUCT_NAME: Folio
+        EXECUTABLE_NAME: TLMarkdown
+        ARCHS: arm64
+        ENABLE_HARDENED_RUNTIME: YES
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: APP_STORE APP_LIFECYCLE_KVS
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        DEAD_CODE_STRIPPING: YES
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDevelopmentRegion: zh_CN
+        CFBundleDocumentTypes:
+          - CFBundleTypeExtensions: [md, markdown]
+            CFBundleTypeName: Markdown document
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [net.daringfireball.markdown, public.plain-text]
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleIconFile: AppIcon
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: TLMarkdown
+        CFBundleDisplayName: Folio
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSApplicationCategoryType: public.app-category.productivity
+        NSHumanReadableCopyright: Folio · Tianli Zeng
+        NSPrincipalClass: NSApplication
+        ITSAppUsesNonExemptEncryption: false
+        UTImportedTypeDeclarations:
+          - UTTypeConformsTo: [public.plain-text]
+            UTTypeDescription: Markdown document
+            UTTypeIdentifier: net.daringfireball.markdown
+            UTTypeTagSpecification:
+              public.filename-extension: [md, markdown]
+              public.mime-type: text/markdown
+    entitlements:
+      path: Folio.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.files.user-selected.read-write: true
+        com.apple.security.files.bookmarks.app-scope: true
+        com.apple.security.network.client: true
+        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
+schemes:
+  Folio:
+    build:
+      targets:
+        Folio: all
+    archive:
+      config: Release

@@ -2,13 +2,70 @@ import SwiftUI
 import WebKit
 import UniformTypeIdentifiers
 
+#if APP_STORE
+/// Runs before SwiftUI creates any window, with the same production disk/config/index engines.
+@MainActor private enum FolioStoreSelfTest {
+    static func run() -> Never {
+        do {
+            let identifier = Bundle.main.bundleIdentifier ?? ""
+            guard identifier == "test.tianli.folio.store", ProcessInfo.processInfo.environment["APP_SANDBOX_CONTAINER_ID"] == identifier else {
+                throw DocumentError.state("商店自检只允许 test.tianli.folio.store 的真实沙盒副本")
+            }
+            let home = URL(fileURLWithPath: NSHomeDirectory())
+            let root = home.appendingPathComponent("tmp/folio-store-self-test")
+            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+            let note = root.appendingPathComponent("example.md")
+            try Data("# Store fixture\n\nSandbox markdown\n".utf8).write(to: note)
+            var doc = try DocumentIO.open(note); doc.text += "\nSaved in sandbox\n"
+            try DocumentIO.save(&doc)
+            let saved = try DocumentIO.open(note)
+            let inserted = try DocumentIO.storeImage(Data([1, 2, 3]), extension: "png", document: saved, folder: "assets")
+            let imageBytesMatch = try Data(contentsOf: inserted.url) == Data([1, 2, 3])
+            let disk = SessionDisk(directory: FolioIndexConfig.stateDirectory)
+            try disk.write(SessionSnapshot(documents: [saved], activeID: saved.id))
+            let config = FolioLifecycle.makeConfiguration()
+            let exported = try config.exportData()
+            guard FolioLifecycle.importProblem(exported) == nil else { throw DocumentError.state("导出配置不完整") }
+            var session = try disk.read(); session.settings.fontSize = 24; try disk.write(session)
+            try config.importData(exported)
+            var index = FolioIndexConfig(); index.roots = [root.path]
+            let database = root.appendingPathComponent("index.db")
+            let stats = try FolioIndexEngine.rebuild(config: index, database: database)
+            let graph = try FolioGraphEngine.generate(root: root, config: index)
+            let external = URL(fileURLWithPath: "/Users/Shared/Folio-ungranted-example.md")
+            let importedFontSize = try disk.read().settings.fontSize
+            let facts: [String: Any] = ["ok": saved.text.contains("Saved in sandbox") && importedFontSize == 17 && stats.count == 1,
+                "sandbox_container": identifier, "pid": ProcessInfo.processInfo.processIdentifier, "home": home.path, "state_directory": disk.directory.path,
+                "session_in_container": disk.directory.path.hasPrefix(home.path + "/"),
+                "document_save_reopen": saved.text.contains("Saved in sandbox"), "config_export_import": importedFontSize == 17,
+                "index_count": stats.count, "graph_created": FileManager.default.fileExists(atPath: graph.path),
+                "relative_image_write": inserted.markdown.contains("assets/") && imageBytesMatch,
+                "ungranted_path_rejected": !FolioFileGrants.shared.covers(external),
+                "editor_present": Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Editor") != nil,
+                "cli_absent": !FileManager.default.fileExists(atPath: (Bundle.main.resourceURL?.appendingPathComponent("bin/folio").path ?? "")),
+                "window_count": NSApp.windows.count, "activation_policy": NSApp.activationPolicy().rawValue, "app_active": NSApp.isActive,
+                "configuration_sync_tested": false]
+            let data = try JSONSerialization.data(withJSONObject: facts, options: [.prettyPrinted, .sortedKeys])
+            FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data("\n".utf8))
+            exit(facts["ok"] as? Bool == true ? 0 : 1)
+        } catch { fputs("Folio store self-test: \(error)\n", stderr); exit(1) }
+    }
+}
+#endif
+
 /// Explicit recording mode requires its own session and never opens a key window.
 /// It hosts the production ContentView and store; it does not simulate product UI.
 enum FolioLaunch {
     static var uiSelfTest: Bool { CommandLine.arguments.contains("--ui-self-test") }
     /// The running window for the lifecycle command checks: the store and the「配置与更新」wiring of an ordinary
     /// launch, on isolated state, with no window, Dock icon or activation (see FolioLifecycleSelfTest).
-    static var lifecycleSelfTest: Bool { CommandLine.arguments.contains("--lifecycle-self-test") }
+    static var lifecycleSelfTest: Bool {
+        #if APP_STORE
+        return false
+        #else
+        return CommandLine.arguments.contains("--lifecycle-self-test")
+        #endif
+    }
     static var selfTest: Bool { uiSelfTest || lifecycleSelfTest }
     static var background: Bool {
         let env = ProcessInfo.processInfo.environment
@@ -45,12 +102,14 @@ private final class FolioRecordingPanel: NSPanel {
             Task { await FolioUISelfTest.run(store: store) }
             return
         }
+        #if !APP_STORE
         if FolioLaunch.lifecycleSelfTest, let store {
             // A run-loop block, not a main-queue one: the self-test spins the run loop while its commands run, and
             // the main dispatch queue is only served again once no main-queue block is in progress.
             RunLoop.main.perform { [lifecycle] in MainActor.assumeIsolated { FolioLifecycleSelfTest.run(store: store, configuration: lifecycle) } }
             return
         }
+        #endif
         if FolioLaunch.background, let store {
             NSApp.setActivationPolicy(.accessory)
             let panel = FolioRecordingPanel(contentRect: NSRect(x: 120, y: 120, width: 1120, height: 780),
@@ -144,6 +203,16 @@ private final class FolioRecordingPanel: NSPanel {
     @StateObject private var store: EditorStore
     private let configuration: AppConfiguration?
     init() {
+        #if APP_STORE
+        if CommandLine.arguments.contains("--store-self-test") {
+            NSApplication.shared.setActivationPolicy(.prohibited)
+            FolioStoreSelfTest.run()
+        }
+        if FolioLaunch.uiSelfTest || FolioLaunch.background {
+            fputs("商店版离屏验证使用 --store-self-test；此版本不运行依赖 macOS 15 窗口抑制的录制入口。\n", stderr)
+            exit(64)
+        }
+        #endif
         // Refuse these diagnostics before creating a store unless their state is isolated.
         if FolioLaunch.selfTest && !FolioLaunch.background {
             fputs("--ui-self-test and --lifecycle-self-test require FOLIO_BACKGROUND=1 and an isolated TL_MARKDOWN_STATE_DIR\n", stderr)
@@ -159,7 +228,12 @@ private final class FolioRecordingPanel: NSPanel {
         // `folio` command uses, and the store gets the means to run `folio config import|sync` in this window.
         let wired = (!FolioLaunch.background && !FolioLaunch.uiSelfTest) || FolioLaunch.lifecycleSelfTest
         let config = wired ? FolioLifecycle.configuration() : nil
+        #if APP_STORE
+        let model = EditorStore(directory: root)
+        model.storeConfiguration = config
+        #else
         let model = EditorStore(directory: root, lifecycle: config.map(FolioLifecycle.windowCommand))
+        #endif
         _store = StateObject(wrappedValue: model)
         configuration = config
         if wired { FolioLifecycle.installApp(config, store: model) }
@@ -175,7 +249,9 @@ private final class FolioRecordingPanel: NSPanel {
                     delegate.reportBenchmarkIfRequested()
                 }
         }.defaultSize(width: 1120, height: 780)
+        #if !APP_STORE
         .defaultLaunchBehavior(FolioLaunch.background || FolioLaunch.selfTest ? .suppressed : .automatic)
+        #endif
         .commands {
             CommandGroup(replacing: .newItem) {
                 Button("新建文档") { store.newDocument() }.keyboardShortcut("n")
@@ -193,8 +269,10 @@ private final class FolioRecordingPanel: NSPanel {
             }
             CommandGroup(replacing: .appSettings) {
                 Button("设置…") { store.showSettings = true }.keyboardShortcut(",")
+                #if !APP_STORE
                 Button("配置与更新…") { AppLifecycleUI.shared.show() }
                 Button("检查更新…") { AppLifecycleUI.shared.checkForUpdates() }
+                #endif
             }
             CommandGroup(replacing: .help) {
                 Button("Folio 使用指南") {
@@ -233,7 +311,11 @@ extension FolioLifecycle {
     /// the switch, because `folio config import|sync` hands the command to it (EditorStore.answerRequests).
     @MainActor static func installApp(_ configuration: AppConfiguration?, store: EditorStore) {
         configuration?.onChange = { [weak store] in store?.reloadConfiguration() }
+        #if APP_STORE
+        configuration?.start()
+        #else
         AppLifecycleUI.install(name: name, configuration: configuration, updateSource: updateSource)
+        #endif
     }
 }
 
@@ -243,6 +325,7 @@ extension FolioLifecycle {
 /// a symlink named folio the way the installed command is called. Every judgement reads the stored values back
 /// with a fresh process. State folder, preference domain, support folder and "cloud" folder are throwaway (set by
 /// scripts/accept/lifecycle.sh): the owner's session, preferences and iCloud Drive are only stat'ed, before and after.
+#if !APP_STORE
 @MainActor private enum FolioLifecycleSelfTest {
     static func run(store: EditorStore, configuration: AppConfiguration?) {
         let files = FileManager.default, environment = ProcessInfo.processInfo.environment
@@ -612,6 +695,7 @@ extension FolioLifecycle {
     }
 }
 
+#endif
 /// Exercises the production SwiftUI shell, embedded editor and button action paths.
 /// The panel is never ordered, activated or made key; only fictional files are used.
 @MainActor private enum FolioUISelfTest {

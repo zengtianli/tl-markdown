@@ -1,0 +1,5 @@
+/Info.plist
+/Folio.entitlements
+/*.xcodeproj/
+/Generated/
+!/Assets.xcassets/AppIcon.appiconset/*.png

@@ -45,8 +45,14 @@ struct SessionSnapshot: Codable {
 }
 enum DocumentError: LocalizedError {
     case conflict, missing, encoding, readOnly, imageFolder, imageTooLarge, imageType, state(String)
+    #if APP_STORE
+    case permission
+    #endif
     var errorDescription: String? {
         switch self {
+        #if APP_STORE
+        case .permission: return "请允许这个文件夹，才能继续打开文档、读取相对图片或保存图片。"
+        #endif
         case .conflict: return "文件已被其他软件修改。你的修改已保留，请选择重新载入或另存为。"
         case .missing: return "原文件已移动或删除。你的修改已保留，请另存为。"
         case .encoding: return "文件不是 UTF-8 文本，暂不支持直接编辑；原文件未改动。"
@@ -62,6 +68,9 @@ enum DocumentError: LocalizedError {
 /// App and tests use this exact implementation; no alternate test-only save path.
 struct DocumentIO {
     static func open(_ url: URL) throws -> OpenDocument {
+        #if APP_STORE
+        guard FolioFileGrants.shared.covers(url) else { throw DocumentError.permission }
+        #endif
         let real = url.standardizedFileURL.resolvingSymlinksInPath()
         let data = try Data(contentsOf: real)
         guard var text = String(data: data, encoding: .utf8), !text.contains("\0") else { throw DocumentError.encoding }
@@ -106,6 +115,9 @@ struct DocumentIO {
     }
     static func imageDestination(document: OpenDocument, folder: String, extension ext: String) throws -> URL {
         guard let path = document.path else { throw DocumentError.missing }
+        #if APP_STORE
+        guard FolioFileGrants.shared.coversFolder(URL(fileURLWithPath: path).deletingLastPathComponent()) else { throw DocumentError.permission }
+        #endif
         guard !folder.isEmpty, !folder.hasPrefix("/"), !folder.split(separator: "/").contains("..") else { throw DocumentError.imageFolder }
         let directory = URL(fileURLWithPath: path).deletingLastPathComponent().appendingPathComponent(folder, isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -249,3 +261,64 @@ func noteLineOffset(_ text: String, line: Int) -> Int {
     }
     return min(location, ns.length)
 }
+
+#if APP_STORE
+// MARK: App-scoped file and folder grants (local only; never exported or synced)
+final class FolioFileGrants: @unchecked Sendable {
+    static let shared = FolioFileGrants()
+    private struct Grant: Codable { var path: String; var directory: Bool; var bookmark: Data }
+    private let lock = NSRecursiveLock()
+    private var grants: [Grant] = []
+    private var active: [String: URL] = [:]
+    private let file: URL
+    init() {
+        file = FolioIndexConfig.stateDirectory.appendingPathComponent("file-grants.json")
+        grants = (try? JSONDecoder().decode([Grant].self, from: Data(contentsOf: file))) ?? []
+        for index in grants.indices {
+            var stale = false
+            guard let url = try? URL(resolvingBookmarkData: grants[index].bookmark,
+                                    options: [.withSecurityScope, .withoutUI], bookmarkDataIsStale: &stale),
+                  url.startAccessingSecurityScopedResource() else { continue }
+            active[grants[index].path] = url
+            if stale, let data = try? url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil) {
+                grants[index].bookmark = data
+            }
+        }
+    }
+    deinit { for url in active.values { url.stopAccessingSecurityScopedResource() } }
+    func remember(_ url: URL) throws {
+        lock.lock(); defer { lock.unlock() }
+        let path = url.standardizedFileURL.resolvingSymlinksInPath().path
+        if intrinsic(path) { return } // Container and bundled examples need no user grant.
+        if active[path] != nil { return }
+        let started = url.startAccessingSecurityScopedResource()
+        do {
+            let bookmark = try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+            let directory = (try url.resourceValues(forKeys: [.isDirectoryKey])).isDirectory == true
+            grants.removeAll { $0.path == path }; grants.append(Grant(path: path, directory: directory, bookmark: bookmark))
+            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try JSONEncoder().encode(grants).write(to: file, options: .atomic)
+            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: file.path)
+            active[path] = url
+        } catch {
+            if started { url.stopAccessingSecurityScopedResource() }
+            throw error
+        }
+    }
+    private func intrinsic(_ path: String) -> Bool {
+        let home = URL(fileURLWithPath: NSHomeDirectory()).resolvingSymlinksInPath().path
+        let resources = Bundle.main.resourceURL?.resolvingSymlinksInPath().path ?? ""
+        return FolioIndexConfig.inside(path, home) || (!resources.isEmpty && FolioIndexConfig.inside(path, resources))
+    }
+    func covers(_ url: URL) -> Bool {
+        lock.lock(); defer { lock.unlock() }
+        let path = url.standardizedFileURL.resolvingSymlinksInPath().path
+        return intrinsic(path) || grants.contains { active[$0.path] != nil && ($0.path == path || ($0.directory && FolioIndexConfig.inside(path, $0.path))) }
+    }
+    func coversFolder(_ url: URL) -> Bool {
+        lock.lock(); defer { lock.unlock() }
+        let path = url.standardizedFileURL.resolvingSymlinksInPath().path
+        return intrinsic(path) || grants.contains { $0.directory && active[$0.path] != nil && FolioIndexConfig.inside(path, $0.path) }
+    }
+}
+#endif

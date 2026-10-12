@@ -23,6 +23,12 @@ struct ContentView: View {
                         Button("另存为") { store.save(saveAs: true) }
                     }.padding(10).background(Color.orange.opacity(0.1))
                 }
+                #if APP_STORE
+                if store.needsFolderPermission {
+                    HStack { Text("允许文档所在文件夹，可继续阅读相对图片并保存插图。"); Spacer(); Button("允许这个文件夹…") { store.allowDocumentFolder() } }
+                        .font(.callout).padding(10).background(Color.accentColor.opacity(0.08))
+                }
+                #endif
                 ZStack {
                     EditorSurface(bridge: store.bridge).opacity(store.active == nil ? 0 : 1)
                     if store.active == nil { welcome }
@@ -162,11 +168,25 @@ struct FolioSettingsView: View {
             Text("图片保存在文档旁的相对目录。未保存的文档会先提示保存。恢复草稿始终保留在本机。").font(.caption).foregroundStyle(.secondary)
             Divider()
             IndexFoldersView(model: indexSettings)
+            #if !APP_STORE
             LabeledContent("自定义索引文件") {
                 TextField((NoteIndex.defaultPath.path as NSString).abbreviatingWithTildeInPath, text: Binding(get: { store.settings.noteIndexPath ?? "" }, set: { store.settings.noteIndexPath = $0.isEmpty ? nil : $0; store.settingsChanged() })).frame(width: 260)
             }.disabled(indexSettings.updating)
+            #endif
             Text("留空使用 Folio 的本机索引。搜索只读索引；更新索引不会修改原文，也不会上传内容。").font(.caption).foregroundStyle(.secondary)
             Divider(); Button("清空最近文件记录") { store.clearRecent() }
+            #if APP_STORE
+            if let configuration = store.storeConfiguration {
+                Divider()
+                Toggle("使用 iCloud 记住配置", isOn: Binding(get: { configuration.enabled }, set: {
+                    store.persist(); configuration.setEnabled($0); store.objectWillChange.send()
+                }))
+                Text(configuration.status).font(.caption).foregroundStyle(.secondary)
+                HStack { Button("导出阅读配置…") { store.exportStoreSettings() }; Button("导入阅读配置…") { store.importStoreSettings() } }
+                Text("下载版先导出配置，再在此导入。文档、草稿、索引与文件夹授权不随配置迁移；更新由 App Store 提供。")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            #endif
         }.padding(28).frame(width: 580)
             .onAppear { indexSettings.reloadConfiguration() }
             // Returning to Folio shows folders another writer (`folio roots`) changed meanwhile.

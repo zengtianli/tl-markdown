@@ -10,11 +10,13 @@ enum FolioLifecycle {
     static let command = "folio"
     /// The one release channel: the window's「检查更新」and「升级到新版…」, `folio update check` and
     /// `folio update install` all read it.
+    #if !APP_STORE
     static let releaseFeed = URL(string: "https://app-mac-folio.tianli.cyou/release.json")!
     /// An isolated run (APP_LIFECYCLE_SUPPORT_DIR) never reads the public channel or the network: it reads the test
     /// release record the shared layer keeps under APP_LIFECYCLE_CLOUD_DIR (TianliApps/Updates/<bundle id>/isolated).
     static let isolatedChannel = "isolated"
     static var updateSource: AppUpdateSource { lifecycleIsolated ? .privateCloud(channel: isolatedChannel) : .manifest(releaseFeed) }
+    #endif
     /// The reading preferences inside session.json that travel with「导出配置」and the optional iCloud copy.
     /// The custom index file, the index folders, the recent list and the tabs stay on this Mac.
     static let portableKeys = ["settings.fontFamily", "settings.fontSize", "settings.contentWidth", "settings.restoreSession", "settings.imageFolder"]
@@ -78,6 +80,8 @@ enum FolioLifecycle {
     static func configuration() -> AppConfiguration? { isolationProblem == nil ? makeConfiguration() : nil }
 
     // MARK: Commands
+
+    #if !APP_STORE
 
     /// Which process is running the command, for the `app_running` it reports.
     enum Runner {
@@ -214,6 +218,7 @@ enum FolioLifecycle {
         return result
     }
 
+    #endif
     // MARK: Import check
 
     /// The settings session.json cannot be read without. An import replaces the portable set: a key the file leaves
@@ -257,6 +262,7 @@ enum FolioLifecycle {
         }
         return nil
     }
+    #if !APP_STORE
     private static func importRefusal(_ arguments: [String]) -> SessionRequests.CommandReply? {
         let words = positionals(arguments)
         guard arguments.first == "config", arguments.contains("--yes"), words.count == 2, words[0] == "import",
@@ -264,6 +270,7 @@ enum FolioLifecycle {
               let problem = importProblem(data) else { return nil }
         return failure(command: "config import", code: "import_rejected", message: "导入未完成，原配置已保留：" + problem, exit: 1, json: arguments.contains("--json"))
     }
+    #endif
     /// A refusal in the shared layer's own shape, so every lifecycle result is read the same way.
     static func failure(command: String, code: String, message: String, exit: Int32, json: Bool) -> SessionRequests.CommandReply {
         guard json else { return .init(exit: exit, out: "", err: message + "\n") }

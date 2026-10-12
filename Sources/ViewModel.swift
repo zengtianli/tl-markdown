@@ -14,6 +14,43 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     @Published var sidebarTab = 0
     @Published var banner = ""
     @Published var showSettings = false
+    #if APP_STORE
+    var storeConfiguration: AppConfiguration?
+    @Published var folderPermissionURL: URL?
+    var needsFolderPermission: Bool {
+        if folderPermissionURL != nil { return true }
+        guard let path = active?.path else { return false }
+        return !FolioFileGrants.shared.coversFolder(URL(fileURLWithPath: path).deletingLastPathComponent())
+    }
+    func allowDocumentFolder() {
+        let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true
+        panel.prompt = "允许这个文件夹"; panel.message = "允许文档所在文件夹，以恢复最近文档、显示相对图片和保存插图。"
+        if let pending = folderPermissionURL { panel.directoryURL = pending.deletingLastPathComponent() }
+        else if let path = active?.path { panel.directoryURL = URL(fileURLWithPath: path).deletingLastPathComponent() }
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try FolioFileGrants.shared.remember(url); banner = "文件夹授权已保存"
+            if let pending = folderPermissionURL { folderPermissionURL = nil; open(pending) } else { reload() }
+            display(); objectWillChange.send()
+        }
+        catch { banner = "文件夹授权未完成：\(error.localizedDescription)" }
+    }
+    func exportStoreSettings() {
+        let panel = NSSavePanel(); panel.nameFieldStringValue = "Folio-settings.json"; panel.allowedContentTypes = [.json]
+        guard let config = storeConfiguration, panel.runModal() == .OK, let url = panel.url else { return }
+        do { persist(); try config.exportData().write(to: url); banner = "阅读设置已导出" }
+        catch { banner = error.localizedDescription }
+    }
+    func importStoreSettings() {
+        let panel = NSOpenPanel(); panel.allowedContentTypes = [.json]
+        guard let config = storeConfiguration, panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            let data = try Data(contentsOf: url)
+            if let problem = FolioLifecycle.importProblem(data) { banner = problem; return }
+            try config.importData(data); reloadConfiguration(); banner = "阅读设置已导入；文档、草稿和授权保持在本机"
+        } catch { banner = error.localizedDescription }
+    }
+    #endif
     @Published var closedDrafts: [OpenDocument] = []
     @Published private(set) var graphGenerating = false
     @Published private(set) var lastGraphURL: URL?
@@ -42,6 +79,9 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     var active: OpenDocument? { documents.first { $0.id == activeID } }
 
     init(directory: URL? = nil, lifecycle: (([String]) -> SessionRequests.CommandReply)? = nil) {
+        #if APP_STORE
+        _ = FolioFileGrants.shared // Restore scoped URLs before restoring even an unsaved document.
+        #endif
         lifecycleCommand = lifecycle
         let base = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TLMarkdown")
         disk = SessionDisk(directory: base)
@@ -209,6 +249,9 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
         if panel.runModal() == .OK { panel.urls.forEach { open($0) } }
     }
     func open(_ url: URL) {
+        #if APP_STORE
+        try? FolioFileGrants.shared.remember(url) // Open panel / Finder / drag grants; a plain ungranted path cannot create one.
+        #endif
         let path = url.standardizedFileURL.resolvingSymlinksInPath().path
         if let existing = documents.first(where: { $0.path == path }) { select(existing.id); return }
         do {
@@ -216,7 +259,12 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
             if let item = recent.first(where: { $0.path == doc.path }) { doc.scroll = item.scroll; doc.selection = item.selection }
             documents.append(doc); activeID = doc.id; touchRecent(doc); persist(); display()
             NSDocumentController.shared.noteNewRecentDocumentURL(url)
-        } catch { banner = "打开失败：\(error.localizedDescription)" }
+        } catch {
+            #if APP_STORE
+            if case DocumentError.permission = error { folderPermissionURL = url }
+            #endif
+            banner = "打开失败：\(error.localizedDescription)"
+        }
     }
     func select(_ id: String) { activeID = id; if let doc = active { touchRecent(doc) }; persistSoon(); display() }
     func display() {
@@ -277,9 +325,15 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
             let panel = NSSavePanel(); panel.nameFieldStringValue = documents[i].title == "未命名" ? "未命名.md" : documents[i].title
             panel.allowedContentTypes = [.init(filenameExtension: "md") ?? .plainText]
             guard panel.runModal() == .OK, let chosen = panel.url else { return false }; destination = chosen
+            #if APP_STORE
+            try? FolioFileGrants.shared.remember(chosen)
+            #endif
         }
         do {
             try DocumentIO.save(&documents[i], to: destination)
+            #if APP_STORE
+            if let path = documents[i].path { try? FolioFileGrants.shared.remember(URL(fileURLWithPath: path)) }
+            #endif
             forgetConflict(targetID)
             if destination != nil { documents[i].revision += 1; display() }
             touchRecent(documents[i]); persist(); return true
@@ -406,6 +460,11 @@ struct OutlineItem: Identifiable { var id: Int; var title: String; var level: In
     }
     func generateDirectoryGraph(at root: URL, openBrowser: Bool = true) {
         guard !graphGenerating else { return }
+        #if APP_STORE
+        do { try FolioFileGrants.shared.remember(root) }
+        catch { banner = "请在打开面板中允许这个文件夹：\(error.localizedDescription)"; return }
+        guard FolioFileGrants.shared.coversFolder(root) else { banner = DocumentError.permission.localizedDescription; return }
+        #endif
         indexSettings.reloadConfiguration()  // skip/restricted rules as saved now, not when Settings opened
         if let error = indexSettings.configurationError {
             graphError = error; banner = error; return
@@ -478,6 +537,10 @@ private final class IndexCancellation: @unchecked Sendable {
     /// Same rule as `folio roots add`: re-read index.json, standardize, dedupe, save atomically.
     @discardableResult func addRoot(_ url: URL) -> Bool {
         guard !updating, configurationError == nil else { return false }
+        #if APP_STORE
+        do { try FolioFileGrants.shared.remember(url) }
+        catch { message = "请重新允许这个索引文件夹：\(error.localizedDescription)"; return false }
+        #endif
         return apply { try FolioIndexConfig.addRoots([url.path], at: configURL) }
     }
     func chooseRoots() {
@@ -506,6 +569,11 @@ private final class IndexCancellation: @unchecked Sendable {
         reloadConfiguration()
         if let error = configurationError { message = error; return }
         guard !config.roots.isEmpty else { message = "请先添加要索引的文件夹。"; return }
+        #if APP_STORE
+        guard config.roots.allSatisfy({ FolioFileGrants.shared.coversFolder(URL(fileURLWithPath: $0)) }) else {
+            message = "文件夹授权需要更新。请点「添加文件夹…」重新允许该文件夹。"; return
+        }
+        #endif
         let token = IndexCancellation(), snapshot = config, target = database
         cancellation = token; updating = true; message = "正在后台更新索引…"
         DispatchQueue.global(qos: .utility).async { [weak self] in

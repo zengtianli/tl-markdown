@@ -45,7 +45,13 @@ struct FolioIndexConfig: Codable, Sendable {
 
     init() {}
 
-    static var home: String { ProcessInfo.processInfo.environment["HOME"] ?? NSHomeDirectory() }
+    static var home: String {
+        #if APP_STORE
+        return NSHomeDirectory() // App Sandbox's container, never the invoking shell's HOME.
+        #else
+        return ProcessInfo.processInfo.environment["HOME"] ?? NSHomeDirectory()
+        #endif
+    }
     static var stateDirectory: URL {
         if let state = ProcessInfo.processInfo.environment["TL_MARKDOWN_STATE_DIR"], !state.isEmpty {
             return URL(fileURLWithPath: state, isDirectory: true)
