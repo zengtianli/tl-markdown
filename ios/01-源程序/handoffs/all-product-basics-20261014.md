@@ -1,6 +1,6 @@
 # Folio 移动端 product_basics — 2026-10-15
 
-本轮责任范围：Sources/MobileProductLifecycle.swift、FolioMobileApp.swift、ContentView.swift、MobileEditor.swift、MobileStore.swift 的设置/动作接线；新增产品设置与进程内自检；Shared 生命周期文件仅通过总部 vendor-lifecycle.py 原入口逐字节分发；project.yml、Resources/Folio.entitlements；scripts/accept/product_basics.py、project.yaml 的 product_basics/accept/相关功能清单、README 与本交接。保留其他会话改动、暂存及后台。接续轮精确 claims 身份为 PID 34499、chapter-task:48e5ac24f6165c13a625688b25626952，写前核对，不另开或释放（上轮 PID 95241 已成为历史）。
+本轮责任范围：Sources/MobileProductLifecycle.swift、FolioMobileApp.swift、ContentView.swift、MobileEditor.swift、MobileStore.swift 的设置/动作接线；新增产品设置与进程内自检；Shared 生命周期文件仅通过总部 vendor-lifecycle.py 原入口逐字节分发；project.yml、Resources/Folio.entitlements；scripts/accept/product_basics.py、project.yaml 的 product_basics/accept/相关功能清单、README 与本交接。保留其他会话改动、暂存及后台。最新接续轮精确 claims 身份为 PID 43047、chapter-task:48e5ac24f6165c13a625688b25626952，写前核对，不另开或释放（此前 PID 34499、95241 均为历史）。
 
 共享资源：总部生命周期源只读；Chapter 标准/引擎只读；SDK 构建与模拟器使用原 sim_lane 全局串行锁，仓外冻结副本；不得触碰生产配置、真实 iCloud 或账户数据。无装机、上传、推送、发布、公证或更新源写入。
 
@@ -8,7 +8,17 @@
 
 已核：固定标准 schema 1 的四项合计 14 项；原移动入口配置为 nil、渠道 unreleased，不能当作通过。ASC 只读 apps 返回 cyou.tianli.TLMarkdown.mobile 对应真实记录 6819568883；此记录存在不表示已公开发行。
 
-## 当前接续（06:46，以下历史过程以此为准）
+## 当前接续（PID 43047，以下历史过程以此为准）
+
+- 本轮仅接续真实候选构建/验收与本交接，未追加源代码改动。开工回读原 job、原失败/暂缓事实、工作区及 claims；入场负载 11.74、无模拟器锁，与前轮负载等待相比条件已改变。
+- 已实际执行规定的 `chapter sop accept --app folio --check product_basics --json`：原入口成功生成当前 c49c9eaef2bc3149c2f7025961de4ca4ffea67d99c86141690255679ea5151d5 输入的普通 Release iOS/Vision 候选，1.2.1 (2)、cyou.tianli.TLMarkdown.mobile；运行准入时负载升为 69.4，高于 18，最终退出 1、status:deferred。尚未安装到本轮专用模拟器或启动 Folio 业务，不把「Runtime iphone」准备日志当运行成功。
+- 当前 iOS 候选 /private/var/folders/6_/r0ygnj7s41g013d21kpwlph80000gp/T/sim-lane-build.h6tprqqt/dd/Build/Products/Release-iphonesimulator/Folio.app；主程序 SHA256 53281d121022da835f8afe02cc7210a00657884fc4d582b7fe1fbae138d1f3be；build/product-basics/iphone-build.json SHA256 8928c8fc48af733b1708960632c81c3c34f0f54bd8b3a31ecba434633381c24d；36 个包文件与回执完整相符，真实构建 13.6 秒。
+- 当前 Vision 候选 /private/var/folders/6_/r0ygnj7s41g013d21kpwlph80000gp/T/sim-lane-build.rfdh30nq/dd/Build/Products/Release-xrsimulator/Folio.app；主程序 SHA256 d048226c5ec4bb2d53a397e01141bcd262aa0d149f86fadd99c60cb15b6ff325；build/product-basics/vision-build.json SHA256 3e8e5e18b5b04ab591a0ebc92d2bf65dca72428b1d15ccf1d090b0820bade576；34 个包文件完整相符，真实构建 12.1 秒。
+- 原 reuse_build 对 iphone、ipad、vision 三线均成功核验当前输入、仓外冻结源码与真实 SDK 包；iPad 合法复用同一 iOS 包。上述完整文件对照使用产品固定脚本原 artifact_files 实现，没有把回执改成通过证据。后续保持源码冻结，直接复用当前包，不为负载等待重编。
+- 已交还原队列，enqueue 返回 deduplicated:true，仍为 e4c4a629451b48ac9dfbe291ead3b822、status:deferred；未新建并行作业、未降低阈值或重跑同因。队列消息保留其前次锁等待，最新直接验收输出已明确是负载等待；Chapter 的 deferred 处理会保留先前失败规范原件，不能据旧 yaml 日志认定当前构建失败。
+- 剩余是资源准入后运行真实 App 的全部 14 项、三平台离屏设置图与独立新进程读回；本机隔离 iCloud 链路、Apple 跨设备传输均未实测。接续 `chapter work --once --app folio --json`，查询 `chapter jobs --app folio --active --json`；当前源码候选已具备，不重复前轮源码或构建阶段。未装机、发布、上传、公证、修改生产配置/iCloud/账户或既有后台；不手写 delivery-evidence，也不声称完整验收。
+
+## 前轮接续（06:46）
 
 - 本轮先回读原始 failed 记录与完整日志：规范原件仍是上轮 Python 缺 yaml 的失败；后续 deferred 由 Chapter 恢复此前原件，不能把它误认为 Python 修复失效，也不能把 deferred 当 passed。回读原 job e4c4a629451b48ac9dfbe291ead3b822 仍 queued，未另建执行者。
 - 入场负载 14.42 且无锁，沿 `chapter work --once --app folio --json` 接续原 job；实际准入时被 fitcoach-ios:product-basics、PID 35992 先取锁，原队列返回 deferred，next_attempt_at 06:45:24。没有碰对方设备或进程。
