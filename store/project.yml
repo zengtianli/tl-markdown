@@ -20,6 +20,7 @@ targets:
           - Shared/AppLifecycle.swift
           - Shared/AppLifecycleUI.swift
           - Shared/AppLifecycleCLI.swift
+          - Shared/AppShortcuts.swift
       - path: Assets.xcassets
       - path: Generated/Editor
         type: folder

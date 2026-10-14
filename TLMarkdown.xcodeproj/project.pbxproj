@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C10000000000000000000106 /* AppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000206; };
 		BF0000000000000000000107 /* IndexEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000207; };
 		BF0000000000000000000108 /* GraphEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000208; };
 		BF0000000000000000000101 /* TLMarkdownApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0000000000000000000201 /* TLMarkdownApp.swift */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C10000000000000000000206 /* AppShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/AppShortcuts.swift; sourceTree = "<group>"; };
 		BF0000000000000000000207 /* IndexEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexEngine.swift; sourceTree = "<group>"; };
 		BF0000000000000000000208 /* GraphEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphEngine.swift; sourceTree = "<group>"; };
 		BF0000000000000000000201 /* TLMarkdownApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TLMarkdownApp.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 				C10000000000000000000203 /* AppLifecycleUI.swift */,
 				C10000000000000000000204 /* AppLifecycleCLI.swift */,
 				C10000000000000000000205 /* Lifecycle.swift */,
+				C10000000000000000000206 /* AppShortcuts.swift */,
 				BF0000000000000000000201 /* TLMarkdownApp.swift */,
 				BF0000000000000000000202 /* ContentView.swift */,
 				BF0000000000000000000203 /* ViewModel.swift */,
@@ -162,6 +165,7 @@
 				C10000000000000000000103 /* AppLifecycleUI.swift in Sources */,
 				C10000000000000000000104 /* AppLifecycleCLI.swift in Sources */,
 				C10000000000000000000105 /* Lifecycle.swift in Sources */,
+				C10000000000000000000106 /* AppShortcuts.swift in Sources */,
 				BF0000000000000000000101 /* TLMarkdownApp.swift in Sources */,
 				BF0000000000000000000102 /* ContentView.swift in Sources */,
 				BF0000000000000000000103 /* ViewModel.swift in Sources */,

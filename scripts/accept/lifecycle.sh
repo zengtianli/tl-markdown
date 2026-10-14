@@ -14,7 +14,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 APP="${1:-$ROOT/build/DerivedData/Build/Products/Release/TLMarkdown.app}"
-OUT="$ROOT/build/accept/lifecycle"
+OUT="${FOLIO_LIFECYCLE_OUT:-$ROOT/build/accept/lifecycle}"
 [ -x "$APP/Contents/MacOS/TLMarkdown" ] && [ -x "$APP/Contents/Resources/bin/folio" ] || {
   echo "没有构建产物：$APP（先 bash build.sh --build-only）" >&2; exit 64; }
 mkdir -p "$OUT"
@@ -27,10 +27,17 @@ sys.path.insert(0, str(pathlib.Path.home() / 'Dev/tools/dev/lib/tools/macapp/ios
 import sim_lane
 
 suite = 'test.tianli.folio.' + uuid.uuid4().hex
+identity = None
 proc, status, result = None, 1, {}
 try:
     copy = sim_lane.uielement_copy(app, work / 'copy')
     info = plistlib.loads((copy / 'Contents/Info.plist').read_bytes())
+    # The common UIElement adapter supplies a .lane identity; this suite also exercises update
+    # preferences, so make its identity unique before starting it, never sharing another lane's defaults.
+    info['CFBundleIdentifier'] = suite + '.app'
+    (copy / 'Contents/Info.plist').write_bytes(plistlib.dumps(info))
+    subprocess.run(['codesign', '--force', '--deep', '--sign', '-', str(copy)], check=True, capture_output=True, timeout=120)
+    identity = info['CFBundleIdentifier']
     assert info.get('LSUIElement') is True and info['CFBundleIdentifier'] != 'cyou.tianli.TLMarkdown', info['CFBundleIdentifier']
     env = {k: v for k, v in os.environ.items()
            if k not in ('TL_MARKDOWN_OPEN', 'TL_MARKDOWN_BENCHMARK', 'MDINDEX_DB', 'APP_LIFECYCLE_FOLLOW_CHANNEL', 'CFFIXED_USER_HOME')}
@@ -62,9 +69,14 @@ finally:
     if proc is not None and proc.poll() is None:
         proc.kill()
         proc.wait(timeout=5)
+    if identity:
+        subprocess.run(['/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister',
+                        '-u', str(copy)], capture_output=True, timeout=20)
     # The preferences daemon may write an empty 42-byte shell for the removed domain a moment after the last process
     # that used it has gone: wait for that moment, then remove the shell (never a file with anything in it).
     subprocess.run(['/usr/bin/defaults', 'delete', suite], capture_output=True)
+    if identity and identity.startswith('test.'):
+        subprocess.run(['/usr/bin/defaults', 'delete', identity], capture_output=True)
     shell = pathlib.Path.home() / 'Library/Preferences' / (suite + '.plist')
     deadline, quiet = time.monotonic() + 3, 0
     while time.monotonic() < deadline and quiet < 10:
@@ -75,6 +87,11 @@ finally:
             quiet += 1
         time.sleep(0.1)
     result['preference_domain_removed'] = not shell.exists()
+    if identity:
+        update_shell = pathlib.Path.home() / 'Library/Preferences' / (identity + '.plist')
+        if update_shell.is_file() and update_shell.stat().st_size <= 42:
+            update_shell.unlink()
+        result['update_preference_domain_removed'] = not update_shell.exists()
     shutil.rmtree(work, ignore_errors=True)
     result['work_removed'] = not work.exists()
     (out / 'lifecycle.json').write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + '\n')

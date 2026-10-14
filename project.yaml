@@ -69,6 +69,10 @@ sop:
       command: folio config import
     - name: 检查更新…
       command: folio update check
+    - name: 更新选项、自动检查间隔与状态
+      command: folio update options
+    - name: 重新载入文档快捷键的关闭、恢复与组合
+      command: folio shortcuts
     - name: 升级到新版… / 下载新版…
       command: folio update install
     - name: 帮助：Folio 使用指南 / 产品主页
@@ -167,6 +171,31 @@ sop:
     recovery: bash scripts/accept/recovery.sh
     privacy: bash scripts/accept/privacy.sh
     native_ui: bash scripts/accept/native_ui.sh
+    product_basics: /Users/tianli/Dev/.venv/bin/python scripts/accept/product_basics.py
+  product_basics:
+    schema_version: 1
+    features:
+      settings:
+        entry: 设置…与配置与更新…；真实阅读偏好、导入导出与同步开关
+        readback: folio settings --json；folio config status --json
+      shortcuts:
+        entry: 配置与更新… → 重新载入文档；应用内菜单快捷键可关闭恢复与改组合
+        readback: folio shortcuts --json
+      icloud:
+        entry: 配置与更新… → 使用 iCloud 记住配置；只同步白名单偏好
+        readback: folio config status --json；folio config export -o 文件
+      updates:
+        entry: 检查更新…；共享更新窗口包含自动检查、间隔和下载选项
+        readback: folio update check --json；folio update options --json
+    inputs:
+    - Sources/**
+    - CLI/**
+    - scripts/build-cli.sh
+    - scripts/accept/lifecycle.sh
+    - scripts/accept/product_basics.py
+    - TLMarkdown.xcodeproj/**
+    - Info.plist
+    - build.sh
   ui_self_test_flag: --ui-self-test
   delivery_evidence: perf/delivery-evidence.json
   ui:

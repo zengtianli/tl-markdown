@@ -71,9 +71,20 @@ enum FolioLifecycle {
     }
 
     static func makeConfiguration() -> AppConfiguration {
+        #if !APP_STORE
+        // Shortcut bindings stay local; the existing five-field reading envelope remains compatible
+        // with the sandboxed Store variant and never carries menu/system preferences to another Mac.
+        return AppConfiguration(productID: productID,
+                         files: [AppConfigurationFile(url: FolioIndexConfig.stateDirectory.appendingPathComponent("session.json"), keys: portableKeys,
+                            validateField: { key, value in
+                                let data = try JSONSerialization.data(withJSONObject: ["values": ["file.0." + key: value]])
+                                if let problem = importProblem(data, requireComplete: false) { throw AppUpdateError(problem) }
+                            })], defaults: defaults())
+        #else
         AppConfiguration(productID: productID,
                          files: [AppConfigurationFile(url: FolioIndexConfig.stateDirectory.appendingPathComponent("session.json"), keys: portableKeys)],
                          defaults: defaults())
+        #endif
     }
     /// nil when the run mixes isolated and real state (see `isolationProblem`): the window then shows the update
     /// group only, and the commands refuse.
@@ -230,7 +241,7 @@ enum FolioLifecycle {
     /// its key. So an import is first held to the settings panel's own limits (SessionEdits.validate) and must
     /// carry every required setting. nil: nothing to object to, or not an envelope at all, which the shared layer
     /// reports itself.
-    static func importProblem(_ data: Data) -> String? {
+    static func importProblem(_ data: Data, requireComplete: Bool = true) -> String? {
         guard let object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
               let values = object["values"] as? [String: Any] else { return nil }
         func isBool(_ value: Any) -> Bool { CFGetTypeID(value as CFTypeRef) == CFBooleanGetTypeID() }
@@ -257,7 +268,7 @@ enum FolioLifecycle {
         }
         do { try SessionEdits.validate(edit) } catch { return error.localizedDescription }
         let missing = requiredKeys.filter { values["file.0." + $0] == nil }
-        if !missing.isEmpty {
+        if requireComplete && !missing.isEmpty {
             return "配置里缺少 \(missing.joined(separator: "、"))；导入会用文件里的整组设置替换现有的，缺的项会被删掉。请导入 folio config export 导出的完整文件（只改一项用 folio settings set）"
         }
         return nil

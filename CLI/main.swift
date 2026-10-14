@@ -58,6 +58,7 @@ Folio — Markdown 文档读写、索引、检索与目录图谱。与 Folio 界
   session                      Folio 窗口状态：打开的文档（未保存/冲突）、最近文件、关闭的草稿
   settings                     阅读设置的当前值与可取范围（字体、字号、宽度、启动恢复、图片目录、自定义索引）
   recent                       最近文件列表：路径、是否固定、上次打开时间、文件是否还在
+  shortcuts                    重新载入文档快捷键读回；on/off 关闭恢复，set r|shift-r|option-r 修改
 \(aligned(AppLifecycleCLI.helpRead("folio")))
 
 写入：
@@ -1152,6 +1153,31 @@ private func lifecycleWords(_ args: [String]) -> [String]? {
     guard verb == "update" || (verb == "config" && commandIndex(rest).map { lifecycleSubcommands.contains(rest[$0]) } == true) else { return nil }
     return [verb] + rest
 }
+private func shortcutCommand(_ args: [String]) throws {
+    if let problem = FolioLifecycle.isolationProblem { throw CodedFailure(code: "isolation_incomplete", message: problem) }
+    let words = Array(args.dropFirst().filter { $0 != "--json" })
+    let adapter = AppShortcuts(defaults: FolioLifecycle.defaults(), action: {})
+    guard words.count <= 2 else { throw UsageError(message: "folio shortcuts [status|on|off|set r|shift-r|option-r]") }
+    switch words.first {
+    case nil: break
+    case "status" where words.count == 1: break
+    case "on" where words.count == 1: adapter.setEnabled(true)
+    case "off" where words.count == 1: adapter.setEnabled(false)
+    case "set" where words.count == 2:
+        let binding = words[1]
+        let flags: NSEvent.ModifierFlags
+        switch binding { case "r": flags = .command; case "shift-r": flags = [.command, .shift]; case "option-r": flags = [.command, .option]
+        default: throw UsageError(message: "快捷键组合可选 r、shift-r、option-r；系统保留键不能绑定") }
+        try adapter.setBinding(.init(key: "r", modifiers: flags))
+    default: throw UsageError(message: "folio shortcuts [status|on|off|set r|shift-r|option-r] [--json]")
+    }
+    if !words.isEmpty && words.first != "status" {
+        DistributedNotificationCenter.default().postNotificationName(Notification.Name("cyou.tianli.folio.shortcuts"), object: nil, userInfo: nil, deliverImmediately: true)
+    }
+    let body: [String: Any] = ["ok": true, "enabled": adapter.enabled, "binding": adapter.binding.dictionary, "description": adapter.descriptionText]
+    if args.contains("--json") { let data = try JSONSerialization.data(withJSONObject: body, options: [.sortedKeys]); FileHandle.standardOutput.write(data); print("") }
+    else { print(adapter.descriptionText) }
+}
 /// Runs the command where it may run: a change to the settings by whoever owns session.json right now (the
 /// window when it is open, otherwise this command holding the session lock), everything else right here.
 private func lifecycle(_ words: [String]) throws -> Int32 {
@@ -1241,6 +1267,7 @@ private func commandName(_ args: [String]) -> String? { commandIndex(args).map {
         let json = flags.contains("--json")
         var command: String?
         do {
+            if args.first == "shortcuts" { command = "shortcuts"; try shortcutCommand(args); exit(0) }
             if let words = lifecycleWords(args) {
                 command = ([words[0]] + FolioLifecycle.positionals(words).prefix(1)).joined(separator: " ")
                 exit(try lifecycle(words))

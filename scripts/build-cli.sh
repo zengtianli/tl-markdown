@@ -14,7 +14,7 @@ xcrun swiftc -Osize -whole-module-optimization -parse-as-library \
   -target arm64-apple-macosx15.0 \
   Sources/IndexEngine.swift Sources/GraphEngine.swift Sources/Models.swift \
   Sources/Shared/AppLifecycle.swift Sources/Shared/AppConfiguration.swift Sources/Shared/AppLifecycleUI.swift \
-  Sources/Shared/AppLifecycleCLI.swift Sources/Lifecycle.swift CLI/main.swift -o "$OUT"
+  Sources/Shared/AppLifecycleCLI.swift Sources/Shared/AppShortcuts.swift Sources/Lifecycle.swift CLI/main.swift -o "$OUT"
 xcrun strip -x "$OUT"
 test "$(stat -f %z "$OUT")" -le 2000000
 # codesign reports "<absolute path>: replacing existing signature" on success;

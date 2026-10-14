@@ -43,6 +43,8 @@ mkdir -p ~/.local/bin && ln -s /Applications/Folio.app/Contents/Resources/bin/fo
 
 ## 给 agent 的用法
 
+下载版的「配置与更新…」还可设置应用内重新载入快捷键（默认 ⌘R，读取磁盘时保留未保存内容为草稿）：`folio shortcuts --json` 读回，`folio shortcuts off|on` 关闭/恢复，`folio shortcuts set r|shift-r|option-r` 改组合。系统保留键及菜单冲突会拒绝，保留原组合。更新选项用 `folio update options --json` 读回，`folio update options --interval 6 --auto-check off --yes` 保存；非法间隔不会改动原选项。实际安装前仍需独立授权。
+
 ```sh
 folio search 水库 --ws Work --since 2026-01-01          # path:line + 命中行
 folio search 生态流量 --json | jq '.files[] | {path, lines}'

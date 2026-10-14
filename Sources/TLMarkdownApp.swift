@@ -315,9 +315,57 @@ extension FolioLifecycle {
         configuration?.start()
         #else
         AppLifecycleUI.install(name: name, configuration: configuration, updateSource: updateSource)
+        FolioShortcutSettings.install(store: store)
         #endif
     }
 }
+
+#if !APP_STORE
+/// Product UI only; persistence, reserved keys and menu dispatch belong to the shared adapter.
+@MainActor private final class FolioShortcutSettings: NSObject {
+    static var shared: FolioShortcutSettings?
+    let shortcuts: AppShortcuts
+    private let toggle = NSSwitch()
+    private let choices = NSPopUpButton()
+    private let detail = AppLifecycleUI.detailLabel()
+    private var observer: NSObjectProtocol?
+    init(store: EditorStore) {
+        shortcuts = AppShortcuts(defaults: FolioLifecycle.defaults()) { [weak store] in store?.reload() }
+        super.init()
+        toggle.target = self; toggle.action = #selector(changeEnabled)
+        choices.addItems(withTitles: ["⌘R", "⌘⇧R", "⌘⌥R"])
+        choices.target = self; choices.action = #selector(changeBinding)
+        observer = DistributedNotificationCenter.default().addObserver(forName: Notification.Name("cyou.tianli.folio.shortcuts"), object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.refresh() }
+        }
+    }
+    static func install(store: EditorStore) {
+        let controls = FolioShortcutSettings(store: store); shared = controls
+        // SwiftUI may finish assembling its main menu just after application launch.
+        DispatchQueue.main.async { controls.shortcuts.installMenu(); controls.refresh() }
+        AppLifecycleUI.shared.productGroups = { [weak controls] in
+            guard let controls else { return [] }
+            controls.shortcuts.installMenu(); controls.refresh()
+            return [AppLifecycleUI.group("重新载入文档", rows: [
+                AppLifecycleUI.row("应用内快捷键", detail: controls.detail, accessory: controls.toggle),
+                AppLifecycleUI.row("快捷键组合", accessory: controls.choices)])]
+        }
+        AppLifecycleUI.shared.willShow = { [weak controls] in controls?.refresh() }
+    }
+    func refresh() {
+        shortcuts.refresh(); toggle.state = shortcuts.enabled ? .on : .off
+        let flags = shortcuts.binding.modifiers
+        choices.selectItem(at: flags.contains(.shift) ? 1 : flags.contains(.option) ? 2 : 0)
+        detail.stringValue = shortcuts.descriptionText + "；重新读取磁盘，未保存内容另存为草稿。"
+    }
+    @objc private func changeEnabled() { shortcuts.setEnabled(toggle.state == .on); refresh() }
+    @objc private func changeBinding() {
+        let flags: NSEvent.ModifierFlags = choices.indexOfSelectedItem == 1 ? [.command, .shift] : choices.indexOfSelectedItem == 2 ? [.command, .option] : .command
+        do { try shortcuts.setBinding(.init(key: "r", modifiers: flags)); refresh() }
+        catch { detail.stringValue = error.localizedDescription }
+    }
+}
+#endif
 
 /// `--lifecycle-self-test`: this process is the running Folio window. It holds the session lock and has the
 /// production「配置与更新」wiring (TLMarkdownApp.init), offscreen: activation policy .prohibited, no window ordered
@@ -687,6 +735,117 @@ extension FolioLifecycle {
                   && store.documents.contains { $0.path == nil && $0.text == "# 笔记\n\n窗口里没保存的修改\n" })
         } else { check("tabs_reload_takes_the_file_and_keeps_the_edits", false) }
 
+        // Product basics: actual shared controls, real menu action, fresh bundled command readback,
+        // shared reconcile and updater. Every fixture remains inside this run's state/cloud directories.
+        check("settings.interaction", checks["settings_window_offscreen_with_configuration_group"] == true && checks["window_switch_is_read_by_the_command"] == true)
+        check("settings.persisted_readback", checks["window_takes_imported_settings"] == true && checks["import_survives_the_windows_own_saves"] == true)
+        func sessionData() -> Data? {
+            guard let data = try? Data(contentsOf: store.disk.file), let object = try? JSONSerialization.jsonObject(with: data) else { return nil }
+            return try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys])
+        }
+        // Drain the autosave scheduled by the preceding real reload action before taking its baseline.
+        spin(0.6); store.persist()
+        let keptSession = sessionData()
+        try? envelope(["file.0.settings.fontSize": "invalid"]).write(to: incoming)
+        let rejected = run("config", "import", incoming.path, "--yes")
+        facts["invalid_settings_import"] = ["exit": rejected.code, "response": rejected.body, "semantic_session_unchanged": keptSession == sessionData()]
+        check("settings.error_preserves_data", rejected.code == 1 && keptSession == sessionData() && checks["bad_imports_are_refused_and_change_nothing"] == true)
+
+        if let controls = FolioShortcutSettings.shared, let document = store.documents.first(where: { $0.path == note.path }) {
+            let shortcuts = controls.shortcuts
+            shortcuts.installMenu()
+            store.select(document.id)
+            store.changed(id: document.id, text: "快捷键前未保存的正文", selection: 0, scroll: 0)
+            try? Data("# Shortcut reloaded\n".utf8).write(to: note, options: .atomic)
+            if let item = shortcuts.menuItem, let action = item.action {
+                NSApp.sendAction(action, to: item.target, from: item)
+                check("shortcuts.action_path", store.documents.first(where: { $0.id == document.id })?.text == "# Shortcut reloaded\n"
+                      && store.documents.contains(where: { $0.path == nil && $0.text == "快捷键前未保存的正文" }))
+            } else { check("shortcuts.action_path", false) }
+            // Invoke the settings window's real switch target without synthesizing keyboard/mouse events.
+            let toggleMirror = Mirror(reflecting: controls)
+            if let control = toggleMirror.descendant("toggle") as? NSSwitch, let action = control.action {
+                control.state = .off; NSApp.sendAction(action, to: control.target, from: control)
+                let disabled = !shortcuts.enabled && shortcuts.menuItem?.keyEquivalent == "" && run("shortcuts").body["enabled"] as? Bool == false
+                control.state = .on; NSApp.sendAction(action, to: control.target, from: control)
+                check("shortcuts.disable_restore", disabled && shortcuts.menuItem?.keyEquivalent == shortcuts.binding.key && run("shortcuts").body["enabled"] as? Bool == true)
+            } else { check("shortcuts.disable_restore", false) }
+            let oldBinding = shortcuts.binding.dictionary as NSDictionary
+            var reservedRefused = false, conflictRefused = false
+            do { try shortcuts.setBinding(.init(key: "q", modifiers: .command)) } catch { reservedRefused = true }
+            let conflict = NSMenuItem(title: "Fixture conflict", action: nil, keyEquivalent: "9")
+            conflict.keyEquivalentModifierMask = .command
+            NSApp.mainMenu?.addItem(conflict)
+            do { try shortcuts.setBinding(.init(key: "9", modifiers: .command)) } catch { conflictRefused = true }
+            NSApp.mainMenu?.removeItem(conflict)
+            check("shortcuts.conflict_or_reserved_keys", reservedRefused && conflictRefused && oldBinding == shortcuts.binding.dictionary as NSDictionary)
+        } else {
+            for key in ["shortcuts.action_path", "shortcuts.disable_restore", "shortcuts.conflict_or_reserved_keys"] { check(key, false) }
+        }
+
+        spin(0.6); store.persist()
+        var reconcileResults: [[String: Any]] = []
+        func reconcile() -> Bool {
+            var completed = false, succeeded = false, failure = ""
+            configuration.reconcile { error in succeeded = error == nil; failure = error?.localizedDescription ?? ""; completed = true }
+            let finished = wait(8, until: { completed })
+            reconcileResults.append(["completed": finished, "succeeded": succeeded, "error": failure, "window_size": store.settings.fontSize,
+                                     "stored_size": storedSize() ?? -1, "cloud_size": cloudSize() ?? -1])
+            return finished && succeeded
+        }
+        configuration.setEnabled(true)
+        let pushed = reconcile() && cloudSize() == store.settings.fontSize
+        configuration.setEnabled(false)
+        if var remote = (try? JSONSerialization.jsonObject(with: Data(contentsOf: cloudFile))) as? [String: Any], var values = remote["values"] as? [String: Any] {
+            values["file.0.settings.fontSize"] = 24; remote["values"] = values
+            try? JSONSerialization.data(withJSONObject: remote).write(to: cloudFile, options: .atomic)
+        }
+        configuration.setEnabled(true)
+        check("icloud.push_pull", pushed && reconcile() && wait(4, until: { store.settings.fontSize == 24 }) && storedSize() == 24)
+        let goodCloud = try? Data(contentsOf: cloudFile), localBeforeBad = sessionData()
+        try? Data("{broken".utf8).write(to: cloudFile, options: .atomic)
+        let refusedCloud = !reconcile() && sessionData() == localBeforeBad && (try? Data(contentsOf: cloudFile)) == Data("{broken".utf8)
+        if let goodCloud { try? goodCloud.write(to: cloudFile, options: .atomic) }
+        check("icloud.conflict_or_corrupt_recovery", refusedCloud && reconcile() && storedSize() == 24)
+        configuration.setEnabled(false)
+        let preservedCloud = out.appendingPathComponent("cloud-preserved")
+        try? files.moveItem(at: cloud, to: preservedCloud)
+        try? Data("not a directory".utf8).write(to: cloud)
+        configuration.setEnabled(true)
+        let unavailable = !reconcile() && sessionData() == localBeforeBad && storedSize() == 24
+        configuration.setEnabled(false)
+        try? files.removeItem(at: cloud); try? files.moveItem(at: preservedCloud, to: cloud)
+        check("icloud.unavailable_local_fallback", unavailable)
+        facts["cloud_reconcile_results"] = reconcileResults
+        let disabledCloud = try? Data(contentsOf: cloudFile)
+        store.settings.fontSize = 25; store.settingsChanged(); spin(0.2)
+        check("icloud.disable_preserves_data", !configuration.enabled && storedSize() == 25 && (try? Data(contentsOf: cloudFile)) == disabledCloud && store.documents.contains(where: { $0.text == "快捷键前未保存的正文" }))
+
+        let beforeUpdates = try? Data(contentsOf: store.disk.file)
+        let missingError = unpublished.code == 1
+        let goodFeed = try? Data(contentsOf: feed.appendingPathComponent("release.json"))
+        try? Data("{broken".utf8).write(to: feed.appendingPathComponent("release.json"), options: .atomic)
+        let corruptFeed = run("update", "check")
+        if let goodFeed { try? goodFeed.write(to: feed.appendingPathComponent("release.json"), options: .atomic) }
+        let recoveredFeed = run("update", "check")
+        // The same production lookup as the native button, with its explicit offscreen presentation mode.
+        let updatesMirror = Mirror(reflecting: AppLifecycleUI.shared)
+        let updateButton = updatesMirror.descendant("updateButton") as? NSButton
+        let updateStatus = updatesMirror.descendant("status") as? NSTextField
+        AppLifecycleUI.shared.checkForUpdates(present: false)
+        check("updates.check_result", recoveredFeed.code == 0 && recoveredFeed.body["state"] as? String == "update_available"
+              && shot["upgrade_actual_button_target"] == true && wait(8, until: { updateStatus?.stringValue.contains("99.0") == true }) && updateButton?.window?.isVisible == false)
+        check("updates.failure_recovery", missingError && corruptFeed.code == 1 && recoveredFeed.code == 0)
+        let savedOptions = run("update", "options", "--interval", "6", "--auto-check", "off", "--yes")
+        let readOptions = run("update", "options")
+        let invalidOptions = run("update", "options", "--interval", "0", "--yes")
+        check("updates.options_or_store_entry", savedOptions.code == 0 && (readOptions.body["options"] as? [String: Any])?["intervalHours"] as? Int == 6
+              && (readOptions.body["options"] as? [String: Any])?["automaticCheck"] as? Bool == false && invalidOptions.code == 2)
+        check("updates.data_preservation", beforeUpdates == (try? Data(contentsOf: store.disk.file)) && checks["update_commands_leave_the_app_in_place"] == true
+              && !files.fileExists(atPath: feed.appendingPathComponent("Folio-99.0.zip").path))
+        facts["cloud_transport"] = "isolated directory through production AppConfiguration; Apple cross-device transfer not exercised"
+        facts["window_visible"] = NSApp.windows.contains(where: { $0.isVisible })
+        facts["app_active"] = NSApp.isActive
         check("never_visible_or_active", NSApp.activationPolicy() == .prohibited && !NSApp.isActive && NSApp.windows.allSatisfy { !$0.isVisible })
         check("owner_session_preferences_and_sync_state_untouched", owned.map(stamp) == ownedBefore)
         facts["not_followed"] = unfollowed
