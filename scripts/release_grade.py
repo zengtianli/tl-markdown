@@ -113,6 +113,27 @@ def grade(app):
     return result
 
 
+def verify_local_source(app, receipt, signing_receipt):
+    """Exact file and signature chain, independent of later handoff-only Git commits."""
+    app, receipt, signing_receipt = Path(app), Path(receipt), Path(signing_receipt)
+    candidate, signed = json.loads(receipt.read_text()), json.loads(signing_receipt.read_text())
+    if signed.get('kind') != 'local-iteration' or signed.get('distribution') is not False:
+        raise BelowGrade('不是本地迭代签名链')
+    if signed['input_receipt_sha256'] != digest(receipt) or signed['unsigned_artifact'] != candidate['artifact']:
+        raise BelowGrade('签名链没有绑定原候选回执')
+    for relative, expected in candidate['source']['files'].items():
+        path = (ROOT / relative).resolve(strict=True)
+        if not path.is_relative_to(ROOT) or digest(path) != expected:
+            raise BelowGrade(f'当前源码与签名原候选不同：{relative}')
+    verdict = signature_grade(app)
+    if any(verdict[key] != signed[key] for key in ('bundle_id', 'version', 'build', 'executable_sha256')):
+        raise BelowGrade('签名原件与持证机回执不同')
+    stamp = json.loads((app / 'Contents/Resources/FolioBuild.json').read_text())
+    if stamp['source_commit'] != candidate['source']['commit'] or digest(app / 'Contents/Resources/bin/folio') != stamp['cli_sha256']:
+        raise BelowGrade('包内原构建来源或 CLI 不符')
+    return verdict
+
+
 def sign_local(source, receipt, out):
     """Certificate owner signs a source/asset-bound copy only; never compiles or installs."""
     receipt = Path(receipt).resolve(strict=True)
@@ -242,13 +263,17 @@ def install(source):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("action", choices=["check", "install", "check-local", "sign-local", "install-local"])
+    parser.add_argument("action", choices=["check", "install", "check-local", "sign-local", "install-local", "verify-local-source"])
     parser.add_argument("path", type=Path)
     parser.add_argument("--receipt", type=Path)
     parser.add_argument("--out", type=Path)
+    parser.add_argument("--signing-receipt", type=Path)
     args = parser.parse_args()
     try:
-        if args.action == 'sign-local':
+        if args.action == 'verify-local-source':
+            if not args.receipt or not args.signing_receipt: parser.error('two original receipts required')
+            result = verify_local_source(args.path, args.receipt, args.signing_receipt)
+        elif args.action == 'sign-local':
             if not args.receipt or not args.out: parser.error('sign-local requires --receipt and --out')
             result = sign_local(args.path, args.receipt, args.out)
         elif args.action == 'install-local': result = install_local(args.path)

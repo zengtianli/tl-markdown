@@ -26,7 +26,9 @@ if [ "$MODE" = "--install" ] || { [ "$MODE" = "--install-local" ] && [ -z "$PREB
 fi
 if [ -n "$PREBUILT" ] && [ "$MODE" != "--install" ] && [ "$MODE" != "--install-local" ]; then echo "FOLIO_PREBUILT 只用于安装" >&2; exit 2; fi
 if [ "$MODE" = "--install-local" ] && [ -n "$PREBUILT" ]; then
-  python3 "$DIR/scripts/release_grade.py" check-local "$PREBUILT" > /dev/null
+  : "${FOLIO_CANDIDATE_RECEIPT:?local prebuilt requires its original candidate receipt}"
+  : "${FOLIO_SIGNING_RECEIPT:?local prebuilt requires the certificate owner's receipt}"
+  python3 "$DIR/scripts/release_grade.py" verify-local-source "$PREBUILT" --receipt "$FOLIO_CANDIDATE_RECEIPT" --signing-receipt "$FOLIO_SIGNING_RECEIPT" > /dev/null
 fi
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
 xcode_env_use macosx
@@ -59,7 +61,11 @@ if [ -n "$PREBUILT" ]; then
   esac
   test -d "$APP"
   codesign --verify --deep --strict "$APP"
-  python3 "$DIR/scripts/package-release.py" --app "$APP" --adopt
+  if [ "$MODE" = "--install-local" ]; then
+    python3 "$DIR/scripts/release_grade.py" verify-local-source "$APP" --receipt "$FOLIO_CANDIDATE_RECEIPT" --signing-receipt "$FOLIO_SIGNING_RECEIPT" > /dev/null
+  else
+    python3 "$DIR/scripts/package-release.py" --app "$APP" --adopt
+  fi
 else
 # A shell profile's Homebrew llvm overrides (CC=/opt/homebrew/opt/llvm/bin/clang …) make Xcode probe a
 # compiler that a Mac without that formula does not have; this build uses Xcode's own toolchain.

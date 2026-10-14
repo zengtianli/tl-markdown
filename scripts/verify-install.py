@@ -21,8 +21,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--local', action='store_true', help='Explicit stable-signed local iteration; no notarization/publication')
     parser.add_argument('--signed-app', type=Path, help='Same-source Developer ID package from the certificate owner')
+    parser.add_argument('--candidate-receipt', type=Path)
+    parser.add_argument('--signing-receipt', type=Path)
     args = parser.parse_args()
     if args.signed_app and not args.local: parser.error('--signed-app requires --local')
+    if args.signed_app and (not args.candidate_receipt or not args.signing_receipt): parser.error('--signed-app requires both original receipts')
     if Path(sys.executable).absolute() != PYTHON.absolute():
         os.execv(str(PYTHON), [str(PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]])
     import yaml
@@ -50,7 +53,8 @@ def main():
                 "Resources/*.txt", "Resources/*.md", "Resources/graph-view.html", "icon/*.png", "icon/*.icns"]
     build_command = 'bash build.sh --install-local' if args.local else 'bash build.sh --install'
     if args.signed_app:
-        build_command = 'FOLIO_PREBUILT=' + shlex.quote(str(args.signed_app.resolve(strict=True))) + ' ' + build_command
+        build_command = ' '.join(name + '=' + shlex.quote(str(path.resolve(strict=True))) for name,path in [
+            ('FOLIO_PREBUILT',args.signed_app), ('FOLIO_CANDIDATE_RECEIPT',args.candidate_receipt), ('FOLIO_SIGNING_RECEIPT',args.signing_receipt)]) + ' ' + build_command
     command = [str(PYTHON), str(ENGINE / "app_sop.py"), "build-receipt", "--app", "folio-mac",
                "--artifact", str(installed), "--build-command",
                "set -o pipefail; " + build_command + " 2>&1 | tee build/install-verification.log"]
