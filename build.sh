@@ -4,8 +4,8 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 MODE="${1:---verify}"
 case "$MODE" in
-  --build-only|--verify|--install) ;;
-  *) echo "Usage: bash build.sh [--build-only|--verify|--install]" >&2; exit 2 ;;
+  --build-only|--verify|--install|--install-local) ;;
+  *) echo "Usage: bash build.sh [--build-only|--verify|--install|--install-local]" >&2; exit 2 ;;
 esac
 # --install produces the one release grade (scripts/release_grade.py): Developer ID + hardened runtime +
 # secure timestamp, notarized by Apple, ticket stapled. --build-only / --verify sign ad hoc: trial builds
@@ -16,15 +16,18 @@ esac
 # and do only what needs the signing Mac: sign, test the signed bundle, notarize, staple, package, install.
 IDENTITY="Developer ID Application: tianli Zeng (B9LJH93LA4)"
 NOTARIZE="$HOME/Apps/mackit/scripts/notarize.py"
-if [ "$MODE" = "--install" ]; then
+PREBUILT="${FOLIO_PREBUILT:-}"
+if [ "$MODE" = "--install" ] || { [ "$MODE" = "--install-local" ] && [ -z "$PREBUILT" ]; }; then
   security find-identity -v -p codesigning 2>/dev/null | grep -Fq "\"$IDENTITY\"" || {
     echo "build.sh --install 要用 ${IDENTITY} 签名，这台 Mac 的钥匙串里没有。" >&2
     echo "在有证书的 Mac 的登录会话里跑它；其他 Mac 装它出的同一份包：python3 scripts/release_grade.py install build/release/Folio-<版本>-<构建>-arm64.zip" >&2
     exit 1; }
-  test -f "$NOTARIZE" || { echo "找不到公证入口 ${NOTARIZE}" >&2; exit 1; }
+  if [ "$MODE" = "--install" ]; then test -f "$NOTARIZE" || { echo "找不到公证入口 ${NOTARIZE}" >&2; exit 1; }; fi
 fi
-PREBUILT="${FOLIO_PREBUILT:-}"
-if [ -n "$PREBUILT" ] && [ "$MODE" != "--install" ]; then echo "FOLIO_PREBUILT 只用于 --install" >&2; exit 2; fi
+if [ -n "$PREBUILT" ] && [ "$MODE" != "--install" ] && [ "$MODE" != "--install-local" ]; then echo "FOLIO_PREBUILT 只用于安装" >&2; exit 2; fi
+if [ "$MODE" = "--install-local" ] && [ -n "$PREBUILT" ]; then
+  python3 "$DIR/scripts/release_grade.py" check-local "$PREBUILT" > /dev/null
+fi
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
 xcode_env_use macosx
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/scrub_env.sh
@@ -106,17 +109,26 @@ LEFT="$(nm -a "$APP/Contents/MacOS/$EXECUTABLE_NAME" | awk 'substr($0,17,1)==" "
 [ "$LEFT" = 0 ] || { echo "Release executable still has $LEFT local/debug symbols" >&2; exit 1; }
 python3 "$DIR/scripts/package-release.py" --app "$APP" --stamp
 fi
-if [ "$MODE" = "--install" ]; then
+if [ "$MODE" = "--install" ] || { [ "$MODE" = "--install-local" ] && [ -z "$PREBUILT" ]; }; then
   # Every Mach-O in the bundle gets the Developer ID, the hardened runtime and a secure timestamp: the
   # bundled command first (the build stamp records its signed digest), then the app that seals it.
   # Over SSH codesign answers errSecInternalComponent: the private key only unlocks in the login session.
   codesign --force --options runtime --timestamp --sign "$IDENTITY" --identifier cyou.tianli.TLMarkdown.cli "$APP/Contents/Resources/bin/folio"
   python3 "$DIR/scripts/package-release.py" --app "$APP" --stamp-cli
   codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP"
-else
+elif [ "$MODE" != "--install-local" ]; then
   codesign --force --sign - "$APP"
 fi
 codesign --verify --deep --strict "$APP"
+if [ "$MODE" = "--install-local" ]; then
+  # Explicitly authorized local iteration: stable Developer ID, original hidden product suite,
+  # atomic installation with rollback. No public packaging, notarization or update-source writes.
+  python3 "$DIR/scripts/release_grade.py" check-local "$APP" > "$DIR/build/local-signature.json"
+  bash "$DIR/scripts/accept/lifecycle.sh" "$APP"
+  python3 "$DIR/scripts/release_grade.py" install-local "$APP" > "$DIR/build/local-install.json"
+  echo "Installed local iteration without launch/notarization: $DEST"
+  exit 0
+fi
 if [ "$MODE" = "--build-only" ]; then
   # The hand-off for FOLIO_PREBUILT on the signing Mac (build/ is not synced between the Macs).
   TRIAL="$DIR/build/trial/TLMarkdown-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")-$VERSION-trial.zip"

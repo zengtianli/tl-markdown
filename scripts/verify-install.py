@@ -9,6 +9,8 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import argparse
+import shlex
 
 ROOT = Path(__file__).resolve().parents[1]
 ENGINE = Path.home() / "Apps/chapter/engine"
@@ -16,10 +18,13 @@ PYTHON = Path.home() / "Dev/.venv/bin/python"
 
 
 def main():
-    if sys.argv[1:]:
-        raise SystemExit("Usage: python3 scripts/verify-install.py")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--local', action='store_true', help='Explicit stable-signed local iteration; no notarization/publication')
+    parser.add_argument('--signed-app', type=Path, help='Same-source Developer ID package from the certificate owner')
+    args = parser.parse_args()
+    if args.signed_app and not args.local: parser.error('--signed-app requires --local')
     if Path(sys.executable).absolute() != PYTHON.absolute():
-        os.execv(str(PYTHON), [str(PYTHON), str(Path(__file__).resolve())])
+        os.execv(str(PYTHON), [str(PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]])
     import yaml
     config = yaml.safe_load((ROOT / "project.yaml").read_text())
     installed = Path("/Applications") / (config["name_en"] + ".app")
@@ -29,6 +34,8 @@ def main():
     if installed.exists():
         current, detail = app_sop.verify_build_receipt(app, installed)
         if current:
+            if args.local:
+                subprocess.run([str(PYTHON), str(ROOT / 'scripts/release_grade.py'), 'check-local', str(installed)], check=True)
             subprocess.run([str(PYTHON), str(ROOT / 'scripts/install-cli.py'), str(installed)], check=True)
             print(json.dumps({"ok": True, "skipped": True, "detail": detail,
                               "artifact": app_sop.artifact_snapshot(installed)}, ensure_ascii=False, indent=2))
@@ -41,9 +48,12 @@ def main():
                 "scripts/test_file_open.py", "scripts/install-cli.py", "scripts/release_grade.py",
                 "Editor/src/**", "Editor/*.mjs", "Editor/package*.json",
                 "Resources/*.txt", "Resources/*.md", "Resources/graph-view.html", "icon/*.png", "icon/*.icns"]
+    build_command = 'bash build.sh --install-local' if args.local else 'bash build.sh --install'
+    if args.signed_app:
+        build_command = 'FOLIO_PREBUILT=' + shlex.quote(str(args.signed_app.resolve(strict=True))) + ' ' + build_command
     command = [str(PYTHON), str(ENGINE / "app_sop.py"), "build-receipt", "--app", "folio-mac",
                "--artifact", str(installed), "--build-command",
-               "set -o pipefail; bash build.sh --install 2>&1 | tee build/install-verification.log"]
+               "set -o pipefail; " + build_command + " 2>&1 | tee build/install-verification.log"]
     for pattern in patterns:
         command.extend(["--source-glob", pattern])
     print("Building, running isolated editor/file-open checks, and installing with a Chapter receipt…", flush=True)

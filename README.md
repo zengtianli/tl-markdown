@@ -94,6 +94,8 @@ bash build.sh --install
 
 本机装机可用 `python3 scripts/verify-install.py`：先核已装版来源，当前源码已有有效回执时直接跳过；否则沿 `build.sh --install` 构建，完成离屏编辑器和隔离 LaunchServices 文件打开测试，再备份旧程序并安装。装机后核验签名、版本、图标与 Chapter `perf/build-receipt.json`；保留用户状态，不关闭已有用户会话。文件打开测试使用独立 bundle ID 的后台副本，不修改默认文件关联。
 
+本人明确授权的本机迭代使用 `python3 scripts/verify-install.py --local`（已有持证机签名原件时加 `--signed-app /实际包.app`），沿 `build.sh --install-local`：同一 Developer ID、runtime、时间戳及 designated requirement，原离屏基础功能自检通过后原子换包并保留旧 App。运行中的 Folio 会拒绝替换并留给原队列空闲接续；不公证、不启动窗口、不写发行包或更新源。持证机只签原候选用 `scripts/release_grade.py sign-local <trial.zip> --receipt <原候选回执> --out <本仓build/新目录>`，先逐项核源文件/候选/CLI/图标来源，输出签名链回执。公开分发仍沿原 `--install` 公证与 `release_grade.py check/install`，本机迭代产物不获得公开发行资格。
+
 Chapter 固定验收登记在 `project.yaml`，四项均使用合成数据和独立状态目录：
 
 ```sh

@@ -53,8 +53,8 @@ def mach_o_files(app):
     return found
 
 
-def grade(app):
-    """The verdict for one .app; raises BelowGrade with the first reason it is not a release package."""
+def signature_grade(app):
+    """Stable product/team, hardened runtime and timestamps; does not grant distribution."""
     app = Path(app)
     info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
     if info.get("CFBundleIdentifier") != BUNDLE_ID:
@@ -92,18 +92,116 @@ def grade(app):
         if "ProvisionedDevices" in plistlib.loads(decoded.stdout):
             raise BelowGrade("包内描述文件带设备清单（只在登记过的设备上能跑）；发行包用 Developer ID 的直接分发描述文件")
         profile_state = "有，无设备清单"
+    return {"ok": True, "app": str(app), "bundle_id": BUNDLE_ID,
+            "version": info["CFBundleShortVersionString"], "build": info["CFBundleVersion"],
+            "identity": IDENTITY, "hardened_runtime": True, "secure_timestamp": True,
+            "provisioning_profile": profile_state, "executable_sha256": digest(executable),
+            "code": [str(path.relative_to(app)) for path in code_files]}
+
+
+def grade(app):
+    """Public packages always require the original notarization and Gatekeeper gate."""
+    app = Path(app)
+    result = signature_grade(app)
     code, staple = run("/usr/bin/xcrun", "stapler", "validate", app)
     if code:
         raise BelowGrade(f"没有装订公证票据：{staple[-300:]}")
     code, assessment = run("/usr/sbin/spctl", "--assess", "--type", "execute", "--verbose=2", app)
     if code or "source=Notarized Developer ID" not in assessment:
         raise BelowGrade(f"Gatekeeper 未放行：{assessment[-300:]}")
-    return {"ok": True, "app": str(app), "bundle_id": BUNDLE_ID,
-            "version": info["CFBundleShortVersionString"], "build": info["CFBundleVersion"],
-            "identity": IDENTITY, "hardened_runtime": True, "secure_timestamp": True, "stapled": True,
-            "gatekeeper": "Notarized Developer ID", "provisioning_profile": profile_state,
-            "executable_sha256": digest(executable),
-            "code": [str(path.relative_to(app)) for path in code_files]}
+    result.update(stapled=True, gatekeeper="Notarized Developer ID")
+    return result
+
+
+def sign_local(source, receipt, out):
+    """Certificate owner signs a source/asset-bound copy only; never compiles or installs."""
+    receipt = Path(receipt).resolve(strict=True)
+    recorded = json.loads(receipt.read_text())
+    for relative, expected in recorded['source']['files'].items():
+        path = (ROOT / relative).resolve(strict=True)
+        if not path.is_relative_to(ROOT) or digest(path) != expected:
+            raise BelowGrade(f"签名前源码输入不匹配：{relative}")
+    out = Path(out).resolve()
+    if not out.is_relative_to(ROOT / 'build') or out.exists():
+        raise BelowGrade("签名输出必须是本产品 build/ 下尚不存在的目录")
+    out.mkdir(parents=True)
+    code, output = run('/usr/bin/ditto', '-x', '-k', source, out)
+    if code:
+        raise BelowGrade(output)
+    apps = list(out.glob('*.app'))
+    if len(apps) != 1:
+        raise BelowGrade("候选归档没有唯一 App")
+    app = apps[0]
+    artifact = recorded['artifact']
+    info = plistlib.loads((app / 'Contents/Info.plist').read_bytes())
+    if (info['CFBundleIdentifier'] != BUNDLE_ID or str(info['CFBundleVersion']) != artifact['build']
+            or info['CFBundleShortVersionString'] != artifact['version'] or digest(app / artifact['executable']) != artifact['sha256']):
+        raise BelowGrade("候选与原构建回执不匹配")
+    icon = artifact['icon']
+    if digest(app / icon['path']) != icon['sha256']:
+        raise BelowGrade("候选图标不匹配")
+    code, output = run('/usr/bin/codesign', '--verify', '--deep', '--strict', app)
+    if code:
+        raise BelowGrade(output)
+    cli = app / 'Contents/Resources/bin/folio'
+    stamp = json.loads((app / 'Contents/Resources/FolioBuild.json').read_text())
+    if digest(cli) != stamp['cli_sha256'] or stamp['source_commit'] != recorded['source']['commit']:
+        raise BelowGrade("候选 CLI/构建来源不匹配")
+    for args in [("--identifier", BUNDLE_ID + '.cli', str(cli)), (str(app),)]:
+        if len(args) == 1:
+            subprocess.run([sys.executable, str(ROOT / 'scripts/package-release.py'), '--app', str(app), '--stamp-cli'], check=True)
+        subprocess.run(['/usr/bin/codesign', '--force', '--options', 'runtime', '--timestamp', '--sign', IDENTITY, *args], check=True)
+    result = signature_grade(app)
+    archive = out / 'Folio-local-signed.zip'
+    subprocess.run(['/usr/bin/ditto', '-c', '-k', '--keepParent', str(app), str(archive)], check=True)
+    result.update(kind='local-iteration', distribution=False, notarization_requested=False,
+                  input_receipt_sha256=digest(receipt), input_archive_sha256=digest(source),
+                  unsigned_artifact=artifact, signed_archive=str(archive), signed_archive_sha256=digest(archive))
+    (out / 'signing-receipt.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+    return result
+
+
+def install_local(source):
+    """Explicit local iteration, same stable signature, atomic rollback; no public package gate bypass."""
+    source = Path(source).resolve(strict=True)
+    verdict = signature_grade(source)
+    if DESTINATION.is_symlink():
+        raise BelowGrade("已装 App 为软链，拒绝替换")
+    if DESTINATION.exists():
+        signature_grade(DESTINATION)
+        def requirement(path):
+            code, detail = run('/usr/bin/codesign', '-d', '-r-', path)
+            if code: raise BelowGrade(detail)
+            return next(line for line in detail.splitlines() if line.startswith('designated =>'))
+        if requirement(source) != requirement(DESTINATION):
+            raise BelowGrade("稳定 designated requirement 改变，拒绝影响现有授权")
+    processes = subprocess.check_output(['ps', '-axo', 'pid=,comm='], text=True)
+    for line in processes.splitlines():
+        fields = line.strip().split(None, 1)
+        if len(fields) == 2 and fields[1].startswith(str(DESTINATION) + '/Contents/MacOS/'):
+            raise BelowGrade("Folio 正在运行，保留现有进程，未替换；沿原队列在空闲时接续")
+    stage = Path(tempfile.mkdtemp(prefix='.Folio-local-install-', dir=DESTINATION.parent))
+    candidate, previous = stage / 'Candidate.app', stage / 'Previous.app'
+    swapped = False
+    try:
+        subprocess.run(['/usr/bin/ditto', str(source), str(candidate)], check=True)
+        if signature_grade(candidate)['executable_sha256'] != verdict['executable_sha256']:
+            raise BelowGrade("安装副本与签名原件不同")
+        if DESTINATION.exists(): DESTINATION.rename(previous)
+        candidate.rename(DESTINATION); swapped = True
+        installed = signature_grade(DESTINATION)
+        if installed['executable_sha256'] != verdict['executable_sha256']:
+            raise BelowGrade("装机字节不匹配")
+        subprocess.run([sys.executable, str(ROOT / 'scripts/install-cli.py'), str(DESTINATION)], check=True)
+    except Exception:
+        if swapped: DESTINATION.rename(stage / 'Rejected.app')
+        if previous.exists(): previous.rename(DESTINATION)
+        raise
+    # Keep the previous exact bundle in this transaction for deliberate rollback, never delete it.
+    installed.update(kind='local-iteration', distribution=False, notarization_requested=False,
+                     installed=str(DESTINATION), previous=str(previous) if previous.exists() else None, transaction=str(stage))
+    (stage / 'receipt.json').write_text(json.dumps(installed, ensure_ascii=False, indent=2) + '\n')
+    return installed
 
 
 def install(source):
@@ -144,11 +242,18 @@ def install(source):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("action", choices=["check", "install"])
+    parser.add_argument("action", choices=["check", "install", "check-local", "sign-local", "install-local"])
     parser.add_argument("path", type=Path)
+    parser.add_argument("--receipt", type=Path)
+    parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     try:
-        result = grade(args.path) if args.action == "check" else install(args.path)
+        if args.action == 'sign-local':
+            if not args.receipt or not args.out: parser.error('sign-local requires --receipt and --out')
+            result = sign_local(args.path, args.receipt, args.out)
+        elif args.action == 'install-local': result = install_local(args.path)
+        elif args.action == 'check-local': result = signature_grade(args.path)
+        else: result = grade(args.path) if args.action == "check" else install(args.path)
     except BelowGrade as error:
         print(json.dumps({"ok": False, "reason": str(error)}, ensure_ascii=False, indent=2))
         raise SystemExit(1)
