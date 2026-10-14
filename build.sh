@@ -27,7 +27,7 @@ fi
 if [ -n "$PREBUILT" ] && [ "$MODE" != "--install" ] && [ "$MODE" != "--install-local" ]; then echo "FOLIO_PREBUILT 只用于安装" >&2; exit 2; fi
 if [ "$MODE" = "--install-local" ] && [ -n "$PREBUILT" ]; then
   : "${FOLIO_CANDIDATE_RECEIPT:?local prebuilt requires its original candidate receipt}"
-  : "${FOLIO_SIGNING_RECEIPT:?local prebuilt requires the certificate owner's receipt}"
+  : "${FOLIO_SIGNING_RECEIPT:?local prebuilt requires the original signing receipt}"
   python3 "$DIR/scripts/release_grade.py" verify-local-source "$PREBUILT" --receipt "$FOLIO_CANDIDATE_RECEIPT" --signing-receipt "$FOLIO_SIGNING_RECEIPT" > /dev/null
 fi
 source /Users/tianli/Dev/tools/dev/lib/tools/macapp/xcode_env.sh
