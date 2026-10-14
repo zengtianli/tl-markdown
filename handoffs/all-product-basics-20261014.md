@@ -8,7 +8,22 @@
 
 ## 进度
 
-### 本机快装接续（用户本轮已明确授权）
+### 当前轮：候选先验、Mac 不安装（2026-10-15，PID 97224）
+
+- 用户本轮明确改为代码/候选阶段，完成后由 Chapter 另排独立 install 阶段；此前签名/快装等待属于独立安装阶段，不作为本轮候选代码任务的通过前置。本轮不推进、重派或取消原签名任务，不安装。
+- 四项生产代码、sop.product_basics 与固定 sop.accept.product_basics 已具备；固定脚本支持 --app/--receipt 及显式候选环境参数，未提供时仍验 /Applications/Folio.app 与 perf/build-receipt.json。已有差异全部保留，不改共享源/登记/引擎。
+- 原 verify_build_receipt 本轮再次核现有 1.2.1 (155) 候选仍返回 true；复用真实构建与原回执，不因旧已装版来源不一致重编同源码。候选主程序 SHA256 dbad87c0cb58da28c26faf5726a95c85f6a8d9e10ea45b505885c4dc1fd4bbd1，回执 SHA256 4c748b959152a849140cd0d237acbb2ec67c5c840cfdfe3b8e73129956520eda。
+- 已显式选当前候选/回执，执行本轮必需 chapter sop accept --app folio-mac --check product_basics --json；退出 0、ok:true、status:passed，全部 14 项必测行为及 81 项原始检查严格 true、failed:[]，subject:candidate。未借候选参数声称已装。
+- 本轮正式原件 `perf/acceptance/run-o207hupu/product_basics.json`，SHA256 `06aa5306e93a329b646dbac08f13cd535d94a794991509b95e9d73556b009052`；原始 checks `perf/acceptance/product-basics-08bd2789072846f897eea1770317a39d/raw.json`，SHA256 `583678e637751269c97c6be7f417f1afecc182976ea3199ba85e7ccb3d0c47fd`；真实进程原件 `lifecycle/lifecycle.json` SHA256 `fde3ddc18b163de86cf01c9ed98de5bfc510ef5240f8e0d9553d214b0af2b10e`。perf/delivery-evidence.json 由原 app_sop 记录 passed，未手写。
+- 原件 window_visible:false、app_active:false，preference_domain_removed/update_preference_domain_removed/work_removed 均 true；iCloud 实测仍是生产同步代码经隔离目录的本机链路，苹果跨设备传输未验证。未改真实用户配置、iCloud/账户数据或后台。
+- 已装版只读核对仍是 1.2.1 (143)，主程序 SHA256 `c3e8b00da53bf11dd5bce92f4c40f9ed81eb980ed326703f1ad7167a306e39c6`；本轮未安装、签名、公证、推送、发布或写更新源，未重编输入相同的候选。仅本报告新增本轮结果，其他 project.yaml 差异/暂存/后台保留。
+- 本轮代码/候选完成条件已经满足，无本产品候选验收阻挡；此前安装来源不一致和签名准入等待留给 Chapter 独立 install 阶段，不作为本轮未完成项。接续候选固定验收仍用以下显式命令，脚本缺省仍验已装版：
+
+  ```sh
+  SOP_FOLIO_BASICS_APP="$PWD/build/DerivedData/Build/Products/Release/TLMarkdown.app" SOP_FOLIO_BASICS_RECEIPT="$PWD/build/accept/product_basics/local-candidate-receipt.json" chapter sop accept --app folio-mac --check product_basics --json
+  ```
+
+### 前轮本机快装接续（历史授权与结果）
 
 - 本轮只续本机迭代安装与已装包 product_basics：build.sh、scripts/release_grade.py、scripts/verify-install.py 的本地安装块及必要固定校验、原 handoff；四项源码与前轮通过结果复用。共享引擎不写，其他修改/暂存/后台保留。
 - 完成条件：同 bundle、同 Developer ID 稳定签名，当前源码构建来源与真实安装字节相符，旧包可回溯；不公证、不发更新源、不公开发布；已装包完成固定 14 项验收。
@@ -20,7 +35,7 @@
 - 已按要求执行默认 `chapter sop accept --app folio-mac --check product_basics --json`，实际已装版因旧构建来源拒绝，退出 1；原件 `perf/acceptance/run-o_6o1ctu/product_basics.json`，完整原因「拒绝未绑定当前源码的产品：当前构建输入与装机来源不同」。没有对同输入重复验收。
 - 显式选上述新候选及原回执，再执行同一固定 Chapter 入口，退出 0、passed，全部 14 项通过。原件 `perf/acceptance/run-nbdeezo_/product_basics.json`；原始 checks `perf/acceptance/product-basics-28ea860470ca4a3ea36de12d2d85d026/raw.json` SHA256 `df4e16e4c1752b5ee0af1d45e8a6db42ffa4a3db19a53f9d8259f1c02088c86e`，subject:candidate、failed:[]。这不是已装版通过，正式证据仍由原 app_sop 写入。
 
-### 快装受阻与原队列接续
+### 前轮快装受阻与原队列接续
 
 #### 2026-10-15 04:23 再次接续（Chapter 精确身份 PID 82824）
 
