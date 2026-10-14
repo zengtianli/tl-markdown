@@ -113,10 +113,11 @@ struct MobileBasicsContext {
                 controller.shortcuts.isOn = false; controller.shortcuts.sendActions(for: .valueChanged)
                 try Data("disk while disabled".utf8).write(to: file)
                 await MobileReloadShortcut.perform(store: store, editorID: "shortcut")
-                let disabled = store.active?.text == "disk after reload" && !prefs.value.shortcutsEnabled
+                let disabled = store.active?.text == "disk after reload" && !prefs.value.shortcutsEnabled && MobileReloadShortcut.binding(enabled: prefs.value.shortcutsEnabled) == nil
                 controller.shortcuts.isOn = true; controller.shortcuts.sendActions(for: .valueChanged)
                 await MobileReloadShortcut.perform(store: store, editorID: "shortcut")
-                checks["shortcuts.disable_restore"] = disabled && prefs.value.shortcutsEnabled && store.active?.text == "disk while disabled"
+                let restoredBinding = MobileReloadShortcut.binding(enabled: prefs.value.shortcutsEnabled)
+                checks["shortcuts.disable_restore"] = disabled && prefs.value.shortcutsEnabled && store.active?.text == "disk while disabled" && restoredBinding?.key == KeyEquivalent(Character(MobileReloadShortcut.key)) && restoredBinding?.modifiers == MobileReloadShortcut.modifiers
                 try Data("reserved must not reload".utf8).write(to: file)
                 await MobileReloadShortcut.perform(store: store, editorID: "shortcut", key: "q", modifiers: .command)
                 checks["shortcuts.conflict_or_reserved_keys"] = store.active?.text == "disk while disabled" && !MobileReloadShortcut.accepts("r", modifiers: .command, enabled: true)

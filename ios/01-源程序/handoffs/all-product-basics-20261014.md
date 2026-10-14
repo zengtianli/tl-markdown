@@ -1,6 +1,6 @@
 # Folio 移动端 product_basics — 2026-10-15
 
-本轮责任范围：Sources/MobileProductLifecycle.swift、FolioMobileApp.swift、ContentView.swift、MobileEditor.swift、MobileStore.swift 的设置/动作接线；新增产品设置与进程内自检；Shared 生命周期文件仅通过总部 vendor-lifecycle.py 原入口逐字节分发；project.yml、Resources/Folio.entitlements；scripts/accept/product_basics.py、project.yaml 的 product_basics/accept/相关功能清单、README 与本交接。保留其他会话改动、暂存及后台。精确 claims 身份为 PID 95241、chapter-task:48e5ac24f6165c13a625688b25626952，不另开或释放。
+本轮责任范围：Sources/MobileProductLifecycle.swift、FolioMobileApp.swift、ContentView.swift、MobileEditor.swift、MobileStore.swift 的设置/动作接线；新增产品设置与进程内自检；Shared 生命周期文件仅通过总部 vendor-lifecycle.py 原入口逐字节分发；project.yml、Resources/Folio.entitlements；scripts/accept/product_basics.py、project.yaml 的 product_basics/accept/相关功能清单、README 与本交接。保留其他会话改动、暂存及后台。接续轮精确 claims 身份为 PID 34499、chapter-task:48e5ac24f6165c13a625688b25626952，写前核对，不另开或释放（上轮 PID 95241 已成为历史）。
 
 共享资源：总部生命周期源只读；Chapter 标准/引擎只读；SDK 构建与模拟器使用原 sim_lane 全局串行锁，仓外冻结副本；不得触碰生产配置、真实 iCloud 或账户数据。无装机、上传、推送、发布、公证或更新源写入。
 
@@ -8,7 +8,17 @@
 
 已核：固定标准 schema 1 的四项合计 14 项；原移动入口配置为 nil、渠道 unreleased，不能当作通过。ASC 只读 apps 返回 cyou.tianli.TLMarkdown.mobile 对应真实记录 6819568883；此记录存在不表示已公开发行。
 
-## 当前结果（06:43，以下历史过程以此为准）
+## 当前接续（06:46，以下历史过程以此为准）
+
+- 本轮先回读原始 failed 记录与完整日志：规范原件仍是上轮 Python 缺 yaml 的失败；后续 deferred 由 Chapter 恢复此前原件，不能把它误认为 Python 修复失效，也不能把 deferred 当 passed。回读原 job e4c4a629451b48ac9dfbe291ead3b822 仍 queued，未另建执行者。
+- 入场负载 14.42 且无锁，沿 `chapter work --once --app folio --json` 接续原 job；实际准入时被 fitcoach-ios:product-basics、PID 35992 先取锁，原队列返回 deferred，next_attempt_at 06:45:24。没有碰对方设备或进程。
+- 对本产品代码检查发现快捷键辅助动作仅由自检调用，实际 SwiftUI 菜单直接调用 store.reload。已将启用快捷键时的菜单动作接到同一 MobileReloadShortcut.perform，并抽出 binding(enabled:) 供真实菜单和自检共同使用；触屏菜单在禁用硬件绑定时仍可安全重新载入。自检新增对真实绑定关闭为 nil、恢复后 key/modifiers 的断言，没有合成按键或放宽检查。
+- 修改后已实际执行规定的 `chapter sop accept --app folio --check product_basics --json`，退出 1、status:deferred，最新原因「1 分钟负载 64.8 在 0s 内没降到 18.0 以下」，在构建准入前停止。没有重跑同因，未降低阈值。Tests/static_check.py 和 git diff --check 通过；新快捷键接线尚未编译及运行，旧候选不再视为当前输入。
+- `chapter enqueue --app folio --action accept --check product_basics --tmpdir /private/tmp --json` 返回 deduplicated:true，保留原 job e4c4a629451b48ac9dfbe291ead3b822、status:deferred，不新造队列。资源允许后由固定脚本重建输入变化的候选，再跑真实 iPhone/iPad/Vision App、14 项行为、离屏原图及新进程读回。接续 `chapter work --once --app folio --json`；查询 `chapter jobs --app folio --active --json`。
+- 本轮新输入 c49c9eaef2bc3149c2f7025961de4ca4ffea67d99c86141690255679ea5151d5，72 个绑定文件；它与历史候选 996230d2… 不同。收尾只读负载回读 25.9，仍超过 18，锁已不存在；未以无锁代替负载准入，也未重复执行同因失败。
+- 当前仍未有四项运行验收通过；本机隔离 iCloud 链路与 Apple 跨设备传输都未测，不能称完整交付。未安装手机或 Mac、未外发发布、未修改生产数据或既有后台，既有未暂存的产品展示块和其他会话产物保留。
+
+## 前轮结果（06:43）
 
 - 本轮主体源码已提交 51a9cf2；后续原队列接续发现 Chapter 登录 shell 的 python3 缺 yaml，已在固定验收器 build_environment 中选择同一个真实 Chapter Python 的 PATH，不改共享引擎或原 build.sh。原失败任务 bb57bf86128f445e97b3fe7b7927dd82 已结束，失败原件 perf/acceptance/run-5o8lqyub/product_basics.json 与 product-basics-mobile-a6cc95da49244330af1605cb521f63a5/raw.json 保留，不冒充产品行为已执行。
 - 最终源码已沿原入口实际重建两线成功，均为普通 Release、1.2.1 (2)、cyou.tianli.TLMarkdown.mobile；input_sha256 996230d2e926adbb9bc60872bd42e0b926b50e4fbba7b56e2a6311a79ee82f69。原 reuse_build 对 iphone、ipad、vision 三条线全部验证成功，iPad 合法复用同一 iOS 包，不改写平台事实。

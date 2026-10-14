@@ -67,9 +67,16 @@ struct ContentView: View {
                             Button("授权图片目录…", systemImage: "folder.badge.plus") { folderDocumentID = store.activeID; folderSheet = true }
                                 .disabled(store.active?.path == nil)
                             Button("重新载入并保留当前草稿", systemImage: "arrow.clockwise") {
-                                Task { await store.reload(editorID: editorID) }
+                                Task {
+                                    if preferences.value.shortcutsEnabled {
+                                        await MobileReloadShortcut.perform(store: store, editorID: editorID)
+                                    } else {
+                                        // Touch menu remains useful while its hardware-key binding is disabled.
+                                        await store.reload(editorID: editorID)
+                                    }
+                                }
                             }
-                            .keyboardShortcut(preferences.value.shortcutsEnabled ? KeyboardShortcut(KeyEquivalent(Character(MobileReloadShortcut.key)), modifiers: MobileReloadShortcut.modifiers) : nil)
+                            .keyboardShortcut(MobileReloadShortcut.binding(enabled: preferences.value.shortcutsEnabled))
                             .disabled(store.active?.path == nil)
                         }
                     } label: { Image(systemName: "ellipsis.circle") }.accessibilityLabel("文稿操作")

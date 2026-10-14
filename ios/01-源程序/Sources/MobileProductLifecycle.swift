@@ -73,6 +73,9 @@ struct MobileReadingSettings: Codable, Equatable {
 enum MobileReloadShortcut {
     static let key = "r"
     static let modifiers: EventModifiers = [.command, .shift]
+    static func binding(enabled: Bool) -> KeyboardShortcut? {
+        enabled ? KeyboardShortcut(KeyEquivalent(Character(key)), modifiers: modifiers) : nil
+    }
     static func accepts(_ key: String, modifiers: EventModifiers, enabled: Bool) -> Bool {
         enabled && key == self.key && modifiers == self.modifiers
     }
