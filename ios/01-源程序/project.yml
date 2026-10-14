@@ -44,6 +44,10 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         PRODUCT_NAME: Folio
         GENERATE_INFOPLIST_FILE: NO
+    entitlements:
+      path: Resources/Folio.entitlements
+      properties:
+        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)cyou.tianli.TLMarkdown.mobile
     info:
       path: Generated/${target_name}-Info.plist
       properties:

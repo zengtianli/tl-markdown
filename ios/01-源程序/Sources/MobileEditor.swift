@@ -8,6 +8,7 @@ import CryptoKit
 struct MobileEditor: UIViewRepresentable {
     enum PrivacyRuleSource: Equatable { case stored, compiled }
     @ObservedObject var store: MobileStore
+    @ObservedObject var preferences = MobileProductLifecycle.preferences
     let document: OpenDocument
     let reading: Bool
     let editorID: String
@@ -70,6 +71,7 @@ struct MobileEditor: UIViewRepresentable {
     }
     func updateUIView(_ view: WKWebView, context: Context) {
         context.coordinator.display(document, source: store.sourceMode)
+        context.coordinator.send("settings", ["fontSize": preferences.value.fontSize, "contentWidth": preferences.value.contentWidth, "fontFamily": "system"])
     }
     static func dismantleUIView(_ view: WKWebView, coordinator: Coordinator) {
         // Retain the old view until its own pending text has been checked; a new
@@ -110,7 +112,8 @@ struct MobileEditor: UIViewRepresentable {
                 loadedID = document.id; loadedRevision = document.revision; sourceMode = source
                 send("load", ["id": document.id, "text": document.text, "revision": document.revision,
                               "selection": document.selection, "scroll": document.scroll, "source": reading ? false : source,
-                              "fontSize": 17, "contentWidth": 820, "fontFamily": "system"])
+                              "fontSize": MobileProductLifecycle.preferences.value.fontSize,
+                              "contentWidth": MobileProductLifecycle.preferences.value.contentWidth, "fontFamily": "system"])
             } else if source != sourceMode {
                 sourceMode = source; send("mode", reading ? false : source)
             }

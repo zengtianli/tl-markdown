@@ -20,8 +20,7 @@ import SwiftUI
 
     init() {
         let demo = ProcessInfo.processInfo.arguments.contains("-folio-demo")
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(demo ? "FolioMobile-Demo" : "FolioMobile", isDirectory: true)
+        let base = MobileProductLifecycle.support
         do { workspace = try DocumentWorkspace(directory: base) }
         catch {
             // Preserve unreadable recovery records. A separate rescue session never replaces them.
@@ -68,6 +67,10 @@ import SwiftUI
     func save(editorID: String) async {
         let intendedID = activeID
         do { try await flush(editorID: editorID); guard let intendedID else { throw DocumentError.missing }; try workspace.save(id: intendedID); refresh(); notice = "已安全保存到原文件" }
+        catch { refresh(); notice = error.localizedDescription }
+    }
+    func reload(editorID: String) async {
+        do { try await flush(editorID: editorID); try workspace.reloadPreservingDraft(); refresh() }
         catch { refresh(); notice = error.localizedDescription }
     }
 }

@@ -11,6 +11,9 @@ struct ContentView: View {
     @State private var editorID = UUID().uuidString
     @State private var folderSheet = false
     @State private var folderDocumentID: String?
+    @EnvironmentObject private var lifecycle: MobileLifecycleModel
+    @ObservedObject private var preferences = MobileProductLifecycle.preferences
+    @State private var settings = false
     @Environment(\.scenePhase) private var phase
     var body: some View {
         NavigationStack {
@@ -50,6 +53,7 @@ struct ContentView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        Button("设置与更新", systemImage: "gearshape") { settings = true }
                         Button("打开 Markdown", systemImage: "folder") { importSheet = true }
                         Button("新建文稿", systemImage: "square.and.pencil") { Task { await store.newDocument(editorID: editorID) } }
                         if store.active != nil {
@@ -63,13 +67,20 @@ struct ContentView: View {
                             Button("授权图片目录…", systemImage: "folder.badge.plus") { folderDocumentID = store.activeID; folderSheet = true }
                                 .disabled(store.active?.path == nil)
                             Button("重新载入并保留当前草稿", systemImage: "arrow.clockwise") {
-                                Task { do { try await store.flush(editorID: editorID); store.perform { try store.workspace.reloadPreservingDraft() } } catch { store.notice = error.localizedDescription } }
-                            }.disabled(store.active?.path == nil)
+                                Task { await store.reload(editorID: editorID) }
+                            }
+                            .keyboardShortcut(preferences.value.shortcutsEnabled ? KeyboardShortcut(KeyEquivalent(Character(MobileReloadShortcut.key)), modifiers: MobileReloadShortcut.modifiers) : nil)
+                            .disabled(store.active?.path == nil)
                         }
                     } label: { Image(systemName: "ellipsis.circle") }.accessibilityLabel("文稿操作")
                 }
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            Button("设置与更新", systemImage: "gearshape") { settings = true }
+                .font(.footnote).padding(7).frame(maxWidth: .infinity).background(.bar)
+        }
+        .sheet(isPresented: $settings) { MobileSettingsPanel(model: lifecycle) }
         .fileImporter(isPresented: $importSheet, allowedContentTypes: [.folioMarkdown, .plainText], allowsMultipleSelection: false) { result in
             switch result {
             case .success(let urls): if let url = urls.first { Task { await store.open(url, editorID: editorID) } }

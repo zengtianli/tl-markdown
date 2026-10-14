@@ -71,22 +71,45 @@ sop:
       human: 窗口里的手势
     - name: 提示条与关闭提示
       human: 只在窗口里有意义
-    # 「配置与更新」面板（共享 AppLifecycleMobile）：移动版渠道是「本地构建」（MobileProductLifecycle 的 unreleased，
-    # 没有安装说明链接）、没有可迁移配置，面板上只有版本、渠道名和一句说明，没有按钮。移动版没有往 Mac 或后端发数据的通道。
-    - name: 配置与更新（版本；移动版无可迁移配置）
-      device: 显示的是这台手机上装的那一份 App 的版本与构建号（读自手机上的 App 包），移动版不上报；folio status 与 folio update check 读的是 Mac 包的版本，读不到手机上这一份
+    - name: 设置与更新（字号、阅读宽度、快捷键、iCloud、导入导出、版本）
+      device: 手机本地配置与 App 包；原共享 AppConfiguration 只同步阅读偏好，不上报文稿、书签或恢复草稿；Mac CLI 不读手机沙盒，固定验收由真实模拟器 App 新进程读回
     - name: 检查更新
-      device: 移动版的渠道是「本地构建」，面板上这一栏只有编进 App 的渠道名和一句说明，没有按钮，也没有可查询的发行记录；它只在这台手机的面板里显示，folio update check 查的是 Mac 版的发行记录
+      device: 原共享 AppUpdateChecker 查询移动 App Store 记录 6819568883，安装由系统商店负责；Mac folio update 查的是另一条 Mac 发行渠道
+    - name: 外接键盘重新载入（⌘⇧R，可关闭）
+      device: 作用于手机当前文稿与本地恢复草稿，复用菜单同一安全重新载入动作；Mac CLI 不操作手机会话
   account:
     mode: none
     rationale: 本地文稿阅读与编辑入口，没有产品账号、注册或登录；文稿经系统“文件”授权读写，iCloud 云盘等位置由系统 Apple ID 管理，不作为本产品账号。
   accept:
+    product_basics: /Users/tianli/Dev/.venv/bin/python -B scripts/accept/product_basics.py
     functionality: /Users/tianli/Dev/.venv/bin/python -B Tests/HostedHarness/run.py --chapter-accept --single-editor
     recovery: bash scripts/test-core.sh
     privacy: bash scripts/test-core.sh
     launch_iphone: SOP_FUNCTIONAL_THIN=1 bash scripts/launch.sh iphone
     launch_ipad: SOP_FUNCTIONAL_THIN=1 bash scripts/launch.sh ipad
     launch_vision: bash scripts/launch.sh vision
+  product_basics:
+    schema_version: 1
+    features:
+      settings:
+        entry: 主界面与文稿菜单「设置与更新」，原生阅读偏好控件及共享导入导出
+        readback: scripts/accept/product_basics.py --inspect；真实模拟器 App --product-basics-self-test 的 readback 阶段独立新进程读配置
+      shortcuts:
+        entry: 设置中的外接键盘开关；文稿菜单 ⌘⇧R 重新载入并保留草稿，不注册系统保留键
+        readback: scripts/accept/product_basics.py --inspect；真实 App 动作、关闭恢复与新进程偏好读回
+      icloud:
+        entry: 设置「使用 iCloud 记住阅读配置」，默认关闭；原共享 KVS 同步与状态
+        readback: scripts/accept/product_basics.py --inspect；真实 App 隔离共享同步往返、损坏恢复、离线回落及关闭保留
+      updates:
+        entry: 设置「检查更新」「前往 App Store」与启动自动检查开关；移动商店 6819568883
+        readback: scripts/accept/product_basics.py --inspect；真实 App 更新状态、实际请求、错误恢复与新进程选项读回
+    inputs:
+    - scripts/accept/product_basics.py
+    - Sources/MobileBasicsSelfTest.swift
+    - Sources/MobileProductLifecycle.swift
+    - Sources/MobileSettings.swift
+    - Resources/Folio.entitlements
+    - project.yml
   platforms:
     iphone:
       scheme: FolioMobile

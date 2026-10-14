@@ -39,10 +39,12 @@ bash scripts/test-core.sh      # 低负载窗口内运行，编译原 Foundation
 
 ## 配置与 App 更新
 
-新构建在主界面下方提供「配置与更新」，显示当前安装包的真实版本和构建号。
+新构建在主界面下方及文稿菜单提供「设置与更新」，显示真实版本与构建号，可改字号（13–28）、阅读宽度（320–1200）和外接键盘快捷键。⌘⇧R 与菜单复用保留草稿的重新载入操作；可关闭，系统编辑快捷键沿原编辑器。
 
-当前没有独立可迁移的偏好配置，界面不提供空的 iCloud 开关。账号、访问凭据、业务内容、本机权限与缓存继续使用各自原有入口。
+可选 iCloud 默认关闭，经总部 AppConfiguration 的系统 KVS 同步阅读偏好；导入导出使用原共享面板。文稿、恢复草稿、Files 书签、权限与账户数据不进入配置白名单；iCloud 不可用仍可本地使用，关闭保留已有数据。文稿文件的 iCloud Drive 同步仍由 Files 提供方负责。
 
-移动版尚未配置商店或 TestFlight 发行渠道，界面显示当前包版本和本地构建渠道。现有组件入口仅负责构建；签名包需通过总部现有真机安装流程分发，目前无法自动查询最新发行版本。资料或后台数据刷新仍在原入口。
+检查更新复用总部 AppUpdateChecker 与真实移动商店记录 6819568883；提供 App Store 获取入口及默认关闭的启动自动检查选项。地区尚无公开发行、网络或数据错误均显示检查未完成，不能声称最新版；不在 App 内下载替换自身。
 
 版本号更新属于本轮新构建；手机上的新版本需通过签名安装或原商店/TestFlight 渠道取得，发行状态以现有发布记录为准。
+
+固定验收：`python3 scripts/accept/product_basics.py --build` 沿原 scripts/build.sh 与 sim_lane 串行锁生成普通 Release 候选和 build receipt；`chapter sop accept --app folio --check product_basics --json` 校验回执并在 iPhone、iPad、Vision 专用模拟器运行真实 App 的进程内自检及新进程读回。`--app/--receipt/--vision-receipt` 可显式指定候选；`--inspect` 只读原始证据。设置 UIKit 视图脱离窗口渲染，无桌面合成输入，不启动 Simulator.app。隔离云目录只证明本机生产同步链路，不能代替 Apple 跨设备传输；更新分别执行真实 App Store HTTPS 查询及共享检查器的隔离测试源文件读写，不发布任何版本。
