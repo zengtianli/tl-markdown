@@ -8,6 +8,40 @@
 
 ## 进度
 
+### 本机快装接续（用户本轮已明确授权）
+
+- 本轮只续本机迭代安装与已装包 product_basics：build.sh、scripts/release_grade.py、scripts/verify-install.py 的本地安装块及必要固定校验、原 handoff；四项源码与前轮通过结果复用。共享引擎不写，其他修改/暂存/后台保留。
+- 完成条件：同 bundle、同 Developer ID 稳定签名，当前源码构建来源与真实安装字节相符，旧包可回溯；不公证、不发更新源、不公开发布；已装包完成固定 14 项验收。
+- Mini 当前仅 Apple Development 身份；已装 Folio 为 Developer ID Application: tianli Zeng (B9LJH93LA4)。Air 实际持有该 Developer ID 私钥。现有安装入口强制公证，本轮按用户授权补显式本地迭代模式，公开发行等级保持原门禁。
+- 本轮代码提交 `688a027077eb2315423829020bbac6d99d0d29cd`、`860ba6c`、`61769bd6edfd814a62264735c79e969b390408be`：原 build.sh 增加 --install-local；原 release_grade.py 的稳定签名检查与公开公证检查分开，公开 check/install 仍强制公证；本地签名、原候选/签名回执链与原子安装保留旧包；verify-install.py --local 使用原 Chapter build-receipt 包裹真实安装。没有改共享引擎或登记，不用分发开关免闸。
+- 1.2.1 (155) 真实候选由原 build.sh --build-only 生成，主程序 SHA256 `dbad87c0cb58da28c26faf5726a95c85f6a8d9e10ea45b505885c4dc1fd4bbd1`，源码提交 `61769bd6edfd814a62264735c79e969b390408be`；原回执 `build/accept/product_basics/local-candidate-receipt.json`，源码指纹 `fad4c48b2e3c45e0321c32318cb966155be93ecea02c4d9b0fa2f4ced352bb9b`。持证机冻结输入 `handoffs/local-install-20261015/trial.zip` SHA256 `9d5f26c00be7cd939a0ea1aa31967bfd4b3a5ec85c1a2e7e886758e1c44084c7`，`candidate-receipt.json` SHA256 `4c748b959152a849140cd0d237acbb2ec67c5c840cfdfe3b8e73129956520eda`。
+- 原快装模式实际拒绝 ad-hoc 候选；`release_grade.py check /Applications/Folio.app` 只读检查原正式 1.2.1 (143) 仍通过，含 Notarized Developer ID。真实已装主程序仍为 `c3e8b00da53bf11dd5bce92f4c40f9ed81eb980ed326703f1ad7167a306e39c6`，未替换、未启动或重启，没有消耗本轮一次装机授权。
+- `Tests/LocalInstallTests.py` 三项通过：复制真实 Developer ID 旧包到 build/ 的隔离目标，调用生产安装事务及真实 CLI 链接器；成功换包/保留原包、实际 CLI 链接冲突回滚、换包后验签故障注入回滚。HOME/目标均隔离，真实已装 App 字节保持不变。原日志 `build/local-install-tests.log`；回滚故障注入仅属事务测试，不冒充四项产品验收。
+- 已按要求执行默认 `chapter sop accept --app folio-mac --check product_basics --json`，实际已装版因旧构建来源拒绝，退出 1；原件 `perf/acceptance/run-o_6o1ctu/product_basics.json`，完整原因「拒绝未绑定当前源码的产品：当前构建输入与装机来源不同」。没有对同输入重复验收。
+- 显式选上述新候选及原回执，再执行同一固定 Chapter 入口，退出 0、passed，全部 14 项通过。原件 `perf/acceptance/run-nbdeezo_/product_basics.json`；原始 checks `perf/acceptance/product-basics-28ea860470ca4a3ea36de12d2d85d026/raw.json` SHA256 `df4e16e4c1752b5ee0af1d45e8a6db42ffa4a3db19a53f9d8259f1c02088c86e`，subject:candidate、failed:[]。这不是已装版通过，正式证据仍由原 app_sop 写入。
+
+### 快装受阻与原队列接续
+
+- 原 mac-pair 签名任务 `20261015-0409-folio-local-sign` 已签入原队列，冻结四个实际输入和 ZIP/签名回执两个产物，使用 --force-queue 等待，未绕互斥。发送 preflight 的完整挡因：project_has_writer（claim:chapter-task:35f32cb39e815cba9ca2d3bb984c038f，mini，owner PID 46445）；active_claim（/Users/tianli/Apps/folio/build/local-signing-product-basics-20261015 被 /Users/tianli/Apps/folio 的 Chapter · folio-mac 与两机交接声明覆盖）。本会话没有另开或释放声明。
+- Air 已回传该任务的原 status：state:deferred、phase:capabilities、reason:capability_unknown_or_unavailable、missing:[agent,apple-release]，updated:2026-10-15 04:14:38。原 wait --limit 30 返回 75，「等待准入条件或产物回传，未重复执行」。Air 的只读 workers 回读 role:air、capacity:1，不能代替缺失能力准入，更不能当作签名完成。暂无签名输出、暂无安装回执；不在 SSH 会话直接签、不修改共享能力登记或引擎。
+- 签名及本机安装尚未完成，交还 Chapter/原 mac-pair 队列处理环境准入。本轮当前可用安装版仍是 (143)，候选 (155) 的四项行为及必要事务验证已完成；没有公证、发布、推送、更新源或手机安装。
+
+在本仓接续原任务（保留同一 task ID，不重发或改签合同）：
+
+```sh
+python3 /Users/tianli/mac-pair/pair.py wait 20261015-0409-folio-local-sign --limit 30
+```
+
+原队列实际返回两份产物并核双方 SHA 后，在本仓沿原入口完成已授权一次快装与已装包验收：
+
+```sh
+ditto -x -k build/local-signing-product-basics-20261015/Folio-local-signed.zip build/local-signing-product-basics-20261015/received
+/Users/tianli/Dev/.venv/bin/python scripts/verify-install.py --local --signed-app build/local-signing-product-basics-20261015/received/TLMarkdown.app --candidate-receipt handoffs/local-install-20261015/candidate-receipt.json --signing-receipt build/local-signing-product-basics-20261015/signing-receipt.json
+chapter sop accept --app folio-mac --check product_basics --json
+```
+
+快装入口会再次完整核原候选源码、签名回执、同身份 designated requirement、隐藏基础行为及安装字节，并保留旧程序；运行中的目标会拒绝换包并留原队列接续，不关闭用户进程。安装后需回读 perf/build-receipt.json、实际版本/签名/CLI 与后台进程，并更新本报告；当前没有声称这些后置步骤已经完成。若原任务截止后失败，按原队列新一轮接续，不重写历史合同。
+
 - 已读取固定标准、唯一要求数据和现有生命周期/原生 UI 验收入口；当前未登记 product_basics。
 - 已确认现有设置、iCloud 配置同步与更新均复用总部共享实现；正在核对实际快捷键和错误恢复路径。
 - 已沿总部 vendor-lifecycle.py 接入原共享更新选项/值校验及 AppShortcuts；Folio 配置窗口增加应用内重新载入快捷键开关/组合，CLI 增加 shortcuts 状态和设置。原读取磁盘与草稿保留业务复用 EditorStore.reload。
