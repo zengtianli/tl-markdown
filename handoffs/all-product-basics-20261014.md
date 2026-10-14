@@ -22,6 +22,16 @@
 
 ### 快装受阻与原队列接续
 
+#### 2026-10-15 04:23 再次接续（Chapter 精确身份 PID 82824）
+
+- 本轮仅回读原签名任务、现有候选/已装来源并执行要求的已装包固定验收；没有重派、复编、修改安装源码或共享引擎，也没有释放或另开声明。
+- 原任务 `20261015-0409-folio-local-sign` 的本机 reply 返回「本机尚无回执」；原 push 返回「只有 Air 能主动连对方；这台等 Air 来取送」。直接只读回读 Air 原 status：state:deferred、phase:capabilities、reason:capability_unknown_or_unavailable、missing:[agent,apple-release]，admission_waits:3、updated:2026-10-15 04:18:37，next_attempt:1792009147.2196941。没有 signing-receipt.json，也没有签名 ZIP；未将取送或排队记成正在签名。
+- Mini 实际仍只有 Apple Development 身份，Air 实际仍有 Developer ID Application: tianli Zeng (B9LJH93LA4)。Air 默认 SSH 命令查找未发现 codex/claude，但通过已有绝对路径可读到 codex-cli 0.162.1；这只能证明二进制存在，不能替代原能力准入报告。原门禁还会使用兼容 owner 的 apple-release 能力；不改报告、共享登记、执行器配置或引擎来放行。
+- 已执行本轮要求的 `chapter sop accept --app folio-mac --check product_basics --json`，退出 1、status:failed；原件 `perf/acceptance/run-d16himj0/product_basics.json`。固定脚本完整错误仍为「拒绝未绑定当前源码的产品：当前构建输入与装机来源不同」，检查 settings.real_product_execution:false。仅执行这一次，原因/输入未变，不再重复到通过；没有手写 delivery-evidence。
+- 原 API verify_build_receipt 对现有候选及 `build/accept/product_basics/local-candidate-receipt.json` 仍返回 true，复用其真实 155 构建与前轮 14 项通过原件，不再重编或重跑同输入候选检查。
+- 实际安装读回：bundle `cyou.tianli.TLMarkdown`，1.2.1 (143)，主程序 SHA256 `c3e8b00da53bf11dd5bce92f4c40f9ed81eb980ed326703f1ad7167a306e39c6`；已装 CLI `folio --version` 退出 0、`folio 1.2.1 (143)`；进程表中本产品运行进程为空。未替换已装包，没有停止/重启用户后台，没有使用本轮一次安装授权。
+- 当前仍受原签名任务能力准入与 Chapter 仓库 writer 边界约束，本产品仓内无新的可独立修复原因。原队列等待条件恢复；Chapter 需沿原 mac-pair 能力/委派入口处理，产品会话不越权改共享能力。保留原 task ID 及下方接续命令，不改签历史合同；无须用户决定。未公证、推送、发布、部署或写更新源，真实 iCloud/账户/配置未改。
+
 - 原 mac-pair 签名任务 `20261015-0409-folio-local-sign` 已签入原队列，冻结四个实际输入和 ZIP/签名回执两个产物，使用 --force-queue 等待，未绕互斥。发送 preflight 的完整挡因：project_has_writer（claim:chapter-task:35f32cb39e815cba9ca2d3bb984c038f，mini，owner PID 46445）；active_claim（/Users/tianli/Apps/folio/build/local-signing-product-basics-20261015 被 /Users/tianli/Apps/folio 的 Chapter · folio-mac 与两机交接声明覆盖）。本会话没有另开或释放声明。
 - Air 已回传该任务的原 status：state:deferred、phase:capabilities、reason:capability_unknown_or_unavailable、missing:[agent,apple-release]，updated:2026-10-15 04:14:38。原 wait --limit 30 返回 75，「等待准入条件或产物回传，未重复执行」。Air 的只读 workers 回读 role:air、capacity:1，不能代替缺失能力准入，更不能当作签名完成。暂无签名输出、暂无安装回执；不在 SSH 会话直接签、不修改共享能力登记或引擎。
 - 签名及本机安装尚未完成，交还 Chapter/原 mac-pair 队列处理环境准入。本轮当前可用安装版仍是 (143)，候选 (155) 的四项行为及必要事务验证已完成；没有公证、发布、推送、更新源或手机安装。
