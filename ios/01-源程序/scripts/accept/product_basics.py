@@ -44,13 +44,17 @@ def write(path, value):
 
 @contextmanager
 def build_environment():
-    fields = ['SOP_REPO', 'SOP_OUT_DIR', 'SOP_CONFIG', 'FOLIO_FAMILY_ROOT']
+    fields = ['SOP_REPO', 'SOP_OUT_DIR', 'SOP_CONFIG', 'FOLIO_FAMILY_ROOT', 'PATH']
     saved = {key: os.environ.pop(key) for key in fields if key in os.environ}
     os.environ['FOLIO_FAMILY_ROOT'] = str(ROOT.parents[1])
+    # Chapter launches acceptors through a login shell; its python3 may lack YAML.
+    # Keep the original product build.sh and select the same real engine interpreter.
+    os.environ['PATH'] = str(Path(sys.executable).parent) + os.pathsep + saved.get('PATH', os.defpath)
     try:
         yield
     finally:
         os.environ.pop('FOLIO_FAMILY_ROOT', None)
+        os.environ.pop('PATH', None)
         os.environ.update(saved)
 
 
