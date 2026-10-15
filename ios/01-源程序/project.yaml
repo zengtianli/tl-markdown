@@ -5,7 +5,7 @@ display_name: Folio · 文页
 family: folio
 form: ios
 platforms: [iphone, ipad, vision]
-lifecycle: active
+lifecycle: frozen
 bundle_id: cyou.tianli.TLMarkdown.mobile
 origin: own
 sop:

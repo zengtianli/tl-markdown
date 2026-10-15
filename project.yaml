@@ -3,7 +3,7 @@ name_en: Folio
 name_zh: 文页
 display_name: Folio · 文页
 form: mac
-lifecycle: active
+lifecycle: frozen
 bundle_id: cyou.tianli.TLMarkdown
 origin: own
 # 交付流程（SOP）事实：app_sop.py 据此检查轻量/测试、演示素材、推广页、装机与发布，字段说明见
